@@ -121,6 +121,7 @@ export function TenantActions({ tenant }: { tenant: Tenant }) {
             <div className='space-y-2 sm:col-span-2'>
               <Label>Gói dịch vụ</Label>
               <SelectDropdown
+                standalone
                 defaultValue={values.servicePlan}
                 isControlled
                 onValueChange={(servicePlan) =>

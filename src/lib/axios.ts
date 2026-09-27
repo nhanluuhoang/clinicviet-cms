@@ -3,19 +3,42 @@ import Axios, {
   type InternalAxiosRequestConfig,
 } from 'axios'
 import { API_URL } from '@/config'
-import { getCookie } from '@/lib/cookies'
 
-const authRequestInterceptor = (
+let csrfToken: string | null = null
+let csrfTokenRequest: Promise<string> | null = null
+
+const getCsrfToken = async (): Promise<string> => {
+  if (csrfToken) return csrfToken
+  if (!csrfTokenRequest) {
+    csrfTokenRequest = Axios.get<{ csrfToken: string }>(
+      `${API_URL}/auth/csrf`,
+      {
+        withCredentials: true,
+        headers: { Accept: 'application/json' },
+      }
+    )
+      .then(({ data }) => {
+        csrfToken = data.csrfToken
+        return data.csrfToken
+      })
+      .finally(() => {
+        csrfTokenRequest = null
+      })
+  }
+  return csrfTokenRequest
+}
+
+const authRequestInterceptor = async (
   config: InternalAxiosRequestConfig
-): InternalAxiosRequestConfig => {
+): Promise<InternalAxiosRequestConfig> => {
   config.headers.Accept = 'application/json'
 
   if (!config.headers['Content-Type'])
     config.headers['Content-Type'] = 'application/json'
 
-  const csrfToken = getCookie('x-csrf-token')
-  if (csrfToken) {
-    config.headers['x-csrf-token'] = decodeURIComponent(csrfToken)
+  const method = config.method?.toUpperCase()
+  if (method && !['GET', 'HEAD', 'OPTIONS'].includes(method)) {
+    config.headers['x-csrf-token'] = await getCsrfToken()
   }
 
   return config
