@@ -3,9 +3,33 @@ import Axios, {
   type InternalAxiosRequestConfig,
 } from 'axios'
 import { API_URL } from '@/config'
+import { toast } from 'sonner'
 
 let csrfToken: string | null = null
 let csrfTokenRequest: Promise<string> | null = null
+
+type ApiErrorPayload = {
+  error?: { title?: string }
+  message?: string | string[]
+}
+
+const showApiError = (error: unknown) => {
+  if (!Axios.isAxiosError<ApiErrorPayload>(error) || !error.response) return
+
+  const { status, data: payload } = error.response
+  const requestUrl = error.config?.url ?? ''
+  // Profile checks use 401 to determine whether a session exists and redirect
+  // to sign-in, so only that expected control flow is silent.
+  if (status === 401 && requestUrl.endsWith('/auth/profile')) return
+
+  const message =
+    payload?.error?.title ??
+    (Array.isArray(payload?.message)
+      ? payload.message.join(', ')
+      : payload?.message)
+
+  if (message) toast.error(message, { id: 'api-error' })
+}
 
 const getCsrfToken = async (): Promise<string> => {
   if (csrfToken) return csrfToken
@@ -20,6 +44,10 @@ const getCsrfToken = async (): Promise<string> => {
       .then(({ data }) => {
         csrfToken = data.csrfToken
         return data.csrfToken
+      })
+      .catch((error: unknown) => {
+        showApiError(error)
+        throw error
       })
       .finally(() => {
         csrfTokenRequest = null
@@ -56,6 +84,7 @@ axios.interceptors.response.use(
     return response.data
   },
   (error) => {
+    showApiError(error)
     const message = error.response?.data || error.message
     return Promise.reject(message)
   }

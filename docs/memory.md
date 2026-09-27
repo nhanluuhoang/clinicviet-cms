@@ -89,8 +89,9 @@ liệu từ server dùng debounce 300 ms. Các bảng dùng chung nằm trong
   đính kèm ảnh, PDF hoặc video theo giới hạn dung lượng đã cấu hình.
 - Chưa kiểm thử end-to-end trên trình duyệt với backend đang chạy. Cần kiểm tra
   bằng tài khoản `DOCTOR` thuộc tenant có dữ liệu bệnh nhân và thuốc.
-- CMS lấy CSRF token từ `GET /auth/csrf` vào bộ nhớ trước mọi request ghi; không
-  còn đọc cookie CSRF dùng chung giữa các subdomain.
+- CMS lấy CSRF token host-only qua `GET /auth/csrf`, giữ token trong bộ nhớ và
+  gửi lại qua header cho mọi request ghi.
 - Metadata chia sẻ của CMS dùng thương hiệu `phanmemphongkhamonline` và ảnh Open Graph 1200×630
   tại `public/images/phanmemphongkhamonline-social.png`; không còn preview Shadcn Admin.
 - `SelectDropdown` có chế độ `standalone` cho bộ lọc/form thủ công ngoài React Hook Form; các dropdown hệ thống, tenant và duyệt trial không gọi `FormControl` khi thiếu form context.
+- Axios xử lý mọi lỗi HTTP backend qua một toast chung và chỉ hiển thị nội dung `error.title`/`message` do backend trả về; không có thông báo theo status hoặc fallback. Chỉ `401` của `/auth/profile` kiểm tra phiên được giữ im lặng.
