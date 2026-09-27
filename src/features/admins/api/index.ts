@@ -35,10 +35,10 @@ export interface AdminsResponse {
   limit: number
 }
 
-const CreateAdmin = (data: StaffInput): Promise<Admin> =>
+const CreateStaff = (data: StaffInput): Promise<Admin> =>
   axios.post('/users', data)
 
-const GetAdmins = ({
+const FindStaff = ({
   fullName,
   page,
   pageSize,
@@ -47,10 +47,10 @@ const GetAdmins = ({
     params: { search: fullName || undefined, page, limit: pageSize },
   })
 
-const UpdateAdmin = (id: string, data: StaffInput): Promise<Admin> =>
+const UpdateStaff = (id: string, data: StaffInput): Promise<Admin> =>
   axios.patch(`/users/${id}`, data)
 
-const DeleteAdmin = (id: string): Promise<Admin> =>
+const DeactivateStaff = (id: string): Promise<Admin> =>
   axios.delete(`/users/${id}`)
 
-export { CreateAdmin, GetAdmins, UpdateAdmin, DeleteAdmin }
+export { CreateStaff, FindStaff, UpdateStaff, DeactivateStaff }

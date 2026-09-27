@@ -1,7 +1,7 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { toast } from 'sonner'
-import { DeleteAdmin, type Admin } from '@/features/admins/api'
 import { ConfirmDialog } from '@/components/confirm-dialog'
+import { DeactivateStaff, type Admin } from '@/features/admins/api'
 
 export function AdminsDeleteDialog({
   open,
@@ -14,7 +14,7 @@ export function AdminsDeleteDialog({
 }) {
   const queryClient = useQueryClient()
   const deactivate = useMutation({
-    mutationFn: () => DeleteAdmin(currentRow.id),
+    mutationFn: () => DeactivateStaff(currentRow.id),
     onSuccess: async () => {
       await queryClient.invalidateQueries({ queryKey: ['users'] })
       toast.success('Đã khóa tài khoản nhân viên')

@@ -36,7 +36,6 @@ export interface QueueEntry {
   examinationAt: string | null
   completedAt: string | null
   patient: QueueUser
-  doctor: QueueUser | null
   medicalHistory: null | {
     id: string
     symptoms: string

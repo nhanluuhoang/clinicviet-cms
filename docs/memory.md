@@ -44,7 +44,11 @@ liệu từ server dùng debounce 300 ms. Các bảng dùng chung nằm trong
 - Các nhãn, nút, placeholder, thông báo và trang lỗi còn dùng tiếng Anh trong CMS đã được chuẩn hóa sang tiếng Việt, gồm thành phần dùng chung, đăng nhập, quản trị viên, cấu hình chung, bài viết, menu và thiết lập.
 
 - Tenant admin có mục “Thông tin phòng khám” tại `/settings/tenant`: sửa tên và địa chỉ; xem mã tenant, subdomain, tên gói, trạng thái và hạn thuê bao. Các vai trò khác không thấy menu và bị chặn route.
+- SUPER_ADMIN chỉ thấy khu vực hệ thống; có thể tạo tenant cùng tài khoản quản trị phòng khám ban đầu trong một thao tác.
+- Menu “Hệ thống” của SUPER_ADMIN có hai mục `/system/tenants` (CRUD tenant, tạo user theo tenant) và `/system/users` (danh sách user, lọc tenant/vai trò, tạo tài khoản).
+- Menu “Hệ thống” có thêm `/system/trial-requests` để xem, duyệt hoặc từ chối yêu cầu dùng thử; duyệt sẽ cấp phát tenant và tài khoản quản trị theo API backend hiện có.
 - Menu cài đặt tài khoản dùng nhãn “Hồ sơ cá nhân” và có trang `/settings/change-password`; đổi mật khẩu yêu cầu mật khẩu hiện tại. Sidebar đổi “Master Data” thành “Cấu hình chung” và có trang `/clinic-days-off`, lưu ngày nghỉ lặp hằng năm dạng `MM-DD` trong master data.
+- Mục và route “Ngày nghỉ phòng khám” chỉ dành cho gói PLUS/PRO; gói BASIC không thấy menu và bị chặn nếu mở URL trực tiếp.
 - Trang `/settings` dùng dữ liệu thật từ auth store, hiển thị đầy đủ hồ sơ và lưu họ tên, email, điện thoại, giới tính, ngày sinh, địa chỉ, ghi chú qua `PATCH /auth/profile`; tên đăng nhập chỉ đọc.
 
 - CMS có trang `/landing-config` cho tenant admin chỉnh tên phòng khám, thương hiệu, phần giới thiệu đầu trang, bác sĩ phụ trách, dịch vụ, giờ đặt lịch, liên hệ và SEO; dữ liệu dùng API `GET/PUT /landing-config`, tên được lưu vào `Tenant`, và landing không có trạng thái công khai riêng.

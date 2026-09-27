@@ -37,6 +37,8 @@ const routeRoles: Array<{
   roles: UserRole[]
   plans?: readonly ServicePlan[]
 }> = [
+  { path: '/tenants', roles: SUPER_ADMIN_ROLES },
+  { path: '/system', roles: SUPER_ADMIN_ROLES },
   {
     path: '/admins',
     roles: TENANT_ADMIN_ROLES,
@@ -54,7 +56,11 @@ const routeRoles: Array<{
   },
   { path: '/settings/tenant', roles: TENANT_ADMIN_ROLES },
   { path: '/master-data', roles: CLINICAL_ADMIN_ROLES },
-  { path: '/clinic-days-off', roles: CLINICAL_ADMIN_ROLES },
+  {
+    path: '/clinic-days-off',
+    roles: CLINICAL_ADMIN_ROLES,
+    plans: TENANT_STAFF_PLANS,
+  },
   { path: '/prescription-templates', roles: CLINICAL_ADMIN_ROLES },
   { path: '/patients', roles: STAFF_ROLES },
   { path: '/medical-histories', roles: STAFF_ROLES },
@@ -72,7 +78,6 @@ export function hasAnyRole(
 ) {
   if (!allowedRoles || allowedRoles.length === 0) return true
   if (!role) return false
-  if (role === USER_ROLES.SUPER_ADMIN) return true
   return allowedRoles.includes(role)
 }
 
