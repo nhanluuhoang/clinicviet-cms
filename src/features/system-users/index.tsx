@@ -75,6 +75,7 @@ export function SystemUsers() {
         </div>
         <div className='grid gap-3 sm:grid-cols-2 lg:max-w-2xl'>
           <SelectDropdown
+            standalone
             defaultValue={tenantId}
             isControlled
             onValueChange={setTenantId}
@@ -87,6 +88,7 @@ export function SystemUsers() {
             ]}
           />
           <SelectDropdown
+            standalone
             defaultValue={role}
             isControlled
             onValueChange={(value) => setRole(value as typeof role)}

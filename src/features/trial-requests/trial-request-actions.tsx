@@ -102,6 +102,7 @@ export function TrialRequestActions({ request }: { request: TrialRequest }) {
             <div className='space-y-2'>
               <Label>Gói dịch vụ</Label>
               <SelectDropdown
+                standalone
                 defaultValue={form.servicePlan}
                 isControlled
                 onValueChange={(servicePlan) =>
