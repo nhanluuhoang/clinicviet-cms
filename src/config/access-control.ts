@@ -78,6 +78,7 @@ export function hasAnyRole(
 ) {
   if (!allowedRoles || allowedRoles.length === 0) return true
   if (!role) return false
+  if (role === USER_ROLES.SUPER_ADMIN) return true
   return allowedRoles.includes(role)
 }
 
@@ -86,6 +87,8 @@ export function canAccessPath(
   pathname: string,
   servicePlan?: ServicePlan
 ) {
+  if (role === USER_ROLES.SUPER_ADMIN) return true
+
   const normalizedPath =
     pathname.length > 1 ? pathname.replace(/\/+$/, '') : pathname
   const rule = routeRoles.find(
@@ -96,4 +99,8 @@ export function canAccessPath(
 
   if (!rule || !hasAnyRole(role, rule.roles)) return !rule
   return !rule.plans || (!!servicePlan && rule.plans.includes(servicePlan))
+}
+
+export function getHomePath() {
+  return '/'
 }

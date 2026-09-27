@@ -3,6 +3,7 @@ import { z } from 'zod'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { Link, useNavigate } from '@tanstack/react-router'
+import { canAccessPath, getHomePath } from '@/config/access-control'
 import { Loader2, LogIn } from 'lucide-react'
 import { toast } from 'sonner'
 import { useAuthStore } from '@/stores/auth-store'
@@ -64,8 +65,14 @@ export function UserAuthForm({
       auth.setUser(profile.data)
 
       const targetPath =
-        redirectTo ||
-        (profile.data.role === 'SUPER_ADMIN' ? '/system/tenants' : '/')
+        redirectTo &&
+        canAccessPath(
+          profile.data.role,
+          redirectTo,
+          profile.data.tenant?.servicePlan
+        )
+          ? redirectTo
+          : getHomePath()
       navigate({ to: targetPath, replace: true })
       toast.success(`Chào mừng trở lại, ${profile.data.fullName}!`)
     } catch (error) {
