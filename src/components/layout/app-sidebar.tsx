@@ -1,5 +1,5 @@
+import { hasAnyRole, USER_ROLES } from '@/config/access-control'
 import { useAuthStore } from '@/stores/auth-store'
-import { hasAnyRole } from '@/config/access-control'
 import { useLayout } from '@/context/layout-provider'
 import {
   Sidebar,
@@ -20,6 +20,7 @@ export function AppSidebar() {
 
   const checkRole = (roles?: string[]) => hasAnyRole(user?.role, roles)
   const checkPlan = (plans?: readonly string[]) =>
+    user?.role === USER_ROLES.SUPER_ADMIN ||
     !plans ||
     (!!user?.tenant?.servicePlan && plans.includes(user.tenant.servicePlan))
 
@@ -33,8 +34,7 @@ export function AppSidebar() {
 
           if ('items' in item && item.items) {
             const filteredSubItems = item.items.filter(
-              (subItem) =>
-                checkRole(subItem.roles) && checkPlan(subItem.plans)
+              (subItem) => checkRole(subItem.roles) && checkPlan(subItem.plans)
             )
             if (filteredSubItems.length === 0) return null
             return { ...item, items: filteredSubItems } as NavItem

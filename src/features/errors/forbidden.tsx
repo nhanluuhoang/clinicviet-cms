@@ -1,4 +1,5 @@
 import { useNavigate, useRouter } from '@tanstack/react-router'
+import { getHomePath } from '@/config/access-control'
 import { Button } from '@/components/ui/button'
 
 export function ForbiddenError() {
@@ -16,7 +17,9 @@ export function ForbiddenError() {
           <Button variant='outline' onClick={() => history.go(-1)}>
             Quay lại
           </Button>
-          <Button onClick={() => navigate({ to: '/' })}>Về trang chủ</Button>
+          <Button onClick={() => navigate({ to: getHomePath() })}>
+            Về trang chủ
+          </Button>
         </div>
       </div>
     </div>
