@@ -5,7 +5,7 @@ import { Header } from '@/components/layout/header'
 import { Main } from '@/components/layout/main'
 import { ProfileDropdown } from '@/components/profile-dropdown'
 import { ThemeSwitch } from '@/components/theme-switch'
-import { GetAdmins } from './api'
+import { FindStaff } from './api'
 import { AdminsDialogs } from './components/admins-dialogs'
 import { AdminsPrimaryButtons } from './components/admins-primary-buttons'
 import { AdminsProvider } from './components/admins-provider'
@@ -29,7 +29,7 @@ export function Admins() {
   const { data, isLoading } = useQuery({
     queryKey: ['users', search],
     queryFn: () =>
-      GetAdmins({
+      FindStaff({
         fullName: search.fullName || '',
         page: search.page || 1,
         pageSize: search.pageSize || 10,

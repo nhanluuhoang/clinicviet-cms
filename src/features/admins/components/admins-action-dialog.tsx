@@ -26,8 +26,8 @@ import { Input } from '@/components/ui/input'
 import { PasswordInput } from '@/components/password-input'
 import { SelectDropdown } from '@/components/select-dropdown'
 import {
-  CreateAdmin,
-  UpdateAdmin,
+  CreateStaff,
+  UpdateStaff,
   type Admin,
   type StaffInput,
 } from '@/features/admins/api'
@@ -130,8 +130,8 @@ export function AdminsActionDialog({
         }),
       }
       return currentRow
-        ? UpdateAdmin(currentRow.id, payload)
-        : CreateAdmin(payload)
+        ? UpdateStaff(currentRow.id, payload)
+        : CreateStaff(payload)
     },
     onSuccess: async () => {
       await queryClient.invalidateQueries({ queryKey: ['users'] })

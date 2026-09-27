@@ -63,7 +63,9 @@ export function UserAuthForm({
       const profile = await Profile()
       auth.setUser(profile.data)
 
-      const targetPath = redirectTo || '/'
+      const targetPath =
+        redirectTo ||
+        (profile.data.role === 'SUPER_ADMIN' ? '/system/tenants' : '/')
       navigate({ to: targetPath, replace: true })
       toast.success(`Chào mừng trở lại, ${profile.data.fullName}!`)
     } catch (error) {

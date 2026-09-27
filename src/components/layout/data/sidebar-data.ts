@@ -4,6 +4,7 @@ import {
   TENANT_APPEARANCE_PLANS,
   TENANT_ADMIN_ROLES,
   TENANT_STAFF_PLANS,
+  SUPER_ADMIN_ROLES,
 } from '@/config/access-control'
 import {
   LayoutDashboard,
@@ -22,11 +23,38 @@ import {
   ChartColumn,
   History,
   PanelsTopLeft,
+  Building2,
 } from 'lucide-react'
 import { type SidebarData } from '../types'
 
 export const sidebarData: SidebarData = {
   navGroups: [
+    {
+      items: [
+        {
+          title: 'Hệ thống',
+          icon: Building2,
+          roles: SUPER_ADMIN_ROLES,
+          items: [
+            {
+              title: 'Phòng khám',
+              url: '/system/tenants',
+              roles: SUPER_ADMIN_ROLES,
+            },
+            {
+              title: 'Người dùng',
+              url: '/system/users',
+              roles: SUPER_ADMIN_ROLES,
+            },
+            {
+              title: 'Yêu cầu dùng thử',
+              url: '/system/trial-requests',
+              roles: SUPER_ADMIN_ROLES,
+            },
+          ],
+        },
+      ],
+    },
     {
       title: 'Tổng quan',
       items: [
@@ -144,6 +172,7 @@ export const sidebarData: SidebarData = {
               url: '/clinic-days-off',
               icon: CalendarOff,
               roles: CLINICAL_ADMIN_ROLES,
+              plans: TENANT_STAFF_PLANS,
             },
           ],
         },
