@@ -1,6 +1,7 @@
 import { useState } from 'react'
+import { DotsHorizontalIcon } from '@radix-ui/react-icons'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
-import { Pencil, Trash2, UserPlus } from 'lucide-react'
+import { Pencil, Trash2 } from 'lucide-react'
 import { toast } from 'sonner'
 import {
   AlertDialog,
@@ -21,16 +22,21 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog'
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuShortcut,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { SelectDropdown } from '@/components/select-dropdown'
-import { CreateSystemUserDialog } from '@/features/system-users/create-system-user-dialog'
 import { deleteTenant, updateTenant, type Tenant } from './api'
 
 export function TenantActions({ tenant }: { tenant: Tenant }) {
   const [editOpen, setEditOpen] = useState(false)
   const [deleteOpen, setDeleteOpen] = useState(false)
-  const [userOpen, setUserOpen] = useState(false)
   const queryClient = useQueryClient()
   const [values, setValues] = useState({
     code: tenant.code,
@@ -62,38 +68,31 @@ export function TenantActions({ tenant }: { tenant: Tenant }) {
 
   return (
     <>
-      <div className='flex justify-end gap-1'>
-        <Button
-          size='icon'
-          variant='ghost'
-          title='Tạo tài khoản'
-          onClick={() => setUserOpen(true)}
-        >
-          <UserPlus />
-        </Button>
-        <Button
-          size='icon'
-          variant='ghost'
-          title='Chỉnh sửa'
-          onClick={() => setEditOpen(true)}
-        >
-          <Pencil />
-        </Button>
-        <Button
-          size='icon'
-          variant='ghost'
-          title='Xóa'
-          onClick={() => setDeleteOpen(true)}
-        >
-          <Trash2 />
-        </Button>
-      </div>
-      <CreateSystemUserDialog
-        open={userOpen}
-        onOpenChange={setUserOpen}
-        tenants={[tenant]}
-        tenantId={tenant.id}
-      />
+      <DropdownMenu modal={false}>
+        <DropdownMenuTrigger asChild>
+          <Button variant='ghost' className='flex h-8 w-8 p-0'>
+            <DotsHorizontalIcon className='h-4 w-4' />
+            <span className='sr-only'>Mở menu</span>
+          </Button>
+        </DropdownMenuTrigger>
+        <DropdownMenuContent align='end' className='w-[160px]'>
+          <DropdownMenuItem onClick={() => setEditOpen(true)}>
+            Sửa
+            <DropdownMenuShortcut>
+              <Pencil size={16} />
+            </DropdownMenuShortcut>
+          </DropdownMenuItem>
+          <DropdownMenuItem
+            onClick={() => setDeleteOpen(true)}
+            className='text-red-500!'
+          >
+            Xóa
+            <DropdownMenuShortcut>
+              <Trash2 size={16} />
+            </DropdownMenuShortcut>
+          </DropdownMenuItem>
+        </DropdownMenuContent>
+      </DropdownMenu>
       <Dialog open={editOpen} onOpenChange={setEditOpen}>
         <DialogContent className='sm:max-w-xl'>
           <DialogHeader>

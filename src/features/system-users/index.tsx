@@ -10,8 +10,9 @@ import { Main } from '@/components/layout/main'
 import { ProfileDropdown } from '@/components/profile-dropdown'
 import { ThemeSwitch } from '@/components/theme-switch'
 import { getTenants } from '@/features/tenants/api'
-import { getSystemUsers, type ManagedRole, type SystemUser } from './api'
+import { getSystemUsers, type SystemUser, type SystemUserRole } from './api'
 import { CreateSystemUserDialog } from './create-system-user-dialog'
+import { UpdateSystemUserDialog } from './update-system-user-dialog'
 
 const route = getRouteApi('/_authenticated/system/users')
 
@@ -19,6 +20,8 @@ const roleLabels = {
   TENANT_ADMIN: 'Quản trị phòng khám',
   DOCTOR: 'Bác sĩ',
   ASSISTANT: 'Trợ lý',
+  PATIENT: 'Bệnh nhân',
+  USER: 'Người dùng',
 }
 const columns: ColumnDef<SystemUser>[] = [
   { accessorKey: 'userName', header: 'Tên đăng nhập' },
@@ -45,6 +48,11 @@ const columns: ColumnDef<SystemUser>[] = [
     header: 'Trạng thái',
     cell: ({ row }) => (row.original.isActive ? 'Đang hoạt động' : 'Đã khóa'),
   },
+  {
+    id: 'actions',
+    header: '',
+    cell: ({ row }) => <UpdateSystemUserDialog user={row.original} />,
+  },
 ]
 
 export function SystemUsers() {
@@ -56,7 +64,7 @@ export function SystemUsers() {
     queryFn: () =>
       getSystemUsers({
         tenantId: tenantId?.[0],
-        role: role?.[0] as ManagedRole | undefined,
+        role: role?.[0] as SystemUserRole | undefined,
       }),
   })
   return (
@@ -90,6 +98,7 @@ export function SystemUsers() {
             tenantId: 'Phòng khám',
             role: 'Vai trò',
             isActive: 'Trạng thái',
+            actions: 'Thao tác',
           }}
           getSearchText={(user) =>
             `${user.userName} ${user.fullName} ${user.email ?? ''} ${user.tenant.code} ${user.tenant.name}`
@@ -112,6 +121,8 @@ export function SystemUsers() {
                 { label: 'Quản trị phòng khám', value: 'TENANT_ADMIN' },
                 { label: 'Bác sĩ', value: 'DOCTOR' },
                 { label: 'Trợ lý', value: 'ASSISTANT' },
+                { label: 'Bệnh nhân', value: 'PATIENT' },
+                { label: 'Người dùng', value: 'USER' },
               ],
             },
           ]}
