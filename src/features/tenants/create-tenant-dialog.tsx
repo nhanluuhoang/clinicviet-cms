@@ -1,6 +1,6 @@
 import { useState } from 'react'
-import { isAxiosError } from 'axios'
 import { z } from 'zod'
+import { isAxiosError } from 'axios'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
@@ -23,41 +23,21 @@ import {
   FormMessage,
 } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
-import { PasswordInput } from '@/components/password-input'
 import { SelectDropdown } from '@/components/select-dropdown'
-import { provisionTenant } from './api'
+import { createTenant } from './api'
 
-const schema = z
-  .object({
-    name: z.string().trim().min(1, 'Vui lòng nhập tên phòng khám.').max(255),
-    subdomain: z
-      .string()
-      .trim()
-      .regex(
-        /^[a-z0-9]+(?:-[a-z0-9]+)*$/,
-        'Chỉ dùng chữ thường, số và dấu gạch ngang.'
-      ),
-    address: z.string().trim().min(1, 'Vui lòng nhập địa chỉ.').max(255),
-    servicePlan: z.enum(['BASIC', 'PLUS', 'PRO']),
-    adminFullName: z.string().trim().min(1, 'Vui lòng nhập họ tên.').max(255),
-    adminEmail: z.email('Email không hợp lệ.'),
-    adminPhone: z.string().trim().max(20),
-    adminUserName: z
-      .string()
-      .trim()
-      .min(3, 'Tên đăng nhập phải có ít nhất 3 ký tự.')
-      .max(50)
-      .regex(
-        /^[a-zA-Z0-9._-]+$/,
-        'Chỉ dùng chữ, số, dấu chấm, gạch ngang hoặc gạch dưới.'
-      ),
-    password: z.string().min(6, 'Mật khẩu phải có ít nhất 6 ký tự.').max(20),
-    passwordConfirmation: z.string(),
-  })
-  .refine((data) => data.password === data.passwordConfirmation, {
-    path: ['passwordConfirmation'],
-    message: 'Mật khẩu nhập lại không khớp.',
-  })
+const schema = z.object({
+  name: z.string().trim().min(1, 'Vui lòng nhập tên phòng khám.').max(255),
+  subdomain: z
+    .string()
+    .trim()
+    .regex(
+      /^[a-z0-9]+(?:-[a-z0-9]+)*$/,
+      'Chỉ dùng chữ thường, số và dấu gạch ngang.'
+    ),
+  address: z.string().trim().min(1, 'Vui lòng nhập địa chỉ.').max(255),
+  servicePlan: z.enum(['BASIC', 'PLUS', 'PRO']),
+})
 
 type FormValues = z.infer<typeof schema>
 
@@ -66,12 +46,6 @@ const defaultValues: FormValues = {
   subdomain: '',
   address: '',
   servicePlan: 'BASIC',
-  adminFullName: '',
-  adminEmail: '',
-  adminPhone: '',
-  adminUserName: '',
-  password: '',
-  passwordConfirmation: '',
 }
 
 type ApiError = { error?: { title?: string } }
@@ -85,14 +59,13 @@ export function CreateTenantDialog() {
   })
   const mutation = useMutation({
     mutationFn: (values: FormValues) =>
-      provisionTenant({
+      createTenant({
         ...values,
         isActive: true,
-        adminPhone: values.adminPhone || undefined,
       }),
-    onSuccess: async ({ admin }) => {
+    onSuccess: async () => {
       await queryClient.invalidateQueries({ queryKey: ['tenants'] })
-      toast.success(`Đã tạo phòng khám và tài khoản ${admin.userName}`)
+      toast.success('Đã tạo phòng khám')
       form.reset(defaultValues)
       setOpen(false)
     },
@@ -108,19 +81,18 @@ export function CreateTenantDialog() {
     <>
       <Button onClick={() => setOpen(true)}>Tạo phòng khám</Button>
       <Dialog open={open} onOpenChange={setOpen}>
-        <DialogContent className='max-h-[90vh] overflow-y-auto sm:max-w-2xl'>
+        <DialogContent className='sm:max-w-xl'>
           <DialogHeader className='text-start'>
-            <DialogTitle>Tạo phòng khám và tài khoản quản trị</DialogTitle>
+            <DialogTitle>Tạo phòng khám</DialogTitle>
             <DialogDescription>
-              Hai dữ liệu được tạo cùng lúc. Nếu có lỗi, hệ thống sẽ không lưu
-              một phần.
+              Tài khoản có thể được tạo sau tại mục Người dùng.
             </DialogDescription>
           </DialogHeader>
           <Form {...form}>
             <form
               id='create-tenant-form'
               onSubmit={form.handleSubmit((values) => mutation.mutate(values))}
-              className='grid gap-4 sm:grid-cols-2'
+              className='space-y-4'
             >
               <Fields form={form} />
             </form>
@@ -145,41 +117,24 @@ export function CreateTenantDialog() {
 
 function Fields({ form }: { form: ReturnType<typeof useForm<FormValues>> }) {
   const fields: Array<{
-    name: keyof FormValues
+    name: 'name' | 'subdomain' | 'address'
     label: string
-    type?: 'email' | 'password'
   }> = [
     { name: 'name', label: 'Tên phòng khám' },
     { name: 'subdomain', label: 'Subdomain' },
     { name: 'address', label: 'Địa chỉ' },
-    { name: 'adminFullName', label: 'Họ tên quản trị viên' },
-    { name: 'adminEmail', label: 'Email quản trị viên', type: 'email' },
-    { name: 'adminPhone', label: 'Số điện thoại quản trị viên' },
-    { name: 'adminUserName', label: 'Tên đăng nhập' },
-    { name: 'password', label: 'Mật khẩu', type: 'password' },
-    {
-      name: 'passwordConfirmation',
-      label: 'Nhập lại mật khẩu',
-      type: 'password',
-    },
   ]
 
   return (
     <>
-      {fields.slice(0, 3).map(({ name, label, type }) => (
-        <TextField
-          key={name}
-          form={form}
-          name={name}
-          label={label}
-          type={type}
-        />
+      {fields.map(({ name, label }) => (
+        <TextField key={name} form={form} name={name} label={label} />
       ))}
       <FormField
         control={form.control}
         name='servicePlan'
         render={({ field }) => (
-          <FormItem className='sm:col-span-2'>
+          <FormItem>
             <FormLabel>Gói dịch vụ</FormLabel>
             <SelectDropdown
               defaultValue={field.value}
@@ -195,18 +150,6 @@ function Fields({ form }: { form: ReturnType<typeof useForm<FormValues>> }) {
           </FormItem>
         )}
       />
-      <div className='border-t pt-4 font-medium sm:col-span-2'>
-        Tài khoản quản trị phòng khám
-      </div>
-      {fields.slice(3).map(({ name, label, type }) => (
-        <TextField
-          key={name}
-          form={form}
-          name={name}
-          label={label}
-          type={type}
-        />
-      ))}
     </>
   )
 }
@@ -215,12 +158,10 @@ function TextField({
   form,
   name,
   label,
-  type,
 }: {
   form: ReturnType<typeof useForm<FormValues>>
-  name: keyof FormValues
+  name: 'name' | 'subdomain' | 'address'
   label: string
-  type?: 'email' | 'password'
 }) {
   return (
     <FormField
@@ -230,11 +171,7 @@ function TextField({
         <FormItem>
           <FormLabel>{label}</FormLabel>
           <FormControl>
-            {type === 'password' ? (
-              <PasswordInput {...field} />
-            ) : (
-              <Input type={type} {...field} />
-            )}
+            <Input {...field} />
           </FormControl>
           <FormMessage />
         </FormItem>

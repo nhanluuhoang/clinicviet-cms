@@ -1,10 +1,21 @@
-import { useEffect } from 'react'
+import { useState } from 'react'
 import { z } from 'zod'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { useMutation, useQueryClient } from '@tanstack/react-query'
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
+import { Check, ChevronsUpDown } from 'lucide-react'
 import { toast } from 'sonner'
+import { cn } from '@/lib/utils'
+import { useDebounce } from '@/hooks/use-debounce'
 import { Button } from '@/components/ui/button'
+import {
+  Command,
+  CommandEmpty,
+  CommandGroup,
+  CommandInput,
+  CommandItem,
+  CommandList,
+} from '@/components/ui/command'
 import {
   Dialog,
   DialogContent,
@@ -22,9 +33,14 @@ import {
   FormMessage,
 } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from '@/components/ui/popover'
 import { PasswordInput } from '@/components/password-input'
 import { SelectDropdown } from '@/components/select-dropdown'
-import type { Tenant } from '@/features/tenants/api'
+import { searchTenants, type Tenant } from '@/features/tenants/api'
 import { createSystemUser } from './api'
 
 const schema = z
@@ -50,34 +66,55 @@ const schema = z
 
 type Values = z.infer<typeof schema>
 
+const defaultValues: Values = {
+  tenantId: '',
+  userName: '',
+  fullName: '',
+  email: '',
+  phone: '',
+  role: 'TENANT_ADMIN',
+  password: '',
+  passwordConfirmation: '',
+}
+
 export function CreateSystemUserDialog({
   open,
   onOpenChange,
   tenants,
-  tenantId,
 }: {
   open: boolean
   onOpenChange: (open: boolean) => void
   tenants: Tenant[]
-  tenantId?: string
 }) {
+  const [clinicSearch, setClinicSearch] = useState('')
+  const [clinicOpen, setClinicOpen] = useState(false)
+  const [selectedTenant, setSelectedTenant] = useState<Tenant | null>(null)
+  const debouncedSearch = useDebounce(clinicSearch, 300)
+  const clinicResults = useQuery({
+    queryKey: ['tenants', 'create-user-search', debouncedSearch],
+    queryFn: () => searchTenants(debouncedSearch.trim()),
+    enabled: open && !!debouncedSearch.trim(),
+  })
+  const isSearching = !!clinicSearch.trim()
+  const availableTenants = isSearching
+    ? clinicSearch.trim() === debouncedSearch.trim()
+      ? (clinicResults.data?.data ?? [])
+      : []
+    : tenants
   const queryClient = useQueryClient()
   const form = useForm<Values>({
     resolver: zodResolver(schema),
-    defaultValues: {
-      tenantId: tenantId ?? '',
-      userName: '',
-      fullName: '',
-      email: '',
-      phone: '',
-      role: 'TENANT_ADMIN',
-      password: '',
-      passwordConfirmation: '',
-    },
+    defaultValues,
   })
-  useEffect(() => {
-    if (open) form.reset({ ...form.getValues(), tenantId: tenantId ?? '' })
-  }, [form, open, tenantId])
+  const handleOpenChange = (nextOpen: boolean) => {
+    if (!nextOpen) {
+      form.reset(defaultValues)
+      setSelectedTenant(null)
+      setClinicSearch('')
+      setClinicOpen(false)
+    }
+    onOpenChange(nextOpen)
+  }
 
   const mutation = useMutation({
     mutationFn: (values: Values) =>
@@ -93,13 +130,13 @@ export function CreateSystemUserDialog({
         queryClient.invalidateQueries({ queryKey: ['tenants'] }),
       ])
       toast.success('Đã tạo tài khoản')
-      onOpenChange(false)
+      handleOpenChange(false)
     },
     onError: () => toast.error('Không thể tạo tài khoản'),
   })
 
   return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
+    <Dialog open={open} onOpenChange={handleOpenChange}>
       <DialogContent className='max-h-[90vh] overflow-y-auto sm:max-w-xl'>
         <DialogHeader className='text-start'>
           <DialogTitle>Tạo tài khoản cho phòng khám</DialogTitle>
@@ -119,15 +156,68 @@ export function CreateSystemUserDialog({
               render={({ field }) => (
                 <FormItem className='sm:col-span-2'>
                   <FormLabel>Phòng khám</FormLabel>
-                  <SelectDropdown
-                    defaultValue={field.value}
-                    isControlled
-                    onValueChange={field.onChange}
-                    items={tenants.map((tenant) => ({
-                      label: `${tenant.code} - ${tenant.name}`,
-                      value: tenant.id,
-                    }))}
-                  />
+                  <Popover open={clinicOpen} onOpenChange={setClinicOpen}>
+                    <PopoverTrigger asChild>
+                      <Button
+                        type='button'
+                        variant='outline'
+                        role='combobox'
+                        aria-expanded={clinicOpen}
+                        className='w-full justify-between font-normal'
+                      >
+                        <span className='truncate'>
+                          {selectedTenant
+                            ? `${selectedTenant.code} - ${selectedTenant.name}`
+                            : 'Tìm mã hoặc tên phòng khám...'}
+                        </span>
+                        <ChevronsUpDown className='ms-2 size-4 shrink-0 opacity-50' />
+                      </Button>
+                    </PopoverTrigger>
+                    <PopoverContent
+                      className='w-(--radix-popover-trigger-width) p-0'
+                      align='start'
+                    >
+                      <Command shouldFilter={false}>
+                        <CommandInput
+                          value={clinicSearch}
+                          onValueChange={setClinicSearch}
+                          placeholder='Tìm theo mã hoặc tên...'
+                        />
+                        <CommandList>
+                          <CommandEmpty>
+                            {(isSearching &&
+                              clinicSearch.trim() !== debouncedSearch.trim()) ||
+                            clinicResults.isFetching
+                              ? 'Đang tìm...'
+                              : 'Không tìm thấy phòng khám.'}
+                          </CommandEmpty>
+                          <CommandGroup>
+                            {availableTenants.map((tenant) => (
+                              <CommandItem
+                                key={tenant.id}
+                                value={tenant.id}
+                                onSelect={() => {
+                                  field.onChange(tenant.id)
+                                  setSelectedTenant(tenant)
+                                  setClinicOpen(false)
+                                }}
+                              >
+                                <Check
+                                  className={cn(
+                                    'me-2 size-4',
+                                    field.value === tenant.id
+                                      ? 'opacity-100'
+                                      : 'opacity-0'
+                                  )}
+                                />
+                                {tenant.code} - {tenant.name}
+                              </CommandItem>
+                            ))}
+                          </CommandGroup>
+                        </CommandList>
+                      </Command>
+                    </PopoverContent>
+                  </Popover>
                   <FormMessage />
                 </FormItem>
               )}

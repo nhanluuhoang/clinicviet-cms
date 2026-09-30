@@ -52,7 +52,7 @@ These files are in the repo and committed to git.
 
 ## At the start of each session
 Before doing anything, read `docs/memory.md` for distilled context about the user,
-project, architecture, and current state.
+project, architecture, and repo conventions.
 
 ## While working
 - Keep continuity only in `docs/memory.md`.
@@ -63,7 +63,8 @@ Rewrite `docs/memory.md` to be CONCISE:
 - Integrate new information, REMOVE what's now outdated.
 - Do NOT accumulate, do NOT repeat — this is a distillation, not a raw log.
 - Keep it under ~1 page. If it's longer, it isn't distilled enough.
-- Keep the section structure: ## User / ## Project / ## Architecture / ## State.
+- Keep the section structure: ## User / ## Project / ## Architecture / ## Convention.
+- Record durable repo conventions, not transient implementation state or progress.
 
 Apply Principle 3 (Surgical Changes) to the memory file itself: change only what
 actually changed, don't rewrite parts that are still correct just to make them different.

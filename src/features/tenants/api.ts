@@ -20,12 +20,6 @@ export type TenantInput = {
   address: string
   servicePlan: ServicePlan
   isActive: boolean
-  adminFullName: string
-  adminEmail: string
-  adminPhone?: string
-  adminUserName: string
-  password: string
-  passwordConfirmation: string
 }
 
 export type TenantsResponse = {
@@ -33,11 +27,6 @@ export type TenantsResponse = {
   total: number
   page: number
   limit: number
-}
-
-export type ProvisionTenantResponse = {
-  tenant: Tenant
-  admin: { id: string; userName: string; fullName: string; email: string }
 }
 
 export type TenantUpdate = Pick<
@@ -48,9 +37,11 @@ export type TenantUpdate = Pick<
 export const getTenants = (): Promise<TenantsResponse> =>
   axios.get('/tenants', { params: { page: 1, limit: 100 } })
 
-export const provisionTenant = (
-  data: TenantInput
-): Promise<ProvisionTenantResponse> => axios.post('/tenants', data)
+export const createTenant = (data: TenantInput): Promise<Tenant> =>
+  axios.post('/tenants', data)
+
+export const searchTenants = (search: string): Promise<TenantsResponse> =>
+  axios.get('/tenants', { params: { search, page: 1, limit: 100 } })
 
 export const updateTenant = (id: string, data: TenantUpdate): Promise<Tenant> =>
   axios.patch(`/tenants/${id}`, data)
