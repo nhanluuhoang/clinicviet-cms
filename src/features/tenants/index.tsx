@@ -23,11 +23,11 @@ const columns: ColumnDef<Tenant>[] = [
   },
   {
     accessorKey: 'subscriptionStatus',
-    header: 'Đăng ký',
+    header: 'Trạng thái đăng ký',
     cell: ({ row }) =>
       ({
-        TRIAL: 'Dùng thử',
-        ACTIVE: 'Đang dùng',
+        TRIAL: 'Đăng ký dùng thử',
+        ACTIVE: 'Đăng ký chính thức',
         EXPIRED: 'Hết hạn',
         SUSPENDED: 'Tạm ngưng',
       })[row.original.subscriptionStatus],
@@ -111,7 +111,7 @@ export function Tenants() {
             name: 'Phòng khám',
             subdomain: 'Subdomain',
             servicePlan: 'Gói',
-            subscriptionStatus: 'Đăng ký',
+            subscriptionStatus: 'Trạng thái đăng ký',
             trialStartedAt: 'Bắt đầu dùng thử',
             trialEndsAt: 'Hạn dùng thử',
             users: 'Tài khoản',
@@ -134,11 +134,11 @@ export function Tenants() {
             },
             {
               columnId: 'subscriptionStatus',
-              title: 'Đăng ký',
+              title: 'Trạng thái đăng ký',
               variant: 'radio',
               options: [
-                { label: 'Dùng thử', value: 'TRIAL' },
-                { label: 'Đang dùng', value: 'ACTIVE' },
+                { label: 'Đăng ký dùng thử', value: 'TRIAL' },
+                { label: 'Đăng ký chính thức', value: 'ACTIVE' },
                 { label: 'Hết hạn', value: 'EXPIRED' },
                 { label: 'Tạm ngưng', value: 'SUSPENDED' },
               ],

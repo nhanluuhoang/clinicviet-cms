@@ -576,10 +576,10 @@ export function Prescriptions({
     <div className='grid gap-6'>
       <div>
         <h2 className='flex items-center gap-2 text-2xl font-bold tracking-tight'>
-          <Stethoscope className='size-6' /> Kê toa thuốc
+          <Stethoscope className='size-6' /> Lập phiếu dịch vụ
         </h2>
         <p className='text-muted-foreground'>
-          Ghi nhận thông tin khám, chẩn đoán và đơn thuốc cho bệnh nhân.
+          Ghi nhận thông tin khám, thuốc, vaccine và phí dịch vụ.
         </p>
       </div>
 

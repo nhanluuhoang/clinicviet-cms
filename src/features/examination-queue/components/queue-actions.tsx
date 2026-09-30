@@ -77,7 +77,7 @@ export function QueueActions({
               data-tour='create-prescription'
               onClick={() => setPrescriptionOpen(true)}
             >
-              <ClipboardList /> Kê toa
+              <ClipboardList /> Lập phiếu
             </Button>
           </>
         )}
