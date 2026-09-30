@@ -1,26 +1,18 @@
-import type { ServicePlan } from '@/config/access-control'
 import { axios } from '@/lib/axios'
 
 export type TrialRequestStatus = 'PENDING' | 'APPROVED' | 'REJECTED'
 export type TrialRequest = {
   id: string
+  code: string | null
   phone: string
   status: TrialRequestStatus
   rejectionReason: string | null
   createdAt: string
-  reviewedAt: string | null
-  tenant: { id: string; code: string; name: string } | null
+  updatedAt: string
 }
 
 export type ApproveTrialInput = {
   code: string
-  clinicName: string
-  subdomain: string
-  address: string
-  adminEmail: string
-  adminFullName: string
-  password: string
-  servicePlan: ServicePlan
 }
 
 export const findTrialRequests = (): Promise<{

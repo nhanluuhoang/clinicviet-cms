@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { isAxiosError } from 'axios'
 import { z } from 'zod'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
@@ -28,7 +29,6 @@ import { provisionTenant } from './api'
 
 const schema = z
   .object({
-    code: z.string().trim().min(1, 'Vui lòng nhập mã phòng khám.').max(50),
     name: z.string().trim().min(1, 'Vui lòng nhập tên phòng khám.').max(255),
     subdomain: z
       .string()
@@ -62,7 +62,6 @@ const schema = z
 type FormValues = z.infer<typeof schema>
 
 const defaultValues: FormValues = {
-  code: '',
   name: '',
   subdomain: '',
   address: '',
@@ -99,7 +98,9 @@ export function CreateTenantDialog() {
     },
     onError: (error) =>
       toast.error(
-        (error as ApiError)?.error?.title ?? 'Không thể tạo phòng khám.'
+        (isAxiosError<ApiError>(error)
+          ? error.response?.data?.error?.title
+          : undefined) ?? 'Không thể tạo phòng khám.'
       ),
   })
 
@@ -148,7 +149,6 @@ function Fields({ form }: { form: ReturnType<typeof useForm<FormValues>> }) {
     label: string
     type?: 'email' | 'password'
   }> = [
-    { name: 'code', label: 'Mã phòng khám' },
     { name: 'name', label: 'Tên phòng khám' },
     { name: 'subdomain', label: 'Subdomain' },
     { name: 'address', label: 'Địa chỉ' },
@@ -166,7 +166,7 @@ function Fields({ form }: { form: ReturnType<typeof useForm<FormValues>> }) {
 
   return (
     <>
-      {fields.slice(0, 4).map(({ name, label, type }) => (
+      {fields.slice(0, 3).map(({ name, label, type }) => (
         <TextField
           key={name}
           form={form}
@@ -198,7 +198,7 @@ function Fields({ form }: { form: ReturnType<typeof useForm<FormValues>> }) {
       <div className='border-t pt-4 font-medium sm:col-span-2'>
         Tài khoản quản trị phòng khám
       </div>
-      {fields.slice(4).map(({ name, label, type }) => (
+      {fields.slice(3).map(({ name, label, type }) => (
         <TextField
           key={name}
           form={form}

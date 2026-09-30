@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { isAxiosError } from 'axios'
 import { z } from 'zod'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
@@ -42,7 +43,9 @@ export function ForgotPasswordForm({
       toast.success(`Đã gửi email đến ${data.email}`)
     } catch (error) {
       const message =
-        (error as { error?: { title?: string } })?.error?.title ??
+        (isAxiosError<{ error?: { title?: string } }>(error)
+          ? error.response?.data?.error?.title
+          : undefined) ??
         'Không thể gửi email. Vui lòng thử lại.'
       toast.error(message)
     } finally {
