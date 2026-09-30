@@ -49,6 +49,17 @@ const columns: ColumnDef<SystemUser>[] = [
     cell: ({ row }) => (row.original.isActive ? 'Đang hoạt động' : 'Đã khóa'),
   },
   {
+    accessorKey: 'lastActiveAt',
+    header: 'Hoạt động gần nhất',
+    cell: ({ row }) =>
+      row.original.lastActiveAt
+        ? new Intl.DateTimeFormat('vi-VN', {
+            dateStyle: 'short',
+            timeStyle: 'short',
+          }).format(new Date(row.original.lastActiveAt))
+        : 'Chưa có phiên hoạt động',
+  },
+  {
     id: 'actions',
     header: '',
     cell: ({ row }) => <UpdateSystemUserDialog user={row.original} />,
@@ -98,6 +109,7 @@ export function SystemUsers() {
             tenantId: 'Phòng khám',
             role: 'Vai trò',
             isActive: 'Trạng thái',
+            lastActiveAt: 'Hoạt động gần nhất',
             actions: 'Thao tác',
           }}
           getSearchText={(user) =>

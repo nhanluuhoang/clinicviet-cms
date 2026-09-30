@@ -22,9 +22,36 @@ const columns: ColumnDef<Tenant>[] = [
     filterFn: (row, id, value: string[]) => value.includes(row.getValue(id)),
   },
   {
-    id: 'actions',
-    header: '',
-    cell: ({ row }) => <TenantActions tenant={row.original} />,
+    accessorKey: 'subscriptionStatus',
+    header: 'Đăng ký',
+    cell: ({ row }) =>
+      ({
+        TRIAL: 'Dùng thử',
+        ACTIVE: 'Đang dùng',
+        EXPIRED: 'Hết hạn',
+        SUSPENDED: 'Tạm ngưng',
+      })[row.original.subscriptionStatus],
+    filterFn: (row, id, value: string[]) => value.includes(row.getValue(id)),
+  },
+  {
+    accessorKey: 'trialStartedAt',
+    header: 'Bắt đầu dùng thử',
+    cell: ({ row }) =>
+      row.original.trialStartedAt
+        ? new Intl.DateTimeFormat('vi-VN', { dateStyle: 'short' }).format(
+            new Date(row.original.trialStartedAt)
+          )
+        : '—',
+  },
+  {
+    accessorKey: 'trialEndsAt',
+    header: 'Hạn dùng thử',
+    cell: ({ row }) =>
+      row.original.trialEndsAt
+        ? new Intl.DateTimeFormat('vi-VN', { dateStyle: 'short' }).format(
+            new Date(row.original.trialEndsAt)
+          )
+        : '—',
   },
   {
     id: 'users',
@@ -41,6 +68,11 @@ const columns: ColumnDef<Tenant>[] = [
             timeStyle: 'short',
           }).format(new Date(row.original.lastActiveAt))
         : 'Chưa có phiên hoạt động',
+  },
+  {
+    id: 'actions',
+    header: '',
+    cell: ({ row }) => <TenantActions tenant={row.original} />,
   },
 ]
 
@@ -63,7 +95,7 @@ export function Tenants() {
           <div>
             <h2 className='text-2xl font-bold tracking-tight'>Phòng khám</h2>
             <p className='text-muted-foreground'>
-              Quản lý tenant và tài khoản quản trị ban đầu.
+              Quản lý phòng khám, gói dùng thử và tài khoản.
             </p>
           </div>
           <CreateTenantDialog />
@@ -79,6 +111,9 @@ export function Tenants() {
             name: 'Phòng khám',
             subdomain: 'Subdomain',
             servicePlan: 'Gói',
+            subscriptionStatus: 'Đăng ký',
+            trialStartedAt: 'Bắt đầu dùng thử',
+            trialEndsAt: 'Hạn dùng thử',
             users: 'Tài khoản',
             lastActiveAt: 'Hoạt động gần nhất',
             actions: 'Thao tác',
@@ -90,10 +125,22 @@ export function Tenants() {
             {
               columnId: 'servicePlan',
               title: 'Gói dịch vụ',
+              variant: 'radio',
               options: [
                 { label: 'Cơ bản', value: 'BASIC' },
                 { label: 'Nâng cao', value: 'PLUS' },
                 { label: 'Chuyên nghiệp', value: 'PRO' },
+              ],
+            },
+            {
+              columnId: 'subscriptionStatus',
+              title: 'Đăng ký',
+              variant: 'radio',
+              options: [
+                { label: 'Dùng thử', value: 'TRIAL' },
+                { label: 'Đang dùng', value: 'ACTIVE' },
+                { label: 'Hết hạn', value: 'EXPIRED' },
+                { label: 'Tạm ngưng', value: 'SUSPENDED' },
               ],
             },
           ]}

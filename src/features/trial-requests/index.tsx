@@ -95,6 +95,7 @@ export function TrialRequests() {
             {
               columnId: 'status',
               title: 'Trạng thái',
+              variant: 'radio',
               options: [
                 { label: 'Chờ duyệt', value: 'PENDING' },
                 { label: 'Đã duyệt', value: 'APPROVED' },

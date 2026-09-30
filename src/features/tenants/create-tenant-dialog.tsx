@@ -26,18 +26,25 @@ import { Input } from '@/components/ui/input'
 import { SelectDropdown } from '@/components/select-dropdown'
 import { createTenant } from './api'
 
-const schema = z.object({
-  name: z.string().trim().min(1, 'Vui lòng nhập tên phòng khám.').max(255),
-  subdomain: z
-    .string()
-    .trim()
-    .regex(
-      /^[a-z0-9]+(?:-[a-z0-9]+)*$/,
-      'Chỉ dùng chữ thường, số và dấu gạch ngang.'
-    ),
-  address: z.string().trim().min(1, 'Vui lòng nhập địa chỉ.').max(255),
-  servicePlan: z.enum(['BASIC', 'PLUS', 'PRO']),
-})
+const schema = z
+  .object({
+    name: z.string().trim().min(1, 'Vui lòng nhập tên phòng khám.').max(255),
+    subdomain: z
+      .string()
+      .trim()
+      .regex(
+        /^[a-z0-9]+(?:-[a-z0-9]+)*$/,
+        'Chỉ dùng chữ thường, số và dấu gạch ngang.'
+      ),
+    address: z.string().trim().min(1, 'Vui lòng nhập địa chỉ.').max(255),
+    servicePlan: z.enum(['BASIC', 'PLUS', 'PRO']),
+    subscriptionStatus: z.enum(['TRIAL', 'ACTIVE']),
+    endsOn: z.string().min(1, 'Vui lòng chọn ngày kết thúc.'),
+  })
+  .refine(
+    ({ endsOn }) => new Date(`${endsOn}T23:59:59`).getTime() > Date.now(),
+    { path: ['endsOn'], message: 'Ngày kết thúc phải ở tương lai.' }
+  )
 
 type FormValues = z.infer<typeof schema>
 
@@ -46,6 +53,8 @@ const defaultValues: FormValues = {
   subdomain: '',
   address: '',
   servicePlan: 'BASIC',
+  subscriptionStatus: 'TRIAL',
+  endsOn: '',
 }
 
 type ApiError = { error?: { title?: string } }
@@ -58,10 +67,16 @@ export function CreateTenantDialog() {
     defaultValues,
   })
   const mutation = useMutation({
-    mutationFn: (values: FormValues) =>
+    mutationFn: ({ endsOn, subscriptionStatus, ...values }: FormValues) =>
       createTenant({
         ...values,
         isActive: true,
+        subscriptionStatus,
+        ...(subscriptionStatus === 'TRIAL'
+          ? { trialEndsAt: new Date(`${endsOn}T23:59:59`).toISOString() }
+          : {
+              subscriptionEndsAt: new Date(`${endsOn}T23:59:59`).toISOString(),
+            }),
       }),
     onSuccess: async () => {
       await queryClient.invalidateQueries({ queryKey: ['tenants'] })
@@ -146,6 +161,42 @@ function Fields({ form }: { form: ReturnType<typeof useForm<FormValues>> }) {
                 { label: 'Chuyên nghiệp', value: 'PRO' },
               ]}
             />
+            <FormMessage />
+          </FormItem>
+        )}
+      />
+      <FormField
+        control={form.control}
+        name='subscriptionStatus'
+        render={({ field }) => (
+          <FormItem>
+            <FormLabel>Loại đăng ký</FormLabel>
+            <SelectDropdown
+              defaultValue={field.value}
+              isControlled
+              onValueChange={field.onChange}
+              items={[
+                { label: 'Dùng thử', value: 'TRIAL' },
+                { label: 'Đang dùng', value: 'ACTIVE' },
+              ]}
+            />
+            <FormMessage />
+          </FormItem>
+        )}
+      />
+      <FormField
+        control={form.control}
+        name='endsOn'
+        render={({ field }) => (
+          <FormItem>
+            <FormLabel>
+              {form.watch('subscriptionStatus') === 'TRIAL'
+                ? 'Ngày kết thúc dùng thử'
+                : 'Ngày hết hạn gói'}
+            </FormLabel>
+            <FormControl>
+              <Input type='date' {...field} />
+            </FormControl>
             <FormMessage />
           </FormItem>
         )}

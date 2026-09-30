@@ -11,6 +11,9 @@ export type Tenant = {
   isActive: boolean
   lastActiveAt: string | null
   subscriptionStatus: 'TRIAL' | 'ACTIVE' | 'EXPIRED' | 'SUSPENDED'
+  trialStartedAt: string | null
+  trialEndsAt: string | null
+  subscriptionEndsAt: string | null
   _count: { users: number }
 }
 
@@ -20,6 +23,9 @@ export type TenantInput = {
   address: string
   servicePlan: ServicePlan
   isActive: boolean
+  subscriptionStatus: 'TRIAL' | 'ACTIVE'
+  trialEndsAt?: string
+  subscriptionEndsAt?: string
 }
 
 export type TenantsResponse = {

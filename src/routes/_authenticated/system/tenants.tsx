@@ -9,6 +9,7 @@ export const Route = createFileRoute('/_authenticated/system/tenants')({
     sort: z.string().optional().catch(''),
     filter: z.string().optional().catch(''),
     servicePlan: z.array(z.string()).optional().catch([]),
+    subscriptionStatus: z.array(z.string()).optional().catch([]),
   }),
   component: Tenants,
 })
