@@ -12,6 +12,7 @@ export type SystemUser = {
   phone: string | null
   role: SystemUserRole
   isActive: boolean
+  lastActiveAt: string | null
   tenant: Pick<Tenant, 'id' | 'code' | 'name'>
 }
 

@@ -65,6 +65,7 @@ Rewrite `docs/memory.md` to be CONCISE:
 - Keep it under ~1 page. If it's longer, it isn't distilled enough.
 - Keep the section structure: ## User / ## Project / ## Architecture / ## Convention.
 - Record durable repo conventions, not transient implementation state or progress.
+- For list/filter UI, follow the conventions in `docs/memory.md` (including action-column order and URL-backed filters).
 
 Apply Principle 3 (Surgical Changes) to the memory file itself: change only what
 actually changed, don't rewrite parts that are still correct just to make them different.
