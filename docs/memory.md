@@ -34,6 +34,8 @@ liệu từ server dùng debounce 300 ms. Các bảng dùng chung nằm trong
 
 ## State
 
+- CMS deployment sets CSP, HSTS, frame denial, MIME sniffing protection, a strict referrer policy, and a restrictive permissions policy in both Netlify and Nginx configuration.
+
 - Bộ lọc Lịch sử khám bệnh dùng `DataTableToolbar` như trang Bệnh nhân cho cả tên bệnh nhân và bác sĩ (cùng kích thước, debounce); trên mobile các bộ lọc xếp dọc, từ `sm` tự xuống dòng. Nút `Đặt lại` luôn hiện vì ngày luôn được lọc, nằm trên cùng ở mobile và xóa hai tên/đưa ngày về hôm nay; `min-w-0` giữ bảng không kéo rộng trang.
 - Trang Thứ tự khám ẩn bốn thẻ thống kê trạng thái trên mobile (< `sm`); danh sách lượt khám hiển thị thẻ thay cho bảng cuộn ngang, phân trang mobile chỉ có trước/sau và số trang. Tablet/desktop vẫn dùng bảng và thống kê.
 - Các bảng danh sách TanStack/`UrlDataTable` hiện dùng thẻ mobile có nhãn tiếng Việt và giữ thao tác/mở rộng; gồm bệnh nhân, quản trị viên, bài viết, lịch sử khám, cấu hình chung, thuốc, kho và mẫu đơn. Phân trang chung rút gọn trên mobile. Bảng thống kê và các bảng chi tiết toa thuốc/kho cũng có thẻ mobile; bảng desktop giữ nguyên.
