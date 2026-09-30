@@ -59,7 +59,7 @@ export function PrescriptionDialog({
             document.body
           )}
         <DialogHeader>
-          <DialogTitle>Khám và kê toa</DialogTitle>
+          <DialogTitle>Phiếu dịch vụ</DialogTitle>
         </DialogHeader>
         <Tabs
           value={view}
@@ -70,7 +70,7 @@ export function PrescriptionDialog({
         >
           <TabsList>
             <TabsTrigger value='prescription'>
-              <ClipboardList /> Kê toa
+              <ClipboardList /> Lập phiếu
             </TabsTrigger>
             <TabsTrigger value='history'>
               <FileClock /> Lịch sử khám
@@ -99,7 +99,7 @@ export function PrescriptionDialog({
               form='prescription-form'
               disabled={isUploading}
             >
-              Lưu chẩn đoán và kê đơn
+              Lưu phiếu
             </Button>
           )}
           <Button

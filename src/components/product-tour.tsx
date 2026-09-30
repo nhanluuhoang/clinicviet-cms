@@ -74,9 +74,9 @@ const patientWorkflowSteps: TourStep[] = [
     target: '[data-tour="create-queue"]',
   },
   {
-    title: '3. Khám và kê toa',
+    title: '3. Lập phiếu dịch vụ',
     description:
-      'Khi lượt bệnh nhân ở trạng thái Đang khám, nút Kê toa sẽ xuất hiện tại cuối dòng. Chọn nút này, nhập chẩn đoán, thêm thuốc và kiểm tra liều dùng trước khi lưu.',
+      'Khi lượt bệnh nhân ở trạng thái Đang khám, nút Lập phiếu sẽ xuất hiện tại cuối dòng. Chọn nút này để ghi nhận thông tin khám, thuốc, vaccine và phí dịch vụ trước khi lưu.',
     destination: 'queue',
     target: '[data-tour="create-prescription"]',
   },

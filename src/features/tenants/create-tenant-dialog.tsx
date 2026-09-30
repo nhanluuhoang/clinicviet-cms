@@ -23,6 +23,7 @@ import {
   FormMessage,
 } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
+import { DatePickerInput } from '@/components/date-picker-input'
 import { SelectDropdown } from '@/components/select-dropdown'
 import { createTenant } from './api'
 
@@ -170,14 +171,14 @@ function Fields({ form }: { form: ReturnType<typeof useForm<FormValues>> }) {
         name='subscriptionStatus'
         render={({ field }) => (
           <FormItem>
-            <FormLabel>Loại đăng ký</FormLabel>
+            <FormLabel>Hình thức đăng ký</FormLabel>
             <SelectDropdown
               defaultValue={field.value}
               isControlled
               onValueChange={field.onChange}
               items={[
-                { label: 'Dùng thử', value: 'TRIAL' },
-                { label: 'Đang dùng', value: 'ACTIVE' },
+                { label: 'Đăng ký dùng thử', value: 'TRIAL' },
+                { label: 'Đăng ký chính thức', value: 'ACTIVE' },
               ]}
             />
             <FormMessage />
@@ -194,9 +195,7 @@ function Fields({ form }: { form: ReturnType<typeof useForm<FormValues>> }) {
                 ? 'Ngày kết thúc dùng thử'
                 : 'Ngày hết hạn gói'}
             </FormLabel>
-            <FormControl>
-              <Input type='date' {...field} />
-            </FormControl>
+            <DatePickerInput value={field.value} onChange={field.onChange} />
             <FormMessage />
           </FormItem>
         )}
