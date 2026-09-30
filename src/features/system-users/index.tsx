@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { useQuery } from '@tanstack/react-query'
+import { getRouteApi } from '@tanstack/react-router'
 import { type ColumnDef } from '@tanstack/react-table'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
@@ -7,11 +8,12 @@ import { UrlDataTable } from '@/components/data-table/url-data-table'
 import { Header } from '@/components/layout/header'
 import { Main } from '@/components/layout/main'
 import { ProfileDropdown } from '@/components/profile-dropdown'
-import { SelectDropdown } from '@/components/select-dropdown'
 import { ThemeSwitch } from '@/components/theme-switch'
 import { getTenants } from '@/features/tenants/api'
 import { getSystemUsers, type ManagedRole, type SystemUser } from './api'
 import { CreateSystemUserDialog } from './create-system-user-dialog'
+
+const route = getRouteApi('/_authenticated/system/users')
 
 const roleLabels = {
   TENANT_ADMIN: 'Quản trị phòng khám',
@@ -23,10 +25,12 @@ const columns: ColumnDef<SystemUser>[] = [
   { accessorKey: 'fullName', header: 'Họ tên' },
   { accessorKey: 'email', header: 'Email' },
   {
-    id: 'tenant',
+    id: 'tenantId',
+    accessorFn: (user) => user.tenant.id,
     header: 'Phòng khám',
     cell: ({ row }) =>
       `${row.original.tenant.code} - ${row.original.tenant.name}`,
+    filterFn: (row, id, value: string[]) => value.includes(row.getValue(id)),
   },
   {
     accessorKey: 'role',
@@ -34,6 +38,7 @@ const columns: ColumnDef<SystemUser>[] = [
     cell: ({ row }) => (
       <Badge variant='outline'>{roleLabels[row.original.role]}</Badge>
     ),
+    filterFn: (row, id, value: string[]) => value.includes(row.getValue(id)),
   },
   {
     accessorKey: 'isActive',
@@ -43,16 +48,15 @@ const columns: ColumnDef<SystemUser>[] = [
 ]
 
 export function SystemUsers() {
-  const [tenantId, setTenantId] = useState('ALL')
-  const [role, setRole] = useState<'ALL' | ManagedRole>('ALL')
+  const { tenantId, role } = route.useSearch()
   const [createOpen, setCreateOpen] = useState(false)
   const tenants = useQuery({ queryKey: ['tenants'], queryFn: getTenants })
   const users = useQuery({
-    queryKey: ['system-users', tenantId, role],
+    queryKey: ['system-users', tenantId?.[0], role?.[0]],
     queryFn: () =>
       getSystemUsers({
-        tenantId: tenantId === 'ALL' ? undefined : tenantId,
-        role: role === 'ALL' ? undefined : role,
+        tenantId: tenantId?.[0],
+        role: role?.[0] as ManagedRole | undefined,
       }),
   })
   return (
@@ -73,33 +77,6 @@ export function SystemUsers() {
           </div>
           <Button onClick={() => setCreateOpen(true)}>Tạo tài khoản</Button>
         </div>
-        <div className='grid gap-3 sm:grid-cols-2 lg:max-w-2xl'>
-          <SelectDropdown
-            standalone
-            defaultValue={tenantId}
-            isControlled
-            onValueChange={setTenantId}
-            items={[
-              { label: 'Tất cả phòng khám', value: 'ALL' },
-              ...(tenants.data?.data ?? []).map((tenant) => ({
-                label: `${tenant.code} - ${tenant.name}`,
-                value: tenant.id,
-              })),
-            ]}
-          />
-          <SelectDropdown
-            standalone
-            defaultValue={role}
-            isControlled
-            onValueChange={(value) => setRole(value as typeof role)}
-            items={[
-              { label: 'Tất cả vai trò', value: 'ALL' },
-              { label: 'Quản trị phòng khám', value: 'TENANT_ADMIN' },
-              { label: 'Bác sĩ', value: 'DOCTOR' },
-              { label: 'Trợ lý', value: 'ASSISTANT' },
-            ]}
-          />
-        </div>
         <UrlDataTable
           columns={columns}
           data={users.data?.data ?? []}
@@ -110,13 +87,34 @@ export function SystemUsers() {
             userName: 'Tên đăng nhập',
             fullName: 'Họ tên',
             email: 'Email',
-            tenant: 'Phòng khám',
+            tenantId: 'Phòng khám',
             role: 'Vai trò',
             isActive: 'Trạng thái',
           }}
           getSearchText={(user) =>
-            `${user.userName} ${user.fullName} ${user.email ?? ''} ${user.tenant.name}`
+            `${user.userName} ${user.fullName} ${user.email ?? ''} ${user.tenant.code} ${user.tenant.name}`
           }
+          filters={[
+            {
+              columnId: 'tenantId',
+              title: 'Phòng khám',
+              variant: 'radio',
+              options: (tenants.data?.data ?? []).map((tenant) => ({
+                label: `${tenant.code} - ${tenant.name}`,
+                value: tenant.id,
+              })),
+            },
+            {
+              columnId: 'role',
+              title: 'Vai trò',
+              variant: 'radio',
+              options: [
+                { label: 'Quản trị phòng khám', value: 'TENANT_ADMIN' },
+                { label: 'Bác sĩ', value: 'DOCTOR' },
+                { label: 'Trợ lý', value: 'ASSISTANT' },
+              ],
+            },
+          ]}
         />
       </Main>
       <CreateSystemUserDialog

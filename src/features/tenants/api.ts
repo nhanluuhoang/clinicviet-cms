@@ -9,12 +9,12 @@ export type Tenant = {
   address: string
   servicePlan: ServicePlan
   isActive: boolean
+  lastActiveAt: string | null
   subscriptionStatus: 'TRIAL' | 'ACTIVE' | 'EXPIRED' | 'SUSPENDED'
-  _count: { users: number; medicines: number }
+  _count: { users: number }
 }
 
 export type TenantInput = {
-  code: string
   name: string
   subdomain: string
   address: string

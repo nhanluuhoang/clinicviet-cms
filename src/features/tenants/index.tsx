@@ -1,6 +1,5 @@
 import { useQuery } from '@tanstack/react-query'
 import { type ColumnDef } from '@tanstack/react-table'
-import { Badge } from '@/components/ui/badge'
 import { UrlDataTable } from '@/components/data-table/url-data-table'
 import { Header } from '@/components/layout/header'
 import { Main } from '@/components/layout/main'
@@ -20,6 +19,7 @@ const columns: ColumnDef<Tenant>[] = [
     accessorKey: 'servicePlan',
     header: 'Gói',
     cell: ({ row }) => planLabels[row.original.servicePlan],
+    filterFn: (row, id, value: string[]) => value.includes(row.getValue(id)),
   },
   {
     id: 'actions',
@@ -32,13 +32,15 @@ const columns: ColumnDef<Tenant>[] = [
     cell: ({ row }) => row.original._count.users,
   },
   {
-    accessorKey: 'isActive',
-    header: 'Trạng thái',
-    cell: ({ row }) => (
-      <Badge variant={row.original.isActive ? 'default' : 'secondary'}>
-        {row.original.isActive ? 'Đang hoạt động' : 'Đã khóa'}
-      </Badge>
-    ),
+    accessorKey: 'lastActiveAt',
+    header: 'Hoạt động gần nhất',
+    cell: ({ row }) =>
+      row.original.lastActiveAt
+        ? new Intl.DateTimeFormat('vi-VN', {
+            dateStyle: 'short',
+            timeStyle: 'short',
+          }).format(new Date(row.original.lastActiveAt))
+        : 'Chưa có phiên hoạt động',
   },
 ]
 
@@ -78,12 +80,23 @@ export function Tenants() {
             subdomain: 'Subdomain',
             servicePlan: 'Gói',
             users: 'Tài khoản',
-            isActive: 'Trạng thái',
+            lastActiveAt: 'Hoạt động gần nhất',
             actions: 'Thao tác',
           }}
           getSearchText={(tenant) =>
             `${tenant.code} ${tenant.name} ${tenant.subdomain}`
           }
+          filters={[
+            {
+              columnId: 'servicePlan',
+              title: 'Gói dịch vụ',
+              options: [
+                { label: 'Cơ bản', value: 'BASIC' },
+                { label: 'Nâng cao', value: 'PLUS' },
+                { label: 'Chuyên nghiệp', value: 'PRO' },
+              ],
+            },
+          ]}
         />
       </Main>
     </>

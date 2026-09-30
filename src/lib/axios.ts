@@ -85,7 +85,6 @@ axios.interceptors.response.use(
   },
   (error) => {
     showApiError(error)
-    const message = error.response?.data || error.message
-    return Promise.reject(message)
+    return Promise.reject(error)
   }
 )

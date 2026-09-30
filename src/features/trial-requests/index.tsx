@@ -35,11 +35,12 @@ const columns: ColumnDef<TrialRequest>[] = [
         {statusLabels[row.original.status]}
       </Badge>
     ),
+    filterFn: (row, id, value: string[]) => value.includes(row.getValue(id)),
   },
   {
-    id: 'tenant',
-    header: 'Phòng khám',
-    cell: ({ row }) => row.original.tenant?.name ?? '—',
+    accessorKey: 'code',
+    header: 'Mã phòng khám',
+    cell: ({ row }) => row.original.code ?? '—',
   },
   {
     accessorKey: 'rejectionReason',
@@ -79,19 +80,28 @@ export function TrialRequests() {
           columns={columns}
           data={query.data?.data ?? []}
           isLoading={query.isLoading}
-          searchPlaceholder='Tìm theo số điện thoại hoặc phòng khám...'
+          searchPlaceholder='Tìm theo số điện thoại hoặc mã phòng khám...'
           emptyMessage='Chưa có yêu cầu dùng thử.'
           mobileLabels={{
             phone: 'Số điện thoại',
             createdAt: 'Ngày đăng ký',
             status: 'Trạng thái',
-            tenant: 'Phòng khám',
+            code: 'Mã phòng khám',
             rejectionReason: 'Lý do từ chối',
             actions: 'Thao tác',
           }}
-          getSearchText={(request) =>
-            `${request.phone} ${request.tenant?.name ?? ''}`
-          }
+          getSearchText={(request) => `${request.phone} ${request.code ?? ''}`}
+          filters={[
+            {
+              columnId: 'status',
+              title: 'Trạng thái',
+              options: [
+                { label: 'Chờ duyệt', value: 'PENDING' },
+                { label: 'Đã duyệt', value: 'APPROVED' },
+                { label: 'Đã từ chối', value: 'REJECTED' },
+              ],
+            },
+          ]}
         />
       </Main>
     </>

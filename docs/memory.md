@@ -48,7 +48,8 @@ liệu từ server dùng debounce 300 ms. Các bảng dùng chung nằm trong
 - Tenant admin có mục “Thông tin phòng khám” tại `/settings/tenant`: sửa tên và địa chỉ; xem mã tenant, subdomain, tên gói, trạng thái và hạn thuê bao. Các vai trò khác không thấy menu và bị chặn route.
 - SUPER_ADMIN có toàn quyền CMS: thấy và truy cập tất cả menu/trang, không bị giới hạn bởi role hoặc gói dịch vụ; sau đăng nhập mặc định về `/` như các vai trò khác.
 - Menu “Hệ thống” của SUPER_ADMIN có hai mục `/system/tenants` (CRUD tenant, tạo user theo tenant) và `/system/users` (danh sách user, lọc tenant/vai trò, tạo tài khoản).
-- Menu “Hệ thống” có thêm `/system/trial-requests` để xem, duyệt hoặc từ chối yêu cầu dùng thử; duyệt sẽ cấp phát tenant và tài khoản quản trị theo API backend hiện có.
+- Menu “Hệ thống” có `/system/trial-requests` để xem, duyệt hoặc từ chối yêu cầu dùng thử; duyệt chỉ nhập mã phòng khám 9 chữ số và lưu vào yêu cầu, không cấp phát tenant/admin.
+- Form tạo tenant không nhập mã phòng khám; trang danh sách tenant hiển thị số tài khoản và thời gian hoạt động gần nhất từ token thay cho trạng thái. Ba trang Hệ thống dùng thanh tìm kiếm và bộ lọc chung của CMS: tenant theo gói, user theo tenant/vai trò, trial theo trạng thái.
 - Menu cài đặt tài khoản dùng nhãn “Hồ sơ cá nhân” và có trang `/settings/change-password`; đổi mật khẩu yêu cầu mật khẩu hiện tại. Sidebar đổi “Master Data” thành “Cấu hình chung” và có trang `/clinic-days-off`, lưu ngày nghỉ lặp hằng năm dạng `MM-DD` trong master data.
 - Mục và route “Ngày nghỉ phòng khám” chỉ dành cho gói PLUS/PRO; gói BASIC không thấy menu và bị chặn nếu mở URL trực tiếp.
 - Trang `/settings` dùng dữ liệu thật từ auth store, hiển thị đầy đủ hồ sơ và lưu họ tên, email, điện thoại, giới tính, ngày sinh, địa chỉ, ghi chú qua `PATCH /auth/profile`; tên đăng nhập chỉ đọc.
@@ -95,5 +96,5 @@ liệu từ server dùng debounce 300 ms. Các bảng dùng chung nằm trong
   gửi lại qua header cho mọi request ghi.
 - Metadata chia sẻ của CMS dùng thương hiệu `phanmemphongkhamonline` và ảnh Open Graph 1200×630
   tại `public/images/phanmemphongkhamonline-social.png`; không còn preview Shadcn Admin.
-- `SelectDropdown` có chế độ `standalone` cho bộ lọc/form thủ công ngoài React Hook Form; các dropdown hệ thống, tenant và duyệt trial không gọi `FormControl` khi thiếu form context.
-- Axios xử lý mọi lỗi HTTP backend qua một toast chung và chỉ hiển thị nội dung `error.title`/`message` do backend trả về; không có thông báo theo status hoặc fallback. Chỉ `401` của `/auth/profile` kiểm tra phiên được giữ im lặng.
+- `SelectDropdown` có chế độ `standalone` cho form thủ công ngoài React Hook Form; dropdown tạo tenant/user không gọi `FormControl` khi thiếu form context.
+- Axios xử lý mọi lỗi HTTP backend qua một toast chung và chỉ hiển thị nội dung `error.title`/`message` do backend trả về; không có thông báo theo status hoặc fallback. Chỉ `401` của `/auth/profile` kiểm tra phiên được giữ im lặng. Interceptor giữ nguyên AxiosError để QueryClient nhận diện 401 và ngừng retry/đưa người dùng về đăng nhập.

@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { isAxiosError } from 'axios'
 import { z } from 'zod'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
@@ -77,7 +78,9 @@ export function UserAuthForm({
       toast.success(`Chào mừng trở lại, ${profile.data.fullName}!`)
     } catch (error) {
       const message =
-        (error as ApiError)?.error?.title ??
+        (isAxiosError<ApiError>(error)
+          ? error.response?.data?.error?.title
+          : undefined) ??
         'Đăng nhập thất bại. Vui lòng kiểm tra lại thông tin.'
       toast.error(message)
     } finally {

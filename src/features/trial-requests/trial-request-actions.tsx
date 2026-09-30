@@ -12,8 +12,6 @@ import {
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Textarea } from '@/components/ui/textarea'
-import { PasswordInput } from '@/components/password-input'
-import { SelectDropdown } from '@/components/select-dropdown'
 import {
   approveTrialRequest,
   rejectTrialRequest,
@@ -24,16 +22,7 @@ import {
 export function TrialRequestActions({ request }: { request: TrialRequest }) {
   const [mode, setMode] = useState<'approve' | 'reject' | null>(null)
   const [reason, setReason] = useState('')
-  const [form, setForm] = useState<ApproveTrialInput>({
-    code: '',
-    clinicName: '',
-    subdomain: '',
-    address: '',
-    adminEmail: '',
-    adminFullName: '',
-    password: '',
-    servicePlan: 'PLUS',
-  })
+  const [form, setForm] = useState<ApproveTrialInput>({ code: '' })
   const queryClient = useQueryClient()
   const done = async (message: string) => {
     await queryClient.invalidateQueries({ queryKey: ['trial-requests'] })
@@ -51,14 +40,6 @@ export function TrialRequestActions({ request }: { request: TrialRequest }) {
     onError: () => toast.error('Không thể từ chối yêu cầu'),
   })
   if (request.status !== 'PENDING') return null
-  const fields = [
-    ['code', 'Mã phòng khám'],
-    ['clinicName', 'Tên phòng khám'],
-    ['subdomain', 'Subdomain'],
-    ['address', 'Địa chỉ'],
-    ['adminEmail', 'Email quản trị'],
-    ['adminFullName', 'Họ tên quản trị'],
-  ] as const
   return (
     <>
       <div className='flex justify-end gap-2'>
@@ -73,59 +54,27 @@ export function TrialRequestActions({ request }: { request: TrialRequest }) {
         open={mode === 'approve'}
         onOpenChange={(open) => !open && setMode(null)}
       >
-        <DialogContent className='max-h-[90vh] overflow-y-auto sm:max-w-2xl'>
+        <DialogContent>
           <DialogHeader>
             <DialogTitle>Duyệt yêu cầu {request.phone}</DialogTitle>
           </DialogHeader>
-          <div className='grid gap-4 sm:grid-cols-2'>
-            {fields.map(([key, label]) => (
-              <div className='space-y-2' key={key}>
-                <Label>{label}</Label>
-                <Input
-                  type={key === 'adminEmail' ? 'email' : 'text'}
-                  value={form[key]}
-                  onChange={(event) =>
-                    setForm({ ...form, [key]: event.target.value })
-                  }
-                />
-              </div>
-            ))}
-            <div className='space-y-2'>
-              <Label>Mật khẩu ban đầu</Label>
-              <PasswordInput
-                value={form.password}
-                onChange={(event) =>
-                  setForm({ ...form, password: event.target.value })
-                }
-              />
-            </div>
-            <div className='space-y-2'>
-              <Label>Gói dịch vụ</Label>
-              <SelectDropdown
-                standalone
-                defaultValue={form.servicePlan}
-                isControlled
-                onValueChange={(servicePlan) =>
-                  setForm({
-                    ...form,
-                    servicePlan:
-                      servicePlan as ApproveTrialInput['servicePlan'],
-                  })
-                }
-                items={[
-                  { label: 'Cơ bản', value: 'BASIC' },
-                  { label: 'Nâng cao', value: 'PLUS' },
-                  { label: 'Chuyên nghiệp', value: 'PRO' },
-                ]}
-              />
-            </div>
+          <div className='space-y-2'>
+            <Label htmlFor='trial-clinic-code'>Mã phòng khám</Label>
+            <Input
+              id='trial-clinic-code'
+              inputMode='numeric'
+              maxLength={9}
+              value={form.code}
+              onChange={(event) => setForm({ code: event.target.value })}
+              placeholder='Nhập mã gồm 9 chữ số'
+            />
           </div>
           <DialogFooter>
             <Button variant='outline' onClick={() => setMode(null)}>
               Hủy
             </Button>
             <Button
-              disabled={approve.isPending}
+              disabled={!/^[1-9]\d{8}$/.test(form.code) || approve.isPending}
               onClick={() => approve.mutate()}
             >
               Xác nhận duyệt
