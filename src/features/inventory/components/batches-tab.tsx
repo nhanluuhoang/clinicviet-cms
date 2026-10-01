@@ -2,6 +2,12 @@ import { DotsHorizontalIcon } from '@radix-ui/react-icons'
 import { useQuery } from '@tanstack/react-query'
 import { type ColumnDef } from '@tanstack/react-table'
 import { Edit, Trash2 } from 'lucide-react'
+import {
+  formatDate,
+  formatMoney,
+  formatNumber,
+  getExpiryStatus,
+} from '@/lib/utils'
 import { useApiSearch } from '@/hooks/use-api-search'
 import { Button } from '@/components/ui/button'
 import {
@@ -16,12 +22,6 @@ import { DataTableColumnHeader } from '@/components/data-table'
 import { UrlDataTable } from '@/components/data-table/url-data-table'
 import { GetBatches, type StockBatch } from '../api'
 import { expiryStatuses } from '../data/data'
-import {
-  formatDate,
-  formatMoney,
-  formatNumber,
-  getExpiryStatus,
-} from '../utils'
 import { ExpiryBadge } from './expiry-badge'
 import { useInventory } from './inventory-provider'
 

@@ -8,7 +8,7 @@ import {
 } from '@tanstack/react-table'
 import { hasAnyRole, PRESCRIBER_ROLES } from '@/config/access-control'
 import { useAuthStore } from '@/stores/auth-store'
-import { cn } from '@/lib/utils'
+import { cn, getToday } from '@/lib/utils'
 import { type NavigateFn, useTableUrlState } from '@/hooks/use-table-url-state'
 import { Button } from '@/components/ui/button'
 import {
@@ -25,7 +25,6 @@ import {
   MobileDataCards,
 } from '@/components/data-table'
 import { DatePickerInput } from '@/components/date-picker-input'
-import { getToday } from '@/features/dashboard/utils'
 import { type MedicalHistoryListItem } from '../api'
 import { medicalHistoryColumns } from './medical-history-columns'
 import { MedicalHistoryDetails } from './medical-history-details'

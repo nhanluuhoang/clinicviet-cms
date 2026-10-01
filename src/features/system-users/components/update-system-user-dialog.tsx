@@ -1,10 +1,10 @@
 import { useEffect, useState } from 'react'
 import { z } from 'zod'
-import { DotsHorizontalIcon } from '@radix-ui/react-icons'
 import { useForm } from 'react-hook-form'
-import { Pencil } from 'lucide-react'
+import { DotsHorizontalIcon } from '@radix-ui/react-icons'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
+import { Pencil } from 'lucide-react'
 import { toast } from 'sonner'
 import { Button } from '@/components/ui/button'
 import { Checkbox } from '@/components/ui/checkbox'
@@ -33,7 +33,7 @@ import {
 } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
 import { SelectDropdown } from '@/components/select-dropdown'
-import { updateSystemUser, type ManagedRole, type SystemUser } from './api'
+import { updateSystemUser, type ManagedRole, type SystemUser } from '../api'
 
 const schema = z.object({
   fullName: z.string().trim().min(1, 'Vui lòng nhập họ tên.'),

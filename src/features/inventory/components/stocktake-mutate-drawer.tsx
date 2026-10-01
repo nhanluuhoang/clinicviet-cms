@@ -2,7 +2,7 @@ import { useEffect, useMemo, useState } from 'react'
 import { useQuery, useQueryClient } from '@tanstack/react-query'
 import { Check, ChevronsUpDown } from 'lucide-react'
 import { toast } from 'sonner'
-import { cn } from '@/lib/utils'
+import { cn, formatNumber, toDateInput } from '@/lib/utils'
 import { useDebounce } from '@/hooks/use-debounce'
 import { Button } from '@/components/ui/button'
 import {
@@ -33,7 +33,6 @@ import { Textarea } from '@/components/ui/textarea'
 import { DatePickerInput } from '@/components/date-picker-input'
 import { GetMedicines, type Medicine } from '@/features/medicines/api'
 import { CreateStockTake, GetBatches } from '../api'
-import { formatNumber, toDateInput } from '../utils'
 import { ExpiryBadge } from './expiry-badge'
 
 function MedicinePicker({

@@ -104,7 +104,7 @@ export const createPrescription = (data: {
 }): Promise<void> => axios.post('/medical-histories', data)
 
 export interface UpdatePrescriptionInput {
-  medicalHistory?: Partial<MedicalHistoryInput>
+  medicalHistory?: Partial<Omit<MedicalHistoryInput, 'examinationQueueId'>>
   prescriptionItems?: PrescriptionItemInput[]
   consultationFee?: number
   serviceFee?: number

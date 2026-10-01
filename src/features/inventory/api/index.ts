@@ -1,6 +1,6 @@
 import { axios } from '@/lib/axios'
+import { isExpired, worstExpiryStatus } from '@/lib/utils'
 import { GetMedicines, type Medicine } from '@/features/medicines/api'
-import { isExpired, worstExpiryStatus } from '../utils'
 import {
   type GoodsReceipt,
   type GoodsReceiptInput,

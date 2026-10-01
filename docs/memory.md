@@ -22,6 +22,12 @@
 
 ## Convention
 
+- Prescriptions: keep tab coordination in `index.tsx`, form logic in `hooks/use-service-prescription-form.ts`, UI sections/pickers in `components/`, shared types/constants in `types.ts` and `data/`.
+
+- Shared utility functions live in `src/lib/utils.ts`; feature code imports them through `@/lib/utils` rather than feature-local utility modules.
+
+- Resource pages keep layout in `index.tsx` and tables, columns, row actions, dialogs and forms in `components/`; complex form state goes in `hooks/`. Prescription templates follow this structure and use the shared Select for medicine selection. Settings pages keep their form beside the entry point, matching profile/change-password.
+
 - Đặt màn hình theo tính năng trong `src/features/<feature>/`, khai báo route trong `src/routes/_authenticated/`; gọi API qua `src/lib/axios.ts` và gom hàm/kiểu API tại `api.ts` của feature.
 - Trang danh sách dùng `UrlDataTable`: cột action luôn đặt cuối, khai báo `mobileLabels`/`getSearchText`; filter đặt trong toolbar, `columnId` khớp cột, `searchKey`/schema route khớp URL, dùng `radio` cho lựa chọn đơn và `checkbox` cho đa chọn. Giữ tìm kiếm, lọc, sort/phân trang đồng bộ URL và thẻ mobile.
 - Form dùng các component UI hiện có; chọn ngày dùng `DatePickerInput`. Giữ phân quyền vai trò/gói nhất quán với BE; không cho sửa vai trò `PATIENT`/`USER` qua form quản lý nhân sự. CMS không tự sinh mã phòng khám: BE sinh khi tạo tenant, duyệt trial chỉ nhập mã.
