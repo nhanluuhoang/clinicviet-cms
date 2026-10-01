@@ -4,6 +4,8 @@
 
 ## Project
 
+- Product brand: ClinicViet; technical names use `clinicviet`, while checked-out repo folders keep `iclinic-*`. Startup migrates old browser storage keys to `clinicviet` and removes the old keys, preserving existing values. CMS and both landing apps use the shared medical favicon; CMS has a ClinicViet page title.
+
 - CMS React 19/TypeScript/Vite/TanStack Router+Query, shadcn/ui; dùng pnpm. API backend qua `VITE_APP_API_URL`.
 
 ## Architecture
@@ -27,6 +29,8 @@
 - Shared utility functions live in `src/lib/utils.ts`; feature code imports them through `@/lib/utils` rather than feature-local utility modules.
 
 - Resource pages keep layout in `index.tsx` and tables, columns, row actions, dialogs and forms in `components/`; complex form state goes in `hooks/`. Prescription templates follow this structure and use the shared Select for medicine selection. Settings pages keep their form beside the entry point, matching profile/change-password.
+
+- Dev dùng cổng 5173 với strictPort; khi VITE_APP_API_URL là API loopback, API_URL chuyển thành `/api`, Vite proxy sang backend để request cùng origin. Production giữ URL API cấu hình.
 
 - Đặt màn hình theo tính năng trong `src/features/<feature>/`, khai báo route trong `src/routes/_authenticated/`; gọi API qua `src/lib/axios.ts` và gom hàm/kiểu API tại `api.ts` của feature.
 - Trang danh sách dùng `UrlDataTable`: cột action luôn đặt cuối, khai báo `mobileLabels`/`getSearchText`; filter đặt trong toolbar, `columnId` khớp cột, `searchKey`/schema route khớp URL, dùng `radio` cho lựa chọn đơn và `checkbox` cho đa chọn. Giữ tìm kiếm, lọc, sort/phân trang đồng bộ URL và thẻ mobile.

@@ -21,7 +21,7 @@ export function Prescriptions({
   ...props
 }: PrescriptionProps) {
   const userId = useAuthStore((state) => state.auth.user?.id ?? 'anonymous')
-  const preferenceKey = 'iclinic:last-service-tab:' + userId
+  const preferenceKey = 'clinicviet:last-service-tab:' + userId
   const [serviceType, setServiceType] = useState<ServiceType>(() => {
     if (props.initialData) return props.initialData.serviceType ?? 'EXAMINATION'
     try {
