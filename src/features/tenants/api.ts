@@ -38,7 +38,11 @@ export type TenantsResponse = {
 export type TenantUpdate = Pick<
   Tenant,
   'code' | 'name' | 'address' | 'servicePlan' | 'isActive'
-> & { subdomain?: string }
+> & {
+  subdomain?: string
+  trialEndsAt?: string
+  subscriptionEndsAt?: string
+}
 
 export const getTenants = (): Promise<TenantsResponse> =>
   axios.get('/tenants', { params: { page: 1, limit: 100 } })
