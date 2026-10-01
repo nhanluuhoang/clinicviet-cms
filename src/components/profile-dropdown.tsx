@@ -1,7 +1,7 @@
 import { Link } from '@tanstack/react-router'
 import { BookOpen, PackageOpen } from 'lucide-react'
-import useDialogState from '@/hooks/use-dialog-state'
 import { useAuthStore } from '@/stores/auth-store'
+import useDialogState from '@/hooks/use-dialog-state'
 import { Avatar, AvatarFallback } from '@/components/ui/avatar'
 import { Button } from '@/components/ui/button'
 import {
@@ -62,7 +62,7 @@ export function ProfileDropdown() {
             <DropdownMenuItem
               onSelect={() =>
                 window.dispatchEvent(
-                  new CustomEvent('iclinic:start-tour', {
+                  new CustomEvent('clinicviet:start-tour', {
                     detail: 'patient-workflow',
                   })
                 )
@@ -74,7 +74,7 @@ export function ProfileDropdown() {
             <DropdownMenuItem
               onSelect={() =>
                 window.dispatchEvent(
-                  new CustomEvent('iclinic:start-tour', {
+                  new CustomEvent('clinicviet:start-tour', {
                     detail: 'inventory-workflow',
                   })
                 )

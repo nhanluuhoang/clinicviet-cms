@@ -10,12 +10,12 @@ import { RouterProvider, createRouter } from '@tanstack/react-router'
 import { toast } from 'sonner'
 import { useAuthStore } from '@/stores/auth-store'
 import { handleServerError } from '@/lib/handle-server-error'
+import { migrateClinicVietStorage } from '@/lib/utils'
 import { DirectionProvider } from './context/direction-provider'
 import { FontProvider } from './context/font-provider'
 import { ThemeProvider } from './context/theme-provider'
 // i18n
 import './i18n'
-
 // Generated Routes
 import { routeTree } from './routeTree.gen'
 // Styles
@@ -91,6 +91,7 @@ declare module '@tanstack/react-router' {
 }
 
 // Render the app
+migrateClinicVietStorage()
 const rootElement = document.getElementById('root')!
 if (!rootElement.innerHTML) {
   const root = ReactDOM.createRoot(rootElement)

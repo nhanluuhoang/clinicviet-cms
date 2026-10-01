@@ -1,6 +1,6 @@
 import { useState } from 'react'
-import { isAxiosError } from 'axios'
 import { z } from 'zod'
+import { isAxiosError } from 'axios'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { Link, useNavigate } from '@tanstack/react-router'
@@ -52,8 +52,8 @@ export function UserAuthForm({
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      userName: '',
-      password: '',
+      userName: 'admin.clinic',
+      password: 'ClinicViet@123',
     },
   })
 
@@ -80,8 +80,7 @@ export function UserAuthForm({
       const message =
         (isAxiosError<ApiError>(error)
           ? error.response?.data?.error?.title
-          : undefined) ??
-        'Đăng nhập thất bại. Vui lòng kiểm tra lại thông tin.'
+          : undefined) ?? 'Đăng nhập thất bại. Vui lòng kiểm tra lại thông tin.'
       toast.error(message)
     } finally {
       setIsLoading(false)
