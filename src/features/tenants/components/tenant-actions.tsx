@@ -3,6 +3,7 @@ import { DotsHorizontalIcon } from '@radix-ui/react-icons'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { Pencil, Trash2 } from 'lucide-react'
 import { toast } from 'sonner'
+import { toDateInput } from '@/lib/utils'
 import {
   AlertDialog,
   AlertDialogAction,
@@ -31,6 +32,7 @@ import {
 } from '@/components/ui/dropdown-menu'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
+import { DatePickerInput } from '@/components/date-picker-input'
 import { SelectDropdown } from '@/components/select-dropdown'
 import { deleteTenant, updateTenant, type Tenant } from '../api'
 
@@ -38,6 +40,11 @@ export function TenantActions({ tenant }: { tenant: Tenant }) {
   const [editOpen, setEditOpen] = useState(false)
   const [deleteOpen, setDeleteOpen] = useState(false)
   const queryClient = useQueryClient()
+  const isTrial = tenant.subscriptionStatus === 'TRIAL'
+  const expiryDate = isTrial ? tenant.trialEndsAt : tenant.subscriptionEndsAt
+  const [endsOn, setEndsOn] = useState(
+    expiryDate ? toDateInput(expiryDate) : ''
+  )
   const [values, setValues] = useState({
     code: tenant.code,
     name: tenant.name,
@@ -52,6 +59,11 @@ export function TenantActions({ tenant }: { tenant: Tenant }) {
       updateTenant(tenant.id, {
         ...values,
         subdomain: values.subdomain || undefined,
+        ...(isTrial
+          ? { trialEndsAt: new Date(`${endsOn}T23:59:59`).toISOString() }
+          : {
+              subscriptionEndsAt: new Date(`${endsOn}T23:59:59`).toISOString(),
+            }),
       }),
     onSuccess: async () => {
       await refresh()
@@ -80,7 +92,20 @@ export function TenantActions({ tenant }: { tenant: Tenant }) {
           </Button>
         </DropdownMenuTrigger>
         <DropdownMenuContent align='end' className='w-[160px]'>
-          <DropdownMenuItem onClick={() => setEditOpen(true)}>
+          <DropdownMenuItem
+            onClick={() => {
+              setEndsOn(expiryDate ? toDateInput(expiryDate) : '')
+              setValues({
+                code: tenant.code,
+                name: tenant.name,
+                subdomain: tenant.subdomain ?? '',
+                address: tenant.address,
+                servicePlan: tenant.servicePlan,
+                isActive: tenant.isActive,
+              })
+              setEditOpen(true)
+            }}
+          >
             Cập nhật
             <DropdownMenuShortcut>
               <Pencil size={16} />
@@ -146,6 +171,16 @@ export function TenantActions({ tenant }: { tenant: Tenant }) {
                 ]}
               />
             </div>
+            <div className='space-y-2 sm:col-span-2'>
+              <Label required htmlFor={`tenant-expiry-${tenant.id}`}>
+                {isTrial ? 'Ngày kết thúc dùng thử' : 'Ngày hết hạn gói'}
+              </Label>
+              <DatePickerInput
+                id={`tenant-expiry-${tenant.id}`}
+                value={endsOn}
+                onChange={setEndsOn}
+              />
+            </div>
             <label className='flex items-center gap-2 sm:col-span-2'>
               <Checkbox
                 checked={values.isActive}
@@ -160,7 +195,10 @@ export function TenantActions({ tenant }: { tenant: Tenant }) {
             <Button variant='outline' onClick={() => setEditOpen(false)}>
               Hủy
             </Button>
-            <Button onClick={() => update.mutate()} disabled={update.isPending}>
+            <Button
+              onClick={() => update.mutate()}
+              disabled={update.isPending || !endsOn}
+            >
               Lưu thay đổi
             </Button>
           </DialogFooter>
