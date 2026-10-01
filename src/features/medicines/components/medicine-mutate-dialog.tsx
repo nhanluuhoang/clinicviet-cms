@@ -127,7 +127,7 @@ export function MedicineMutateDialog({
       >
         <DialogHeader className='pe-8 text-start'>
           <DialogTitle>
-            {isUpdate ? 'Sửa thuốc' : 'Thêm thuốc vào danh mục'}
+            {isUpdate ? 'Cập nhật thuốc' : 'Thêm thuốc vào danh mục'}
           </DialogTitle>
           <DialogDescription>
             Danh mục chỉ khai báo thông tin thuốc. Số lượng và hạn sử dụng đến

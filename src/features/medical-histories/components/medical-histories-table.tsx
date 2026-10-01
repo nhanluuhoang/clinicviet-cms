@@ -6,6 +6,8 @@ import {
   getCoreRowModel,
   useReactTable,
 } from '@tanstack/react-table'
+import { hasAnyRole, PRESCRIBER_ROLES } from '@/config/access-control'
+import { useAuthStore } from '@/stores/auth-store'
 import { cn } from '@/lib/utils'
 import { type NavigateFn, useTableUrlState } from '@/hooks/use-table-url-state'
 import { Button } from '@/components/ui/button'
@@ -25,7 +27,7 @@ import {
 import { DatePickerInput } from '@/components/date-picker-input'
 import { getToday } from '@/features/dashboard/utils'
 import { type MedicalHistoryListItem } from '../api'
-import { medicalHistoryColumns as columns } from './medical-history-columns'
+import { medicalHistoryColumns } from './medical-history-columns'
 import { MedicalHistoryDetails } from './medical-history-details'
 
 type Props = {
@@ -46,6 +48,10 @@ export function MedicalHistoriesTable({
   isLoading,
 }: Props) {
   const [expanded, setExpanded] = useState<ExpandedState>({})
+  const role = useAuthStore((state) => state.auth.user?.role)
+  const columns = hasAnyRole(role, PRESCRIBER_ROLES)
+    ? medicalHistoryColumns
+    : medicalHistoryColumns.filter((column) => column.id !== 'actions')
   const {
     columnFilters,
     onColumnFiltersChange,

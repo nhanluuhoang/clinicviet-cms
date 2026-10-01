@@ -39,7 +39,7 @@ export function DataTableRowActions({ row }: { row: Row<Patient> }) {
             setOpen('update')
           }}
         >
-          Sửa
+          Cập nhật
           <DropdownMenuShortcut>
             <Edit size={16} />
           </DropdownMenuShortcut>

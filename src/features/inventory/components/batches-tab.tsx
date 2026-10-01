@@ -46,7 +46,7 @@ function BatchActions({ batch }: { batch: StockBatch }) {
             setOpen('batch-update')
           }}
         >
-          Sửa
+          Cập nhật
           <DropdownMenuShortcut>
             <Edit size={16} />
           </DropdownMenuShortcut>

@@ -77,7 +77,7 @@ export function TenantActions({ tenant }: { tenant: Tenant }) {
         </DropdownMenuTrigger>
         <DropdownMenuContent align='end' className='w-[160px]'>
           <DropdownMenuItem onClick={() => setEditOpen(true)}>
-            Sửa
+            Cập nhật
             <DropdownMenuShortcut>
               <Pencil size={16} />
             </DropdownMenuShortcut>
@@ -96,7 +96,7 @@ export function TenantActions({ tenant }: { tenant: Tenant }) {
       <Dialog open={editOpen} onOpenChange={setEditOpen}>
         <DialogContent className='sm:max-w-xl'>
           <DialogHeader>
-            <DialogTitle>Chỉnh sửa phòng khám</DialogTitle>
+            <DialogTitle>Cập nhật phòng khám</DialogTitle>
           </DialogHeader>
           <div className='grid gap-4 sm:grid-cols-2'>
             {(

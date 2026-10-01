@@ -113,7 +113,7 @@ export function UpdateSystemUserDialog({ user }: { user: SystemUser }) {
         </DropdownMenuTrigger>
         <DropdownMenuContent align='end' className='w-[160px]'>
           <DropdownMenuItem onClick={() => setOpen(true)}>
-            Sửa
+            Cập nhật
             <DropdownMenuShortcut>
               <Pencil size={16} />
             </DropdownMenuShortcut>
@@ -123,7 +123,7 @@ export function UpdateSystemUserDialog({ user }: { user: SystemUser }) {
       <Dialog open={open} onOpenChange={setOpen}>
         <DialogContent className='sm:max-w-lg'>
           <DialogHeader>
-            <DialogTitle>Sửa người dùng</DialogTitle>
+            <DialogTitle>Cập nhật người dùng</DialogTitle>
             <DialogDescription>
               {user.userName} · {user.tenant.code} - {user.tenant.name}
             </DialogDescription>

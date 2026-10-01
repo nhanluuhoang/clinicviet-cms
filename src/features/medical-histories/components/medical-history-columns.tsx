@@ -5,6 +5,7 @@ import { Button } from '@/components/ui/button'
 import { DataTableColumnHeader } from '@/components/data-table'
 import { LongText } from '@/components/long-text'
 import { type MedicalHistoryListItem } from '../api'
+import { MedicalHistoryActions } from './medical-history-actions'
 
 export const medicalHistoryColumns: ColumnDef<MedicalHistoryListItem>[] = [
   {
@@ -96,5 +97,13 @@ export const medicalHistoryColumns: ColumnDef<MedicalHistoryListItem>[] = [
       tdClassName: 'text-right',
     },
     enableSorting: false,
+  },
+  {
+    id: 'actions',
+    header: () => null,
+    cell: ({ row }) => <MedicalHistoryActions history={row.original} />,
+    enableSorting: false,
+    enableHiding: false,
+    meta: { className: 'text-right' },
   },
 ]

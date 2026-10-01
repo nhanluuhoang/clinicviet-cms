@@ -199,7 +199,7 @@ export function PrescriptionTemplates() {
                 setOpen('update')
               }}
             >
-              Sửa
+              Cập nhật
               <DropdownMenuShortcut>
                 <Edit size={16} />
               </DropdownMenuShortcut>
@@ -273,7 +273,7 @@ export function PrescriptionTemplates() {
         <DialogContent className='grid max-h-[90dvh] grid-rows-[auto_minmax(0,1fr)_auto] sm:max-w-2xl'>
           <DialogHeader>
             <DialogTitle>
-              {current ? 'Sửa mẫu đơn thuốc' : 'Thêm mẫu đơn thuốc'}
+              {current ? 'Cập nhật mẫu đơn thuốc' : 'Thêm mẫu đơn thuốc'}
             </DialogTitle>
             <DialogDescription>
               Thiết lập thuốc, số lượng và hướng dẫn sử dụng mặc định.

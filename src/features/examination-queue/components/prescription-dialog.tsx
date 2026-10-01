@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useCallback, useState } from 'react'
 import { ClipboardList, FileClock, LoaderCircle } from 'lucide-react'
 import { createPortal } from 'react-dom'
 import { Button } from '@/components/ui/button'
@@ -9,8 +9,11 @@ import {
   DialogTitle,
 } from '@/components/ui/dialog'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
-import { Prescriptions } from '@/features/prescriptions'
-import { type QueueEntry, type QueueUser } from '../api'
+import {
+  Prescriptions,
+  type InitialPrescriptionData,
+} from '@/features/prescriptions'
+import { type QueueUser } from '../api'
 import { MedicalHistoryContent } from './medical-history-content'
 
 type View = 'prescription' | 'history'
@@ -26,16 +29,25 @@ export function PrescriptionDialog({
   onOpenChange: (open: boolean) => void
   patient: QueueUser
   queueId?: string
-  initialData: QueueEntry['medicalHistory']
+  initialData: InitialPrescriptionData | null
 }) {
   const [view, setView] = useState<View>('prescription')
   const [isUploading, setIsUploading] = useState(false)
+  const [isSaving, setIsSaving] = useState(false)
+  const [activeForm, setActiveForm] = useState({
+    id: 'prescription-form-EXAMINATION',
+    label: 'Lưu phiếu khám',
+  })
+  const handleActiveFormChange = useCallback(
+    (id: string, label: string) => setActiveForm({ id, label }),
+    []
+  )
 
   return (
     <Dialog
       open={open}
       onOpenChange={(nextOpen) => {
-        if (isUploading) return
+        if (isUploading || isSaving) return
         if (!nextOpen) setView('prescription')
         onOpenChange(nextOpen)
       }}
@@ -59,18 +71,20 @@ export function PrescriptionDialog({
             document.body
           )}
         <DialogHeader>
-          <DialogTitle>Phiếu dịch vụ</DialogTitle>
+          <DialogTitle>
+            {initialData ? 'Cập nhật lịch sử khám bệnh' : 'Phiếu dịch vụ'}
+          </DialogTitle>
         </DialogHeader>
         <Tabs
           value={view}
           onValueChange={(value) => {
-            if (!isUploading) setView(value as View)
+            if (!isUploading && !isSaving) setView(value as View)
           }}
           className='gap-3'
         >
           <TabsList>
             <TabsTrigger value='prescription'>
-              <ClipboardList /> Lập phiếu
+              <ClipboardList /> {initialData ? 'Cập nhật phiếu' : 'Lập phiếu'}
             </TabsTrigger>
             <TabsTrigger value='history'>
               <FileClock /> Lịch sử khám
@@ -82,6 +96,8 @@ export function PrescriptionDialog({
               examinationQueueId={queueId}
               initialData={initialData}
               onUploadingChange={setIsUploading}
+              onSavingChange={setIsSaving}
+              onActiveFormChange={handleActiveFormChange}
               onSaved={() => {
                 setView('prescription')
                 onOpenChange(false)
@@ -96,16 +112,16 @@ export function PrescriptionDialog({
           {view === 'prescription' && (
             <Button
               type='submit'
-              form='prescription-form'
-              disabled={isUploading}
+              form={activeForm.id}
+              disabled={isUploading || isSaving}
             >
-              Lưu phiếu
+              {isSaving ? 'Đang lưu...' : activeForm.label}
             </Button>
           )}
           <Button
             type='button'
             variant='outline'
-            disabled={isUploading}
+            disabled={isUploading || isSaving}
             onClick={() => {
               setView('prescription')
               onOpenChange(false)

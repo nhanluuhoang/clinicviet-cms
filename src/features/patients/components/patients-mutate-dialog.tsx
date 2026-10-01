@@ -243,7 +243,7 @@ export function PatientsMutateDialog({
       >
         <DialogHeader className='pe-8 text-start'>
           <DialogTitle>
-            {isEdit ? 'Sửa bệnh nhân' : 'Thêm bệnh nhân'}
+            {isEdit ? 'Cập nhật bệnh nhân' : 'Thêm bệnh nhân'}
           </DialogTitle>
           <DialogDescription>
             {isEdit
