@@ -208,7 +208,9 @@ export function StockTakeMutateDrawer({
         <div className='-mx-1 space-y-6 overflow-y-auto px-1'>
           <div className='grid gap-4 sm:grid-cols-2'>
             <div className='space-y-2'>
-              <Label htmlFor='stocktake-medicine'>Thuốc</Label>
+              <Label required htmlFor='stocktake-medicine'>
+                Thuốc
+              </Label>
               <MedicinePicker
                 selected={selectedMedicine}
                 onChange={(medicine) => {
@@ -218,7 +220,9 @@ export function StockTakeMutateDrawer({
               />
             </div>
             <div className='space-y-2'>
-              <Label htmlFor='stocktake-date'>Ngày kiểm kê</Label>
+              <Label required htmlFor='stocktake-date'>
+                Ngày kiểm kê
+              </Label>
               <DatePickerInput
                 id='stocktake-date'
                 value={countedAt}

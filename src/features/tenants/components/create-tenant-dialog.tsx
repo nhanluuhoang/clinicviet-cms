@@ -30,18 +30,22 @@ import { createTenant } from '../api'
 const schema = z
   .object({
     name: z.string().trim().min(1, 'Vui lòng nhập tên phòng khám.').max(255),
-    subdomain: z
-      .string()
-      .trim()
-      .regex(
-        /^[a-z0-9]+(?:-[a-z0-9]+)*$/,
-        'Chỉ dùng chữ thường, số và dấu gạch ngang.'
-      ),
+    subdomain: z.string().trim(),
     address: z.string().trim().min(1, 'Vui lòng nhập địa chỉ.').max(255),
     servicePlan: z.enum(['BASIC', 'PLUS', 'PRO']),
     subscriptionStatus: z.enum(['TRIAL', 'ACTIVE']),
     endsOn: z.string().min(1, 'Vui lòng chọn ngày kết thúc.'),
   })
+  .refine(
+    ({ servicePlan, subdomain }) =>
+      servicePlan === 'BASIC' ||
+      (subdomain.length <= 50 && /^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(subdomain)),
+    {
+      path: ['subdomain'],
+      message:
+        'Nhập subdomain tối đa 50 ký tự, chỉ dùng chữ thường, số và dấu gạch ngang.',
+    }
+  )
   .refine(
     ({ endsOn }) => new Date(`${endsOn}T23:59:59`).getTime() > Date.now(),
     { path: ['endsOn'], message: 'Ngày kết thúc phải ở tương lai.' }
@@ -68,9 +72,15 @@ export function CreateTenantDialog() {
     defaultValues,
   })
   const mutation = useMutation({
-    mutationFn: ({ endsOn, subscriptionStatus, ...values }: FormValues) =>
+    mutationFn: ({
+      endsOn,
+      subscriptionStatus,
+      subdomain,
+      ...values
+    }: FormValues) =>
       createTenant({
         ...values,
+        ...(values.servicePlan !== 'BASIC' && { subdomain }),
         isActive: true,
         subscriptionStatus,
         ...(subscriptionStatus === 'TRIAL'
@@ -143,15 +153,20 @@ function Fields({ form }: { form: ReturnType<typeof useForm<FormValues>> }) {
 
   return (
     <>
-      {fields.map(({ name, label }) => (
-        <TextField key={name} form={form} name={name} label={label} />
-      ))}
+      {fields
+        .filter(
+          ({ name }) =>
+            name !== 'subdomain' || form.watch('servicePlan') !== 'BASIC'
+        )
+        .map(({ name, label }) => (
+          <TextField key={name} form={form} name={name} label={label} />
+        ))}
       <FormField
         control={form.control}
         name='servicePlan'
         render={({ field }) => (
           <FormItem>
-            <FormLabel>Gói dịch vụ</FormLabel>
+            <FormLabel required>Gói dịch vụ</FormLabel>
             <SelectDropdown
               defaultValue={field.value}
               isControlled
@@ -171,7 +186,7 @@ function Fields({ form }: { form: ReturnType<typeof useForm<FormValues>> }) {
         name='subscriptionStatus'
         render={({ field }) => (
           <FormItem>
-            <FormLabel>Hình thức đăng ký</FormLabel>
+            <FormLabel required>Hình thức đăng ký</FormLabel>
             <SelectDropdown
               defaultValue={field.value}
               isControlled
@@ -190,7 +205,7 @@ function Fields({ form }: { form: ReturnType<typeof useForm<FormValues>> }) {
         name='endsOn'
         render={({ field }) => (
           <FormItem>
-            <FormLabel>
+            <FormLabel required>
               {form.watch('subscriptionStatus') === 'TRIAL'
                 ? 'Ngày kết thúc dùng thử'
                 : 'Ngày hết hạn gói'}
@@ -219,7 +234,7 @@ function TextField({
       name={name}
       render={({ field }) => (
         <FormItem>
-          <FormLabel>{label}</FormLabel>
+          <FormLabel required>{label}</FormLabel>
           <FormControl>
             <Input {...field} />
           </FormControl>

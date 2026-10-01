@@ -155,7 +155,7 @@ export function CreateSystemUserDialog({
               name='tenantId'
               render={({ field }) => (
                 <FormItem className='sm:col-span-2'>
-                  <FormLabel>Phòng khám</FormLabel>
+                  <FormLabel required>Phòng khám</FormLabel>
                   <Popover open={clinicOpen} onOpenChange={setClinicOpen}>
                     <PopoverTrigger asChild>
                       <Button
@@ -236,7 +236,11 @@ export function CreateSystemUserDialog({
                 name={name}
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>{label}</FormLabel>
+                    <FormLabel
+                      required={name === 'userName' || name === 'fullName'}
+                    >
+                      {label}
+                    </FormLabel>
                     <FormControl>
                       <Input
                         type={name === 'email' ? 'email' : 'text'}
@@ -253,7 +257,7 @@ export function CreateSystemUserDialog({
               name='role'
               render={({ field }) => (
                 <FormItem className='sm:col-span-2'>
-                  <FormLabel>Vai trò</FormLabel>
+                  <FormLabel required>Vai trò</FormLabel>
                   <SelectDropdown
                     defaultValue={field.value}
                     isControlled
@@ -275,7 +279,7 @@ export function CreateSystemUserDialog({
                 name={name}
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>
+                    <FormLabel required>
                       {name === 'password' ? 'Mật khẩu' : 'Nhập lại mật khẩu'}
                     </FormLabel>
                     <FormControl>

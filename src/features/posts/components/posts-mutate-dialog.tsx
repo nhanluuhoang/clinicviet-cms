@@ -3,9 +3,9 @@ import { z } from 'zod'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useQueryClient } from '@tanstack/react-query'
-import { toast } from 'sonner'
-import { ImagePlus, Loader2, X } from 'lucide-react'
 import { API_URL } from '@/config'
+import { ImagePlus, Loader2, X } from 'lucide-react'
+import { toast } from 'sonner'
 import { Button } from '@/components/ui/button'
 import {
   Dialog,
@@ -28,12 +28,7 @@ import { Input } from '@/components/ui/input'
 import { Textarea } from '@/components/ui/textarea'
 import { SelectDropdown } from '@/components/select-dropdown'
 import { uploadImage } from '@/features/examination-queue/api'
-import {
-  CreatePost,
-  UpdatePost,
-  type Post,
-  type PostDtoRequest,
-} from '../api'
+import { CreatePost, UpdatePost, type Post, type PostDtoRequest } from '../api'
 import { postStatuses } from '../data/data'
 import { PostContentEditor } from './post-content-editor'
 
@@ -95,7 +90,10 @@ export function PostsMutateDialog({ open, onOpenChange, currentRow }: Props) {
 
   const uploadThumbnail = async (file: File | undefined) => {
     if (!file) return
-    if (!['image/jpeg', 'image/png', 'image/webp'].includes(file.type) || file.size > 5 * 1024 * 1024) {
+    if (
+      !['image/jpeg', 'image/png', 'image/webp'].includes(file.type) ||
+      file.size > 5 * 1024 * 1024
+    ) {
       toast.error('Chỉ nhận ảnh JPG, PNG hoặc WebP, dung lượng tối đa 5 MB')
       return
     }
@@ -105,7 +103,10 @@ export function PostsMutateDialog({ open, onOpenChange, currentRow }: Props) {
     try {
       const uploaded = await uploadImage(file, 'POST')
       const publicUrl = `${API_URL}/images/thumbnail/${encodeURIComponent(uploaded.fileName)}`
-      form.setValue('thumbnailUrl', publicUrl, { shouldDirty: true, shouldValidate: true })
+      form.setValue('thumbnailUrl', publicUrl, {
+        shouldDirty: true,
+        shouldValidate: true,
+      })
       toast.success('Đã tải ảnh đại diện')
     } catch (error) {
       setThumbnailPreview(authenticatedImageUrl(currentRow?.thumbnailUrl))
@@ -157,7 +158,7 @@ export function PostsMutateDialog({ open, onOpenChange, currentRow }: Props) {
               name='title'
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Tiêu đề</FormLabel>
+                  <FormLabel required>Tiêu đề</FormLabel>
                   <FormControl>
                     <Input {...field} />
                   </FormControl>
@@ -171,7 +172,7 @@ export function PostsMutateDialog({ open, onOpenChange, currentRow }: Props) {
                 name='category'
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Chuyên mục</FormLabel>
+                    <FormLabel required>Chuyên mục</FormLabel>
                     <FormControl>
                       <Input {...field} />
                     </FormControl>
@@ -184,15 +185,17 @@ export function PostsMutateDialog({ open, onOpenChange, currentRow }: Props) {
                 name='readTime'
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Thời gian đọc (phút)</FormLabel>
+                    <FormLabel required>Thời gian đọc (phút)</FormLabel>
                     <FormControl>
-                  <Input
-                    type='number'
-                    min={1}
-                    max={120}
-                    value={field.value}
-                    onChange={(event) => field.onChange(Number(event.target.value))}
-                  />
+                      <Input
+                        type='number'
+                        min={1}
+                        max={120}
+                        value={field.value}
+                        onChange={(event) =>
+                          field.onChange(Number(event.target.value))
+                        }
+                      />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -204,7 +207,7 @@ export function PostsMutateDialog({ open, onOpenChange, currentRow }: Props) {
               name='excerpt'
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Mô tả ngắn</FormLabel>
+                  <FormLabel required>Mô tả ngắn</FormLabel>
                   <FormControl>
                     <Textarea rows={3} {...field} />
                   </FormControl>
@@ -232,7 +235,9 @@ export function PostsMutateDialog({ open, onOpenChange, currentRow }: Props) {
                           <ImagePlus className='size-7 text-muted-foreground' />
                         )}
                         <span className='text-sm font-medium'>
-                          {isUploadingThumbnail ? 'Đang tải ảnh...' : 'Chọn ảnh đại diện'}
+                          {isUploadingThumbnail
+                            ? 'Đang tải ảnh...'
+                            : 'Chọn ảnh đại diện'}
                         </span>
                         <span className='text-xs text-muted-foreground'>
                           JPG, PNG hoặc WebP, tối đa 5 MB.
@@ -251,12 +256,16 @@ export function PostsMutateDialog({ open, onOpenChange, currentRow }: Props) {
                       />
                       {thumbnailPreview && (
                         <div className='relative overflow-hidden rounded-lg border bg-muted'>
-                          <img src={thumbnailPreview} alt='Xem trước ảnh đại diện' className='aspect-video w-full object-cover' />
+                          <img
+                            src={thumbnailPreview}
+                            alt='Xem trước ảnh đại diện'
+                            className='aspect-video w-full object-cover'
+                          />
                           <Button
                             type='button'
                             variant='destructive'
                             size='icon'
-                            className='absolute right-2 top-2 size-8'
+                            className='absolute top-2 right-2 size-8'
                             aria-label='Xóa ảnh đại diện'
                             onClick={() => {
                               field.onChange('')
@@ -279,9 +288,12 @@ export function PostsMutateDialog({ open, onOpenChange, currentRow }: Props) {
               name='content'
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Nội dung</FormLabel>
+                  <FormLabel required>Nội dung</FormLabel>
                   <FormControl>
-                    <PostContentEditor value={field.value} onChange={field.onChange} />
+                    <PostContentEditor
+                      value={field.value}
+                      onChange={field.onChange}
+                    />
                   </FormControl>
                   <FormMessage />
                 </FormItem>

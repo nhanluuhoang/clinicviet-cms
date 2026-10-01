@@ -5,7 +5,7 @@ export interface TenantData {
   code: string
   name: string
   address: string
-  subdomain: string
+  subdomain: string | null
   servicePlan: 'BASIC' | 'PLUS' | 'PRO'
   isActive: boolean
   subscriptionStatus: 'TRIAL' | 'ACTIVE' | 'EXPIRED' | 'SUSPENDED'

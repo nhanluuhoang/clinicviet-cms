@@ -107,7 +107,9 @@ export function MasterDataMutateDrawer({
     >
       <SheetContent className='flex flex-col'>
         <SheetHeader className='text-start'>
-          <SheetTitle>{isUpdate ? 'Cập nhật' : 'Tạo'} cấu hình chung</SheetTitle>
+          <SheetTitle>
+            {isUpdate ? 'Cập nhật' : 'Tạo'} cấu hình chung
+          </SheetTitle>
           <SheetDescription>
             {isUpdate
               ? 'Cập nhật các thông tin cấu hình cần thiết.'
@@ -125,7 +127,7 @@ export function MasterDataMutateDrawer({
               name='key'
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Khóa</FormLabel>
+                  <FormLabel required>Khóa</FormLabel>
                   <FormControl>
                     <Input {...field} placeholder='Nhập khóa' />
                   </FormControl>
@@ -138,7 +140,7 @@ export function MasterDataMutateDrawer({
               name='value'
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Giá trị</FormLabel>
+                  <FormLabel required>Giá trị</FormLabel>
                   <FormControl>
                     <Input {...field} placeholder='Nhập giá trị' />
                   </FormControl>

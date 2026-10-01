@@ -166,7 +166,7 @@ export function AdminsActionDialog({
               name='fullName'
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Họ tên</FormLabel>
+                  <FormLabel required>Họ tên</FormLabel>
                   <FormControl>
                     <Input {...field} />
                   </FormControl>
@@ -205,7 +205,7 @@ export function AdminsActionDialog({
               name='role'
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Vai trò</FormLabel>
+                  <FormLabel required>Vai trò</FormLabel>
                   <SelectDropdown
                     defaultValue={field.value}
                     isControlled
@@ -246,7 +246,7 @@ export function AdminsActionDialog({
               name='password'
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>
+                  <FormLabel required={!isEdit}>
                     {isEdit ? 'Mật khẩu mới (không bắt buộc)' : 'Mật khẩu'}
                   </FormLabel>
                   <FormControl>
@@ -261,7 +261,11 @@ export function AdminsActionDialog({
               name='passwordConfirmation'
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Nhập lại mật khẩu</FormLabel>
+                  <FormLabel
+                    required={!isEdit || Boolean(form.watch('password'))}
+                  >
+                    Nhập lại mật khẩu
+                  </FormLabel>
                   <FormControl>
                     <PasswordInput {...field} />
                   </FormControl>

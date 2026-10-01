@@ -5,7 +5,7 @@ export type Tenant = {
   id: string
   code: string
   name: string
-  subdomain: string
+  subdomain: string | null
   address: string
   servicePlan: ServicePlan
   isActive: boolean
@@ -19,7 +19,7 @@ export type Tenant = {
 
 export type TenantInput = {
   name: string
-  subdomain: string
+  subdomain?: string
   address: string
   servicePlan: ServicePlan
   isActive: boolean
@@ -37,8 +37,8 @@ export type TenantsResponse = {
 
 export type TenantUpdate = Pick<
   Tenant,
-  'code' | 'name' | 'subdomain' | 'address' | 'servicePlan' | 'isActive'
->
+  'code' | 'name' | 'address' | 'servicePlan' | 'isActive'
+> & { subdomain?: string }
 
 export const getTenants = (): Promise<TenantsResponse> =>
   axios.get('/tenants', { params: { page: 1, limit: 100 } })

@@ -233,7 +233,7 @@ export function IssueMutateDialog({
                 name='recipientName'
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Người nhận</FormLabel>
+                    <FormLabel required>Người nhận</FormLabel>
                     <FormControl>
                       <Input {...field} placeholder='Tên người hoặc bộ phận' />
                     </FormControl>
@@ -246,7 +246,7 @@ export function IssueMutateDialog({
                 name='issuedAt'
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Ngày xuất</FormLabel>
+                    <FormLabel required>Ngày xuất</FormLabel>
                     <DatePickerInput
                       value={field.value}
                       onChange={field.onChange}
@@ -282,7 +282,9 @@ export function IssueMutateDialog({
                       name={`lines.${index}.batchId`}
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel className='text-xs'>Thuốc / lô</FormLabel>
+                          <FormLabel required className='text-xs'>
+                            Thuốc / lô
+                          </FormLabel>
                           <BatchPicker
                             selected={selected}
                             onChange={(batch) => {
@@ -302,7 +304,9 @@ export function IssueMutateDialog({
                       name={`lines.${index}.quantity`}
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel className='text-xs'>Số lượng</FormLabel>
+                          <FormLabel required className='text-xs'>
+                            Số lượng
+                          </FormLabel>
                           <FormControl>
                             <Input
                               {...field}

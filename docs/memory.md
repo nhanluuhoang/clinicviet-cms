@@ -24,6 +24,8 @@
 
 ## Convention
 
+- Required editable fields use `Label required` / `FormLabel required`; conditional requirements follow create/edit mode and the selected plan. Creating a BASIC tenant hides and omits subdomain; PLUS/PRO require it.
+
 - Prescriptions: keep tab coordination in `index.tsx`, form logic in `hooks/use-service-prescription-form.ts`, UI sections/pickers in `components/`, shared types/constants in `types.ts` and `data/`.
 
 - Shared utility functions live in `src/lib/utils.ts`; feature code imports them through `@/lib/utils` rather than feature-local utility modules.

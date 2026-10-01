@@ -298,7 +298,7 @@ export function PatientsMutateDialog({
                 name='fullName'
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Họ tên</FormLabel>
+                    <FormLabel required>Họ tên</FormLabel>
                     <FormControl>
                       <Input {...field} placeholder='VD: Nguyễn Văn A' />
                     </FormControl>
@@ -314,7 +314,7 @@ export function PatientsMutateDialog({
                 name='password'
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>
+                    <FormLabel required={!isEdit}>
                       Mật khẩu{' '}
                       {isEdit && (
                         <span className='font-normal text-muted-foreground'>
@@ -338,7 +338,11 @@ export function PatientsMutateDialog({
                 name='confirmPassword'
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Nhập lại mật khẩu</FormLabel>
+                    <FormLabel
+                      required={!isEdit || Boolean(form.watch('password'))}
+                    >
+                      Nhập lại mật khẩu
+                    </FormLabel>
                     <FormControl>
                       <PasswordInput
                         {...field}

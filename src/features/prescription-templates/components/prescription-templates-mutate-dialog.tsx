@@ -65,7 +65,7 @@ export function PrescriptionTemplatesMutateDialog({
         </DialogHeader>
         <div className='space-y-4 overflow-y-auto px-1'>
           <div className='space-y-2'>
-            <Label>Tên mẫu</Label>
+            <Label required>Tên mẫu</Label>
             <Input
               value={name}
               onChange={(e) => setName(e.target.value)}
@@ -75,7 +75,7 @@ export function PrescriptionTemplatesMutateDialog({
           {items.map((item, index) => (
             <div key={index} className='grid gap-3 rounded-md border p-3'>
               <div className='flex items-center justify-between'>
-                <Label>Thuốc {index + 1}</Label>
+                <Label required>Thuốc {index + 1}</Label>
                 <Button
                   variant='ghost'
                   size='icon'
@@ -116,7 +116,7 @@ export function PrescriptionTemplatesMutateDialog({
               </Select>
               <div className='grid gap-3 sm:grid-cols-[8rem_1fr]'>
                 <div className='space-y-2'>
-                  <Label>Số lượng</Label>
+                  <Label required>Số lượng</Label>
                   <Input
                     type='number'
                     min={1}

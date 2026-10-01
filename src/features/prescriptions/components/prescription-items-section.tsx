@@ -99,9 +99,7 @@ export function PrescriptionItemsSection({
             )}
             <div className='grid gap-4 md:grid-cols-2 lg:grid-cols-[minmax(0,2fr)_minmax(8rem,0.6fr)_minmax(0,1.4fr)]'>
               <div className='grid grid-rows-[auto_2.25rem_1rem] content-start gap-2 md:col-span-2 lg:col-span-1'>
-                <Label>
-                  Thuốc <span className='text-destructive'>*</span>
-                </Label>
+                <Label required>Thuốc</Label>
                 <MedicinePicker
                   selected={item.selectedMedicine}
                   onChange={(medicine) =>

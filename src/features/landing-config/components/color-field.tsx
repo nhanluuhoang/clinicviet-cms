@@ -12,7 +12,7 @@ export function ColorField({
 }) {
   return (
     <div className='space-y-2'>
-      <Label>{label}</Label>
+      <Label required>{label}</Label>
       <div className='flex gap-2'>
         <Input
           type='color'

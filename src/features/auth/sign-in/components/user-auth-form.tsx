@@ -99,7 +99,7 @@ export function UserAuthForm({
           name='userName'
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Tên đăng nhập</FormLabel>
+              <FormLabel required>Tên đăng nhập</FormLabel>
               <FormControl>
                 <Input placeholder='name@example.com' {...field} />
               </FormControl>
@@ -112,7 +112,7 @@ export function UserAuthForm({
           name='password'
           render={({ field }) => (
             <FormItem className='relative'>
-              <FormLabel>Mật khẩu</FormLabel>
+              <FormLabel required>Mật khẩu</FormLabel>
               <FormControl>
                 <PasswordInput placeholder='********' {...field} />
               </FormControl>

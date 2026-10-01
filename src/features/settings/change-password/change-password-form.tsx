@@ -1,9 +1,8 @@
-import { useMutation } from '@tanstack/react-query'
-import { useForm } from 'react-hook-form'
-import { toast } from 'sonner'
 import { z } from 'zod'
+import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { ChangePassword } from '@/features/auth/api'
+import { useMutation } from '@tanstack/react-query'
+import { toast } from 'sonner'
 import { Button } from '@/components/ui/button'
 import {
   Form,
@@ -14,6 +13,7 @@ import {
   FormMessage,
 } from '@/components/ui/form'
 import { PasswordInput } from '@/components/password-input'
+import { ChangePassword } from '@/features/auth/api'
 
 const schema = z
   .object({
@@ -63,7 +63,7 @@ export function ChangePasswordForm() {
           name='currentPassword'
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Mật khẩu hiện tại</FormLabel>
+              <FormLabel required>Mật khẩu hiện tại</FormLabel>
               <FormControl>
                 <PasswordInput
                   {...field}
@@ -80,7 +80,7 @@ export function ChangePasswordForm() {
           name='password'
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Mật khẩu mới</FormLabel>
+              <FormLabel required>Mật khẩu mới</FormLabel>
               <FormControl>
                 <PasswordInput
                   {...field}
@@ -97,7 +97,7 @@ export function ChangePasswordForm() {
           name='passwordConfirmation'
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Xác nhận mật khẩu mới</FormLabel>
+              <FormLabel required>Xác nhận mật khẩu mới</FormLabel>
               <FormControl>
                 <PasswordInput
                   {...field}

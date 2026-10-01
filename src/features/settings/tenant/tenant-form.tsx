@@ -103,7 +103,7 @@ export function TenantForm() {
             name='name'
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Tên phòng khám</FormLabel>
+                <FormLabel required>Tên phòng khám</FormLabel>
                 <FormControl>
                   <Input {...field} />
                 </FormControl>
@@ -116,7 +116,7 @@ export function TenantForm() {
             name='address'
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Địa chỉ</FormLabel>
+                <FormLabel required>Địa chỉ</FormLabel>
                 <FormControl>
                   <Input {...field} />
                 </FormControl>

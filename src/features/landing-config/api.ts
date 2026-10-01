@@ -27,7 +27,7 @@ export interface LandingConfigResponse extends LandingConfigFields {
   tenant: {
     name: string
     address: string | null
-    subdomain: string
+    subdomain: string | null
   }
   version: number
 }

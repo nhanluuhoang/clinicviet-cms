@@ -91,7 +91,7 @@ export function DaysOffForm({
         <CardContent className='space-y-5'>
           <div className='grid max-w-md grid-cols-2 gap-4'>
             <div className='space-y-2'>
-              <Label>Ngày</Label>
+              <Label required>Ngày</Label>
               <Select
                 value={String(Math.min(day, daysInMonth))}
                 onValueChange={(value) => setDay(Number(value))}
@@ -112,7 +112,7 @@ export function DaysOffForm({
               </Select>
             </div>
             <div className='space-y-2'>
-              <Label>Tháng</Label>
+              <Label required>Tháng</Label>
               <Select
                 value={String(month)}
                 onValueChange={(value) => {

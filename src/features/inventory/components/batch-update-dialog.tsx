@@ -106,7 +106,7 @@ export function BatchUpdateDialog({
               name='batchNo'
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Số lô</FormLabel>
+                  <FormLabel required>Số lô</FormLabel>
                   <FormControl>
                     <Input {...field} />
                   </FormControl>
@@ -134,7 +134,7 @@ export function BatchUpdateDialog({
                 name='expiryDate'
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Hạn sử dụng</FormLabel>
+                    <FormLabel required>Hạn sử dụng</FormLabel>
                     <DatePickerInput
                       value={field.value}
                       onChange={field.onChange}

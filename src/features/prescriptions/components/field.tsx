@@ -15,9 +15,8 @@ export function Field({
 
   return (
     <div className={`grid gap-2 ${className ?? ''}`}>
-      <Label htmlFor={htmlFor}>
+      <Label htmlFor={htmlFor} required={required}>
         {required ? label.slice(0, -2) : label}
-        {required && <span className='text-destructive'> *</span>}
       </Label>
       {children}
     </div>
