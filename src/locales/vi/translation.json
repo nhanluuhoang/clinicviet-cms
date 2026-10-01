@@ -1,9 +1,9 @@
 {
   "auth": {
     "appName": "ClinicViet",
-    "appDescription": "Hệ thống quản lý",
+    "appDescription": "Quản lý phòng khám",
     "signIn": "Đăng nhập",
-    "signInDescription": "Nhập email và mật khẩu bên dưới để đăng nhập vào tài khoản của bạn",
+    "signInDescription": "Nhập tên đăng nhập và mật khẩu để truy cập ClinicViet.",
     "agreement": "Bằng cách nhấp vào đăng nhập, bạn đồng ý với",
     "termsOfService": "Điều khoản dịch vụ",
     "and": "và",
