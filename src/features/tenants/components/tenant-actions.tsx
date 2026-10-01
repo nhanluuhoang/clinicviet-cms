@@ -40,7 +40,10 @@ export function TenantActions({ tenant }: { tenant: Tenant }) {
   const [editOpen, setEditOpen] = useState(false)
   const [deleteOpen, setDeleteOpen] = useState(false)
   const queryClient = useQueryClient()
-  const isTrial = tenant.subscriptionStatus === 'TRIAL'
+  const [subscriptionStatus, setSubscriptionStatus] = useState(
+    tenant.subscriptionStatus
+  )
+  const isTrial = subscriptionStatus === 'TRIAL'
   const expiryDate = isTrial ? tenant.trialEndsAt : tenant.subscriptionEndsAt
   const [endsOn, setEndsOn] = useState(
     expiryDate ? toDateInput(expiryDate) : ''
@@ -58,6 +61,7 @@ export function TenantActions({ tenant }: { tenant: Tenant }) {
     mutationFn: () =>
       updateTenant(tenant.id, {
         ...values,
+        subscriptionStatus,
         subdomain: values.subdomain || undefined,
         ...(isTrial
           ? { trialEndsAt: new Date(`${endsOn}T23:59:59`).toISOString() }
@@ -94,7 +98,12 @@ export function TenantActions({ tenant }: { tenant: Tenant }) {
         <DropdownMenuContent align='end' className='w-[160px]'>
           <DropdownMenuItem
             onClick={() => {
-              setEndsOn(expiryDate ? toDateInput(expiryDate) : '')
+              setSubscriptionStatus(tenant.subscriptionStatus)
+              const storedExpiry =
+                tenant.subscriptionStatus === 'TRIAL'
+                  ? tenant.trialEndsAt
+                  : tenant.subscriptionEndsAt
+              setEndsOn(storedExpiry ? toDateInput(storedExpiry) : '')
               setValues({
                 code: tenant.code,
                 name: tenant.name,
@@ -168,6 +177,29 @@ export function TenantActions({ tenant }: { tenant: Tenant }) {
                   { label: 'Cơ bản', value: 'BASIC' },
                   { label: 'Nâng cao', value: 'PLUS' },
                   { label: 'Chuyên nghiệp', value: 'PRO' },
+                ]}
+              />
+            </div>
+            <div className='space-y-2 sm:col-span-2'>
+              <Label required>Hình thức đăng ký</Label>
+              <SelectDropdown
+                standalone
+                isControlled
+                defaultValue={subscriptionStatus}
+                onValueChange={(value) => {
+                  const status = value as Tenant['subscriptionStatus']
+                  setSubscriptionStatus(status)
+                  const date =
+                    status === 'TRIAL'
+                      ? tenant.trialEndsAt
+                      : tenant.subscriptionEndsAt
+                  setEndsOn(date ? toDateInput(date) : '')
+                }}
+                items={[
+                  { label: 'Đăng ký dùng thử', value: 'TRIAL' },
+                  { label: 'Đăng ký chính thức', value: 'ACTIVE' },
+                  { label: 'Đã hết hạn', value: 'EXPIRED' },
+                  { label: 'Tạm ngưng', value: 'SUSPENDED' },
                 ]}
               />
             </div>
