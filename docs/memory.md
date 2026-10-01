@@ -4,7 +4,7 @@
 
 ## Project
 
-- Product brand: ClinicViet; technical names use `clinicviet`, while checked-out repo folders keep `iclinic-*`. Startup migrates old browser storage keys to `clinicviet` and removes the old keys, preserving existing values. CMS and both landing apps use the shared medical favicon; CMS has a ClinicViet page title.
+- Product brand: ClinicViet; technical names and browser storage keys use `clinicviet`, while checked-out repo folders keep `iclinic-*`. Rename storage keys directly without a migration function. CMS and both landing apps use the shared medical favicon; CMS has a ClinicViet page title.
 
 - CMS React 19/TypeScript/Vite/TanStack Router+Query, shadcn/ui; dùng pnpm. API backend qua `VITE_APP_API_URL`.
 

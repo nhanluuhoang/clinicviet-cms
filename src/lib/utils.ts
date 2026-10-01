@@ -11,25 +11,6 @@ import {
 } from '@/features/examination-queue/api'
 import { type ExpiryStatus } from '@/features/inventory/api/types'
 
-export function migrateClinicVietStorage(storage?: Storage) {
-  try {
-    const source = storage ?? window.localStorage
-    const keys = Array.from({ length: source.length }, (_, index) =>
-      source.key(index)
-    )
-    for (const key of keys) {
-      if (!key || !/^iclinic(?=$|[:-])/.test(key)) continue
-      const nextKey = key.replace(/^iclinic/, 'clinicviet')
-      const value = source.getItem(key)
-      if (value === null) continue
-      if (source.getItem(nextKey) === null) source.setItem(nextKey, value)
-      source.removeItem(key)
-    }
-  } catch {
-    // Leave existing values intact when browser storage cannot be written.
-  }
-}
-
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs))
 }
