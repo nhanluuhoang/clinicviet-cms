@@ -25,7 +25,7 @@ import {
 import { Input } from '@/components/ui/input'
 import { DatePickerInput } from '@/components/date-picker-input'
 import { SelectDropdown } from '@/components/select-dropdown'
-import { createTenant } from './api'
+import { createTenant } from '../api'
 
 const schema = z
   .object({

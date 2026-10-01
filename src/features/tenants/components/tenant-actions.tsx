@@ -32,7 +32,7 @@ import {
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { SelectDropdown } from '@/components/select-dropdown'
-import { deleteTenant, updateTenant, type Tenant } from './api'
+import { deleteTenant, updateTenant, type Tenant } from '../api'
 
 export function TenantActions({ tenant }: { tenant: Tenant }) {
   const [editOpen, setEditOpen] = useState(false)

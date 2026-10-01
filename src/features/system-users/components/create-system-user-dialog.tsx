@@ -41,7 +41,7 @@ import {
 import { PasswordInput } from '@/components/password-input'
 import { SelectDropdown } from '@/components/select-dropdown'
 import { searchTenants, type Tenant } from '@/features/tenants/api'
-import { createSystemUser } from './api'
+import { createSystemUser } from '../api'
 
 const schema = z
   .object({

@@ -1,11 +1,11 @@
 import { useQuery } from '@tanstack/react-query'
 import { getRouteApi } from '@tanstack/react-router'
+import { getToday } from '@/lib/utils'
 // import { LanguageSwitcher } from '@/components/language-switcher'
 import { Header } from '@/components/layout/header'
 import { Main } from '@/components/layout/main'
 import { ProfileDropdown } from '@/components/profile-dropdown'
 import { ThemeSwitch } from '@/components/theme-switch'
-import { getToday } from '@/features/dashboard/utils'
 import { getMedicalHistoryList } from './api'
 import { MedicalHistoriesTable } from './components/medical-histories-table'
 

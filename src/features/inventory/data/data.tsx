@@ -9,8 +9,8 @@ import {
   TriangleAlert,
   Warehouse,
 } from 'lucide-react'
+import { EXPIRY_CRITICAL_DAYS, EXPIRY_WARNING_DAYS } from '@/lib/utils'
 import { type ExpiryStatus } from '../api/types'
-import { EXPIRY_CRITICAL_DAYS, EXPIRY_WARNING_DAYS } from '../utils'
 
 /**
  * Các tab của page kho thuốc. Khai báo ở một chỗ để `index.tsx` dựng tab bar và

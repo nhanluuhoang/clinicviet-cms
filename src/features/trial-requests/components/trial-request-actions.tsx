@@ -17,7 +17,7 @@ import {
   rejectTrialRequest,
   type ApproveTrialInput,
   type TrialRequest,
-} from './api'
+} from '../api'
 
 export function TrialRequestActions({ request }: { request: TrialRequest }) {
   const [mode, setMode] = useState<'approve' | 'reject' | null>(null)

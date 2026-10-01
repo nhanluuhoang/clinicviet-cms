@@ -1,70 +1,17 @@
 import { useState } from 'react'
 import { useQuery } from '@tanstack/react-query'
 import { getRouteApi } from '@tanstack/react-router'
-import { type ColumnDef } from '@tanstack/react-table'
-import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
-import { UrlDataTable } from '@/components/data-table/url-data-table'
 import { Header } from '@/components/layout/header'
 import { Main } from '@/components/layout/main'
 import { ProfileDropdown } from '@/components/profile-dropdown'
 import { ThemeSwitch } from '@/components/theme-switch'
 import { getTenants } from '@/features/tenants/api'
-import { getSystemUsers, type SystemUser, type SystemUserRole } from './api'
-import { CreateSystemUserDialog } from './create-system-user-dialog'
-import { UpdateSystemUserDialog } from './update-system-user-dialog'
+import { getSystemUsers, type SystemUserRole } from './api'
+import { CreateSystemUserDialog } from './components/create-system-user-dialog'
+import { SystemUsersTable } from './components/system-users-table'
 
 const route = getRouteApi('/_authenticated/system/users')
-
-const roleLabels = {
-  TENANT_ADMIN: 'Quản trị phòng khám',
-  DOCTOR: 'Bác sĩ',
-  ASSISTANT: 'Trợ lý',
-  PATIENT: 'Bệnh nhân',
-  USER: 'Người dùng',
-}
-const columns: ColumnDef<SystemUser>[] = [
-  { accessorKey: 'userName', header: 'Tên đăng nhập' },
-  { accessorKey: 'fullName', header: 'Họ tên' },
-  { accessorKey: 'email', header: 'Email' },
-  {
-    id: 'tenantId',
-    accessorFn: (user) => user.tenant.id,
-    header: 'Phòng khám',
-    cell: ({ row }) =>
-      `${row.original.tenant.code} - ${row.original.tenant.name}`,
-    filterFn: (row, id, value: string[]) => value.includes(row.getValue(id)),
-  },
-  {
-    accessorKey: 'role',
-    header: 'Vai trò',
-    cell: ({ row }) => (
-      <Badge variant='outline'>{roleLabels[row.original.role]}</Badge>
-    ),
-    filterFn: (row, id, value: string[]) => value.includes(row.getValue(id)),
-  },
-  {
-    accessorKey: 'isActive',
-    header: 'Trạng thái',
-    cell: ({ row }) => (row.original.isActive ? 'Đang hoạt động' : 'Đã khóa'),
-  },
-  {
-    accessorKey: 'lastActiveAt',
-    header: 'Hoạt động gần nhất',
-    cell: ({ row }) =>
-      row.original.lastActiveAt
-        ? new Intl.DateTimeFormat('vi-VN', {
-            dateStyle: 'short',
-            timeStyle: 'short',
-          }).format(new Date(row.original.lastActiveAt))
-        : 'Chưa có phiên hoạt động',
-  },
-  {
-    id: 'actions',
-    header: '',
-    cell: ({ row }) => <UpdateSystemUserDialog user={row.original} />,
-  },
-]
 
 export function SystemUsers() {
   const { tenantId, role } = route.useSearch()
@@ -96,8 +43,7 @@ export function SystemUsers() {
           </div>
           <Button onClick={() => setCreateOpen(true)}>Tạo tài khoản</Button>
         </div>
-        <UrlDataTable
-          columns={columns}
+        <SystemUsersTable
           data={users.data?.data ?? []}
           isLoading={users.isLoading}
           searchPlaceholder='Tìm tên đăng nhập, họ tên hoặc email...'
