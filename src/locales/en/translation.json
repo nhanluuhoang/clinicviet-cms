@@ -1,9 +1,9 @@
 {
   "auth": {
     "appName": "ClinicViet",
-    "appDescription": "Management System",
+    "appDescription": "Clinic Management",
     "signIn": "Sign in",
-    "signInDescription": "Enter your email and password below to log into your account",
+    "signInDescription": "Enter your username and password to access ClinicViet.",
     "agreement": "By clicking sign in, you agree to our",
     "termsOfService": "Terms of Service",
     "and": "and",
