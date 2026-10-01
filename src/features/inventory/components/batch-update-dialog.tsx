@@ -90,7 +90,7 @@ export function BatchUpdateDialog({
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className='sm:max-w-lg'>
         <DialogHeader>
-          <DialogTitle>Sửa lô hàng</DialogTitle>
+          <DialogTitle>Cập nhật lô hàng</DialogTitle>
           <DialogDescription>
             {batch.medicineName} · Tồn {batch.qtyRemaining} {batch.unit}
           </DialogDescription>

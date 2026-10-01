@@ -1,4 +1,5 @@
 import { useQuery } from '@tanstack/react-query'
+import { getVaccinationFields } from '@/features/prescriptions/api'
 import { getMedicalHistories, type QueueUser } from '../api'
 
 export function MedicalHistoryContent({
@@ -31,6 +32,56 @@ export function MedicalHistoryContent({
     <div className='space-y-3'>
       {histories.data.data.map((history) => (
         <div key={history.id} className='space-y-2 rounded-lg border p-4'>
+          <p className='text-sm font-medium'>
+            {history.serviceType === 'PHARMACY'
+              ? 'Bán thuốc'
+              : history.serviceType === 'VACCINATION'
+                ? 'Tiêm vắc xin'
+                : 'Khám bệnh'}
+          </p>
+          {history.serviceType === 'VACCINATION' && (
+            <div className='grid gap-2 rounded-md bg-muted/40 p-3 text-sm sm:grid-cols-2'>
+              {Object.entries(getVaccinationFields(history)).map(
+                ([key, value]) => {
+                  const labels: Record<string, string> = {
+                    temperature: 'Nhiệt độ (°C)',
+                    bloodPressure: 'Huyết áp (mmHg)',
+                    vaccineName: 'Vắc xin',
+                    batchNumber: 'Số lô',
+                    expiryDate: 'Hạn dùng',
+                    administeredDate: 'Ngày tiêm',
+                    nextDoseDate: 'Hẹn mũi tiếp theo',
+                    doseNumber: 'Mũi số',
+                    dose: 'Liều dùng',
+                    route: 'Đường tiêm',
+                    site: 'Vị trí tiêm',
+                    administeredBy: 'Người tiêm',
+                    screening: 'Sàng lọc',
+                    screeningNote: 'Ghi chú sàng lọc',
+                    observation: 'Theo dõi sau tiêm',
+                  }
+                  if (!value || !labels[key]) return null
+                  const displayed =
+                    key === 'screening'
+                      ? ({
+                          PENDING: 'Chưa sàng lọc',
+                          ELIGIBLE: 'Đủ điều kiện tiêm',
+                          DEFERRED: 'Hoãn tiêm',
+                        }[value as 'PENDING' | 'ELIGIBLE' | 'DEFERRED'] ??
+                        value)
+                      : value
+                  return (
+                    <p key={key}>
+                      <span className='text-muted-foreground'>
+                        {labels[key]}:
+                      </span>{' '}
+                      {displayed}
+                    </p>
+                  )
+                }
+              )}
+            </div>
+          )}
           <div className='flex flex-wrap justify-between gap-2'>
             <strong>
               {new Date(history.createdAt).toLocaleString('vi-VN')}

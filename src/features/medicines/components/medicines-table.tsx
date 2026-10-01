@@ -40,7 +40,7 @@ function RowActions({ medicine }: { medicine: Medicine }) {
             setOpen('medicine-update')
           }}
         >
-          Sửa
+          Cập nhật
           <DropdownMenuShortcut>
             <Edit size={16} />
           </DropdownMenuShortcut>

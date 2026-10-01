@@ -39,7 +39,7 @@ export function DataTableRowActions({ row }: DataTableRowActionsProps) {
               setOpen('edit')
             }}
           >
-            Sửa
+            Cập nhật
             <DropdownMenuShortcut>
               <UserPen size={16} />
             </DropdownMenuShortcut>

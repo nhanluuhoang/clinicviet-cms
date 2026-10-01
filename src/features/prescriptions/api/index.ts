@@ -25,7 +25,8 @@ interface Page<T> {
   limit: number
 }
 
-export interface MedicalHistoryInput {
+export interface MedicalHistoryInput extends VaccinationInput {
+  serviceType?: ServiceType
   examinationQueueId?: string
   userId: string
   symptoms?: string
@@ -38,6 +39,34 @@ export interface MedicalHistoryInput {
   pdfs?: string[]
   videos?: string[]
 }
+
+export type ServiceType = 'EXAMINATION' | 'PHARMACY' | 'VACCINATION'
+export interface VaccinationInput {
+  temperature?: string | null
+  bloodPressure?: string | null
+  vaccineName?: string | null
+  batchNumber?: string | null
+  expiryDate?: string | null
+  administeredDate?: string | null
+  nextDoseDate?: string | null
+  screening?: 'PENDING' | 'ELIGIBLE' | 'DEFERRED' | null
+  administeredById?: string | null
+  screeningNote?: string | null
+  doseNumber?: string | null
+  dose?: string | null
+  route?: string | null
+  site?: string | null
+  administeredBy?: string | null
+  observation?: string | null
+}
+
+export interface VaccinationStaff {
+  id: string
+  fullName: string
+  role: string
+}
+export const getVaccinationStaff = (): Promise<VaccinationStaff[]> =>
+  axios.get('/users/staff-options')
 
 export interface PrescriptionItemInput {
   medicineId: string
@@ -92,3 +121,26 @@ export const updatePrescription = (
   medicalHistoryId: string,
   data: UpdatePrescriptionInput
 ): Promise<void> => axios.patch(`/medical-histories/${medicalHistoryId}`, data)
+
+export function getVaccinationFields(
+  history: VaccinationInput
+): VaccinationInput {
+  return {
+    temperature: history.temperature,
+    bloodPressure: history.bloodPressure,
+    vaccineName: history.vaccineName,
+    batchNumber: history.batchNumber,
+    doseNumber: history.doseNumber,
+    dose: history.dose,
+    route: history.route,
+    site: history.site,
+    administeredBy: history.administeredBy,
+    screening: history.screening,
+    screeningNote: history.screeningNote,
+    observation: history.observation,
+    expiryDate: history.expiryDate?.slice(0, 10),
+    administeredDate: history.administeredDate?.slice(0, 10),
+    nextDoseDate: history.nextDoseDate?.slice(0, 10),
+    administeredById: history.administeredById,
+  }
+}

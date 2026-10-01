@@ -149,7 +149,7 @@ export function AdminsActionDialog({
       <DialogContent className='sm:max-w-lg'>
         <DialogHeader className='text-start'>
           <DialogTitle>
-            {isEdit ? 'Sửa nhân viên' : 'Thêm nhân viên'}
+            {isEdit ? 'Cập nhật nhân viên' : 'Thêm nhân viên'}
           </DialogTitle>
           <DialogDescription>
             Tài khoản nhân viên chỉ thuộc phòng khám hiện tại.

@@ -8,6 +8,14 @@
 
 ## Architecture
 
+- Trang lịch sử khám có action cập nhật trong menu ba chấm ở cột cuối cho PRESCRIBER_ROLES, dùng chung PrescriptionDialog 3 tab. Khi cập nhật khóa 2 tab khác loại phiếu đã lưu. Lưu PATCH theo history.id, làm mới query medical-histories; hồ sơ không có prescription chỉ sửa thông tin hồ sơ, ẩn thuốc/chi phí.
+
+- Vaccination API fields are flat on MedicalHistory. getVaccinationFields maps database date responses to YYYY-MM-DD for the form; no vaccination JSON object.
+
+- Form tiêm hiện nhiệt độ (°C), huyết áp (mmHg), mũi số, liều, đường/vị trí tiêm, người tiêm, hạn dùng, ngày tiêm và hẹn mũi tiếp theo. Người tiêm lấy từ `/users/staff-options`, mặc định user hiện tại; ngày tiêm mặc định ngày local hiện tại. Mở phiếu cũ giữ giá trị đã lưu.
+
+- Phiếu dịch vụ có 3 tab EXAMINATION/PHARMACY/VACCINATION, mỗi tab giữ form và chi phí riêng; chỉ gửi tab đang mở. localStorage nhớ tab gần nhất theo user, không lưu dữ liệu bệnh nhân; sửa phiếu mở đúng loại đã lưu. Phí khám chỉ áp dụng EXAMINATION.
+
 - Feature ở `src/features`, route ở `src/routes/_authenticated`; `UrlDataTable` dùng chung toolbar, bộ lọc/phan trang đồng bộ URL và thẻ mobile. Axios interceptor trả `response.data`, giữ `AxiosError` để nhận diện 401.
 - CMS lấy CSRF qua `/auth/csrf` rồi gửi header cho request ghi. `SUPER_ADMIN` có toàn quyền; tenant admin bị giới hạn theo vai trò/gói.
 - Landing config và posts dùng API thật; ảnh POST có thumbnail public, ảnh bệnh nhân giữ kiểm soát truy cập.

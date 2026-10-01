@@ -1,5 +1,6 @@
 import { API_URL } from '@/config'
 import { axios } from '@/lib/axios'
+import type { VaccinationInput } from '@/features/prescriptions/api'
 
 export type QueueStatus =
   | 'BOOKED'
@@ -37,6 +38,23 @@ export interface QueueEntry {
   completedAt: string | null
   patient: QueueUser
   medicalHistory: null | {
+    serviceType?: import('@/features/prescriptions/api').ServiceType
+    temperature?: string | null
+    bloodPressure?: string | null
+    vaccineName?: string | null
+    batchNumber?: string | null
+    doseNumber?: string | null
+    dose?: string | null
+    route?: string | null
+    site?: string | null
+    administeredBy?: string | null
+    screening?: import('@/features/prescriptions/api').VaccinationInput['screening']
+    screeningNote?: string | null
+    observation?: string | null
+    expiryDate?: string | null
+    administeredDate?: string | null
+    nextDoseDate?: string | null
+    administeredById?: string | null
     id: string
     symptoms: string
     diagnosis: string
@@ -227,8 +245,7 @@ const deleteMedia = (resource: 'images' | 'pdfs' | 'videos', id: string) =>
 export const uploadImage = (
   file: File,
   resource: 'PATIENT' | 'POST' = 'PATIENT'
-): Promise<UploadedImage> =>
-  uploadMedia('images', 'image', file, { resource })
+): Promise<UploadedImage> => uploadMedia('images', 'image', file, { resource })
 export const uploadPdf = (file: File): Promise<UploadedPdf> =>
   uploadMedia('pdfs', 'pdf', file)
 export const uploadVideo = (file: File): Promise<UploadedVideo> =>
@@ -240,7 +257,8 @@ export const deletePdf = (fileName: string): Promise<void> =>
 export const deleteVideo = (fileName: string): Promise<void> =>
   deleteMedia('videos', fileName)
 
-export interface MedicalHistory {
+export interface MedicalHistory extends VaccinationInput {
+  serviceType?: import('@/features/prescriptions/api').ServiceType
   id: string
   createdAt: string
   symptoms: string

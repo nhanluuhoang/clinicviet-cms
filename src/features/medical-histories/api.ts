@@ -1,6 +1,8 @@
 import { axios } from '@/lib/axios'
+import type { InitialPrescriptionData } from '@/features/prescriptions'
 
-export interface MedicalHistoryListItem {
+export interface MedicalHistoryListItem extends InitialPrescriptionData {
+  examinationQueueId?: string | null
   id: string
   symptoms: string
   diagnosis: string
@@ -11,15 +13,23 @@ export interface MedicalHistoryListItem {
     id: string
     fullName: string
     phone?: string | null
+    dateOfBirth?: string | null
+    role: string
   }
   prescription: {
     id: string
     items: Array<{
       id: string
+      medicineId: string
       medicineName: string
       quantity: number | null
       instruction: string
       medicine: {
+        id: string
+        name: string
+        strength: string
+        totalQty: number
+        isActive: boolean
         unit: string
         salePrice: number | string
       } | null
