@@ -267,7 +267,7 @@ export function ReceiptMutateDrawer({
                 name='supplierName'
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Nhà cung cấp</FormLabel>
+                    <FormLabel required>Nhà cung cấp</FormLabel>
                     <FormControl>
                       <Input {...field} placeholder='VD: Dược Hậu Giang' />
                     </FormControl>
@@ -280,7 +280,7 @@ export function ReceiptMutateDrawer({
                 name='invoiceNo'
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Số hoá đơn</FormLabel>
+                    <FormLabel required>Số hoá đơn</FormLabel>
                     <FormControl>
                       <Input {...field} placeholder='VD: HD12345' />
                     </FormControl>
@@ -293,7 +293,7 @@ export function ReceiptMutateDrawer({
                 name='receivedAt'
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Ngày nhập</FormLabel>
+                    <FormLabel required>Ngày nhập</FormLabel>
                     <DatePickerInput
                       value={field.value}
                       onChange={field.onChange}
@@ -362,7 +362,9 @@ export function ReceiptMutateDrawer({
                         name={`lines.${index}.medicineId`}
                         render={({ field }) => (
                           <FormItem className='min-w-0 lg:col-span-6'>
-                            <FormLabel className='text-xs'>Thuốc</FormLabel>
+                            <FormLabel required className='text-xs'>
+                              Thuốc
+                            </FormLabel>
                             <MedicinePicker onChange={field.onChange} />
                             <FormMessage />
                           </FormItem>
@@ -373,7 +375,9 @@ export function ReceiptMutateDrawer({
                         name={`lines.${index}.batchNo`}
                         render={({ field }) => (
                           <FormItem className='lg:col-span-6'>
-                            <FormLabel className='text-xs'>Số lô</FormLabel>
+                            <FormLabel required className='text-xs'>
+                              Số lô
+                            </FormLabel>
                             <FormControl>
                               <Input
                                 {...field}
@@ -404,7 +408,9 @@ export function ReceiptMutateDrawer({
                         name={`lines.${index}.expiryDate`}
                         render={({ field }) => (
                           <FormItem className='lg:col-span-3'>
-                            <FormLabel className='text-xs'>Hạn dùng</FormLabel>
+                            <FormLabel required className='text-xs'>
+                              Hạn dùng
+                            </FormLabel>
                             <DatePickerInput
                               value={field.value}
                               onChange={field.onChange}
@@ -422,7 +428,9 @@ export function ReceiptMutateDrawer({
                         name={`lines.${index}.qty`}
                         render={({ field }) => (
                           <FormItem className='lg:col-span-2'>
-                            <FormLabel className='text-xs'>Số lượng</FormLabel>
+                            <FormLabel required className='text-xs'>
+                              Số lượng
+                            </FormLabel>
                             <FormControl>
                               <Input
                                 {...field}
@@ -446,7 +454,7 @@ export function ReceiptMutateDrawer({
                         name={`lines.${index}.unitCost`}
                         render={({ field }) => (
                           <FormItem className='lg:col-span-4'>
-                            <FormLabel className='text-xs'>
+                            <FormLabel required className='text-xs'>
                               Đơn giá nhập (₫)
                             </FormLabel>
                             <FormControl>

@@ -59,7 +59,9 @@ export function TrialRequestActions({ request }: { request: TrialRequest }) {
             <DialogTitle>Duyệt yêu cầu {request.phone}</DialogTitle>
           </DialogHeader>
           <div className='space-y-2'>
-            <Label htmlFor='trial-clinic-code'>Mã phòng khám</Label>
+            <Label required htmlFor='trial-clinic-code'>
+              Mã phòng khám
+            </Label>
             <Input
               id='trial-clinic-code'
               inputMode='numeric'
@@ -91,7 +93,7 @@ export function TrialRequestActions({ request }: { request: TrialRequest }) {
             <DialogTitle>Từ chối yêu cầu {request.phone}</DialogTitle>
           </DialogHeader>
           <div className='space-y-2'>
-            <Label>Lý do</Label>
+            <Label required>Lý do</Label>
             <Textarea
               value={reason}
               onChange={(event) => setReason(event.target.value)}

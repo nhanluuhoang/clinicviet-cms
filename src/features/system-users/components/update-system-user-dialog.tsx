@@ -139,7 +139,7 @@ export function UpdateSystemUserDialog({ user }: { user: SystemUser }) {
                 name='fullName'
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Họ tên</FormLabel>
+                    <FormLabel required>Họ tên</FormLabel>
                     <FormControl>
                       <Input {...field} />
                     </FormControl>
@@ -178,7 +178,7 @@ export function UpdateSystemUserDialog({ user }: { user: SystemUser }) {
                 name='role'
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Vai trò</FormLabel>
+                    <FormLabel required>Vai trò</FormLabel>
                     {user.role === 'PATIENT' || user.role === 'USER' ? (
                       <Input value={roleLabels[user.role]} readOnly />
                     ) : (

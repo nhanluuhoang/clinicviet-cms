@@ -1,6 +1,6 @@
 import { useState } from 'react'
-import { isAxiosError } from 'axios'
 import { z } from 'zod'
+import { isAxiosError } from 'axios'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { ArrowRight, Loader2 } from 'lucide-react'
@@ -45,8 +45,7 @@ export function ForgotPasswordForm({
       const message =
         (isAxiosError<{ error?: { title?: string } }>(error)
           ? error.response?.data?.error?.title
-          : undefined) ??
-        'Không thể gửi email. Vui lòng thử lại.'
+          : undefined) ?? 'Không thể gửi email. Vui lòng thử lại.'
       toast.error(message)
     } finally {
       setIsLoading(false)
@@ -65,7 +64,7 @@ export function ForgotPasswordForm({
           name='email'
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Email</FormLabel>
+              <FormLabel required>Email</FormLabel>
               <FormControl>
                 <Input placeholder='email@example.com' {...field} />
               </FormControl>

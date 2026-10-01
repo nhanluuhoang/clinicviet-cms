@@ -146,7 +146,7 @@ export function MedicineMutateDialog({
               name='name'
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Tên thuốc</FormLabel>
+                  <FormLabel required>Tên thuốc</FormLabel>
                   <FormControl>
                     <Input {...field} placeholder='VD: Paracetamol 500mg' />
                   </FormControl>
@@ -159,7 +159,7 @@ export function MedicineMutateDialog({
               name='activeIngredient'
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Hoạt chất</FormLabel>
+                  <FormLabel required>Hoạt chất</FormLabel>
                   <FormControl>
                     <Input {...field} placeholder='VD: Paracetamol' />
                   </FormControl>
@@ -173,7 +173,7 @@ export function MedicineMutateDialog({
                 name='strength'
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Hàm lượng</FormLabel>
+                    <FormLabel required>Hàm lượng</FormLabel>
                     <FormControl>
                       <Input {...field} placeholder='VD: 500mg' />
                     </FormControl>
@@ -186,7 +186,7 @@ export function MedicineMutateDialog({
                 name='unit'
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Đơn vị</FormLabel>
+                    <FormLabel required>Đơn vị</FormLabel>
                     <SelectDropdown
                       isControlled
                       defaultValue={field.value}
@@ -207,7 +207,7 @@ export function MedicineMutateDialog({
               name='group'
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Nhóm thuốc</FormLabel>
+                  <FormLabel required>Nhóm thuốc</FormLabel>
                   <SelectDropdown
                     isControlled
                     defaultValue={field.value}
@@ -227,7 +227,7 @@ export function MedicineMutateDialog({
               name='manufacturer'
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Nhà sản xuất</FormLabel>
+                  <FormLabel required>Nhà sản xuất</FormLabel>
                   <FormControl>
                     <Input {...field} placeholder='VD: Traphaco' />
                   </FormControl>
@@ -240,9 +240,16 @@ export function MedicineMutateDialog({
               name='salePrice'
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Giá bán</FormLabel>
+                  <FormLabel required>Giá bán</FormLabel>
                   <FormControl>
-                    <Input {...field} type='number' min={0} onChange={(e) => field.onChange(Number(e.target.value || 0))} />
+                    <Input
+                      {...field}
+                      type='number'
+                      min={0}
+                      onChange={(e) =>
+                        field.onChange(Number(e.target.value || 0))
+                      }
+                    />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -254,7 +261,7 @@ export function MedicineMutateDialog({
               render={({ field }) => (
                 <FormItem>
                   <div className='flex items-center gap-1'>
-                    <FormLabel>Định mức tồn tối thiểu</FormLabel>
+                    <FormLabel required>Định mức tồn tối thiểu</FormLabel>
                     <InfoHint label='Giải thích định mức tồn tối thiểu'>
                       Ngưỡng tồn thấp nhất cần duy trì cho thuốc này. Hệ thống
                       so ngưỡng với tổng tồn của tất cả các lô; khi tồn xuống
@@ -288,7 +295,9 @@ export function MedicineMutateDialog({
                   <FormControl>
                     <Checkbox
                       checked={field.value}
-                      onCheckedChange={(checked) => field.onChange(checked === true)}
+                      onCheckedChange={(checked) =>
+                        field.onChange(checked === true)
+                      }
                       onBlur={field.onBlur}
                       ref={field.ref}
                     />

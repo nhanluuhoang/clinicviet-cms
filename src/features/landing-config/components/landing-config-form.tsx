@@ -44,6 +44,7 @@ export function LandingConfigForm({
       >
         <Field
           label='Tên phòng khám'
+          required
           value={clinicName}
           onChange={setClinicName}
         />

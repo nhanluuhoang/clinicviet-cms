@@ -23,9 +23,7 @@ const formSchema = z.object({
     .string()
     .min(6, 'Mật khẩu phải có ít nhất 6 ký tự')
     .max(255, 'Mật khẩu không được vượt quá 255 ký tự'),
-  passwordConfirmation: z
-    .string()
-    .min(1, 'Vui lòng nhập lại mật khẩu'),
+  passwordConfirmation: z.string().min(1, 'Vui lòng nhập lại mật khẩu'),
 })
 
 interface ResetPasswordFormProps extends React.HTMLAttributes<HTMLFormElement> {
@@ -75,7 +73,7 @@ export function ResetPasswordForm({
           name='password'
           render={({ field }) => (
             <FormItem className='relative'>
-              <FormLabel>Mật khẩu</FormLabel>
+              <FormLabel required>Mật khẩu</FormLabel>
               <FormControl>
                 <PasswordInput placeholder='********' {...field} />
               </FormControl>
@@ -88,7 +86,7 @@ export function ResetPasswordForm({
           name='passwordConfirmation'
           render={({ field }) => (
             <FormItem className='relative'>
-              <FormLabel>Nhập lại mật khẩu</FormLabel>
+              <FormLabel required>Nhập lại mật khẩu</FormLabel>
               <FormControl>
                 <PasswordInput placeholder='********' {...field} />
               </FormControl>

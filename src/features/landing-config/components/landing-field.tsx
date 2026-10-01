@@ -9,6 +9,7 @@ export function Field({
   wide,
   readOnly,
   hint,
+  required = false,
 }: {
   label: string
   value: string
@@ -17,10 +18,11 @@ export function Field({
   wide?: boolean
   readOnly?: boolean
   hint?: string
+  required?: boolean
 }) {
   return (
     <div className={`space-y-2 ${wide ? 'md:col-span-2' : ''}`}>
-      <Label>{label}</Label>
+      <Label required={required}>{label}</Label>
       <Input
         value={value}
         onChange={(event) => onChange?.(event.target.value)}

@@ -91,9 +91,7 @@ export function CreateQueueDialog({
         </DialogHeader>
         <div className='grid gap-4'>
           <div className='grid gap-2'>
-            <Label>
-              Bệnh nhân <span className='text-destructive'>*</span>
-            </Label>
+            <Label required>Bệnh nhân</Label>
             <Popover open={comboboxOpen} onOpenChange={setComboboxOpen}>
               <PopoverTrigger asChild>
                 <Button

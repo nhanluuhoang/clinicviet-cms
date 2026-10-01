@@ -41,14 +41,18 @@ export function TenantActions({ tenant }: { tenant: Tenant }) {
   const [values, setValues] = useState({
     code: tenant.code,
     name: tenant.name,
-    subdomain: tenant.subdomain,
+    subdomain: tenant.subdomain ?? '',
     address: tenant.address,
     servicePlan: tenant.servicePlan,
     isActive: tenant.isActive,
   })
   const refresh = () => queryClient.invalidateQueries({ queryKey: ['tenants'] })
   const update = useMutation({
-    mutationFn: () => updateTenant(tenant.id, values),
+    mutationFn: () =>
+      updateTenant(tenant.id, {
+        ...values,
+        subdomain: values.subdomain || undefined,
+      }),
     onSuccess: async () => {
       await refresh()
       toast.success('Đã cập nhật phòng khám')
@@ -108,7 +112,13 @@ export function TenantActions({ tenant }: { tenant: Tenant }) {
               ] as const
             ).map(([key, label]) => (
               <div className='space-y-2' key={key}>
-                <Label>{label}</Label>
+                <Label
+                  required={
+                    key !== 'subdomain' || values.servicePlan !== 'BASIC'
+                  }
+                >
+                  {label}
+                </Label>
                 <Input
                   value={values[key]}
                   onChange={(event) =>
@@ -118,7 +128,7 @@ export function TenantActions({ tenant }: { tenant: Tenant }) {
               </div>
             ))}
             <div className='space-y-2 sm:col-span-2'>
-              <Label>Gói dịch vụ</Label>
+              <Label required>Gói dịch vụ</Label>
               <SelectDropdown
                 standalone
                 defaultValue={values.servicePlan}
