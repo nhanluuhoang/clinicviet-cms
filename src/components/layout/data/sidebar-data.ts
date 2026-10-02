@@ -33,16 +33,6 @@ export const sidebarData: SidebarData = {
     {
       items: [
         {
-          title: 'Hỗ trợ & góp ý',
-          url: '/support-requests',
-          icon: MessageSquare,
-          roles: STAFF_ROLES,
-        },
-      ],
-    },
-    {
-      items: [
-        {
           title: 'Hệ thống',
           icon: Building2,
           roles: SUPER_ADMIN_ROLES,
@@ -191,6 +181,16 @@ export const sidebarData: SidebarData = {
               plans: TENANT_STAFF_PLANS,
             },
           ],
+        },
+      ],
+    },
+    {
+      items: [
+        {
+          title: 'Hỗ trợ & góp ý',
+          url: '/support-requests',
+          icon: MessageSquare,
+          roles: STAFF_ROLES,
         },
       ],
     },
