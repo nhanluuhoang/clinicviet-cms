@@ -1,4 +1,5 @@
 import { axios } from '@/lib/axios'
+import type { AuditFields } from '@/components/data-table/audit-columns'
 
 /**
  * Suy ra từ Prisma model Patient. Giới hạn VarChar của DB được đưa vào zod
@@ -24,7 +25,7 @@ export interface PatientParams {
  * Các field nullable trong Prisma (`String?`) để `| null` vì Postgres trả NULL,
  * không phải undefined.
  */
-export interface Patient {
+export interface Patient extends AuditFields {
   id: string
   userName: string
   fullName: string

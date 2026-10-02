@@ -5,6 +5,7 @@ import { formatDate, formatNumber } from '@/lib/utils'
 import { useApiSearch } from '@/hooks/use-api-search'
 import { Button } from '@/components/ui/button'
 import { DataTableColumnHeader } from '@/components/data-table'
+import { withAuditColumns } from '@/components/data-table/audit-columns'
 import { UrlDataTable } from '@/components/data-table/url-data-table'
 import { GetGoodsIssue, GetGoodsIssues, type GoodsIssueSummary } from '../api'
 
@@ -120,13 +121,6 @@ const columns: ColumnDef<GoodsIssueSummary>[] = [
     ),
   },
   {
-    accessorKey: 'operatorName',
-    header: ({ column }) => (
-      <DataTableColumnHeader column={column} title='Người thao tác' />
-    ),
-    cell: ({ row }) => row.original.operatorName ?? '—',
-  },
-  {
     accessorKey: 'lineCount',
     header: ({ column }) => (
       <DataTableColumnHeader column={column} title='Số dòng' />
@@ -153,7 +147,7 @@ export function IssuesTab() {
         </p>
       )}
       <UrlDataTable
-        columns={columns}
+        columns={withAuditColumns(columns)}
         data={data ?? []}
         isLoading={isLoading}
         searchPlaceholder='Tìm mã phiếu hoặc người nhận...'

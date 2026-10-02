@@ -1,4 +1,5 @@
 import { axios } from '@/lib/axios'
+import type { AuditFields } from '@/components/data-table/audit-columns'
 
 export interface PrescriptionTemplateItem {
   medicineId: string
@@ -7,13 +8,13 @@ export interface PrescriptionTemplateItem {
   instruction: string
 }
 
-export interface PrescriptionTemplate {
+export interface PrescriptionTemplate extends AuditFields {
   id: string
   name: string
   items: PrescriptionTemplateItem[]
 }
 
-interface ApiPrescriptionTemplate {
+interface ApiPrescriptionTemplate extends AuditFields {
   id: string
   name: string
   items: Array<
@@ -31,7 +32,7 @@ export const getPrescriptionTemplates = async (search = '') => {
     { params: { search: search || undefined } }
   )
   return templates.map((template) => ({
-    id: template.id,
+    ...template,
     name: template.name,
     items: template.items.map((item) => ({
       medicineId: item.medicineId,

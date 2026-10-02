@@ -1,3 +1,4 @@
+import { withAuditColumns } from '@/components/data-table/audit-columns'
 import { UrlDataTable } from '@/components/data-table/url-data-table'
 import type { PrescriptionTemplatesState } from '../hooks/use-prescription-templates'
 import { getPrescriptionTemplatesColumns } from './prescription-templates-columns'
@@ -21,7 +22,7 @@ export function PrescriptionTemplatesTable({
   })
   return (
     <UrlDataTable
-      columns={columns}
+      columns={withAuditColumns(columns)}
       data={templates}
       isLoading={isLoading}
       searchPlaceholder='Tìm tên mẫu hoặc thuốc...'

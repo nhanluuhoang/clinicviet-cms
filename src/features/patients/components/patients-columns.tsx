@@ -1,5 +1,6 @@
 import { type ColumnDef } from '@tanstack/react-table'
 import { DataTableColumnHeader } from '@/components/data-table'
+import { withAuditColumns } from '@/components/data-table/audit-columns'
 import { LongText } from '@/components/long-text'
 import { type Patient } from '../api'
 import { formatDate, genderLabel } from '../data/data'
@@ -12,7 +13,7 @@ import { DataTableRowActions } from './data-table-row-actions'
  * Sắp xếp và lọc là manual (server-side), nên cột nào backend chưa hỗ trợ sort
  * thì đặt `enableSorting: false` để không hiện mũi tên gây hiểu nhầm.
  */
-export const patientsColumns: ColumnDef<Patient>[] = [
+export const patientsColumns: ColumnDef<Patient>[] = withAuditColumns([
   {
     accessorKey: 'fullName',
     header: ({ column }) => (
@@ -83,4 +84,4 @@ export const patientsColumns: ColumnDef<Patient>[] = [
     id: 'actions',
     cell: DataTableRowActions,
   },
-]
+])

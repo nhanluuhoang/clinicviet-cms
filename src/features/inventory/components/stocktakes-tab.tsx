@@ -5,6 +5,7 @@ import { cn, formatDate, formatNumber } from '@/lib/utils'
 import { useApiSearch } from '@/hooks/use-api-search'
 import { Button } from '@/components/ui/button'
 import { DataTableColumnHeader } from '@/components/data-table'
+import { withAuditColumns } from '@/components/data-table/audit-columns'
 import { UrlDataTable } from '@/components/data-table/url-data-table'
 import { GetStockTake, GetStockTakes, type StockTakeSummary } from '../api'
 import { ExpiryBadge } from './expiry-badge'
@@ -152,13 +153,6 @@ const columns: ColumnDef<StockTakeSummary>[] = [
     ),
   },
   {
-    accessorKey: 'operatorName',
-    header: ({ column }) => (
-      <DataTableColumnHeader column={column} title='Người thao tác' />
-    ),
-    cell: ({ row }) => row.original.operatorName ?? '—',
-  },
-  {
     id: 'lineCount',
     accessorKey: 'lineCount',
     header: ({ column }) => (
@@ -189,7 +183,7 @@ export function StockTakesTab() {
 
   return (
     <UrlDataTable
-      columns={columns}
+      columns={withAuditColumns(columns)}
       data={data ?? []}
       isLoading={isLoading}
       searchPlaceholder='Tìm theo mã phiếu, thuốc, số lô...'

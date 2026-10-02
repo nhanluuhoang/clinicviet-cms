@@ -1,6 +1,7 @@
 import { type ColumnDef } from '@tanstack/react-table'
 import { Badge } from '@/components/ui/badge'
 import { DataTableColumnHeader } from '@/components/data-table'
+import { withAuditColumns } from '@/components/data-table/audit-columns'
 import { LongText } from '@/components/long-text'
 import { type Admin } from '@/features/admins/api'
 import { DataTableRowActions } from './data-table-row-actions'
@@ -11,7 +12,7 @@ const roleLabels: Record<Admin['role'], string> = {
   ASSISTANT: 'Trợ lý',
 }
 
-export const adminsColumns: ColumnDef<Admin>[] = [
+export const adminsColumns: ColumnDef<Admin>[] = withAuditColumns([
   {
     accessorKey: 'userName',
     header: ({ column }) => (
@@ -61,4 +62,4 @@ export const adminsColumns: ColumnDef<Admin>[] = [
     cell: ({ row }) => (row.original.isActive ? 'Đang hoạt động' : 'Đã khóa'),
   },
   { id: 'actions', cell: DataTableRowActions },
-]
+])

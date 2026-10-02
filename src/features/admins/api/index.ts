@@ -1,4 +1,5 @@
 import { axios } from '@/lib/axios'
+import type { AuditFields } from '@/components/data-table/audit-columns'
 
 export type StaffRole = 'DOCTOR' | 'ASSISTANT'
 
@@ -18,7 +19,7 @@ export interface StaffInput {
   isActive?: boolean
 }
 
-export interface Admin {
+export interface Admin extends AuditFields {
   id: string
   userName: string
   email: string | null

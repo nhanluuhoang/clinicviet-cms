@@ -3,6 +3,7 @@ import {
   flexRender,
   getCoreRowModel,
   useReactTable,
+  type VisibilityState,
 } from '@tanstack/react-table'
 import { cn } from '@/lib/utils'
 import { type NavigateFn, useTableUrlState } from '@/hooks/use-table-url-state'
@@ -38,6 +39,7 @@ export function PatientsTable({
   navigate,
   isLoading,
 }: PatientsTableProps) {
+  const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({})
   const [rowSelection, setRowSelection] = useState({})
 
   // Lọc / phân trang / sắp xếp đều đẩy sang server và đồng bộ lên URL, giống
@@ -73,7 +75,13 @@ export function PatientsTable({
   const table = useReactTable({
     data,
     columns,
-    state: { sorting, pagination, rowSelection, columnFilters },
+    state: {
+      sorting,
+      pagination,
+      rowSelection,
+      columnFilters,
+      columnVisibility,
+    },
     enableRowSelection: true,
     manualPagination: true,
     manualSorting: true,
@@ -83,6 +91,7 @@ export function PatientsTable({
     onColumnFiltersChange,
     onRowSelectionChange: setRowSelection,
     onSortingChange,
+    onColumnVisibilityChange: setColumnVisibility,
     getCoreRowModel: getCoreRowModel(),
   })
 
@@ -147,7 +156,7 @@ export function PatientsTable({
             {isLoading ? (
               <TableRow>
                 <TableCell
-                  colSpan={columns.length}
+                  colSpan={table.getVisibleLeafColumns().length}
                   className='h-24 text-center text-muted-foreground'
                 >
                   Đang tải...
@@ -178,7 +187,7 @@ export function PatientsTable({
             ) : (
               <TableRow>
                 <TableCell
-                  colSpan={columns.length}
+                  colSpan={table.getVisibleLeafColumns().length}
                   className='h-24 text-center text-muted-foreground'
                 >
                   Chưa có bệnh nhân nào.

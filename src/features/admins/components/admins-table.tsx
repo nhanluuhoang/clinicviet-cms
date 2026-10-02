@@ -100,7 +100,7 @@ export function AdminsTable({
         isLoading={isLoading}
         emptyMessage='Không có kết quả.'
       />
-      <div className='hidden overflow-hidden rounded-md border text-nowrap sm:block'>
+      <div className='hidden overflow-x-auto rounded-md border text-nowrap sm:block'>
         <Table>
           <TableHeader>
             {table.getHeaderGroups().map((headerGroup) => (
@@ -130,7 +130,7 @@ export function AdminsTable({
             {isLoading ? (
               <TableRow>
                 <TableCell
-                  colSpan={columns.length}
+                  colSpan={table.getVisibleLeafColumns().length}
                   className='h-24 text-center'
                 >
                   Đang tải...
@@ -163,7 +163,7 @@ export function AdminsTable({
             ) : (
               <TableRow>
                 <TableCell
-                  colSpan={columns.length}
+                  colSpan={table.getVisibleLeafColumns().length}
                   className='h-24 text-center'
                 >
                   Không có kết quả.

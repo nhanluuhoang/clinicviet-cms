@@ -1,7 +1,9 @@
 import { axios } from '@/lib/axios'
+import type { AuditFields } from '@/components/data-table/audit-columns'
 import type { InitialPrescriptionData } from '@/features/prescriptions'
 
-export interface MedicalHistoryListItem extends InitialPrescriptionData {
+export interface MedicalHistoryListItem
+  extends InitialPrescriptionData, AuditFields {
   examinationQueueId?: string | null
   id: string
   symptoms: string
@@ -16,39 +18,43 @@ export interface MedicalHistoryListItem extends InitialPrescriptionData {
     dateOfBirth?: string | null
     role: string
   }
-  prescription: {
-    id: string
-    items: Array<{
-      id: string
-      medicineId: string
-      medicineName: string
-      quantity: number | null
-      instruction: string
-      medicine: {
+  prescription:
+    | (AuditFields & {
         id: string
-        name: string
-        strength: string
-        totalQty: number
-        isActive: boolean
-        unit: string
-        salePrice: number | string
-      } | null
-    }>
-    invoice: {
-      invoiceCode: string
-      consultationFee: number | string
-      serviceFee: number | string
-      serviceFeeLabel: string
-      medicineRevenue: number | string
-      otherFee1: number | string
-      otherFee1Label: string
-      otherFee2: number | string
-      otherFee2Label: string
-      otherFee3: number | string
-      otherFee3Label: string
-      totalAmount: number | string
-    } | null
-  } | null
+        items: Array<{
+          id: string
+          medicineId: string
+          medicineName: string
+          quantity: number | null
+          instruction: string
+          medicine: {
+            id: string
+            name: string
+            strength: string
+            totalQty: number
+            isActive: boolean
+            unit: string
+            salePrice: number | string
+          } | null
+        }>
+        invoice:
+          | (AuditFields & {
+              invoiceCode: string
+              consultationFee: number | string
+              serviceFee: number | string
+              serviceFeeLabel: string
+              medicineRevenue: number | string
+              otherFee1: number | string
+              otherFee1Label: string
+              otherFee2: number | string
+              otherFee2Label: string
+              otherFee3: number | string
+              otherFee3Label: string
+              totalAmount: number | string
+            })
+          | null
+      })
+    | null
   images: MedicalHistoryMedia[]
   pdfs: MedicalHistoryMedia[]
   videos: MedicalHistoryMedia[]

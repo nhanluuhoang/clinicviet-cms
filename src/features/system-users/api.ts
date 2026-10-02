@@ -1,10 +1,11 @@
 import { axios } from '@/lib/axios'
+import type { AuditFields } from '@/components/data-table/audit-columns'
 import type { Tenant } from '@/features/tenants/api'
 
 export type ManagedRole = 'TENANT_ADMIN' | 'DOCTOR' | 'ASSISTANT'
 export type SystemUserRole = ManagedRole | 'PATIENT' | 'USER'
 
-export type SystemUser = {
+export type SystemUser = AuditFields & {
   id: string
   userName: string
   email: string | null
