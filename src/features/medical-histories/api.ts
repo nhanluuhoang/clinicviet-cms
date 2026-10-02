@@ -77,7 +77,7 @@ interface MedicalHistoryPage {
 export const getMedicalHistoryList = (params: {
   patientName?: string
   doctorName?: string
-  date: string
+  date?: string
   page: number
   limit: number
 }): Promise<MedicalHistoryPage> => axios.get('/medical-histories', { params })
