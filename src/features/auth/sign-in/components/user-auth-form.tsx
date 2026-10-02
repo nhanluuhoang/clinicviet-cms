@@ -3,6 +3,7 @@ import { z } from 'zod'
 import { isAxiosError } from 'axios'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
+import { useQueryClient } from '@tanstack/react-query'
 import { Link, useNavigate } from '@tanstack/react-router'
 import { canAccessPath, getHomePath } from '@/config/access-control'
 import { Loader2, LogIn } from 'lucide-react'
@@ -47,6 +48,7 @@ export function UserAuthForm({
   const [isLoading, setIsLoading] = useState(false)
   const [submitError, setSubmitError] = useState('')
   const navigate = useNavigate()
+  const queryClient = useQueryClient()
   const { auth } = useAuthStore()
 
   const form = useForm<z.infer<typeof formSchema>>({
@@ -63,6 +65,21 @@ export function UserAuthForm({
     try {
       await Login(data)
       const profile = await Profile()
+      if (
+        !canAccessPath(
+          profile.data.role,
+          getHomePath(),
+          profile.data.tenant?.servicePlan
+        )
+      ) {
+        auth.reset()
+        setSubmitError(
+          'Tài khoản này không có quyền truy cập CMS. Vui lòng đăng nhập bằng tài khoản nhân viên.'
+        )
+        return
+      }
+      await queryClient.cancelQueries()
+      queryClient.clear()
       auth.setUser(profile.data)
 
       const targetPath =

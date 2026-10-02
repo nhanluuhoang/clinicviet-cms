@@ -1,5 +1,6 @@
 import { useNavigate, useRouter } from '@tanstack/react-router'
 import { Button } from '@/components/ui/button'
+import { ErrorSignInButton } from './sign-in-button'
 
 export function NotFoundError() {
   const navigate = useNavigate()
@@ -13,6 +14,7 @@ export function NotFoundError() {
           Trang bạn đang tìm kiếm không tồn tại <br /> hoặc có thể đã bị xóa.
         </p>
         <div className='mt-6 flex gap-4'>
+          <ErrorSignInButton />
           <Button variant='outline' onClick={() => history.go(-1)}>
             Quay lại
           </Button>
