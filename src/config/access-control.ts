@@ -39,6 +39,7 @@ const routeRoles: Array<{
 }> = [
   { path: '/tenants', roles: SUPER_ADMIN_ROLES },
   { path: '/system', roles: SUPER_ADMIN_ROLES },
+  { path: '/support-requests', roles: STAFF_ROLES },
   {
     path: '/admins',
     roles: TENANT_ADMIN_ROLES,

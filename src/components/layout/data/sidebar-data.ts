@@ -24,6 +24,7 @@ import {
   History,
   PanelsTopLeft,
   Building2,
+  MessageSquare,
 } from 'lucide-react'
 import { type SidebarData } from '../types'
 
@@ -32,10 +33,25 @@ export const sidebarData: SidebarData = {
     {
       items: [
         {
+          title: 'Hỗ trợ & góp ý',
+          url: '/support-requests',
+          icon: MessageSquare,
+          roles: STAFF_ROLES,
+        },
+      ],
+    },
+    {
+      items: [
+        {
           title: 'Hệ thống',
           icon: Building2,
           roles: SUPER_ADMIN_ROLES,
           items: [
+            {
+              title: 'Yêu cầu hỗ trợ',
+              url: '/system/support-requests',
+              roles: SUPER_ADMIN_ROLES,
+            },
             {
               title: 'Phòng khám',
               url: '/system/tenants',
