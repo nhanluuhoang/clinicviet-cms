@@ -1,6 +1,7 @@
 import { useNavigate, useRouter } from '@tanstack/react-router'
 import { cn } from '@/lib/utils'
 import { Button } from '@/components/ui/button'
+import { ErrorSignInButton } from './sign-in-button'
 
 type GeneralErrorProps = React.HTMLAttributes<HTMLDivElement> & {
   minimal?: boolean
@@ -24,6 +25,7 @@ export function GeneralError({
         </p>
         {!minimal && (
           <div className='mt-6 flex gap-4'>
+            <ErrorSignInButton />
             <Button variant='outline' onClick={() => history.go(-1)}>
               Quay lại
             </Button>

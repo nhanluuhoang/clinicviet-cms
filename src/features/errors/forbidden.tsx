@@ -1,6 +1,7 @@
 import { useNavigate, useRouter } from '@tanstack/react-router'
 import { getHomePath } from '@/config/access-control'
 import { Button } from '@/components/ui/button'
+import { ErrorSignInButton } from './sign-in-button'
 
 export function ForbiddenError() {
   const navigate = useNavigate()
@@ -20,6 +21,7 @@ export function ForbiddenError() {
           <Button onClick={() => navigate({ to: getHomePath() })}>
             Về trang chủ
           </Button>
+          <ErrorSignInButton />
         </div>
       </div>
     </div>

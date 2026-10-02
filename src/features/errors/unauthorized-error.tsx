@@ -1,5 +1,6 @@
 import { useNavigate, useRouter } from '@tanstack/react-router'
 import { Button } from '@/components/ui/button'
+import { ErrorSignInButton } from './sign-in-button'
 
 export function UnauthorisedError() {
   const navigate = useNavigate()
@@ -14,6 +15,7 @@ export function UnauthorisedError() {
           này.
         </p>
         <div className='mt-6 flex gap-4'>
+          <ErrorSignInButton />
           <Button variant='outline' onClick={() => history.go(-1)}>
             Quay lại
           </Button>
