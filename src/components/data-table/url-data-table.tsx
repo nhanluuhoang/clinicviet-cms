@@ -13,6 +13,7 @@ import {
   getPaginationRowModel,
   getSortedRowModel,
   useReactTable,
+  type VisibilityState,
 } from '@tanstack/react-table'
 import { cn } from '@/lib/utils'
 import { type NavigateFn, useTableUrlState } from '@/hooks/use-table-url-state'
@@ -80,6 +81,7 @@ export function UrlDataTable<TData>({
   const navigate = useNavigate()
 
   // Mở rộng dòng là trạng thái xem tạm, không đáng đưa lên URL.
+  const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({})
   const [expanded, setExpanded] = useState<ExpandedState>({})
 
   // Mỗi filter tự lấy `searchKey` làm param; dùng type 'array' vì faceted
@@ -132,6 +134,7 @@ export function UrlDataTable<TData>({
       globalFilter,
       pagination,
       expanded,
+      columnVisibility,
     },
     onSortingChange,
     onColumnFiltersChange,
@@ -145,6 +148,7 @@ export function UrlDataTable<TData>({
             .toLowerCase()
             .includes(String(filterValue).toLowerCase())
       : 'auto',
+    onColumnVisibilityChange: setColumnVisibility,
     getCoreRowModel: getCoreRowModel(),
     getFilteredRowModel: getFilteredRowModel(),
     getSortedRowModel: getSortedRowModel(),
@@ -207,7 +211,7 @@ export function UrlDataTable<TData>({
             {isLoading ? (
               <TableRow>
                 <TableCell
-                  colSpan={columns.length}
+                  colSpan={table.getVisibleLeafColumns().length}
                   className='h-24 text-center text-muted-foreground'
                 >
                   Đang tải...
@@ -235,7 +239,7 @@ export function UrlDataTable<TData>({
                   {row.getIsExpanded() && renderSubRow && (
                     <TableRow className='hover:bg-transparent'>
                       <TableCell
-                        colSpan={columns.length}
+                        colSpan={table.getVisibleLeafColumns().length}
                         className='bg-muted/30 p-0'
                       >
                         {renderSubRow(row)}
@@ -247,7 +251,7 @@ export function UrlDataTable<TData>({
             ) : (
               <TableRow>
                 <TableCell
-                  colSpan={columns.length}
+                  colSpan={table.getVisibleLeafColumns().length}
                   className='h-24 text-center text-muted-foreground'
                 >
                   {emptyMessage}

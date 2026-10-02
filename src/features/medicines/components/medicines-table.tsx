@@ -14,6 +14,7 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
 import { DataTableColumnHeader } from '@/components/data-table'
+import { withAuditColumns } from '@/components/data-table/audit-columns'
 import { UrlDataTable } from '@/components/data-table/url-data-table'
 import { GetMedicines, type Medicine } from '../api'
 import { medicineGroupLabel, medicineGroups } from '../data/data'
@@ -66,7 +67,7 @@ function RowActions({ medicine }: { medicine: Medicine }) {
 const formatNumber = (value: number) =>
   new Intl.NumberFormat('vi-VN').format(value)
 
-const columns: ColumnDef<Medicine>[] = [
+const columns: ColumnDef<Medicine>[] = withAuditColumns([
   {
     accessorKey: 'name',
     header: ({ column }) => (
@@ -142,7 +143,7 @@ const columns: ColumnDef<Medicine>[] = [
     id: 'actions',
     cell: ({ row }) => <RowActions medicine={row.original} />,
   },
-]
+])
 
 export function MedicinesTable() {
   const search = useApiSearch()

@@ -5,6 +5,7 @@ import {
   flexRender,
   getCoreRowModel,
   useReactTable,
+  type VisibilityState,
 } from '@tanstack/react-table'
 import { hasAnyRole, PRESCRIBER_ROLES } from '@/config/access-control'
 import { useAuthStore } from '@/stores/auth-store'
@@ -24,6 +25,7 @@ import {
   DataTableToolbar,
   MobileDataCards,
 } from '@/components/data-table'
+import { DataTableViewOptions } from '@/components/data-table/view-options'
 import { DatePickerInput } from '@/components/date-picker-input'
 import { type MedicalHistoryListItem } from '../api'
 import { medicalHistoryColumns } from './medical-history-columns'
@@ -46,6 +48,7 @@ export function MedicalHistoriesTable({
   navigate,
   isLoading,
 }: Props) {
+  const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({})
   const [expanded, setExpanded] = useState<ExpandedState>({})
   const role = useAuthStore((state) => state.auth.user?.role)
   const columns = hasAnyRole(role, PRESCRIBER_ROLES)
@@ -73,7 +76,7 @@ export function MedicalHistoriesTable({
   const table = useReactTable({
     data,
     columns,
-    state: { sorting, pagination, columnFilters, expanded },
+    state: { sorting, pagination, columnFilters, expanded, columnVisibility },
     manualPagination: true,
     manualSorting: true,
     manualFiltering: true,
@@ -83,6 +86,7 @@ export function MedicalHistoriesTable({
     onSortingChange,
     onExpandedChange: setExpanded,
     getRowCanExpand: () => true,
+    onColumnVisibilityChange: setColumnVisibility,
     getCoreRowModel: getCoreRowModel(),
   })
 
@@ -112,12 +116,14 @@ export function MedicalHistoriesTable({
           searchKey='patientName'
           searchPlaceholder='Tìm tên bệnh nhân...'
           showReset={false}
+          showViewOptions={false}
         />
         <DataTableToolbar
           table={table}
           searchKey='doctorName'
           searchPlaceholder='Tìm tên bác sĩ...'
           showReset={false}
+          showViewOptions={false}
         />
         <DatePickerInput
           value={date}
@@ -142,13 +148,19 @@ export function MedicalHistoriesTable({
           Đặt lại
           <Cross2Icon className='ms-2 h-4 w-4' />
         </Button>
+        <DataTableViewOptions table={table} />
       </div>
 
       <MobileDataCards
         table={table}
         isLoading={isLoading}
         emptyMessage='Không có lịch sử khám bệnh trong ngày đã chọn.'
-        renderSubRow={(row) => <MedicalHistoryDetails history={row.original} />}
+        renderSubRow={(row) => (
+          <MedicalHistoryDetails
+            history={row.original}
+            auditVisibility={columnVisibility}
+          />
+        )}
       />
       <div className='hidden overflow-x-auto rounded-md border sm:block'>
         <Table>
@@ -180,7 +192,7 @@ export function MedicalHistoriesTable({
             {isLoading ? (
               <TableRow>
                 <TableCell
-                  colSpan={columns.length}
+                  colSpan={table.getVisibleLeafColumns().length}
                   className='h-24 text-center text-muted-foreground'
                 >
                   Đang tải...
@@ -211,7 +223,10 @@ export function MedicalHistoriesTable({
                         colSpan={row.getVisibleCells().length}
                         className='p-0'
                       >
-                        <MedicalHistoryDetails history={row.original} />
+                        <MedicalHistoryDetails
+                          history={row.original}
+                          auditVisibility={columnVisibility}
+                        />
                       </TableCell>
                     </TableRow>
                   )}
@@ -220,7 +235,7 @@ export function MedicalHistoriesTable({
             ) : (
               <TableRow>
                 <TableCell
-                  colSpan={columns.length}
+                  colSpan={table.getVisibleLeafColumns().length}
                   className='h-24 text-center text-muted-foreground'
                 >
                   Không có lịch sử khám bệnh trong ngày đã chọn.

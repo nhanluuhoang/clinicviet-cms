@@ -1,5 +1,6 @@
 import { type ColumnDef } from '@tanstack/react-table'
 import { Badge } from '@/components/ui/badge'
+import { withAuditColumns } from '@/components/data-table/audit-columns'
 import { type SystemUser } from '../api'
 import { UpdateSystemUserDialog } from './update-system-user-dialog'
 
@@ -11,7 +12,7 @@ const roleLabels = {
   USER: 'Người dùng',
 }
 
-export const columns: ColumnDef<SystemUser>[] = [
+export const columns: ColumnDef<SystemUser>[] = withAuditColumns([
   { accessorKey: 'userName', header: 'Tên đăng nhập' },
   { accessorKey: 'fullName', header: 'Họ tên' },
   { accessorKey: 'email', header: 'Email' },
@@ -52,4 +53,4 @@ export const columns: ColumnDef<SystemUser>[] = [
     header: '',
     cell: ({ row }) => <UpdateSystemUserDialog user={row.original} />,
   },
-]
+])

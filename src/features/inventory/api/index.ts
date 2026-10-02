@@ -1,5 +1,6 @@
 import { axios } from '@/lib/axios'
 import { isExpired, worstExpiryStatus } from '@/lib/utils'
+import type { AuditFields } from '@/components/data-table/audit-columns'
 import { GetMedicines, type Medicine } from '@/features/medicines/api'
 import {
   type GoodsReceipt,
@@ -51,7 +52,7 @@ interface ApiBatch {
     }
   }
 }
-interface ApiReceipt {
+interface ApiReceipt extends AuditFields {
   id: string
   code: string
   supplierName: string
@@ -66,7 +67,7 @@ interface ApiReceipt {
     batch: ApiBatch
   }>
 }
-interface ApiReceiptSummary {
+interface ApiReceiptSummary extends AuditFields {
   id: string
   code: string
   supplierName: string
@@ -76,7 +77,7 @@ interface ApiReceiptSummary {
   creator: ApiCreator | null
   _count: { lines: number }
 }
-interface ApiStockTake {
+interface ApiStockTake extends AuditFields {
   id: string
   code: string
   countedAt: string
@@ -90,7 +91,7 @@ interface ApiStockTake {
     batch: ApiBatch
   }>
 }
-interface ApiGoodsIssue {
+interface ApiGoodsIssue extends AuditFields {
   id: string
   code: string
   userId?: string
@@ -241,7 +242,7 @@ const mapReceipt = (receipt: ApiReceipt): GoodsReceipt => {
     totalAmount: lines.reduce((sum, line) => sum + line.amount, 0),
   }
 }
-interface ApiStockTakeSummary {
+interface ApiStockTakeSummary extends AuditFields {
   id: string
   code: string
   countedAt: string
@@ -250,7 +251,7 @@ interface ApiStockTakeSummary {
   _count: { lines: number }
 }
 
-interface ApiGoodsIssueSummary {
+interface ApiGoodsIssueSummary extends AuditFields {
   id: string
   code: string
   recipientName: string
