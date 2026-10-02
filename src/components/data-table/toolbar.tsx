@@ -60,8 +60,11 @@ export function DataTableToolbar<TData>({
     if (!showSearch) return
 
     if (searchKey) {
-      table.getColumn(searchKey)?.setFilterValue(debouncedSearchValue)
+      const column = table.getColumn(searchKey)
+      if ((column?.getFilterValue() ?? '') === debouncedSearchValue) return
+      column?.setFilterValue(debouncedSearchValue)
     } else {
+      if ((table.getState().globalFilter ?? '') === debouncedSearchValue) return
       table.setGlobalFilter(debouncedSearchValue)
     }
   }, [debouncedSearchValue, searchKey, table, showSearch])

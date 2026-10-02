@@ -25,6 +25,7 @@ import {
   DataTableToolbar,
   MobileDataCards,
 } from '@/components/data-table'
+import { defaultAuditVisibility } from '@/components/data-table/audit-columns'
 import { DataTableViewOptions } from '@/components/data-table/view-options'
 import { DatePickerInput } from '@/components/date-picker-input'
 import { type MedicalHistoryListItem } from '../api'
@@ -48,7 +49,9 @@ export function MedicalHistoriesTable({
   navigate,
   isLoading,
 }: Props) {
-  const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({})
+  const [columnVisibility, setColumnVisibility] = useState<VisibilityState>(
+    defaultAuditVisibility
+  )
   const [expanded, setExpanded] = useState<ExpandedState>({})
   const role = useAuthStore((state) => state.auth.user?.role)
   const columns = hasAnyRole(role, PRESCRIBER_ROLES)
@@ -110,45 +113,49 @@ export function MedicalHistoriesTable({
 
   return (
     <div className='flex min-w-0 flex-1 flex-col gap-4'>
-      <div className='flex w-full min-w-0 flex-col items-start gap-2 sm:flex-row sm:flex-wrap sm:items-center'>
-        <DataTableToolbar
-          table={table}
-          searchKey='patientName'
-          searchPlaceholder='Tìm tên bệnh nhân...'
-          showReset={false}
-          showViewOptions={false}
-        />
-        <DataTableToolbar
-          table={table}
-          searchKey='doctorName'
-          searchPlaceholder='Tìm tên bác sĩ...'
-          showReset={false}
-          showViewOptions={false}
-        />
-        <DatePickerInput
-          value={date}
-          onChange={(value) =>
-            navigate({
-              search: (previous) => ({
-                ...previous,
-                page: undefined,
-                date: value,
-              }),
-            })
-          }
-          className='w-[150px] lg:w-[250px]'
-          inputClassName='h-8 w-full'
-        />
-        <Button
-          type='button'
-          variant='ghost'
-          className='order-first h-8 px-2 sm:order-last lg:px-3'
-          onClick={resetFilters}
-        >
-          Đặt lại
-          <Cross2Icon className='ms-2 h-4 w-4' />
-        </Button>
-        <DataTableViewOptions table={table} />
+      <div className='flex w-full min-w-0 flex-wrap items-center gap-2'>
+        <div className='flex min-w-0 flex-wrap items-center gap-2'>
+          <DataTableToolbar
+            table={table}
+            searchKey='patientName'
+            searchPlaceholder='Tìm tên bệnh nhân...'
+            showReset={false}
+            showViewOptions={false}
+          />
+          <DataTableToolbar
+            table={table}
+            searchKey='doctorName'
+            searchPlaceholder='Tìm tên bác sĩ...'
+            showReset={false}
+            showViewOptions={false}
+          />
+          <DatePickerInput
+            value={date}
+            onChange={(value) =>
+              navigate({
+                search: (previous) => ({
+                  ...previous,
+                  page: undefined,
+                  date: value,
+                }),
+              })
+            }
+            className='w-[150px] lg:w-[250px]'
+            inputClassName='h-8 w-full'
+          />
+        </div>
+        <div className='ms-auto flex shrink-0 items-center gap-2'>
+          <DataTableViewOptions table={table} />
+          <Button
+            type='button'
+            variant='ghost'
+            className='h-8 px-2 lg:px-3'
+            onClick={resetFilters}
+          >
+            Đặt lại
+            <Cross2Icon className='ms-2 h-4 w-4' />
+          </Button>
+        </div>
       </div>
 
       <MobileDataCards
