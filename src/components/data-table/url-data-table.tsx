@@ -52,6 +52,8 @@ type ToolbarFilter = {
 type UrlDataTableProps<TData> = {
   columns: ColumnDef<TData>[]
   data: TData[]
+  /** Supplying total enables server pagination, filtering and sorting. */
+  total?: number
   isLoading?: boolean
   searchPlaceholder?: string
   filters?: ToolbarFilter[]
@@ -67,6 +69,7 @@ type UrlDataTableProps<TData> = {
 export function UrlDataTable<TData>({
   columns,
   data,
+  total,
   isLoading,
   searchPlaceholder = 'Tìm kiếm...',
   filters = [],
@@ -152,6 +155,10 @@ export function UrlDataTable<TData>({
             .includes(String(filterValue).toLowerCase())
       : 'auto',
     onColumnVisibilityChange: setColumnVisibility,
+    manualPagination: total !== undefined,
+    manualFiltering: total !== undefined,
+    manualSorting: total !== undefined,
+    rowCount: total,
     getCoreRowModel: getCoreRowModel(),
     getFilteredRowModel: getFilteredRowModel(),
     getSortedRowModel: getSortedRowModel(),
@@ -164,8 +171,8 @@ export function UrlDataTable<TData>({
   // dòng này thì người dùng nhìn thấy bảng trống mà không hiểu tại sao.
   const pageCount = table.getPageCount()
   useEffect(() => {
-    ensurePageInRange(pageCount)
-  }, [pageCount, ensurePageInRange])
+    if (!isLoading) ensurePageInRange(pageCount)
+  }, [pageCount, ensurePageInRange, isLoading])
 
   const rows = table.getRowModel().rows
 
