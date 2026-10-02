@@ -14,14 +14,14 @@ const route = getRouteApi('/_authenticated/medical-histories/')
 export function MedicalHistories() {
   const search = route.useSearch()
   const navigate = route.useNavigate()
-  const date = search.date || getToday()
+  const date = search.date ?? getToday()
   const { data, isLoading, isError } = useQuery({
     queryKey: ['medical-histories', search, date],
     queryFn: () =>
       getMedicalHistoryList({
         patientName: search.patientName || undefined,
         doctorName: search.doctorName || undefined,
-        date,
+        date: date || undefined,
         page: search.page ?? 1,
         limit: search.pageSize ?? 10,
       }),

@@ -9,7 +9,7 @@ import {
 } from '@tanstack/react-table'
 import { hasAnyRole, PRESCRIBER_ROLES } from '@/config/access-control'
 import { useAuthStore } from '@/stores/auth-store'
-import { cn, getToday } from '@/lib/utils'
+import { cn } from '@/lib/utils'
 import { type NavigateFn, useTableUrlState } from '@/hooks/use-table-url-state'
 import { Button } from '@/components/ui/button'
 import {
@@ -106,7 +106,7 @@ export function MedicalHistoriesTable({
         page: undefined,
         patientName: undefined,
         doctorName: undefined,
-        date: getToday(),
+        date: '',
       }),
     })
   }
@@ -159,7 +159,11 @@ export function MedicalHistoriesTable({
       <MobileDataCards
         table={table}
         isLoading={isLoading}
-        emptyMessage='Không có lịch sử khám bệnh trong ngày đã chọn.'
+        emptyMessage={
+          date
+            ? 'Không có lịch sử khám bệnh trong ngày đã chọn.'
+            : 'Không có lịch sử khám bệnh.'
+        }
         renderSubRow={(row) => (
           <MedicalHistoryDetails
             history={row.original}
@@ -243,7 +247,9 @@ export function MedicalHistoriesTable({
                   colSpan={table.getVisibleLeafColumns().length}
                   className='h-24 text-center text-muted-foreground'
                 >
-                  Không có lịch sử khám bệnh trong ngày đã chọn.
+                  {date
+                    ? 'Không có lịch sử khám bệnh trong ngày đã chọn.'
+                    : 'Không có lịch sử khám bệnh.'}
                 </TableCell>
               </TableRow>
             )}
