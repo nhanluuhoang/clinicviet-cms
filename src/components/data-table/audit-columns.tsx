@@ -19,6 +19,13 @@ export const auditLabels = {
 
 export type AuditColumnId = keyof typeof auditLabels
 
+export const defaultAuditVisibility = {
+  createdAt: false,
+  createdBy: false,
+  updatedAt: false,
+  updatedBy: false,
+}
+
 export function formatAuditValue(record: AuditFields, key: AuditColumnId) {
   const value = record[key]
   if (key === 'createdAt' || key === 'updatedAt') {

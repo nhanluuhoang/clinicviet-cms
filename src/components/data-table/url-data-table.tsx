@@ -26,6 +26,7 @@ import {
   TableRow,
 } from '@/components/ui/table'
 import { DataTablePagination, DataTableToolbar } from '@/components/data-table'
+import { defaultAuditVisibility } from './audit-columns'
 import { MobileDataCards } from './mobile-cards'
 
 type ToolbarFilter = {
@@ -81,7 +82,9 @@ export function UrlDataTable<TData>({
   const navigate = useNavigate()
 
   // Mở rộng dòng là trạng thái xem tạm, không đáng đưa lên URL.
-  const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({})
+  const [columnVisibility, setColumnVisibility] = useState<VisibilityState>(
+    defaultAuditVisibility
+  )
   const [expanded, setExpanded] = useState<ExpandedState>({})
 
   // Mỗi filter tự lấy `searchKey` làm param; dùng type 'array' vì faceted

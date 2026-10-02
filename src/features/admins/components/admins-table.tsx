@@ -20,6 +20,7 @@ import {
   DataTableToolbar,
   MobileDataCards,
 } from '@/components/data-table'
+import { defaultAuditVisibility } from '@/components/data-table/audit-columns'
 import { type Admin } from '../api'
 import { adminsColumns as columns } from './admins-columns'
 
@@ -40,7 +41,9 @@ export function AdminsTable({
 }: DataTableProps) {
   // Local UI-only states
   const [rowSelection, setRowSelection] = useState({})
-  const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({})
+  const [columnVisibility, setColumnVisibility] = useState<VisibilityState>(
+    defaultAuditVisibility
+  )
 
   // Synced with URL states
   const {

@@ -20,6 +20,7 @@ import {
   DataTableToolbar,
   MobileDataCards,
 } from '@/components/data-table'
+import { defaultAuditVisibility } from '@/components/data-table/audit-columns'
 import { type Patient } from '../api'
 import { genders } from '../data/data'
 import { patientsColumns as columns } from './patients-columns'
@@ -39,7 +40,9 @@ export function PatientsTable({
   navigate,
   isLoading,
 }: PatientsTableProps) {
-  const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({})
+  const [columnVisibility, setColumnVisibility] = useState<VisibilityState>(
+    defaultAuditVisibility
+  )
   const [rowSelection, setRowSelection] = useState({})
 
   // Lọc / phân trang / sắp xếp đều đẩy sang server và đồng bộ lên URL, giống

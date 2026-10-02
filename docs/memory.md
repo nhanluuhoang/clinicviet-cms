@@ -24,7 +24,7 @@
 
 ## Convention
 
-- Audit columns use the shared `withAuditColumns` and `DataTableViewOptions` for createdAt/createdBy/updatedAt/updatedBy. Visibility is local table state and applies to desktop/mobile; history prescription/invoice details follow the same visibility. API provides createdByName/updatedByName for display; retain actor UUIDs and template audit fields during mapping.
+- Audit columns use shared `withAuditColumns` and `DataTableViewOptions` for createdAt/createdBy/updatedAt/updatedBy; all four default to hidden via `defaultAuditVisibility`. Visibility is local table state and applies to desktop/mobile; history prescription/invoice details follow the same visibility. API provides createdByName/updatedByName for display; retain actor UUIDs and template audit fields during mapping.
 
 - Required editable fields use `Label required` / `FormLabel required`; conditional requirements follow create/edit mode and the selected plan. Creating a BASIC tenant hides and omits subdomain; PLUS/PRO require it.
 
