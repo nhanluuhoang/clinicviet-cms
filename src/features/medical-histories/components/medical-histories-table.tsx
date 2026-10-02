@@ -113,8 +113,8 @@ export function MedicalHistoriesTable({
 
   return (
     <div className='flex min-w-0 flex-1 flex-col gap-4'>
-      <div className='flex w-full min-w-0 flex-wrap items-center gap-2'>
-        <div className='flex min-w-0 flex-wrap items-center gap-2'>
+      <div className='flex w-full min-w-0 flex-col gap-2 sm:flex-row sm:items-center'>
+        <div className='flex min-w-0 flex-1 flex-wrap items-center gap-2'>
           <DataTableToolbar
             table={table}
             searchKey='patientName'
@@ -143,19 +143,17 @@ export function MedicalHistoriesTable({
             className='w-[150px] lg:w-[250px]'
             inputClassName='h-8 w-full'
           />
-        </div>
-        <div className='ms-auto flex shrink-0 items-center gap-2'>
-          <DataTableViewOptions table={table} />
           <Button
             type='button'
             variant='ghost'
-            className='h-8 px-2 lg:px-3'
+            className='h-8 shrink-0 gap-2 px-2 lg:px-3'
             onClick={resetFilters}
           >
             Đặt lại
-            <Cross2Icon className='ms-2 h-4 w-4' />
+            <Cross2Icon className='h-4 w-4' />
           </Button>
         </div>
+        <DataTableViewOptions table={table} />
       </div>
 
       <MobileDataCards
