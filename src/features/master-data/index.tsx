@@ -1,20 +1,25 @@
 import { useQuery } from '@tanstack/react-query'
+import { useAuthStore } from '@/stores/auth-store'
 import { Header } from '@/components/layout/header'
 import { Main } from '@/components/layout/main'
 import { ProfileDropdown } from '@/components/profile-dropdown'
 import { ThemeSwitch } from '@/components/theme-switch'
-import { GetMasterDatas } from './api'
 import { MasterDataForm } from './components/master-data-form'
 import {
   CONSULTATION_FEE_KEY,
   SHOW_MEDICINES_TO_PATIENT_KEY,
   MEDICINE_INSTRUCTION_OPTIONS_KEY,
 } from './data/constants'
+import { GetMasterDatas } from '@/features/master-data/api'
 
 export function MasterData() {
+  const tenantId = useAuthStore((state) => state.auth.user?.tenantId)
   const { data, isLoading } = useQuery({
-    queryKey: ['master-data'],
-    queryFn: () => GetMasterDatas({ page: 1 }),
+    queryKey: ['master-data', tenantId],
+    queryFn: () => GetMasterDatas(),
+    enabled: !!tenantId,
+    staleTime: 0,
+    gcTime: 0,
   })
   const consultationFeeItem = data?.data.find(
     (row) => row.key === CONSULTATION_FEE_KEY

@@ -10,6 +10,8 @@
 
 ## Architecture
 
+- Master-data caching belongs to the API. Settings, days off, prescriptions and templates use useQuery directly with tenant-scoped key `['master-data', tenantId]`, staleTime 0 and gcTime 0; refetch on mount, discard inactive data and inherit global focus behavior. CRUD invalidates the `['master-data']` prefix. No separate useMasterDataQuery hook.
+
 - Medical-history PATCH sends the complete retained media lists, including empty arrays. Recognize HLS MIME `application/vnd.apple.mpegurl` as video. Removing existing media only changes draft state until Save; DELETE and close-dialog cleanup apply only to new uploads. Limits: 5 images, 5 PDFs, 1 video per history.
 
 - Full error pages (401/403/404/500/503) show only the shared sign-in button (no back/home buttons) that resets CMS auth, cancels queries and clears cache before navigating to `/sign-in`; it does not log out the shared API session. Minimal embedded errors keep their compact layout.

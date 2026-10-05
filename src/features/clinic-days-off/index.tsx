@@ -1,4 +1,5 @@
 import { useQuery } from '@tanstack/react-query'
+import { useAuthStore } from '@/stores/auth-store'
 import { Header } from '@/components/layout/header'
 import { Main } from '@/components/layout/main'
 import { ProfileDropdown } from '@/components/profile-dropdown'
@@ -8,9 +9,13 @@ import { DaysOffForm } from './components/days-off-form'
 import { DAYS_OFF_KEY } from './data/constants'
 
 export function ClinicDaysOff() {
+  const tenantId = useAuthStore((state) => state.auth.user?.tenantId)
   const { data, isLoading } = useQuery({
-    queryKey: ['master-data', DAYS_OFF_KEY],
-    queryFn: () => GetMasterDatas({ page: 1, key: DAYS_OFF_KEY }),
+    queryKey: ['master-data', tenantId],
+    queryFn: () => GetMasterDatas(),
+    enabled: !!tenantId,
+    staleTime: 0,
+    gcTime: 0,
   })
   const item = data?.data.find((row) => row.key === DAYS_OFF_KEY)
 
