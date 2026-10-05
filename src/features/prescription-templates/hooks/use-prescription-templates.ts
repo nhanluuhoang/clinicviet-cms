@@ -1,3 +1,4 @@
+import { useAuthStore } from '@/stores/auth-store'
 import { useState } from 'react'
 import { useQuery, useQueryClient } from '@tanstack/react-query'
 import { toast } from 'sonner'
@@ -15,6 +16,7 @@ import { DEFAULT_INSTRUCTIONS, emptyItem } from '../data/constants'
 import type { DialogType } from '../types'
 
 export function usePrescriptionTemplates() {
+  const tenantId = useAuthStore((state) => state.auth.user?.tenantId)
   const queryClient = useQueryClient()
 
   const [open, setOpen] = useState<DialogType>(null)
@@ -36,8 +38,11 @@ export function usePrescriptionTemplates() {
   })
 
   const { data: masterData } = useQuery({
-    queryKey: ['master-data'],
-    queryFn: () => GetMasterDatas({ page: 1 }),
+    queryKey: ['master-data', tenantId],
+    queryFn: () => GetMasterDatas(),
+    enabled: !!tenantId,
+    staleTime: 0,
+    gcTime: 0,
   })
 
   const instructionOptions = (
