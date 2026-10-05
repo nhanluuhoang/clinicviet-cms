@@ -28,6 +28,7 @@ export function PatientInformationSection({
   setAdvice,
   media,
   isUploadingMedia,
+  save,
   addMedia,
   removeMedia,
 }: Pick<
@@ -51,6 +52,7 @@ export function PatientInformationSection({
   | 'setAdvice'
   | 'media'
   | 'isUploadingMedia'
+  | 'save'
   | 'addMedia'
   | 'removeMedia'
 >) {
@@ -162,8 +164,8 @@ export function PatientInformationSection({
                 {isPharmacy ? 'Đơn thuốc đính kèm' : 'Tệp hồ sơ'}
               </Label>
               <p className='mt-1 text-xs text-muted-foreground'>
-                Tối đa {MAX_MEDIA_FILES} tệp. Ảnh/PDF không quá 5 MB; video MP4,
-                WebM hoặc MOV không quá 100 MB.
+                Tối đa 5 ảnh, 5 PDF và 1 video. Ảnh/PDF không quá 5 MB; video
+                MP4, WebM hoặc MOV không quá 100 MB.
               </p>
             </div>
             <label
@@ -186,7 +188,7 @@ export function PatientInformationSection({
               type='file'
               accept='image/jpeg,image/png,application/pdf,video/mp4,video/webm,video/quicktime'
               multiple
-              disabled={isUploadingMedia}
+              disabled={isUploadingMedia || save.isPending}
               onChange={(event) => {
                 event.currentTarget.blur()
                 void addMedia(event.target.files)
@@ -199,6 +201,7 @@ export function PatientInformationSection({
                   <MediaPreview
                     key={`${file.url}-${index}`}
                     media={file}
+                    disabled={isUploadingMedia || save.isPending}
                     onRemove={() => void removeMedia(file)}
                   />
                 ))}

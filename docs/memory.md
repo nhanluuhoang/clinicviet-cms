@@ -10,6 +10,8 @@
 
 ## Architecture
 
+- Medical-history PATCH sends the complete retained media lists, including empty arrays. Recognize HLS MIME `application/vnd.apple.mpegurl` as video. Removing existing media only changes draft state until Save; DELETE and close-dialog cleanup apply only to new uploads. Limits: 5 images, 5 PDFs, 1 video per history.
+
 - Full error pages (401/403/404/500/503) show only the shared sign-in button (no back/home buttons) that resets CMS auth, cancels queries and clears cache before navigating to `/sign-in`; it does not log out the shared API session. Minimal embedded errors keep their compact layout.
 
 - Trang lịch sử khám có action cập nhật trong menu ba chấm ở cột cuối cho PRESCRIBER_ROLES, dùng chung PrescriptionDialog 3 tab. Khi cập nhật khóa 2 tab khác loại phiếu đã lưu. Lưu PATCH theo history.id, làm mới query medical-histories; hồ sơ không có prescription chỉ sửa thông tin hồ sơ, ẩn thuốc/chi phí.

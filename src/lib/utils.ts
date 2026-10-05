@@ -175,3 +175,10 @@ export function deleteMediaFile(
   if (file.mimeType === 'application/pdf') return deletePdf(file.fileName)
   return deleteVideo(file.fileName)
 }
+
+export function isVideoMedia(file: Pick<UploadedVideo, 'mimeType'>): boolean {
+  return (
+    file.mimeType.startsWith('video/') ||
+    file.mimeType === 'application/vnd.apple.mpegurl'
+  )
+}

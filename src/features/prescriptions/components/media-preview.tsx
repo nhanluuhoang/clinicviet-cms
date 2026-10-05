@@ -1,4 +1,5 @@
 import { FileText, X } from 'lucide-react'
+import { isVideoMedia } from '@/lib/utils'
 import { Button } from '@/components/ui/button'
 import {
   type UploadedImage,
@@ -9,14 +10,14 @@ import {
 export function MediaPreview({
   media,
   onRemove,
+  disabled = false,
 }: {
   media: UploadedImage | UploadedPdf | UploadedVideo
   onRemove: () => void
+  disabled?: boolean
 }) {
   const isPdf = media.mimeType === 'application/pdf'
-  const isVideo =
-    media.mimeType.startsWith('video/') ||
-    media.mimeType === 'application/vnd.apple.mpegurl'
+  const isVideo = isVideoMedia(media)
 
   return (
     <div className='group relative aspect-square overflow-hidden rounded-lg border bg-muted'>
@@ -50,6 +51,7 @@ export function MediaPreview({
         size='icon'
         className='absolute top-1 right-1 size-7'
         onClick={onRemove}
+        disabled={disabled}
       >
         <X className='size-4' />
         <span className='sr-only'>Xóa tệp {media.name}</span>
