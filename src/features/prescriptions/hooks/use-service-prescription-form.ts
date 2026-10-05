@@ -3,7 +3,7 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { API_URL } from '@/config'
 import { toast } from 'sonner'
 import { useAuthStore } from '@/stores/auth-store'
-import { deleteMediaFile } from '@/lib/utils'
+import { deleteMediaFile, isVideoMedia } from '@/lib/utils'
 import {
   uploadImage,
   uploadPdf,
@@ -328,9 +328,7 @@ export function useServicePrescriptionForm({
             pdfs: media
               .filter((file) => file.mimeType === 'application/pdf')
               .map((file) => file.fileName),
-            videos: media
-              .filter((file) => file.mimeType.startsWith('video/'))
-              .map((file) => file.fileName),
+            videos: media.filter(isVideoMedia).map((file) => file.fileName),
           }),
         },
         consultationFee,
@@ -415,7 +413,7 @@ export function useServicePrescriptionForm({
   }
 
   const addMedia = async (files: FileList | null) => {
-    if (!files) return
+    if (!files || isUploadingMedia || save.isPending) return
     const selected = Array.from(files)
     const invalid = selected.find((file) => {
       const maxSize = file.type.startsWith('video/')
@@ -433,18 +431,39 @@ export function useServicePrescriptionForm({
       toast.error(`Chỉ được tải lên tối đa ${MAX_MEDIA_FILES} tệp`)
       return
     }
+    const imageCount =
+      media.filter((file) => file.mimeType.startsWith('image/')).length +
+      selected.filter((file) => file.type.startsWith('image/')).length
+    const pdfCount =
+      media.filter((file) => file.mimeType === 'application/pdf').length +
+      selected.filter((file) => file.type === 'application/pdf').length
+    const videoCount =
+      media.filter(isVideoMedia).length +
+      selected.filter((file) => file.type.startsWith('video/')).length
+    if (imageCount > 5 || pdfCount > 5 || videoCount > 1) {
+      toast.error('Mỗi hồ sơ tối đa 5 ảnh, 5 PDF và 1 video.')
+      return
+    }
     setIsUploadingMedia(true)
     onUploadingChange?.(true)
     try {
-      const uploaded = await Promise.all(
+      const results = await Promise.allSettled(
         selected.map((file) => {
           if (file.type.startsWith('image/')) return uploadImage(file)
           if (file.type === 'application/pdf') return uploadPdf(file)
           return uploadVideo(file)
         })
       )
+      const uploaded = results.flatMap((result) =>
+        result.status === 'fulfilled' ? [result.value] : []
+      )
       draftMediaRef.current.push(...uploaded)
       setMedia((current) => [...current, ...uploaded])
+      if (results.some((result) => result.status === 'rejected')) {
+        toast.error(
+          'Một số tệp không tải lên được. Các tệp tải thành công đã được giữ lại.'
+        )
+      }
     } catch (error) {
       toast.error(typeof error === 'string' ? error : 'Không thể tải tệp lên')
     } finally {
@@ -456,6 +475,19 @@ export function useServicePrescriptionForm({
   const removeMedia = async (
     file: UploadedImage | UploadedPdf | UploadedVideo
   ) => {
+    if (isUploadingMedia || save.isPending) return
+    const isDraft = draftMediaRef.current.some(
+      (item) => item.id === file.id && item.fileName === file.fileName
+    )
+    if (!isDraft) {
+      setMedia((current) =>
+        current.filter(
+          (item) => item.id !== file.id || item.fileName !== file.fileName
+        )
+      )
+      toast.info('Tệp sẽ được xóa khi lưu hồ sơ.')
+      return
+    }
     setIsUploadingMedia(true)
     onUploadingChange?.(true)
     try {
@@ -468,9 +500,6 @@ export function useServicePrescriptionForm({
           (item) => item.id !== file.id || item.fileName !== file.fileName
         )
       )
-      void queryClient.invalidateQueries({
-        queryKey: ['examination-queue', 'list'],
-      })
       toast.success('Đã xóa tệp')
     } catch (error) {
       toast.error(typeof error === 'string' ? error : 'Không thể xóa tệp')

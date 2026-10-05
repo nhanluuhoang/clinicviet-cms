@@ -6,7 +6,7 @@ export const emptyMedicine = (key: number): MedicineRow => ({
   instruction: '',
 })
 
-export const MAX_MEDIA_FILES = 10
+export const MAX_MEDIA_FILES = 11
 
 export const MAX_MEDIA_FILE_SIZE = 5 * 1024 * 1024
 
