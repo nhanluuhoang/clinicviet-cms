@@ -7,6 +7,14 @@ export type MedicineGroup =
   | 'cardio'
   | 'digestive'
   | 'respiratory'
+  | 'allergy'
+  | 'endocrine'
+  | 'dermatology'
+  | 'ophthalmology'
+  | 'ent'
+  | 'musculoskeletal'
+  | 'neurology'
+  | 'vaccine'
   | 'other'
 
 export interface Medicine extends AuditFields {

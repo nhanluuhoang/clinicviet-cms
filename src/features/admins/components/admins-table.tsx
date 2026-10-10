@@ -59,6 +59,8 @@ export function AdminsTable({
     pagination: { defaultPage: 1, defaultPageSize: 10 },
     columnFilters: [
       { columnId: 'fullName', searchKey: 'fullName', type: 'string' },
+      { columnId: 'role', searchKey: 'role', type: 'array' },
+      { columnId: 'isActive', searchKey: 'isActive', type: 'array' },
     ],
     sorting: { defaultSort: '' },
   })
@@ -97,6 +99,27 @@ export function AdminsTable({
         table={table}
         searchPlaceholder='Tìm kiếm tên...'
         searchKey='fullName'
+        filters={[
+          {
+            columnId: 'role',
+            title: 'Vai trò',
+            variant: 'radio',
+            options: [
+              { label: 'Quản trị phòng khám', value: 'TENANT_ADMIN' },
+              { label: 'Bác sĩ', value: 'DOCTOR' },
+              { label: 'Trợ lý', value: 'ASSISTANT' },
+            ],
+          },
+          {
+            columnId: 'isActive',
+            title: 'Trạng thái',
+            variant: 'radio',
+            options: [
+              { label: 'Đang hoạt động', value: 'true' },
+              { label: 'Đã khóa', value: 'false' },
+            ],
+          },
+        ]}
       />
       <MobileDataCards
         table={table}

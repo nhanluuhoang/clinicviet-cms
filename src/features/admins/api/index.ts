@@ -4,6 +4,8 @@ import type { AuditFields } from '@/components/data-table/audit-columns'
 export type StaffRole = 'DOCTOR' | 'ASSISTANT'
 
 export interface Params {
+  role?: Admin['role']
+  isActive?: 'true' | 'false'
   fullName: string
   page: number
   pageSize: number
@@ -41,11 +43,19 @@ const CreateStaff = (data: StaffInput): Promise<Admin> =>
 
 const FindStaff = ({
   fullName,
+  role,
+  isActive,
   page,
   pageSize,
 }: Params): Promise<AdminsResponse> =>
   axios.get('/users', {
-    params: { search: fullName || undefined, page, limit: pageSize },
+    params: {
+      search: fullName || undefined,
+      role,
+      isActive,
+      page,
+      limit: pageSize,
+    },
   })
 
 const UpdateStaff = (id: string, data: StaffInput): Promise<Admin> =>
