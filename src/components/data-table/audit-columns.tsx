@@ -4,10 +4,10 @@ import { DataTableColumnHeader } from './column-header'
 export type AuditFields = {
   createdAt?: string | null
   createdBy?: string | null
-  createdByName?: string | null
+  creator?: { fullName: string } | null
   updatedAt?: string | null
   updatedBy?: string | null
-  updatedByName?: string | null
+  updater?: { fullName: string } | null
 }
 
 export const auditLabels = {
@@ -34,7 +34,7 @@ export function formatAuditValue(record: AuditFields, key: AuditColumnId) {
     return Number.isNaN(date.getTime()) ? '—' : date.toLocaleString('vi-VN')
   }
   return (
-    record[key === 'createdBy' ? 'createdByName' : 'updatedByName'] ||
+    record[key === 'createdBy' ? 'creator' : 'updater']?.fullName ||
     value ||
     '—'
   )
