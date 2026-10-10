@@ -19,6 +19,8 @@ type AdminsSearch = {
   fullName: string
   phone: string
   gender: string
+  role?: ('TENANT_ADMIN' | 'DOCTOR' | 'ASSISTANT')[]
+  isActive?: ('true' | 'false')[]
   sort: string
 }
 
@@ -31,6 +33,8 @@ export function Admins() {
     queryFn: () =>
       FindStaff({
         fullName: search.fullName || '',
+        role: search.role?.[0],
+        isActive: search.isActive?.[0],
         page: search.page || 1,
         pageSize: search.pageSize || 10,
       }),

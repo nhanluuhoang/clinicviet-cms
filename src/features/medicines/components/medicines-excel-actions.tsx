@@ -22,6 +22,14 @@ const medicineGroups: MedicineGroup[] = [
   'cardio',
   'digestive',
   'respiratory',
+  'allergy',
+  'endocrine',
+  'dermatology',
+  'ophthalmology',
+  'ent',
+  'musculoskeletal',
+  'neurology',
+  'vaccine',
   'other',
 ]
 

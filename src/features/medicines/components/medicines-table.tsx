@@ -17,7 +17,7 @@ import { DataTableColumnHeader } from '@/components/data-table'
 import { withAuditColumns } from '@/components/data-table/audit-columns'
 import { UrlDataTable } from '@/components/data-table/url-data-table'
 import { GetMedicines, type Medicine } from '../api'
-import { medicineGroupLabel, medicineGroups } from '../data/data'
+import { medicineGroupLabel, medicineGroups, medicineUnits } from '../data/data'
 import { useMedicines } from './medicines-provider'
 
 function RowActions({ medicine }: { medicine: Medicine }) {
@@ -93,6 +93,7 @@ const columns: ColumnDef<Medicine>[] = withAuditColumns([
     header: ({ column }) => (
       <DataTableColumnHeader column={column} title='Đơn vị' />
     ),
+    filterFn: (row, id, value) => value.includes(row.getValue(id)),
   },
   {
     accessorKey: 'group',
@@ -165,6 +166,12 @@ export function MedicinesTable() {
       }
       pageSize={15}
       filters={[
+        {
+          columnId: 'unit',
+          title: 'Đơn vị',
+          variant: 'checkbox',
+          options: medicineUnits.map((unit) => ({ label: unit, value: unit })),
+        },
         {
           columnId: 'group',
           title: 'Nhóm thuốc',
