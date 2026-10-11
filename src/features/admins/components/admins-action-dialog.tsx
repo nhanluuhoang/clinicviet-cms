@@ -4,6 +4,7 @@ import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { toast } from 'sonner'
+import { showRequestError } from '@/lib/handle-server-error'
 import { Button } from '@/components/ui/button'
 import { Checkbox } from '@/components/ui/checkbox'
 import {
@@ -140,7 +141,7 @@ export function AdminsActionDialog({
     },
     onError: (error) => {
       if (error instanceof Error && error.message === 'missing-password') return
-      toast.error('Không thể lưu thông tin nhân viên')
+      showRequestError(error, 'Không thể lưu thông tin nhân viên')
     },
   })
 

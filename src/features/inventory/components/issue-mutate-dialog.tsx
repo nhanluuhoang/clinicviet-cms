@@ -5,6 +5,7 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import { useQuery, useQueryClient } from '@tanstack/react-query'
 import { Check, ChevronsUpDown, Plus, Trash2 } from 'lucide-react'
 import { toast } from 'sonner'
+import { showRequestError } from '@/lib/handle-server-error'
 import { cn, formatDate, formatNumber, toDateInput } from '@/lib/utils'
 import { useDebounce } from '@/hooks/use-debounce'
 import { Button } from '@/components/ui/button'
@@ -205,9 +206,7 @@ export function IssueMutateDialog({
       toast.success('Đã xuất hàng')
       onOpenChange(false)
     } catch (error) {
-      toast.error('Không xuất được hàng', {
-        description: error instanceof Error ? error.message : undefined,
-      })
+      showRequestError(error, 'Không xuất được hàng')
     }
   }
 

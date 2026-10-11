@@ -1,6 +1,6 @@
 import { type ClassValue, clsx } from 'clsx'
-import { toast } from 'sonner'
 import { twMerge } from 'tailwind-merge'
+import { showRequestError } from '@/lib/handle-server-error'
 import {
   deleteImage,
   deletePdf,
@@ -138,9 +138,7 @@ export const formatTime = (value?: string | null) =>
     : '—'
 
 export function showQueueError(error: unknown) {
-  const message =
-    typeof error === 'string' ? error : (error as { message?: string })?.message
-  toast.error(message || 'Không thể cập nhật thứ tự khám')
+  showRequestError(error, 'Không thể cập nhật thứ tự khám')
 }
 
 export const formatDashboardMoney = (value: number) =>

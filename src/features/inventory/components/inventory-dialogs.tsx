@@ -1,5 +1,6 @@
 import { useQueryClient } from '@tanstack/react-query'
 import { toast } from 'sonner'
+import { showRequestError } from '@/lib/handle-server-error'
 import { formatNumber } from '@/lib/utils'
 import { ConfirmDialog } from '@/components/confirm-dialog'
 import { DisposeBatch } from '../api'
@@ -26,9 +27,7 @@ export function InventoryDialogs() {
       toast.success('Đã huỷ lô khỏi kho')
       closeAndClear(() => setCurrentBatch(null))
     } catch (error) {
-      toast.error('Không huỷ được lô', {
-        description: error instanceof Error ? error.message : undefined,
-      })
+      showRequestError(error, 'Không huỷ được lô')
     }
   }
 

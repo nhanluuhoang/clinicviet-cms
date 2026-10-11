@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState } from 'react'
 import { useQuery, useQueryClient } from '@tanstack/react-query'
 import { Check, ChevronsUpDown } from 'lucide-react'
 import { toast } from 'sonner'
+import { showRequestError } from '@/lib/handle-server-error'
 import { cn, formatNumber, toDateInput } from '@/lib/utils'
 import { useDebounce } from '@/hooks/use-debounce'
 import { Button } from '@/components/ui/button'
@@ -182,9 +183,7 @@ export function StockTakeMutateDrawer({
       })
       onOpenChange(false)
     } catch (error) {
-      toast.error('Không lưu được phiếu kiểm kê', {
-        description: error instanceof Error ? error.message : undefined,
-      })
+      showRequestError(error, 'Không lưu được phiếu kiểm kê')
     } finally {
       setIsSubmitting(false)
     }

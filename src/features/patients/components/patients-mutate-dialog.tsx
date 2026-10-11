@@ -5,6 +5,7 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import { useQueryClient } from '@tanstack/react-query'
 import { Info } from 'lucide-react'
 import { toast } from 'sonner'
+import { showRequestError } from '@/lib/handle-server-error'
 import { cn } from '@/lib/utils'
 import { Button } from '@/components/ui/button'
 import {
@@ -210,11 +211,9 @@ export function PatientsMutateDialog({
       queryClient.invalidateQueries({ queryKey: ['patients'] })
       onOpenChange(false)
     } catch (error) {
-      toast.error(
-        isEdit ? 'Không cập nhật được' : 'Không thêm được bệnh nhân',
-        {
-          description: error instanceof Error ? error.message : undefined,
-        }
+      showRequestError(
+        error,
+        isEdit ? 'Không cập nhật được' : 'Không thêm được bệnh nhân'
       )
     }
   }

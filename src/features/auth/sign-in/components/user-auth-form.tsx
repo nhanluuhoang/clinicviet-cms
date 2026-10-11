@@ -1,6 +1,5 @@
 import { useState } from 'react'
 import { z } from 'zod'
-import { isAxiosError } from 'axios'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useQueryClient } from '@tanstack/react-query'
@@ -9,6 +8,7 @@ import { canAccessPath, getHomePath } from '@/config/access-control'
 import { Loader2, LogIn } from 'lucide-react'
 import { toast } from 'sonner'
 import { useAuthStore } from '@/stores/auth-store'
+import { showRequestError } from '@/lib/handle-server-error'
 import { cn } from '@/lib/utils'
 import { Button } from '@/components/ui/button'
 import {
@@ -37,8 +37,6 @@ const formSchema = z.object({
 interface UserAuthFormProps extends React.HTMLAttributes<HTMLFormElement> {
   redirectTo?: string
 }
-
-type ApiError = { error?: { title?: string } }
 
 export function UserAuthForm({
   className,
@@ -94,11 +92,10 @@ export function UserAuthForm({
       navigate({ to: targetPath, replace: true })
       toast.success(`Chào mừng trở lại, ${profile.data.fullName}!`)
     } catch (error) {
-      const message =
-        (isAxiosError<ApiError>(error)
-          ? error.response?.data?.error?.title
-          : undefined) ?? 'Đăng nhập thất bại. Vui lòng kiểm tra lại thông tin.'
-      toast.error(message)
+      showRequestError(
+        error,
+        'Đăng nhập thất bại. Vui lòng kiểm tra lại thông tin.'
+      )
     } finally {
       setIsLoading(false)
     }

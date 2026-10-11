@@ -5,6 +5,7 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { Check, ChevronsUpDown } from 'lucide-react'
 import { toast } from 'sonner'
+import { showRequestError } from '@/lib/handle-server-error'
 import { cn } from '@/lib/utils'
 import { useDebounce } from '@/hooks/use-debounce'
 import { Button } from '@/components/ui/button'
@@ -135,7 +136,7 @@ export function CreateSystemUserDialog({
       toast.success('Đã tạo tài khoản')
       handleOpenChange(false)
     },
-    onError: () => toast.error('Không thể tạo tài khoản'),
+    onError: (error) => showRequestError(error, 'Không thể tạo tài khoản'),
   })
 
   return (

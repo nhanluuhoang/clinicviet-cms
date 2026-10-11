@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { toast } from 'sonner'
+import { showRequestError } from '@/lib/handle-server-error'
 import { Button } from '@/components/ui/button'
 import {
   Dialog,
@@ -32,12 +33,12 @@ export function TrialRequestActions({ request }: { request: TrialRequest }) {
   const approve = useMutation({
     mutationFn: () => approveTrialRequest(request.id, form),
     onSuccess: () => done('Đã duyệt yêu cầu dùng thử'),
-    onError: () => toast.error('Không thể duyệt yêu cầu'),
+    onError: (error) => showRequestError(error, 'Không thể duyệt yêu cầu'),
   })
   const reject = useMutation({
     mutationFn: () => rejectTrialRequest(request.id, reason),
     onSuccess: () => done('Đã từ chối yêu cầu'),
-    onError: () => toast.error('Không thể từ chối yêu cầu'),
+    onError: (error) => showRequestError(error, 'Không thể từ chối yêu cầu'),
   })
   if (request.status !== 'PENDING') return null
   return (

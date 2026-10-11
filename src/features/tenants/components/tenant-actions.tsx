@@ -3,6 +3,7 @@ import { DotsHorizontalIcon } from '@radix-ui/react-icons'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { Pencil, Trash2 } from 'lucide-react'
 import { toast } from 'sonner'
+import { showRequestError } from '@/lib/handle-server-error'
 import { toDateInput } from '@/lib/utils'
 import {
   AlertDialog,
@@ -74,7 +75,8 @@ export function TenantActions({ tenant }: { tenant: Tenant }) {
       toast.success('Đã cập nhật phòng khám')
       setEditOpen(false)
     },
-    onError: () => toast.error('Không thể cập nhật phòng khám'),
+    onError: (error) =>
+      showRequestError(error, 'Không thể cập nhật phòng khám'),
   })
   const remove = useMutation({
     mutationFn: () => deleteTenant(tenant.id),
@@ -83,8 +85,11 @@ export function TenantActions({ tenant }: { tenant: Tenant }) {
       toast.success('Đã xóa phòng khám')
       setDeleteOpen(false)
     },
-    onError: () =>
-      toast.error('Không thể xóa phòng khám đang có dữ liệu nghiệp vụ'),
+    onError: (error) =>
+      showRequestError(
+        error,
+        'Không thể xóa phòng khám đang có dữ liệu nghiệp vụ'
+      ),
   })
 
   return (

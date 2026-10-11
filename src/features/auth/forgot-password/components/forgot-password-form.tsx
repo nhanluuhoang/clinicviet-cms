@@ -1,10 +1,10 @@
 import { useState } from 'react'
 import { z } from 'zod'
-import { isAxiosError } from 'axios'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { ArrowRight, Loader2 } from 'lucide-react'
 import { toast } from 'sonner'
+import { showRequestError } from '@/lib/handle-server-error'
 import { cn } from '@/lib/utils'
 import { Button } from '@/components/ui/button'
 import {
@@ -42,11 +42,7 @@ export function ForgotPasswordForm({
       form.reset()
       toast.success(`Đã gửi email đến ${data.email}`)
     } catch (error) {
-      const message =
-        (isAxiosError<{ error?: { title?: string } }>(error)
-          ? error.response?.data?.error?.title
-          : undefined) ?? 'Không thể gửi email. Vui lòng thử lại.'
-      toast.error(message)
+      showRequestError(error, 'Không thể gửi email. Vui lòng thử lại.')
     } finally {
       setIsLoading(false)
     }

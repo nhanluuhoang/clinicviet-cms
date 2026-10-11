@@ -1,6 +1,7 @@
 import { useState, type FormEvent } from 'react'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { toast } from 'sonner'
+import { showRequestError } from '@/lib/handle-server-error'
 import { Button } from '@/components/ui/button'
 import {
   Dialog,
@@ -62,6 +63,7 @@ export function RequestDetailDialog({
       ])
       toast.success('Đã cập nhật yêu cầu')
     },
+    onError: (error) => showRequestError(error, 'Không thể cập nhật yêu cầu'),
   })
   const request = query.data
   const submit = (event: FormEvent<HTMLFormElement>) => {

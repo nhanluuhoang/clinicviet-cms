@@ -4,6 +4,7 @@ import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { toast } from 'sonner'
+import { showRequestError } from '@/lib/handle-server-error'
 import { Button } from '@/components/ui/button'
 import {
   Form,
@@ -61,7 +62,8 @@ export function TenantForm() {
       ])
       toast.success('Đã cập nhật thông tin phòng khám')
     },
-    onError: () => toast.error('Không thể cập nhật thông tin phòng khám'),
+    onError: (error) =>
+      showRequestError(error, 'Không thể cập nhật thông tin phòng khám'),
   })
 
   if (tenant.isLoading) {

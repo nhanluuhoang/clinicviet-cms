@@ -5,6 +5,7 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import { useNavigate } from '@tanstack/react-router'
 import { Loader2, Save } from 'lucide-react'
 import { toast } from 'sonner'
+import { showRequestError } from '@/lib/handle-server-error'
 import { cn } from '@/lib/utils'
 import { Button } from '@/components/ui/button'
 import {
@@ -52,8 +53,9 @@ export function ResetPasswordForm({
       await ResetPassword({ ...data, token })
       navigate({ to: '/sign-in' })
       toast.success('Đặt lại mật khẩu thành công')
-    } catch {
-      toast.error(
+    } catch (error) {
+      showRequestError(
+        error,
         'Đặt lại mật khẩu thất bại. Vui lòng kiểm tra liên kết và thử lại.'
       )
     } finally {
