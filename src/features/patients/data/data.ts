@@ -7,11 +7,11 @@ export const genderLabel = (value?: string | null) =>
   genders.find((g) => g.value === value)?.label ?? '—'
 
 /**
- * Giới hạn độ dài lấy từ @db.VarChar trong Prisma model.
+ * Giới hạn nhập liệu; mật khẩu đồng bộ với quy tắc 8–20 ký tự của API.
  * Không có `userName` vì field đó không nằm trong form — backend tự sinh.
  */
 export const MAX = {
-  password: 255,
+  password: 20,
   fullName: 150,
   email: 150,
   phone: 15,

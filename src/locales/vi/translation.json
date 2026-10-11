@@ -23,7 +23,10 @@
     "context": {
       "medicineName": "Tên thuốc",
       "stockMedicine": "Thuốc",
-      "templateName": "Tên mẫu"
+      "templateName": "Tên mẫu",
+      "clinicName": "Phòng khám",
+      "clinicCode": "Mã phòng khám",
+      "registeredAt": "Ngày đăng ký"
     },
     "columns": {
       "address": "Địa chỉ",
@@ -71,7 +74,23 @@
       "totalQty": "Tồn kho",
       "unit": "Đơn vị",
       "unitCost": "Giá nhập",
-      "value": "Giá trị"
+      "value": "Giá trị",
+      "creator": "Người tạo",
+      "isActive": "Trạng thái",
+      "lastActiveAt": "Hoạt động gần nhất",
+      "rejectionReason": "Lý do từ chối",
+      "role": "Vai trò",
+      "servicePlan": "Gói dịch vụ",
+      "status": "Trạng thái",
+      "subdomain": "Tên miền phụ",
+      "subscriptionStatus": "Trạng thái đăng ký",
+      "tenantId": "Phòng khám",
+      "trialEndsAt": "Hạn dùng thử",
+      "trialStartedAt": "Bắt đầu dùng thử",
+      "type": "Loại",
+      "updatedAt": "Ngày cập nhật",
+      "userName": "Tên đăng nhập",
+      "users": "Tài khoản"
     }
   }
 }

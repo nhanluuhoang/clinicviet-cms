@@ -5,5 +5,15 @@ import { columns } from './tenants-columns'
 export function TenantsTable(
   props: Omit<React.ComponentProps<typeof UrlDataTable<Tenant>>, 'columns'>
 ) {
-  return <UrlDataTable {...props} columns={columns} />
+  return (
+    <UrlDataTable
+      {...props}
+      columns={columns}
+      mobileLabels={{
+        code: 'mobileTable.context.clinicCode',
+        name: 'mobileTable.context.clinicName',
+        ...props.mobileLabels,
+      }}
+    />
+  )
 }

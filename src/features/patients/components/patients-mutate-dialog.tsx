@@ -111,20 +111,6 @@ const formSchema = z
         message: 'Mật khẩu tối thiểu 8 ký tự',
       })
     }
-    if (!/[a-z]/.test(v.password)) {
-      ctx.addIssue({
-        code: 'custom',
-        path: ['password'],
-        message: 'Mật khẩu cần ít nhất một chữ thường',
-      })
-    }
-    if (!/\d/.test(v.password)) {
-      ctx.addIssue({
-        code: 'custom',
-        path: ['password'],
-        message: 'Mật khẩu cần ít nhất một chữ số',
-      })
-    }
     if (v.password !== v.confirmPassword) {
       ctx.addIssue({
         code: 'custom',

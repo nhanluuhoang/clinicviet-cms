@@ -44,11 +44,11 @@ const formSchema = z
     passwordConfirmation: z.string(),
   })
   .superRefine((values, context) => {
-    if (values.password && values.password.length < 12) {
+    if (values.password && values.password.length < 8) {
       context.addIssue({
         code: 'custom',
         path: ['password'],
-        message: 'Mật khẩu phải có ít nhất 12 ký tự.',
+        message: 'Mật khẩu phải có ít nhất 8 ký tự.',
       })
     }
     if (values.password.length > 20) {
