@@ -66,7 +66,7 @@ export function QueueActions({
             disabled={pending}
             onClick={onCheckIn}
           >
-            <UserRoundCheck /> Check-in
+            <UserRoundCheck /> Tiếp nhận
           </Button>
         )}
         {item.status === 'IN_EXAMINATION' && canPrescribe && (

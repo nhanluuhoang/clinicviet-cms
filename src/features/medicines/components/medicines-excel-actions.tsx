@@ -2,18 +2,9 @@ import { useRef, useState } from 'react'
 import { useQueryClient } from '@tanstack/react-query'
 import { Download, FileUp } from 'lucide-react'
 import { toast } from 'sonner'
-import {
-  downloadExcel,
-  excelNumber,
-  excelText,
-  readExcel,
-} from '@/lib/excel'
+import { downloadExcel, excelNumber, excelText, readExcel } from '@/lib/excel'
 import { Button } from '@/components/ui/button'
-import {
-  CreateMedicine,
-  GetMedicines,
-  type MedicineGroup,
-} from '../api'
+import { CreateMedicine, GetMedicines, type MedicineGroup } from '../api'
 
 const medicineGroups: MedicineGroup[] = [
   'antibiotic',
@@ -95,7 +86,9 @@ export function MedicinesExcelActions() {
           salePrice: excelNumber(row.salePrice, 'salePrice', rowNumber),
           isActive:
             row.isActive === true ||
-            ['true', '1', 'yes'].includes(excelText(row.isActive).toLowerCase()),
+            ['true', '1', 'yes'].includes(
+              excelText(row.isActive).toLowerCase()
+            ),
         })
       }
 
@@ -115,7 +108,7 @@ export function MedicinesExcelActions() {
     <>
       <Button variant='outline' disabled={isWorking} onClick={handleDownload}>
         <Download className='size-4' />
-        Download
+        Xuất Excel
       </Button>
       <Button
         variant='outline'
@@ -123,7 +116,7 @@ export function MedicinesExcelActions() {
         onClick={() => inputRef.current?.click()}
       >
         <FileUp className='size-4' />
-        Import Excel
+        Nhập Excel
       </Button>
       <input
         ref={inputRef}

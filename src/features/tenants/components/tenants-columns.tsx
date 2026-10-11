@@ -7,7 +7,7 @@ const planLabels = { BASIC: 'Cơ bản', PLUS: 'Nâng cao', PRO: 'Chuyên nghi�
 export const columns: ColumnDef<Tenant>[] = [
   { accessorKey: 'code', header: 'Mã' },
   { accessorKey: 'name', header: 'Phòng khám' },
-  { accessorKey: 'subdomain', header: 'Subdomain' },
+  { accessorKey: 'subdomain', header: 'Tên miền phụ' },
   {
     accessorKey: 'servicePlan',
     header: 'Gói',

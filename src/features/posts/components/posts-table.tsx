@@ -163,7 +163,7 @@ export function PostsTable({ data, total, isLoading }: PostsTableProps) {
                   colSpan={columns.length}
                   className='h-24 text-center'
                 >
-                  Loading...
+                  Đang tải...
                 </TableCell>
               </TableRow>
             ) : table.getRowModel().rows?.length ? (

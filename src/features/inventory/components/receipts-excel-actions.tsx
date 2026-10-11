@@ -123,7 +123,7 @@ export function ReceiptsExcelActions() {
     <>
       <Button variant='outline' disabled={isWorking} onClick={handleDownload}>
         <Download className='size-4' />
-        Download
+        Xuất Excel
       </Button>
       <Button
         variant='outline'
@@ -131,7 +131,7 @@ export function ReceiptsExcelActions() {
         onClick={() => inputRef.current?.click()}
       >
         <FileUp className='size-4' />
-        Import Excel
+        Nhập Excel
       </Button>
       <input
         ref={inputRef}

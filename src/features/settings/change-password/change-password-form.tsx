@@ -23,7 +23,7 @@ const schema = z
       .max(20, 'Mật khẩu không được quá 20 ký tự'),
     password: z
       .string()
-      .min(6, 'Mật khẩu phải có ít nhất 6 ký tự')
+      .min(8, 'Mật khẩu phải có ít nhất 8 ký tự')
       .max(20, 'Mật khẩu không được quá 20 ký tự'),
     passwordConfirmation: z.string(),
   })
@@ -85,7 +85,7 @@ export function ChangePasswordForm() {
                 <PasswordInput
                   {...field}
                   autoComplete='new-password'
-                  placeholder='Từ 6 đến 20 ký tự'
+                  placeholder='Từ 8 đến 20 ký tự'
                 />
               </FormControl>
               <FormMessage />

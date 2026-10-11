@@ -8,5 +8,15 @@ export function TrialRequestsTable(
     'columns'
   >
 ) {
-  return <UrlDataTable {...props} columns={columns} />
+  return (
+    <UrlDataTable
+      {...props}
+      columns={columns}
+      mobileLabels={{
+        code: 'mobileTable.context.clinicCode',
+        createdAt: 'mobileTable.context.registeredAt',
+        ...props.mobileLabels,
+      }}
+    />
+  )
 }

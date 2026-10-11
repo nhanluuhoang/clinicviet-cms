@@ -21,8 +21,8 @@ import { ResetPassword } from '@/features/auth/api'
 const formSchema = z.object({
   password: z
     .string()
-    .min(6, 'Mật khẩu phải có ít nhất 6 ký tự')
-    .max(255, 'Mật khẩu không được vượt quá 255 ký tự'),
+    .min(8, 'Mật khẩu phải có ít nhất 8 ký tự')
+    .max(20, 'Mật khẩu không được vượt quá 20 ký tự'),
   passwordConfirmation: z.string().min(1, 'Vui lòng nhập lại mật khẩu'),
 })
 

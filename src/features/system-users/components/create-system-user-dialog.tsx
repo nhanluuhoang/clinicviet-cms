@@ -54,9 +54,12 @@ const schema = z
       .regex(/^[a-zA-Z0-9._-]+$/),
     fullName: z.string().trim().min(1, 'Vui lòng nhập họ tên.'),
     email: z.union([z.literal(''), z.email('Email không hợp lệ.')]),
-    phone: z.string().trim().max(20),
+    phone: z.string().trim().max(20, 'Tối đa 20 ký tự.'),
     role: z.enum(['TENANT_ADMIN', 'DOCTOR', 'ASSISTANT']),
-    password: z.string().min(6, 'Mật khẩu tối thiểu 6 ký tự.').max(20),
+    password: z
+      .string()
+      .min(8, 'Mật khẩu tối thiểu 8 ký tự.')
+      .max(20, 'Mật khẩu tối đa 20 ký tự.'),
     passwordConfirmation: z.string(),
   })
   .refine((value) => value.password === value.passwordConfirmation, {
