@@ -12,15 +12,22 @@ import { emptyConfig } from '../data/constants'
 
 export function useLandingConfigForm() {
   const queryClient = useQueryClient()
+  const [postsOpen, setPostsOpen] = useState(false)
 
   const { data, isLoading } = useQuery({
     queryKey: ['landing-config'],
     queryFn: getLandingConfig,
   })
 
-  const { data: publishedPosts } = useQuery({
+  const {
+    data: publishedPosts,
+    isLoading: postsLoading,
+    isError: postsError,
+    refetch: refetchPosts,
+  } = useQuery({
     queryKey: ['posts', 'landing-featured'],
     queryFn: () => GetPosts({ page: 1, limit: 100, isPublic: true }),
+    enabled: postsOpen,
   })
 
   const [config, setConfig] = useState(emptyConfig)
@@ -60,6 +67,11 @@ export function useLandingConfigForm() {
     data,
     isLoading,
     publishedPosts,
+    postsOpen,
+    setPostsOpen,
+    postsLoading,
+    postsError,
+    refetchPosts,
     config,
     clinicName,
     setClinicName,

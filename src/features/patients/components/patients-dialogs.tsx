@@ -83,6 +83,8 @@ export function PatientsDialogs() {
               <>
                 Bệnh nhân <strong>{currentRow.fullName}</strong> (tên đăng nhập{' '}
                 <strong>{currentRow.userName}</strong>) sẽ bị xoá. <br />
+                Chỉ có thể xoá bệnh nhân chưa có lịch khám, hồ sơ khám hoặc
+                phiếu xuất kho.
                 Hành động này không thể hoàn tác.
               </>
             }

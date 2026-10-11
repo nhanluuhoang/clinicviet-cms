@@ -20,6 +20,11 @@ import { Section } from './landing-section'
 export function LandingConfigForm({
   data,
   publishedPosts,
+  postsOpen,
+  setPostsOpen,
+  postsLoading,
+  postsError,
+  refetchPosts,
   config,
   clinicName,
   setClinicName,
@@ -29,6 +34,11 @@ export function LandingConfigForm({
   LandingConfigFormState,
   | 'data'
   | 'publishedPosts'
+  | 'postsOpen'
+  | 'setPostsOpen'
+  | 'postsLoading'
+  | 'postsError'
+  | 'refetchPosts'
   | 'config'
   | 'clinicName'
   | 'setClinicName'
@@ -195,7 +205,27 @@ export function LandingConfigForm({
         description='Chọn tối đa 3 bài viết đã công khai và sắp xếp theo thứ tự chọn.'
       >
         <div className='space-y-3 md:col-span-2'>
-          {(publishedPosts?.data.length ?? 0) === 0 ? (
+          <Button
+            type='button'
+            variant='outline'
+            onClick={() => setPostsOpen(!postsOpen)}
+          >
+            {postsOpen ? 'Ẩn danh sách bài viết' : 'Xem và chọn bài viết'}
+          </Button>
+          {!postsOpen ? (
+            <p className='text-sm text-muted-foreground'>
+              Đã chọn {config.featuredPostIds.length} bài viết.
+            </p>
+          ) : postsLoading ? (
+            <p className='text-sm text-muted-foreground'>Đang tải bài viết...</p>
+          ) : postsError ? (
+            <div className='space-y-2'>
+              <p className='text-sm text-destructive'>Không tải được bài viết.</p>
+              <Button type='button' variant='outline' onClick={() => refetchPosts()}>
+                Thử lại
+              </Button>
+            </div>
+          ) : (publishedPosts?.data.length ?? 0) === 0 ? (
             <p className='text-sm text-muted-foreground'>
               Chưa có bài viết công khai. Hãy công khai bài viết trước khi chọn.
             </p>
@@ -238,9 +268,11 @@ export function LandingConfigForm({
               )
             })
           )}
-          <p className='text-xs text-muted-foreground'>
-            Nếu không chọn bài nào, trang chủ sẽ tự hiển thị 3 bài mới nhất.
-          </p>
+          {postsOpen && (
+            <p className='text-xs text-muted-foreground'>
+              Nếu không chọn bài nào, trang chủ sẽ tự hiển thị 3 bài mới nhất.
+            </p>
+          )}
         </div>
       </Section>
 

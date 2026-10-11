@@ -26,7 +26,7 @@
 
 - Feature ở `src/features`, route ở `src/routes/_authenticated`; `UrlDataTable` dùng chung toolbar, bộ lọc/phan trang đồng bộ URL và thẻ mobile. Axios interceptor trả `response.data`, giữ `AxiosError` để nhận diện 401.
 - CMS lấy CSRF qua `/auth/csrf` rồi gửi header cho request ghi. `SUPER_ADMIN` có toàn quyền; tenant admin bị giới hạn theo vai trò/gói.
-- Landing config và posts dùng API thật; ảnh POST có thumbnail public, ảnh bệnh nhân giữ kiểm soát truy cập.
+- Landing config và posts dùng API thật; ảnh POST có thumbnail public, ảnh bệnh nhân giữ kiểm soát truy cập. Mẫu đơn thuốc chỉ tải thuốc và tùy chọn hướng dẫn khi mở dialog tạo/sửa. Landing config chỉ tải bài viết công khai khi mở phần chọn bài nổi bật; lưu form vẫn giữ featuredPostIds khi phần này đóng.
 
 ## Convention
 

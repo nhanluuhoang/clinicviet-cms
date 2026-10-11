@@ -62,6 +62,9 @@ export function PostsDialogs() {
               <>
                 Bạn sắp xóa bài viết <strong>{currentRow.title}</strong>.
                 <br />
+                Nếu bài viết đang được chọn làm bài nổi bật, hãy bỏ chọn trong
+                Cấu hình landing trước.
+                <br />
                 Thao tác này không thể hoàn tác.
               </>
             }

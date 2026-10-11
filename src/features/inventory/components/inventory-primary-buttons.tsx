@@ -2,7 +2,6 @@ import { ClipboardCheck, PackageMinus, PackagePlus } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { type InventoryTab } from '../data/data'
 import { useInventory } from './inventory-provider'
-import { ReceiptsExcelActions } from './receipts-excel-actions'
 
 export function PrimaryButtons({ tab }: { tab: InventoryTab }) {
   const { setOpen } = useInventory()
@@ -31,7 +30,6 @@ export function PrimaryButtons({ tab }: { tab: InventoryTab }) {
   if (tab === 'receipts') {
     return (
       <div className='flex flex-wrap items-center gap-2'>
-        <ReceiptsExcelActions />
         <Button
           data-tour='create-receipt'
           onClick={() => setOpen('receipt-create')}

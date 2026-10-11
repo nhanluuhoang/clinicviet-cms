@@ -109,7 +109,7 @@ export function ExaminationQueue() {
               <ListOrdered className='size-6' /> Thứ tự khám
             </h2>
             <p className='text-muted-foreground'>
-              Tiếp nhận và điều phối lượt khám trong ngày.
+              Tiếp nhận và điều phối lượt khám theo ngày.
             </p>
           </div>
           <div className='flex flex-wrap gap-2'>
@@ -120,7 +120,6 @@ export function ExaminationQueue() {
                 setQueueDate(value)
                 setPage(1)
               }}
-              minDate={today()}
             />
             <Button
               data-tour='create-queue'

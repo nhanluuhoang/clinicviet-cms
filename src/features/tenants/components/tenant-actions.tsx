@@ -81,6 +81,7 @@ export function TenantActions({ tenant }: { tenant: Tenant }) {
     onSuccess: async () => {
       await refresh()
       toast.success('Đã xóa phòng khám')
+      setDeleteOpen(false)
     },
     onError: () =>
       toast.error('Không thể xóa phòng khám đang có dữ liệu nghiệp vụ'),
@@ -241,8 +242,10 @@ export function TenantActions({ tenant }: { tenant: Tenant }) {
           <AlertDialogHeader>
             <AlertDialogTitle>Xóa phòng khám?</AlertDialogTitle>
             <AlertDialogDescription>
-              Tài khoản thuộc tenant sẽ bị xóa cùng phòng khám. Tenant đã có dữ
-              liệu nghiệp vụ cần được khóa thay vì xóa.
+              Chỉ có thể xóa phòng khám chưa có lịch khám, hồ sơ, dữ liệu kho,
+              mẫu đơn, bài viết hoặc lịch sử hỗ trợ. Tài khoản thuộc phòng khám
+              sẽ bị xóa cùng phòng khám. Nếu đã có dữ liệu, hãy khóa phòng khám
+              trong phần Cập nhật.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
