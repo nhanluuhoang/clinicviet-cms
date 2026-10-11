@@ -4,6 +4,7 @@ import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useQueryClient } from '@tanstack/react-query'
 import { toast } from 'sonner'
+import { showRequestError } from '@/lib/handle-server-error'
 import { toDateInput } from '@/lib/utils'
 import { Button } from '@/components/ui/button'
 import {
@@ -80,9 +81,7 @@ export function BatchUpdateDialog({
       toast.success('Đã cập nhật lô hàng')
       onOpenChange(false)
     } catch (error) {
-      toast.error('Không cập nhật được lô hàng', {
-        description: error instanceof Error ? error.message : undefined,
-      })
+      showRequestError(error, 'Không cập nhật được lô hàng')
     }
   }
 

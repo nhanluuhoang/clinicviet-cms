@@ -2,6 +2,7 @@ import { useMemo, useState } from 'react'
 import { useQueryClient } from '@tanstack/react-query'
 import { CalendarOff, Info, Plus, Save, Trash2 } from 'lucide-react'
 import { toast } from 'sonner'
+import { showRequestError } from '@/lib/handle-server-error'
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
@@ -63,8 +64,8 @@ export function DaysOffForm({
       await (item ? UpdateMasterData(item.id, data) : CreateMasterData(data))
       await queryClient.invalidateQueries({ queryKey: ['master-data'] })
       toast.success('Đã lưu ngày nghỉ của phòng khám')
-    } catch {
-      toast.error('Không thể lưu ngày nghỉ')
+    } catch (error) {
+      showRequestError(error, 'Không thể lưu ngày nghỉ')
     } finally {
       setIsSaving(false)
     }

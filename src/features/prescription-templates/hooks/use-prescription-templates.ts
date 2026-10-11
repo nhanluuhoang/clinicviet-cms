@@ -1,7 +1,8 @@
-import { useAuthStore } from '@/stores/auth-store'
 import { useState } from 'react'
 import { useQuery, useQueryClient } from '@tanstack/react-query'
 import { toast } from 'sonner'
+import { useAuthStore } from '@/stores/auth-store'
+import { showRequestError } from '@/lib/handle-server-error'
 import { GetMasterDatas } from '@/features/master-data/api'
 import { getMedicines } from '@/features/prescriptions/api'
 import {
@@ -90,9 +91,7 @@ export function usePrescriptionTemplates() {
       toast.success(current ? 'Đã cập nhật mẫu đơn' : 'Đã tạo mẫu đơn')
       close()
     } catch (error) {
-      toast.error('Không lưu được mẫu đơn', {
-        description: error instanceof Error ? error.message : undefined,
-      })
+      showRequestError(error, 'Không lưu được mẫu đơn')
     }
   }
 
@@ -106,9 +105,7 @@ export function usePrescriptionTemplates() {
       toast.success('Đã xóa mẫu đơn')
       close()
     } catch (error) {
-      toast.error('Không xóa được mẫu đơn', {
-        description: error instanceof Error ? error.message : undefined,
-      })
+      showRequestError(error, 'Không xóa được mẫu đơn')
     }
   }
   return {

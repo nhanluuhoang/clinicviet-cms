@@ -5,6 +5,7 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import { useMutation } from '@tanstack/react-query'
 import { toast } from 'sonner'
 import { useAuthStore } from '@/stores/auth-store'
+import { showRequestError } from '@/lib/handle-server-error'
 import { Button } from '@/components/ui/button'
 import {
   Form,
@@ -104,7 +105,7 @@ export function ProfileForm() {
       setUser(data)
       toast.success('Đã cập nhật hồ sơ')
     },
-    onError: () => toast.error('Không thể cập nhật hồ sơ'),
+    onError: (error) => showRequestError(error, 'Không thể cập nhật hồ sơ'),
   })
 
   return (

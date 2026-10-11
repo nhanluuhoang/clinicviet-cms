@@ -1,5 +1,6 @@
 import { useQueryClient } from '@tanstack/react-query'
 import { toast } from 'sonner'
+import { showRequestError } from '@/lib/handle-server-error'
 import { ConfirmDialog } from '@/components/confirm-dialog'
 import { DeleteMasterData } from '../api'
 import { MasterDataMutateDrawer } from './master-data-mutate-drawer'
@@ -17,8 +18,8 @@ export function MasterDataDialogs() {
       setOpen(null)
       setCurrentRow(null)
       toast.success('Đã xóa cấu hình chung')
-    } catch (_error) {
-      toast.error('Không thể xóa cấu hình chung')
+    } catch (error) {
+      showRequestError(error, 'Không thể xóa cấu hình chung')
     }
   }
 

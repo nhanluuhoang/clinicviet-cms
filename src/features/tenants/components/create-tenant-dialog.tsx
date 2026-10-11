@@ -1,10 +1,10 @@
 import { useState } from 'react'
 import { z } from 'zod'
-import { isAxiosError } from 'axios'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { toast } from 'sonner'
+import { showRequestError } from '@/lib/handle-server-error'
 import { Button } from '@/components/ui/button'
 import {
   Dialog,
@@ -62,8 +62,6 @@ const defaultValues: FormValues = {
   endsOn: '',
 }
 
-type ApiError = { error?: { title?: string } }
-
 export function CreateTenantDialog() {
   const [open, setOpen] = useState(false)
   const queryClient = useQueryClient()
@@ -95,12 +93,7 @@ export function CreateTenantDialog() {
       form.reset(defaultValues)
       setOpen(false)
     },
-    onError: (error) =>
-      toast.error(
-        (isAxiosError<ApiError>(error)
-          ? error.response?.data?.error?.title
-          : undefined) ?? 'Không thể tạo phòng khám.'
-      ),
+    onError: (error) => showRequestError(error, 'Không thể tạo phòng khám.'),
   })
 
   return (

@@ -3,6 +3,7 @@ import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useMutation } from '@tanstack/react-query'
 import { toast } from 'sonner'
+import { showRequestError } from '@/lib/handle-server-error'
 import { Button } from '@/components/ui/button'
 import {
   Form,
@@ -49,7 +50,7 @@ export function ChangePasswordForm() {
       form.reset()
       toast.success('Đã đổi mật khẩu')
     },
-    onError: () => toast.error('Không thể đổi mật khẩu'),
+    onError: (error) => showRequestError(error, 'Không thể đổi mật khẩu'),
   })
 
   return (

@@ -6,6 +6,7 @@ import { useQueryClient } from '@tanstack/react-query'
 import { API_URL } from '@/config'
 import { ImagePlus, Loader2, X } from 'lucide-react'
 import { toast } from 'sonner'
+import { showRequestError } from '@/lib/handle-server-error'
 import { Button } from '@/components/ui/button'
 import {
   Dialog,
@@ -110,7 +111,7 @@ export function PostsMutateDialog({ open, onOpenChange, currentRow }: Props) {
       toast.success('Đã tải ảnh đại diện')
     } catch (error) {
       setThumbnailPreview(authenticatedImageUrl(currentRow?.thumbnailUrl))
-      toast.error(typeof error === 'string' ? error : 'Không thể tải ảnh lên')
+      showRequestError(error, 'Không thể tải ảnh lên')
     } finally {
       setIsUploadingThumbnail(false)
     }
@@ -127,8 +128,8 @@ export function PostsMutateDialog({ open, onOpenChange, currentRow }: Props) {
       await queryClient.invalidateQueries({ queryKey: ['posts'] })
       toast.success(currentRow ? 'Đã cập nhật bài viết' : 'Đã tạo bài viết')
       onOpenChange(false)
-    } catch {
-      toast.error('Không thể lưu bài viết')
+    } catch (error) {
+      showRequestError(error, 'Không thể lưu bài viết')
     }
   }
 

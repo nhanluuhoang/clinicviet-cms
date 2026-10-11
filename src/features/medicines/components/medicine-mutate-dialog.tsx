@@ -4,6 +4,7 @@ import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useQueryClient } from '@tanstack/react-query'
 import { toast } from 'sonner'
+import { showRequestError } from '@/lib/handle-server-error'
 import { Button } from '@/components/ui/button'
 import { Checkbox } from '@/components/ui/checkbox'
 import {
@@ -120,9 +121,7 @@ export function MedicineMutateDialog({
       queryClient.invalidateQueries({ queryKey: ['inventory'] })
       onOpenChange(false)
     } catch (error) {
-      toast.error('Không lưu được thuốc', {
-        description: error instanceof Error ? error.message : undefined,
-      })
+      showRequestError(error, 'Không lưu được thuốc')
     }
   }
 

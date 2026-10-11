@@ -1,6 +1,7 @@
 import { useState, type FormEvent } from 'react'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { toast } from 'sonner'
+import { showRequestError } from '@/lib/handle-server-error'
 import { Button } from '@/components/ui/button'
 import {
   Dialog,
@@ -42,6 +43,7 @@ export function CreateRequestDialog({
       setOpen(false)
       onCreated(request.id)
     },
+    onError: (error) => showRequestError(error, 'Không thể gửi yêu cầu'),
   })
   const submit = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault()

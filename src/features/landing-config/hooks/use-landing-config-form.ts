@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { toast } from 'sonner'
+import { showRequestError } from '@/lib/handle-server-error'
 import { GetPosts } from '@/features/posts/api'
 import { updateOwnTenant } from '@/features/settings/tenant/api'
 import {
@@ -56,7 +57,8 @@ export function useLandingConfigForm() {
       ])
       toast.success('Đã lưu cấu hình landing page')
     },
-    onError: () => toast.error('Không thể lưu cấu hình landing page'),
+    onError: (error) =>
+      showRequestError(error, 'Không thể lưu cấu hình landing page'),
   })
 
   const set = <K extends keyof LandingConfigFields>(

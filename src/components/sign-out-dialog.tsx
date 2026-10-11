@@ -1,8 +1,8 @@
 import { useNavigate, useLocation } from '@tanstack/react-router'
-import { toast } from 'sonner'
-import { Logout } from '@/features/auth/api'
 import { useAuthStore } from '@/stores/auth-store'
+import { showRequestError } from '@/lib/handle-server-error'
 import { ConfirmDialog } from '@/components/confirm-dialog'
+import { Logout } from '@/features/auth/api'
 
 interface SignOutDialogProps {
   open: boolean
@@ -25,8 +25,8 @@ export function SignOutDialog({ open, onOpenChange }: SignOutDialogProps) {
         search: { redirect: currentPath },
         replace: true,
       })
-    } catch {
-      toast.error('Không thể đăng xuất lúc này. Vui lòng thử lại.')
+    } catch (error) {
+      showRequestError(error, 'Không thể đăng xuất lúc này. Vui lòng thử lại.')
     }
   }
 

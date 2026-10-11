@@ -4,6 +4,7 @@ import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useQueryClient } from '@tanstack/react-query'
 import { toast } from 'sonner'
+import { showRequestError } from '@/lib/handle-server-error'
 import { Button } from '@/components/ui/button'
 import {
   Form,
@@ -92,8 +93,8 @@ export function MasterDataMutateDrawer({
       queryClient.invalidateQueries({ queryKey: ['master-data'] })
       onOpenChange(false)
       form.reset()
-    } catch (_error) {
-      toast.error('Không thể lưu cấu hình chung.')
+    } catch (error) {
+      showRequestError(error, 'Không thể lưu cấu hình chung.')
     }
   }
 

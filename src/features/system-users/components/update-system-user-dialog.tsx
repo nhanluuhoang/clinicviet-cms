@@ -6,6 +6,7 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { Pencil } from 'lucide-react'
 import { toast } from 'sonner'
+import { showRequestError } from '@/lib/handle-server-error'
 import { Button } from '@/components/ui/button'
 import { Checkbox } from '@/components/ui/checkbox'
 import {
@@ -99,7 +100,8 @@ export function UpdateSystemUserDialog({ user }: { user: SystemUser }) {
       toast.success('Đã cập nhật người dùng')
       setOpen(false)
     },
-    onError: () => toast.error('Không thể cập nhật người dùng'),
+    onError: (error) =>
+      showRequestError(error, 'Không thể cập nhật người dùng'),
   })
 
   return (

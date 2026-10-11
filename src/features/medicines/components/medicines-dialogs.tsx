@@ -1,5 +1,7 @@
+import { useState } from 'react'
 import { useQueryClient } from '@tanstack/react-query'
 import { toast } from 'sonner'
+import { showRequestError } from '@/lib/handle-server-error'
 import { ConfirmDialog } from '@/components/confirm-dialog'
 import { DeleteMedicine } from '../api'
 import { MedicineMutateDialog } from './medicine-mutate-dialog'
@@ -8,6 +10,7 @@ import { useMedicines } from './medicines-provider'
 export function MedicinesDialogs() {
   const { open, setOpen, currentMedicine, setCurrentMedicine } = useMedicines()
   const queryClient = useQueryClient()
+  const [isDeleting, setIsDeleting] = useState(false)
 
   const closeAndClear = () => {
     setOpen(null)
@@ -15,7 +18,8 @@ export function MedicinesDialogs() {
   }
 
   const handleDelete = async () => {
-    if (!currentMedicine) return
+    if (!currentMedicine || isDeleting) return
+    setIsDeleting(true)
     try {
       await DeleteMedicine(currentMedicine.id)
       queryClient.invalidateQueries({ queryKey: ['medicines'] })
@@ -23,9 +27,9 @@ export function MedicinesDialogs() {
       toast.success('Đã xoá thuốc khỏi danh mục')
       closeAndClear()
     } catch (error) {
-      toast.error('Không xoá được thuốc', {
-        description: error instanceof Error ? error.message : undefined,
-      })
+      showRequestError(error, 'Không xoá được thuốc')
+    } finally {
+      setIsDeleting(false)
     }
   }
 
@@ -56,6 +60,7 @@ export function MedicinesDialogs() {
               if (!value) closeAndClear()
             }}
             handleConfirm={handleDelete}
+            isLoading={isDeleting}
             className='max-w-md'
             title={`Xoá thuốc "${currentMedicine.name}"?`}
             desc={

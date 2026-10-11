@@ -3,6 +3,8 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { API_URL } from '@/config'
 import { toast } from 'sonner'
 import { useAuthStore } from '@/stores/auth-store'
+import { getApiErrorMessage } from '@/lib/axios'
+import { showRequestError } from '@/lib/handle-server-error'
 import { deleteMediaFile, isVideoMedia } from '@/lib/utils'
 import {
   uploadImage,
@@ -394,11 +396,7 @@ export function useServicePrescriptionForm({
       })
     },
     onError: (error) =>
-      toast.error(
-        typeof error === 'string'
-          ? error
-          : 'Không thể lưu hồ sơ khám và đơn thuốc'
-      ),
+      showRequestError(error, 'Không thể lưu hồ sơ khám và đơn thuốc'),
   })
 
   useEffect(() => {
@@ -462,13 +460,18 @@ export function useServicePrescriptionForm({
       )
       draftMediaRef.current.push(...uploaded)
       setMedia((current) => [...current, ...uploaded])
-      if (results.some((result) => result.status === 'rejected')) {
+      if (
+        results.some(
+          (result) =>
+            result.status === 'rejected' && !getApiErrorMessage(result.reason)
+        )
+      ) {
         toast.error(
           'Một số tệp không tải lên được. Các tệp tải thành công đã được giữ lại.'
         )
       }
     } catch (error) {
-      toast.error(typeof error === 'string' ? error : 'Không thể tải tệp lên')
+      showRequestError(error, 'Không thể tải tệp lên')
     } finally {
       setIsUploadingMedia(false)
       onUploadingChange?.(false)
@@ -505,7 +508,7 @@ export function useServicePrescriptionForm({
       )
       toast.success('Đã xóa tệp')
     } catch (error) {
-      toast.error(typeof error === 'string' ? error : 'Không thể xóa tệp')
+      showRequestError(error, 'Không thể xóa tệp')
     } finally {
       setIsUploadingMedia(false)
       onUploadingChange?.(false)

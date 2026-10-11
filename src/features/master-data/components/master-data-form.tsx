@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { useQueryClient } from '@tanstack/react-query'
 import { Eye, Minus, Pill, Plus, Save, Stethoscope } from 'lucide-react'
 import { toast } from 'sonner'
+import { showRequestError } from '@/lib/handle-server-error'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
 import { Checkbox } from '@/components/ui/checkbox'
@@ -55,9 +56,7 @@ export function MasterDataForm({
       await queryClient.invalidateQueries({ queryKey: ['master-data'] })
       toast.success('Đã lưu cài đặt')
     } catch (error) {
-      toast.error('Không lưu được cài đặt', {
-        description: error instanceof Error ? error.message : undefined,
-      })
+      showRequestError(error, 'Không lưu được cài đặt')
     } finally {
       setSavingKeys((current) => current.filter((item) => item !== key))
     }

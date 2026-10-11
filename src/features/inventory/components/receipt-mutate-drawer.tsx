@@ -6,6 +6,7 @@ import { useQuery, useQueryClient } from '@tanstack/react-query'
 import { Link } from '@tanstack/react-router'
 import { Check, ChevronsUpDown, ExternalLink, Plus, Trash2 } from 'lucide-react'
 import { toast } from 'sonner'
+import { showRequestError } from '@/lib/handle-server-error'
 import { cn, formatMoney, getExpiryStatus, toDateInput } from '@/lib/utils'
 import { useDebounce } from '@/hooks/use-debounce'
 import { Button } from '@/components/ui/button'
@@ -233,9 +234,7 @@ export function ReceiptMutateDrawer({
       })
       onOpenChange(false)
     } catch (error) {
-      toast.error('Không nhập được hàng', {
-        description: error instanceof Error ? error.message : undefined,
-      })
+      showRequestError(error, 'Không nhập được hàng')
     }
   }
 

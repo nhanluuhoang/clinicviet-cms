@@ -1,24 +1,7 @@
-import { AxiosError } from 'axios'
 import { toast } from 'sonner'
+import { getApiErrorMessage } from './axios'
 
-export function handleServerError(error: unknown) {
-  // eslint-disable-next-line no-console
-  console.log(error)
-
-  let errMsg = 'Đã xảy ra lỗi!'
-
-  if (
-    error &&
-    typeof error === 'object' &&
-    'status' in error &&
-    Number(error.status) === 204
-  ) {
-    errMsg = 'Không tìm thấy nội dung.'
-  }
-
-  if (error instanceof AxiosError) {
-    errMsg = error.response?.data.title
-  }
-
-  toast.error(errMsg)
+export function showRequestError(error: unknown, fallback: string) {
+  if (getApiErrorMessage(error)) return
+  toast.error(typeof error === 'string' ? error : fallback)
 }
