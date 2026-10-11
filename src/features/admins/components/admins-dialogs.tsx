@@ -1,5 +1,4 @@
 import { AdminsActionDialog } from './admins-action-dialog'
-import { AdminsDeleteDialog } from './admins-delete-dialog'
 import { useAdmins } from './admins-provider'
 
 export function AdminsDialogs() {
@@ -26,17 +25,6 @@ export function AdminsDialogs() {
             currentRow={currentRow}
           />
 
-          <AdminsDeleteDialog
-            key={`admin-delete-${currentRow.id}`}
-            open={open === 'delete'}
-            onOpenChange={() => {
-              setOpen('delete')
-              setTimeout(() => {
-                setCurrentRow(null)
-              }, 500)
-            }}
-            currentRow={currentRow}
-          />
         </>
       )}
     </>

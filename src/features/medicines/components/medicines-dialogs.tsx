@@ -62,8 +62,9 @@ export function MedicinesDialogs() {
               <>
                 Thuốc <strong>{currentMedicine.name}</strong> sẽ bị xoá khỏi
                 danh mục. <br />
-                Thuốc còn tồn kho sẽ không xoá được — hãy xuất hoặc huỷ hết các
-                lô trước.
+                Chỉ có thể xoá thuốc chưa có lô kho, đơn thuốc hoặc mẫu đơn.
+                Thuốc đã được sử dụng có thể chuyển sang trạng thái ngừng sử
+                dụng trong phần Cập nhật.
               </>
             }
             confirmText='Xoá'

@@ -61,7 +61,4 @@ const FindStaff = ({
 const UpdateStaff = (id: string, data: StaffInput): Promise<Admin> =>
   axios.patch(`/users/${id}`, data)
 
-const DeactivateStaff = (id: string): Promise<Admin> =>
-  axios.delete(`/users/${id}`)
-
-export { CreateStaff, FindStaff, UpdateStaff, DeactivateStaff }
+export { CreateStaff, FindStaff, UpdateStaff }

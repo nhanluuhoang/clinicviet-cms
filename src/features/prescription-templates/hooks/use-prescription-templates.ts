@@ -20,6 +20,7 @@ export function usePrescriptionTemplates() {
   const queryClient = useQueryClient()
 
   const [open, setOpen] = useState<DialogType>(null)
+  const isMutating = open === 'create' || open === 'update'
 
   const [current, setCurrent] = useState<PrescriptionTemplate | null>(null)
 
@@ -35,12 +36,13 @@ export function usePrescriptionTemplates() {
   const { data: medicines = [] } = useQuery({
     queryKey: ['prescription-template-medicines'],
     queryFn: () => getMedicines(),
+    enabled: isMutating,
   })
 
   const { data: masterData } = useQuery({
     queryKey: ['master-data', tenantId],
     queryFn: () => GetMasterDatas(),
-    enabled: !!tenantId,
+    enabled: !!tenantId && isMutating,
     staleTime: 0,
     gcTime: 0,
   })
