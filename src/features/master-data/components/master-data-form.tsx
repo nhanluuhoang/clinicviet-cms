@@ -147,7 +147,7 @@ export function MasterDataForm({
                 Hiển thị danh sách thuốc
               </span>
               <span className='text-sm text-muted-foreground'>
-                Khi bật, bệnh nhân có thể xem thuốc trong hồ sơ khám online.
+                Khi tắt, ẩn thuốc trong phiếu khám; phiếu bán thuốc và tiêm chủng vẫn hiển thị.
               </span>
             </span>
           </label>
