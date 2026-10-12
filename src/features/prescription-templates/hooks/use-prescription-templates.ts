@@ -13,7 +13,7 @@ import {
   type PrescriptionTemplate,
   type PrescriptionTemplateItem,
 } from '../api'
-import { DEFAULT_INSTRUCTIONS, emptyItem } from '../data/constants'
+import { emptyItem } from '../data/constants'
 import type { DialogType } from '../types'
 
 export function usePrescriptionTemplates() {
@@ -50,7 +50,7 @@ export function usePrescriptionTemplates() {
 
   const instructionOptions = (
     masterData?.data.find((item) => item.key === 'MEDICINE_INSTRUCTION_OPTIONS')
-      ?.value ?? DEFAULT_INSTRUCTIONS.join('\n')
+      ?.value ?? ''
   )
     .split(/\r?\n/)
     .map((value) => value.trim())

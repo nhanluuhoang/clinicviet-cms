@@ -30,7 +30,6 @@ import {
   MAX_MEDIA_FILE_SIZE,
   MAX_VIDEO_SIZE,
   ACCEPTED_MEDIA_TYPES,
-  INSTRUCTION_OPTIONS,
 } from '../data/constants'
 import type { MedicineRow, ServicePrescriptionFormProps } from '../types'
 
@@ -274,7 +273,7 @@ export function useServicePrescriptionForm({
   const instructionOptions = (
     masterData.data?.data.find(
       (item) => item.key === 'MEDICINE_INSTRUCTION_OPTIONS'
-    )?.value ?? INSTRUCTION_OPTIONS.join('\n')
+    )?.value ?? ''
   )
     .split(/\r?\n/)
     .map((value) => value.trim())
