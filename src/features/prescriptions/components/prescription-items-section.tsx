@@ -9,13 +9,7 @@ import {
 } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select'
+import { MedicineInstructionInput } from '@/components/medicine-instruction-input'
 import type { ServicePrescriptionFormState } from '../hooks/use-service-prescription-form'
 import { Field } from './field'
 import { MedicinePicker } from './medicine-picker'
@@ -139,36 +133,18 @@ export function PrescriptionItemsSection({
                 {!getQuantityError(item) && <span aria-hidden='true' />}
               </Field>
               <Field
-                className='grid-rows-[auto_2.25rem_1rem] content-start md:col-span-2 lg:col-span-1'
+                className='content-start md:col-span-2 lg:col-span-1'
                 label='Hướng dẫn sử dụng'
               >
-                <Select
-                  value={item.instruction || '__none__'}
-                  onValueChange={(value) =>
+                <MedicineInstructionInput
+                  value={item.instruction ?? ''}
+                  options={instructionOptions}
+                  onChange={(value) =>
                     updateItem(item.key, {
-                      instruction: value === '__none__' ? '' : value,
+                      instruction: value,
                     })
                   }
-                >
-                  <SelectTrigger className='w-full'>
-                    <SelectValue placeholder='Chọn hướng dẫn sử dụng' />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value='__none__'>Không có hướng dẫn</SelectItem>
-                    {item.instruction &&
-                      !instructionOptions.includes(item.instruction) && (
-                        <SelectItem value={item.instruction}>
-                          {item.instruction}
-                        </SelectItem>
-                      )}
-                    {instructionOptions.map((instruction) => (
-                      <SelectItem key={instruction} value={instruction}>
-                        {instruction}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-                <span aria-hidden='true' />
+                />
               </Field>
             </div>
           </div>

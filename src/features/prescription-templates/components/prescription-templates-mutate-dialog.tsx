@@ -11,6 +11,7 @@ import {
 } from '@/components/ui/dialog'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
+import { MedicineInstructionInput } from '@/components/medicine-instruction-input'
 import {
   Select,
   SelectContent,
@@ -128,34 +129,15 @@ export function PrescriptionTemplatesMutateDialog({
                 </div>
                 <div className='space-y-2'>
                   <Label>Hướng dẫn sử dụng</Label>
-                  <Select
-                    value={item.instruction || '__none__'}
-                    onValueChange={(value) =>
+                  <MedicineInstructionInput
+                    value={item.instruction}
+                    options={instructionOptions}
+                    onChange={(value) =>
                       patchItem(index, {
-                        instruction: value === '__none__' ? '' : value,
+                        instruction: value,
                       })
                     }
-                  >
-                    <SelectTrigger className='w-full'>
-                      <SelectValue placeholder='Chọn hướng dẫn sử dụng' />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value='__none__'>
-                        Không có hướng dẫn
-                      </SelectItem>
-                      {item.instruction &&
-                        !instructionOptions.includes(item.instruction) && (
-                          <SelectItem value={item.instruction}>
-                            {item.instruction}
-                          </SelectItem>
-                        )}
-                      {instructionOptions.map((instruction) => (
-                        <SelectItem key={instruction} value={instruction}>
-                          {instruction}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
+                  />
                 </div>
               </div>
             </div>

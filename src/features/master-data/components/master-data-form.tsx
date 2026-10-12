@@ -8,6 +8,7 @@ import { Card, CardContent } from '@/components/ui/card'
 import { Checkbox } from '@/components/ui/checkbox'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
+import { DEFAULT_MEDICINE_INSTRUCTIONS } from '@/lib/medicine-instructions'
 import {
   CreateMasterData,
   UpdateMasterData,
@@ -17,7 +18,6 @@ import {
   CONSULTATION_FEE_KEY,
   SHOW_MEDICINES_TO_PATIENT_KEY,
   MEDICINE_INSTRUCTION_OPTIONS_KEY,
-  DEFAULT_MEDICINE_INSTRUCTIONS,
 } from '../data/constants'
 import { SettingHeading } from './setting-heading'
 
@@ -176,7 +176,7 @@ export function MasterDataForm({
         <SettingHeading
           icon={Pill}
           title='Hướng dẫn sử dụng thuốc'
-          description='Các lựa chọn có sẵn trong dropdown khi bác sĩ kê toa.'
+          description='Các lựa chọn riêng của phòng khám; biểu mẫu cũng có gợi ý phổ biến để chọn nhanh.'
         />
         <CardContent className='space-y-3 pt-6'>
           {adviceOptions.map((option, index) => (
