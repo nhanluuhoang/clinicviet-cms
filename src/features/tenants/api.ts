@@ -40,7 +40,7 @@ export type TenantUpdate = Pick<
   'code' | 'name' | 'address' | 'servicePlan' | 'isActive'
 > &
   Partial<Pick<Tenant, 'subscriptionStatus'>> & {
-    subdomain?: string
+    subdomain?: string | null
     trialEndsAt?: string
     subscriptionEndsAt?: string
   }

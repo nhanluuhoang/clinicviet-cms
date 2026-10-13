@@ -1,13 +1,8 @@
 import { type ColumnDef } from '@tanstack/react-table'
 import { Badge } from '@/components/ui/badge'
 import { type TrialRequest } from '../api'
+import { TRIAL_REQUEST_STATUS_LABELS } from '../data'
 import { TrialRequestActions } from './trial-request-actions'
-
-const statusLabels = {
-  PENDING: 'Chờ duyệt',
-  APPROVED: 'Đã duyệt',
-  REJECTED: 'Đã từ chối',
-}
 
 export const columns: ColumnDef<TrialRequest>[] = [
   { accessorKey: 'phone', header: 'Số điện thoại' },
@@ -27,7 +22,7 @@ export const columns: ColumnDef<TrialRequest>[] = [
       <Badge
         variant={row.original.status === 'PENDING' ? 'default' : 'outline'}
       >
-        {statusLabels[row.original.status]}
+        {TRIAL_REQUEST_STATUS_LABELS[row.original.status]}
       </Badge>
     ),
     filterFn: (row, id, value: string[]) => value.includes(row.getValue(id)),

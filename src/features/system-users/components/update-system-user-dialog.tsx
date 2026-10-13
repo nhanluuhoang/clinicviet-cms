@@ -34,6 +34,10 @@ import {
 } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
 import { SelectDropdown } from '@/components/select-dropdown'
+import {
+  MANAGED_USER_ROLE_OPTIONS,
+  USER_ROLE_LABELS,
+} from '@/config/user-role-labels'
 import { updateSystemUser, type ManagedRole, type SystemUser } from '../api'
 
 const schema = z.object({
@@ -45,11 +49,6 @@ const schema = z.object({
 })
 
 type Values = z.infer<typeof schema>
-
-const roleLabels = {
-  PATIENT: 'Bệnh nhân',
-  USER: 'Người dùng',
-}
 
 export function UpdateSystemUserDialog({ user }: { user: SystemUser }) {
   const [open, setOpen] = useState(false)
@@ -182,20 +181,13 @@ export function UpdateSystemUserDialog({ user }: { user: SystemUser }) {
                   <FormItem>
                     <FormLabel required>Vai trò</FormLabel>
                     {user.role === 'PATIENT' || user.role === 'USER' ? (
-                      <Input value={roleLabels[user.role]} readOnly />
+                      <Input value={USER_ROLE_LABELS[user.role]} readOnly />
                     ) : (
                       <SelectDropdown
                         defaultValue={field.value}
                         isControlled
                         onValueChange={field.onChange}
-                        items={[
-                          {
-                            label: 'Quản trị phòng khám',
-                            value: 'TENANT_ADMIN',
-                          },
-                          { label: 'Bác sĩ', value: 'DOCTOR' },
-                          { label: 'Trợ lý', value: 'ASSISTANT' },
-                        ]}
+                        items={MANAGED_USER_ROLE_OPTIONS}
                       />
                     )}
                     <FormMessage />

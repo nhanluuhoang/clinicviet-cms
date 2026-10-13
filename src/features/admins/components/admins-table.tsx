@@ -21,6 +21,7 @@ import {
   MobileDataCards,
 } from '@/components/data-table'
 import { defaultAuditVisibility } from '@/components/data-table/audit-columns'
+import { MANAGED_USER_ROLE_OPTIONS } from '@/config/user-role-labels'
 import { type Admin } from '../api'
 import { adminsColumns as columns } from './admins-columns'
 
@@ -104,11 +105,7 @@ export function AdminsTable({
             columnId: 'role',
             title: 'Vai trò',
             variant: 'radio',
-            options: [
-              { label: 'Quản trị phòng khám', value: 'TENANT_ADMIN' },
-              { label: 'Bác sĩ', value: 'DOCTOR' },
-              { label: 'Trợ lý', value: 'ASSISTANT' },
-            ],
+            options: MANAGED_USER_ROLE_OPTIONS,
           },
           {
             columnId: 'isActive',

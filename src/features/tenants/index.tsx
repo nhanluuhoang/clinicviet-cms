@@ -3,6 +3,8 @@ import { Header } from '@/components/layout/header'
 import { Main } from '@/components/layout/main'
 import { ProfileDropdown } from '@/components/profile-dropdown'
 import { ThemeSwitch } from '@/components/theme-switch'
+import { SERVICE_PLAN_OPTIONS } from '@/config/service-plans'
+import { SUBSCRIPTION_STATUS_OPTIONS } from '@/config/subscription-statuses'
 import { getTenants } from './api'
 import { CreateTenantDialog } from './components/create-tenant-dialog'
 import { TenantsTable } from './components/tenants-table'
@@ -56,22 +58,13 @@ export function Tenants() {
               columnId: 'servicePlan',
               title: 'Gói dịch vụ',
               variant: 'radio',
-              options: [
-                { label: 'Cơ bản', value: 'BASIC' },
-                { label: 'Nâng cao', value: 'PLUS' },
-                { label: 'Chuyên nghiệp', value: 'PRO' },
-              ],
+              options: SERVICE_PLAN_OPTIONS,
             },
             {
               columnId: 'subscriptionStatus',
               title: 'Trạng thái đăng ký',
               variant: 'radio',
-              options: [
-                { label: 'Đăng ký dùng thử', value: 'TRIAL' },
-                { label: 'Đăng ký chính thức', value: 'ACTIVE' },
-                { label: 'Hết hạn', value: 'EXPIRED' },
-                { label: 'Tạm ngưng', value: 'SUSPENDED' },
-              ],
+              options: SUBSCRIPTION_STATUS_OPTIONS,
             },
           ]}
         />

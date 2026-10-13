@@ -16,6 +16,8 @@ import {
   FormMessage,
 } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
+import { SERVICE_PLAN_LABELS } from '@/config/service-plans'
+import { SUBSCRIPTION_STATUS_SUMMARY_LABELS } from '@/config/subscription-statuses'
 import { ContentSection } from '../components/content-section'
 import { getOwnTenant, updateOwnTenant } from './api'
 
@@ -25,14 +27,6 @@ const schema = z.object({
 })
 
 type FormValues = z.infer<typeof schema>
-
-const planLabels = { BASIC: 'Cơ bản', PLUS: 'Chuyên nghiệp', PRO: 'Cao cấp' }
-const statusLabels = {
-  TRIAL: 'Dùng thử',
-  ACTIVE: 'Đang hoạt động',
-  EXPIRED: 'Đã hết hạn',
-  SUSPENDED: 'Tạm ngưng',
-}
 
 const formatDate = (value?: string | null) =>
   value ? new Date(value).toLocaleDateString('vi-VN') : '—'
@@ -93,7 +87,7 @@ export function TenantForm() {
               <FormLabel>Tên gói dịch vụ</FormLabel>
               <FormControl>
                 <Input
-                  value={tenant.data ? planLabels[tenant.data.servicePlan] : ''}
+                  value={tenant.data ? SERVICE_PLAN_LABELS[tenant.data.servicePlan] : ''}
                   disabled
                 />
               </FormControl>
@@ -143,7 +137,7 @@ export function TenantForm() {
               </p>
               <p className='font-medium'>
                 {tenant.data
-                  ? statusLabels[tenant.data.subscriptionStatus]
+                  ? SUBSCRIPTION_STATUS_SUMMARY_LABELS[tenant.data.subscriptionStatus]
                   : '—'}
               </p>
             </div>
