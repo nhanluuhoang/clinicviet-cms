@@ -66,8 +66,11 @@ export function TenantActions({ tenant }: { tenant: Tenant }) {
         ...values,
         subscriptionStatus,
         subdomain:
-          values.subdomain ||
-          (values.servicePlan === 'PLUS' ? null : undefined),
+          values.servicePlan === 'PRO'
+            ? values.subdomain || null
+            : values.servicePlan === 'PLUS' && tenant.servicePlan !== 'PLUS'
+              ? null
+              : undefined,
         ...(isTrial
           ? { trialEndsAt: new Date(`${endsOn}T23:59:59`).toISOString() }
           : {
@@ -154,21 +157,21 @@ export function TenantActions({ tenant }: { tenant: Tenant }) {
                 ['subdomain', 'Subdomain'],
                 ['address', 'Địa chỉ'],
               ] as const
-            ).map(([key, label]) => (
-              <div className='space-y-2' key={key}>
-                <Label
-                  required={key !== 'subdomain' || values.servicePlan === 'PRO'}
-                >
-                  {label}
-                </Label>
-                <Input
-                  value={values[key]}
-                  onChange={(event) =>
-                    setValues({ ...values, [key]: event.target.value })
-                  }
-                />
-              </div>
-            ))}
+            )
+              .filter(
+                ([key]) => key !== 'subdomain' || values.servicePlan === 'PRO'
+              )
+              .map(([key, label]) => (
+                <div className='space-y-2' key={key}>
+                  <Label required>{label}</Label>
+                  <Input
+                    value={values[key]}
+                    onChange={(event) =>
+                      setValues({ ...values, [key]: event.target.value })
+                    }
+                  />
+                </div>
+              ))}
             <div className='space-y-2 sm:col-span-2'>
               <Label required>Gói dịch vụ</Label>
               <SelectDropdown

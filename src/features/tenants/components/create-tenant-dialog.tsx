@@ -40,8 +40,7 @@ const schema = z
   })
   .refine(
     ({ servicePlan, subdomain }) =>
-      servicePlan === 'BASIC' ||
-      (servicePlan === 'PLUS' && subdomain === '') ||
+      servicePlan !== 'PRO' ||
       (subdomain.length <= 50 && /^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(subdomain)),
     {
       path: ['subdomain'],
@@ -81,7 +80,7 @@ export function CreateTenantDialog() {
     }: FormValues) =>
       createTenant({
         ...values,
-        ...(values.servicePlan !== 'BASIC' && subdomain && { subdomain }),
+        ...(values.servicePlan === 'PRO' && { subdomain }),
         isActive: true,
         subscriptionStatus,
         ...(subscriptionStatus === 'TRIAL'
@@ -152,7 +151,7 @@ function Fields({ form }: { form: ReturnType<typeof useForm<FormValues>> }) {
       {fields
         .filter(
           ({ name }) =>
-            name !== 'subdomain' || form.watch('servicePlan') !== 'BASIC'
+            name !== 'subdomain' || form.watch('servicePlan') === 'PRO'
         )
         .map(({ name, label }) => (
           <TextField key={name} form={form} name={name} label={label} />
