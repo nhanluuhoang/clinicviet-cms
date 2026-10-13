@@ -1,9 +1,6 @@
 name: Deploy CMS (staging)
 
 on:
-  push:
-    branches:
-      - staging
   workflow_dispatch:
 
 concurrency:
