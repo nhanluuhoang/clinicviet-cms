@@ -88,14 +88,14 @@ jobs:
           set -euo pipefail
 
           release_sha="$1"
-          deploy_root="/var/www/clinicviet-cms"
+          deploy_root="var/www/clinicviet-cms"
           archive="/tmp/clinicviet-cms-${release_sha}.tar.gz"
-          release_dir="${deploy_root}/releases/${release_sha}"
+          release_dir="releases/${release_sha}"
 
           umask 022
-          mkdir -p "$release_dir"
-          tar -xzf "$archive" -C "$release_dir"
-          test -f "${release_dir}/index.html"
+          mkdir -p "${deploy_root}/${release_dir}"
+          tar -xzf "$archive" -C "${deploy_root}/${release_dir}"
+          test -f "${deploy_root}/${release_dir}/index.html"
 
           ln -sfn "$release_dir" "${deploy_root}/current.next"
           mv -Tf "${deploy_root}/current.next" "${deploy_root}/current"
