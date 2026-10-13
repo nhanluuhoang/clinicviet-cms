@@ -88,7 +88,7 @@ jobs:
           set -euo pipefail
 
           release_sha="$1"
-          deploy_root="var/www/clinicviet-cms"
+          deploy_root="/var/www/clinicviet-cms"
           archive="/tmp/clinicviet-cms-${release_sha}.tar.gz"
           release_dir="releases/${release_sha}"
 
