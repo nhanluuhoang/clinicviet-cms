@@ -4,6 +4,7 @@ import { Main } from '@/components/layout/main'
 import { ProfileDropdown } from '@/components/profile-dropdown'
 import { ThemeSwitch } from '@/components/theme-switch'
 import { findTrialRequests } from './api'
+import { TRIAL_REQUEST_STATUS_OPTIONS } from './data'
 import { TrialRequestsTable } from './components/trial-requests-table'
 
 export function TrialRequests() {
@@ -47,11 +48,7 @@ export function TrialRequests() {
               columnId: 'status',
               title: 'Trạng thái',
               variant: 'radio',
-              options: [
-                { label: 'Chờ duyệt', value: 'PENDING' },
-                { label: 'Đã duyệt', value: 'APPROVED' },
-                { label: 'Đã từ chối', value: 'REJECTED' },
-              ],
+              options: TRIAL_REQUEST_STATUS_OPTIONS,
             },
           ]}
         />

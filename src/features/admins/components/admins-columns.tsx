@@ -3,14 +3,9 @@ import { Badge } from '@/components/ui/badge'
 import { DataTableColumnHeader } from '@/components/data-table'
 import { withAuditColumns } from '@/components/data-table/audit-columns'
 import { LongText } from '@/components/long-text'
+import { USER_ROLE_LABELS } from '@/config/user-role-labels'
 import { type Admin } from '@/features/admins/api'
 import { DataTableRowActions } from './data-table-row-actions'
-
-const roleLabels: Record<Admin['role'], string> = {
-  TENANT_ADMIN: 'Quản trị phòng khám',
-  DOCTOR: 'Bác sĩ',
-  ASSISTANT: 'Trợ lý',
-}
 
 export const adminsColumns: ColumnDef<Admin>[] = withAuditColumns([
   {
@@ -51,7 +46,7 @@ export const adminsColumns: ColumnDef<Admin>[] = withAuditColumns([
       <DataTableColumnHeader column={column} title='Vai trò' />
     ),
     cell: ({ row }) => (
-      <Badge variant='outline'>{roleLabels[row.original.role]}</Badge>
+      <Badge variant='outline'>{USER_ROLE_LABELS[row.original.role]}</Badge>
     ),
   },
   {

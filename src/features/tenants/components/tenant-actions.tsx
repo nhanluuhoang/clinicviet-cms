@@ -1,6 +1,8 @@
 import { useState } from 'react'
 import { DotsHorizontalIcon } from '@radix-ui/react-icons'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
+import { SERVICE_PLAN_OPTIONS } from '@/config/service-plans'
+import { SUBSCRIPTION_STATUS_OPTIONS } from '@/config/subscription-statuses'
 import { Pencil, Trash2 } from 'lucide-react'
 import { toast } from 'sonner'
 import { showRequestError } from '@/lib/handle-server-error'
@@ -63,7 +65,9 @@ export function TenantActions({ tenant }: { tenant: Tenant }) {
       updateTenant(tenant.id, {
         ...values,
         subscriptionStatus,
-        subdomain: values.subdomain || undefined,
+        subdomain:
+          values.subdomain ||
+          (values.servicePlan === 'PLUS' ? null : undefined),
         ...(isTrial
           ? { trialEndsAt: new Date(`${endsOn}T23:59:59`).toISOString() }
           : {
@@ -153,9 +157,7 @@ export function TenantActions({ tenant }: { tenant: Tenant }) {
             ).map(([key, label]) => (
               <div className='space-y-2' key={key}>
                 <Label
-                  required={
-                    key !== 'subdomain' || values.servicePlan !== 'BASIC'
-                  }
+                  required={key !== 'subdomain' || values.servicePlan === 'PRO'}
                 >
                   {label}
                 </Label>
@@ -179,11 +181,7 @@ export function TenantActions({ tenant }: { tenant: Tenant }) {
                     servicePlan: servicePlan as Tenant['servicePlan'],
                   })
                 }
-                items={[
-                  { label: 'Cơ bản', value: 'BASIC' },
-                  { label: 'Nâng cao', value: 'PLUS' },
-                  { label: 'Chuyên nghiệp', value: 'PRO' },
-                ]}
+                items={SERVICE_PLAN_OPTIONS}
               />
             </div>
             <div className='space-y-2 sm:col-span-2'>
@@ -201,12 +199,7 @@ export function TenantActions({ tenant }: { tenant: Tenant }) {
                       : tenant.subscriptionEndsAt
                   setEndsOn(date ? toDateInput(date) : '')
                 }}
-                items={[
-                  { label: 'Đăng ký dùng thử', value: 'TRIAL' },
-                  { label: 'Đăng ký chính thức', value: 'ACTIVE' },
-                  { label: 'Đã hết hạn', value: 'EXPIRED' },
-                  { label: 'Tạm ngưng', value: 'SUSPENDED' },
-                ]}
+                items={SUBSCRIPTION_STATUS_OPTIONS}
               />
             </div>
             <div className='space-y-2 sm:col-span-2'>

@@ -1,8 +1,8 @@
 import { type ColumnDef } from '@tanstack/react-table'
+import { SERVICE_PLAN_LABELS } from '@/config/service-plans'
+import { SUBSCRIPTION_STATUS_LABELS } from '@/config/subscription-statuses'
 import { type Tenant } from '../api'
 import { TenantActions } from './tenant-actions'
-
-const planLabels = { BASIC: 'Cơ bản', PLUS: 'Nâng cao', PRO: 'Chuyên nghiệp' }
 
 export const columns: ColumnDef<Tenant>[] = [
   { accessorKey: 'code', header: 'Mã' },
@@ -11,19 +11,14 @@ export const columns: ColumnDef<Tenant>[] = [
   {
     accessorKey: 'servicePlan',
     header: 'Gói',
-    cell: ({ row }) => planLabels[row.original.servicePlan],
+    cell: ({ row }) => SERVICE_PLAN_LABELS[row.original.servicePlan],
     filterFn: (row, id, value: string[]) => value.includes(row.getValue(id)),
   },
   {
     accessorKey: 'subscriptionStatus',
     header: 'Trạng thái đăng ký',
     cell: ({ row }) =>
-      ({
-        TRIAL: 'Đăng ký dùng thử',
-        ACTIVE: 'Đăng ký chính thức',
-        EXPIRED: 'Hết hạn',
-        SUSPENDED: 'Tạm ngưng',
-      })[row.original.subscriptionStatus],
+      SUBSCRIPTION_STATUS_LABELS[row.original.subscriptionStatus],
     filterFn: (row, id, value: string[]) => value.includes(row.getValue(id)),
   },
   {

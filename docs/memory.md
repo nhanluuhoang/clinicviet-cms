@@ -38,7 +38,7 @@
 
 - Audit columns use shared `withAuditColumns` and `DataTableViewOptions` for createdAt/createdBy/updatedAt/updatedBy; all four default to hidden via `defaultAuditVisibility`. Visibility is local table state and applies to desktop/mobile; history prescription/invoice details follow the same visibility. API returns creator/updater objects with fullName for display; retain these relations, actor UUIDs and template audit fields during mapping (including inventory list/detail adapters).
 
-- Required editable fields use `Label required` / `FormLabel required`; conditional requirements follow create/edit mode and the selected plan. Creating a BASIC tenant hides and omits subdomain; PLUS/PRO require it.
+- Required editable fields use `Label required` / `FormLabel required`; conditional requirements follow create/edit mode and the selected plan. Creating a BASIC tenant hides and omits subdomain; PLUS allows it to be empty; PRO requires it. Shared plan, subscription and role labels live in `src/config/`; trial-request status labels live in its feature `data.ts`.
 
 - Prescriptions: keep tab coordination in `index.tsx`, form logic in `hooks/use-service-prescription-form.ts`, UI sections/pickers in `components/`, shared types/constants in `types.ts` and `data/`.
 
