@@ -1,4 +1,5 @@
 import { Stethoscope, UserRoundCog } from 'lucide-react'
+import { USER_ROLE_LABELS } from '@/config/user-role-labels'
 import { type UserStatus } from './schema'
 
 export const callTypes = new Map<UserStatus, string>([
@@ -13,12 +14,12 @@ export const callTypes = new Map<UserStatus, string>([
 
 export const roles = [
   {
-    label: 'Bác sĩ',
+    label: USER_ROLE_LABELS.DOCTOR,
     value: 'DOCTOR',
     icon: Stethoscope,
   },
   {
-    label: 'Trợ lý',
+    label: USER_ROLE_LABELS.ASSISTANT,
     value: 'ASSISTANT',
     icon: UserRoundCog,
   },

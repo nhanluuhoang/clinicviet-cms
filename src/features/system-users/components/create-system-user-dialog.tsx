@@ -41,6 +41,7 @@ import {
 } from '@/components/ui/popover'
 import { PasswordInput } from '@/components/password-input'
 import { SelectDropdown } from '@/components/select-dropdown'
+import { MANAGED_USER_ROLE_OPTIONS } from '@/config/user-role-labels'
 import { searchTenants, type Tenant } from '@/features/tenants/api'
 import { createSystemUser } from '../api'
 
@@ -266,11 +267,7 @@ export function CreateSystemUserDialog({
                     defaultValue={field.value}
                     isControlled
                     onValueChange={field.onChange}
-                    items={[
-                      { label: 'Quản trị phòng khám', value: 'TENANT_ADMIN' },
-                      { label: 'Bác sĩ', value: 'DOCTOR' },
-                      { label: 'Trợ lý', value: 'ASSISTANT' },
-                    ]}
+                    items={MANAGED_USER_ROLE_OPTIONS}
                   />
                   <FormMessage />
                 </FormItem>

@@ -3,6 +3,8 @@ import { z } from 'zod'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
+import { SERVICE_PLAN_OPTIONS } from '@/config/service-plans'
+import { NEW_SUBSCRIPTION_STATUS_OPTIONS } from '@/config/subscription-statuses'
 import { toast } from 'sonner'
 import { showRequestError } from '@/lib/handle-server-error'
 import { Button } from '@/components/ui/button'
@@ -39,6 +41,7 @@ const schema = z
   .refine(
     ({ servicePlan, subdomain }) =>
       servicePlan === 'BASIC' ||
+      (servicePlan === 'PLUS' && subdomain === '') ||
       (subdomain.length <= 50 && /^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(subdomain)),
     {
       path: ['subdomain'],
@@ -78,7 +81,7 @@ export function CreateTenantDialog() {
     }: FormValues) =>
       createTenant({
         ...values,
-        ...(values.servicePlan !== 'BASIC' && { subdomain }),
+        ...(values.servicePlan !== 'BASIC' && subdomain && { subdomain }),
         isActive: true,
         subscriptionStatus,
         ...(subscriptionStatus === 'TRIAL'
@@ -164,11 +167,7 @@ function Fields({ form }: { form: ReturnType<typeof useForm<FormValues>> }) {
               defaultValue={field.value}
               isControlled
               onValueChange={field.onChange}
-              items={[
-                { label: 'Cơ bản', value: 'BASIC' },
-                { label: 'Nâng cao', value: 'PLUS' },
-                { label: 'Chuyên nghiệp', value: 'PRO' },
-              ]}
+              items={SERVICE_PLAN_OPTIONS}
             />
             <FormMessage />
           </FormItem>
@@ -184,10 +183,7 @@ function Fields({ form }: { form: ReturnType<typeof useForm<FormValues>> }) {
               defaultValue={field.value}
               isControlled
               onValueChange={field.onChange}
-              items={[
-                { label: 'Đăng ký dùng thử', value: 'TRIAL' },
-                { label: 'Đăng ký chính thức', value: 'ACTIVE' },
-              ]}
+              items={NEW_SUBSCRIPTION_STATUS_OPTIONS}
             />
             <FormMessage />
           </FormItem>
@@ -227,7 +223,13 @@ function TextField({
       name={name}
       render={({ field }) => (
         <FormItem>
-          <FormLabel required>{label}</FormLabel>
+          <FormLabel
+            required={
+              name !== 'subdomain' || form.watch('servicePlan') === 'PRO'
+            }
+          >
+            {label}
+          </FormLabel>
           <FormControl>
             <Input {...field} />
           </FormControl>

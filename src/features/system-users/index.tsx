@@ -6,6 +6,7 @@ import { Header } from '@/components/layout/header'
 import { Main } from '@/components/layout/main'
 import { ProfileDropdown } from '@/components/profile-dropdown'
 import { ThemeSwitch } from '@/components/theme-switch'
+import { SYSTEM_USER_ROLE_OPTIONS } from '@/config/user-role-labels'
 import { getTenants } from '@/features/tenants/api'
 import { getSystemUsers, type SystemUserRole } from './api'
 import { CreateSystemUserDialog } from './components/create-system-user-dialog'
@@ -75,13 +76,7 @@ export function SystemUsers() {
               columnId: 'role',
               title: 'Vai trò',
               variant: 'radio',
-              options: [
-                { label: 'Quản trị phòng khám', value: 'TENANT_ADMIN' },
-                { label: 'Bác sĩ', value: 'DOCTOR' },
-                { label: 'Trợ lý', value: 'ASSISTANT' },
-                { label: 'Bệnh nhân', value: 'PATIENT' },
-                { label: 'Người dùng', value: 'USER' },
-              ],
+              options: SYSTEM_USER_ROLE_OPTIONS,
             },
           ]}
         />

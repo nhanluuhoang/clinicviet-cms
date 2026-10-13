@@ -1,16 +1,9 @@
 import { type ColumnDef } from '@tanstack/react-table'
 import { Badge } from '@/components/ui/badge'
 import { withAuditColumns } from '@/components/data-table/audit-columns'
+import { USER_ROLE_LABELS } from '@/config/user-role-labels'
 import { type SystemUser } from '../api'
 import { UpdateSystemUserDialog } from './update-system-user-dialog'
-
-const roleLabels = {
-  TENANT_ADMIN: 'Quản trị phòng khám',
-  DOCTOR: 'Bác sĩ',
-  ASSISTANT: 'Trợ lý',
-  PATIENT: 'Bệnh nhân',
-  USER: 'Người dùng',
-}
 
 export const columns: ColumnDef<SystemUser>[] = withAuditColumns([
   { accessorKey: 'userName', header: 'Tên đăng nhập' },
@@ -28,7 +21,7 @@ export const columns: ColumnDef<SystemUser>[] = withAuditColumns([
     accessorKey: 'role',
     header: 'Vai trò',
     cell: ({ row }) => (
-      <Badge variant='outline'>{roleLabels[row.original.role]}</Badge>
+      <Badge variant='outline'>{USER_ROLE_LABELS[row.original.role]}</Badge>
     ),
     filterFn: (row, id, value: string[]) => value.includes(row.getValue(id)),
   },
