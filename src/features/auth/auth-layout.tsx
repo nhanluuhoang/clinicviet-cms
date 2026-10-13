@@ -11,11 +11,11 @@ export function AuthLayout({ children }: AuthLayoutProps) {
   const { t } = useTranslation()
 
   return (
-    <div className='relative container grid h-svh max-w-none items-center justify-center'>
+    <div className='relative container flex min-h-svh max-w-none items-center justify-center'>
       {/* <div className='absolute right-4 top-4'>
         <LanguageSwitcher />
       </div> */}
-      <div className='mx-auto flex w-full flex-col justify-center space-y-2 py-8 sm:w-[480px] sm:p-8'>
+      <div className='flex w-full max-w-[480px] flex-col justify-center space-y-2 py-8 sm:p-8'>
         <div className='mb-4 flex items-center justify-center gap-3'>
           <Logo className='size-10' />
           <h1 className='text-2xl font-semibold tracking-tight'>
