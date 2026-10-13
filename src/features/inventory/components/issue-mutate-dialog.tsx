@@ -5,7 +5,8 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import { useQuery, useQueryClient } from '@tanstack/react-query'
 import { Check, ChevronsUpDown, Plus, Trash2 } from 'lucide-react'
 import { toast } from 'sonner'
-import { cn } from '@/lib/utils'
+import { showRequestError } from '@/lib/handle-server-error'
+import { cn, formatDate, formatNumber, toDateInput } from '@/lib/utils'
 import { useDebounce } from '@/hooks/use-debounce'
 import { Button } from '@/components/ui/button'
 import {
@@ -42,7 +43,6 @@ import {
 import { Textarea } from '@/components/ui/textarea'
 import { DatePickerInput } from '@/components/date-picker-input'
 import { CreateGoodsIssue, SearchBatches, type StockBatch } from '../api'
-import { formatDate, formatNumber, toDateInput } from '../utils'
 
 const lineSchema = z.object({
   batchId: z.string().min(1, 'Chọn lô thuốc'),
@@ -206,9 +206,7 @@ export function IssueMutateDialog({
       toast.success('Đã xuất hàng')
       onOpenChange(false)
     } catch (error) {
-      toast.error('Không xuất được hàng', {
-        description: error instanceof Error ? error.message : undefined,
-      })
+      showRequestError(error, 'Không xuất được hàng')
     }
   }
 
@@ -234,7 +232,7 @@ export function IssueMutateDialog({
                 name='recipientName'
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Người nhận</FormLabel>
+                    <FormLabel required>Người nhận</FormLabel>
                     <FormControl>
                       <Input {...field} placeholder='Tên người hoặc bộ phận' />
                     </FormControl>
@@ -247,7 +245,7 @@ export function IssueMutateDialog({
                 name='issuedAt'
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Ngày xuất</FormLabel>
+                    <FormLabel required>Ngày xuất</FormLabel>
                     <DatePickerInput
                       value={field.value}
                       onChange={field.onChange}
@@ -283,7 +281,9 @@ export function IssueMutateDialog({
                       name={`lines.${index}.batchId`}
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel className='text-xs'>Thuốc / lô</FormLabel>
+                          <FormLabel required className='text-xs'>
+                            Thuốc / lô
+                          </FormLabel>
                           <BatchPicker
                             selected={selected}
                             onChange={(batch) => {
@@ -303,7 +303,9 @@ export function IssueMutateDialog({
                       name={`lines.${index}.quantity`}
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel className='text-xs'>Số lượng</FormLabel>
+                          <FormLabel required className='text-xs'>
+                            Số lượng
+                          </FormLabel>
                           <FormControl>
                             <Input
                               {...field}

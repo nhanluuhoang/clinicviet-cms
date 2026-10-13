@@ -5,7 +5,10 @@ import {
   flexRender,
   getCoreRowModel,
   useReactTable,
+  type VisibilityState,
 } from '@tanstack/react-table'
+import { hasAnyRole, PRESCRIBER_ROLES } from '@/config/access-control'
+import { useAuthStore } from '@/stores/auth-store'
 import { cn } from '@/lib/utils'
 import { type NavigateFn, useTableUrlState } from '@/hooks/use-table-url-state'
 import { Button } from '@/components/ui/button'
@@ -22,10 +25,11 @@ import {
   DataTableToolbar,
   MobileDataCards,
 } from '@/components/data-table'
+import { defaultAuditVisibility } from '@/components/data-table/audit-columns'
+import { DataTableViewOptions } from '@/components/data-table/view-options'
 import { DatePickerInput } from '@/components/date-picker-input'
-import { getToday } from '@/features/dashboard/utils'
 import { type MedicalHistoryListItem } from '../api'
-import { medicalHistoryColumns as columns } from './medical-history-columns'
+import { medicalHistoryColumns } from './medical-history-columns'
 import { MedicalHistoryDetails } from './medical-history-details'
 
 type Props = {
@@ -45,7 +49,14 @@ export function MedicalHistoriesTable({
   navigate,
   isLoading,
 }: Props) {
+  const [columnVisibility, setColumnVisibility] = useState<VisibilityState>(
+    defaultAuditVisibility
+  )
   const [expanded, setExpanded] = useState<ExpandedState>({})
+  const role = useAuthStore((state) => state.auth.user?.role)
+  const columns = hasAnyRole(role, PRESCRIBER_ROLES)
+    ? medicalHistoryColumns
+    : medicalHistoryColumns.filter((column) => column.id !== 'actions')
   const {
     columnFilters,
     onColumnFiltersChange,
@@ -68,7 +79,7 @@ export function MedicalHistoriesTable({
   const table = useReactTable({
     data,
     columns,
-    state: { sorting, pagination, columnFilters, expanded },
+    state: { sorting, pagination, columnFilters, expanded, columnVisibility },
     manualPagination: true,
     manualSorting: true,
     manualFiltering: true,
@@ -78,6 +89,7 @@ export function MedicalHistoriesTable({
     onSortingChange,
     onExpandedChange: setExpanded,
     getRowCanExpand: () => true,
+    onColumnVisibilityChange: setColumnVisibility,
     getCoreRowModel: getCoreRowModel(),
   })
 
@@ -94,56 +106,70 @@ export function MedicalHistoriesTable({
         page: undefined,
         patientName: undefined,
         doctorName: undefined,
-        date: getToday(),
+        date: '',
       }),
     })
   }
 
   return (
     <div className='flex min-w-0 flex-1 flex-col gap-4'>
-      <div className='flex w-full min-w-0 flex-col items-start gap-2 sm:flex-row sm:flex-wrap sm:items-center'>
-        <DataTableToolbar
-          table={table}
-          searchKey='patientName'
-          searchPlaceholder='Tìm tên bệnh nhân...'
-          showReset={false}
-        />
-        <DataTableToolbar
-          table={table}
-          searchKey='doctorName'
-          searchPlaceholder='Tìm tên bác sĩ...'
-          showReset={false}
-        />
-        <DatePickerInput
-          value={date}
-          onChange={(value) =>
-            navigate({
-              search: (previous) => ({
-                ...previous,
-                page: undefined,
-                date: value,
-              }),
-            })
-          }
-          className='w-[150px] lg:w-[250px]'
-          inputClassName='h-8 w-full'
-        />
-        <Button
-          type='button'
-          variant='ghost'
-          className='order-first h-8 px-2 sm:order-last lg:px-3'
-          onClick={resetFilters}
-        >
-          Đặt lại
-          <Cross2Icon className='ms-2 h-4 w-4' />
-        </Button>
+      <div className='flex w-full min-w-0 flex-col gap-2 sm:flex-row sm:items-center'>
+        <div className='flex min-w-0 flex-1 flex-wrap items-center gap-2'>
+          <DataTableToolbar
+            table={table}
+            searchKey='patientName'
+            searchPlaceholder='Tìm tên bệnh nhân...'
+            showReset={false}
+            showViewOptions={false}
+          />
+          <DataTableToolbar
+            table={table}
+            searchKey='doctorName'
+            searchPlaceholder='Tìm tên bác sĩ...'
+            showReset={false}
+            showViewOptions={false}
+          />
+          <DatePickerInput
+            value={date}
+            onChange={(value) =>
+              navigate({
+                search: (previous) => ({
+                  ...previous,
+                  page: undefined,
+                  date: value,
+                }),
+              })
+            }
+            className='w-[150px] lg:w-[250px]'
+            inputClassName='h-8 w-full'
+          />
+          <Button
+            type='button'
+            variant='ghost'
+            className='h-8 shrink-0 gap-2 px-2 lg:px-3'
+            onClick={resetFilters}
+          >
+            Đặt lại
+            <Cross2Icon className='h-4 w-4' />
+          </Button>
+        </div>
+        <DataTableViewOptions table={table} />
       </div>
 
       <MobileDataCards
         table={table}
         isLoading={isLoading}
-        emptyMessage='Không có lịch sử khám bệnh trong ngày đã chọn.'
-        renderSubRow={(row) => <MedicalHistoryDetails history={row.original} />}
+        emptyMessage={
+          date
+            ? 'Không có lịch sử khám bệnh trong ngày đã chọn.'
+            : 'Không có lịch sử khám bệnh.'
+        }
+        renderSubRow={(row) => (
+          <MedicalHistoryDetails
+            history={row.original}
+            auditVisibility={columnVisibility}
+          />
+        )}
       />
       <div className='hidden overflow-x-auto rounded-md border sm:block'>
         <Table>
@@ -175,7 +201,7 @@ export function MedicalHistoriesTable({
             {isLoading ? (
               <TableRow>
                 <TableCell
-                  colSpan={columns.length}
+                  colSpan={table.getVisibleLeafColumns().length}
                   className='h-24 text-center text-muted-foreground'
                 >
                   Đang tải...
@@ -206,7 +232,10 @@ export function MedicalHistoriesTable({
                         colSpan={row.getVisibleCells().length}
                         className='p-0'
                       >
-                        <MedicalHistoryDetails history={row.original} />
+                        <MedicalHistoryDetails
+                          history={row.original}
+                          auditVisibility={columnVisibility}
+                        />
                       </TableCell>
                     </TableRow>
                   )}
@@ -215,10 +244,12 @@ export function MedicalHistoriesTable({
             ) : (
               <TableRow>
                 <TableCell
-                  colSpan={columns.length}
+                  colSpan={table.getVisibleLeafColumns().length}
                   className='h-24 text-center text-muted-foreground'
                 >
-                  Không có lịch sử khám bệnh trong ngày đã chọn.
+                  {date
+                    ? 'Không có lịch sử khám bệnh trong ngày đã chọn.'
+                    : 'Không có lịch sử khám bệnh.'}
                 </TableCell>
               </TableRow>
             )}

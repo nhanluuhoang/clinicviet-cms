@@ -8,6 +8,7 @@ import {
   UserPlus,
   Users,
 } from 'lucide-react'
+import { formatDashboardMoney as formatMoney } from '@/lib/utils'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import {
   Table,
@@ -18,7 +19,6 @@ import {
   TableRow,
 } from '@/components/ui/table'
 import { type DashboardStatistics } from '@/features/examination-queue/api'
-import { formatDashboardMoney as formatMoney } from './utils'
 
 export function OperationalStatistics({
   data,

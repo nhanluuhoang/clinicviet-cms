@@ -1,9 +1,9 @@
 {
   "auth": {
-    "appName": "iClinic",
-    "appDescription": "Management System",
+    "appName": "ClinicViet",
+    "appDescription": "Clinic Management",
     "signIn": "Sign in",
-    "signInDescription": "Enter your email and password below to log into your account",
+    "signInDescription": "Enter your username and password to access ClinicViet.",
     "agreement": "By clicking sign in, you agree to our",
     "termsOfService": "Terms of Service",
     "and": "and",
@@ -23,7 +23,10 @@
     "context": {
       "medicineName": "Medicine name",
       "stockMedicine": "Medicine",
-      "templateName": "Template name"
+      "templateName": "Template name",
+      "clinicName": "Clinic",
+      "clinicCode": "Clinic code",
+      "registeredAt": "Registered at"
     },
     "columns": {
       "address": "Address",
@@ -71,7 +74,23 @@
       "totalQty": "Stock quantity",
       "unit": "Unit",
       "unitCost": "Unit cost",
-      "value": "Value"
+      "value": "Value",
+      "creator": "Created by",
+      "isActive": "Status",
+      "lastActiveAt": "Last active",
+      "rejectionReason": "Rejection reason",
+      "role": "Role",
+      "servicePlan": "Service plan",
+      "status": "Status",
+      "subdomain": "Subdomain",
+      "subscriptionStatus": "Subscription status",
+      "tenantId": "Clinic",
+      "trialEndsAt": "Trial ends",
+      "trialStartedAt": "Trial starts",
+      "type": "Type",
+      "updatedAt": "Updated at",
+      "userName": "Username",
+      "users": "Accounts"
     }
   }
 }

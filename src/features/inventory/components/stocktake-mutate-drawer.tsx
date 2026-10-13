@@ -2,7 +2,8 @@ import { useEffect, useMemo, useState } from 'react'
 import { useQuery, useQueryClient } from '@tanstack/react-query'
 import { Check, ChevronsUpDown } from 'lucide-react'
 import { toast } from 'sonner'
-import { cn } from '@/lib/utils'
+import { showRequestError } from '@/lib/handle-server-error'
+import { cn, formatNumber, toDateInput } from '@/lib/utils'
 import { useDebounce } from '@/hooks/use-debounce'
 import { Button } from '@/components/ui/button'
 import {
@@ -33,7 +34,6 @@ import { Textarea } from '@/components/ui/textarea'
 import { DatePickerInput } from '@/components/date-picker-input'
 import { GetMedicines, type Medicine } from '@/features/medicines/api'
 import { CreateStockTake, GetBatches } from '../api'
-import { formatNumber, toDateInput } from '../utils'
 import { ExpiryBadge } from './expiry-badge'
 
 function MedicinePicker({
@@ -183,9 +183,7 @@ export function StockTakeMutateDrawer({
       })
       onOpenChange(false)
     } catch (error) {
-      toast.error('Không lưu được phiếu kiểm kê', {
-        description: error instanceof Error ? error.message : undefined,
-      })
+      showRequestError(error, 'Không lưu được phiếu kiểm kê')
     } finally {
       setIsSubmitting(false)
     }
@@ -209,7 +207,9 @@ export function StockTakeMutateDrawer({
         <div className='-mx-1 space-y-6 overflow-y-auto px-1'>
           <div className='grid gap-4 sm:grid-cols-2'>
             <div className='space-y-2'>
-              <Label htmlFor='stocktake-medicine'>Thuốc</Label>
+              <Label required htmlFor='stocktake-medicine'>
+                Thuốc
+              </Label>
               <MedicinePicker
                 selected={selectedMedicine}
                 onChange={(medicine) => {
@@ -219,7 +219,9 @@ export function StockTakeMutateDrawer({
               />
             </div>
             <div className='space-y-2'>
-              <Label htmlFor='stocktake-date'>Ngày kiểm kê</Label>
+              <Label required htmlFor='stocktake-date'>
+                Ngày kiểm kê
+              </Label>
               <DatePickerInput
                 id='stocktake-date'
                 value={countedAt}

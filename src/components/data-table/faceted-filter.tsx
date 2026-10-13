@@ -1,6 +1,7 @@
 import * as React from 'react'
-import { CheckIcon, PlusCircledIcon } from '@radix-ui/react-icons'
+import { CheckIcon } from '@radix-ui/react-icons'
 import { type Column } from '@tanstack/react-table'
+import { CircleDot, ListChecks } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
@@ -46,8 +47,17 @@ export function DataTableFacetedFilter<TData, TValue>({
   return (
     <Popover>
       <PopoverTrigger asChild>
-        <Button variant='outline' size='sm' className='h-8 border-dashed'>
-          <PlusCircledIcon className='size-4' />
+        <Button
+          variant='outline'
+          size='sm'
+          className='h-8 border-dashed'
+          aria-label={`${title} (${variant === 'radio' ? 'chọn một' : 'chọn nhiều'})`}
+        >
+          {variant === 'radio' ? (
+            <CircleDot className='size-4' />
+          ) : (
+            <ListChecks className='size-4' />
+          )}
           {title}
           {selectedValues?.size > 0 && (
             <>
@@ -64,7 +74,7 @@ export function DataTableFacetedFilter<TData, TValue>({
                     variant='secondary'
                     className='rounded-sm px-1 font-normal'
                   >
-                    {selectedValues.size} selected
+                    Đã chọn {selectedValues.size}
                   </Badge>
                 ) : (
                   options
@@ -147,7 +157,7 @@ export function DataTableFacetedFilter<TData, TValue>({
                     onSelect={() => column?.setFilterValue(undefined)}
                     className='justify-center text-center'
                   >
-                    Clear filters
+                    Xóa bộ lọc
                   </CommandItem>
                 </CommandGroup>
               </>

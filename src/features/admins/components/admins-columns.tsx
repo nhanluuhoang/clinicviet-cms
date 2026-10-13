@@ -1,26 +1,26 @@
 import { type ColumnDef } from '@tanstack/react-table'
-import { cn } from '@/lib/utils'
+import { Badge } from '@/components/ui/badge'
 import { DataTableColumnHeader } from '@/components/data-table'
+import { withAuditColumns } from '@/components/data-table/audit-columns'
 import { LongText } from '@/components/long-text'
 import { type Admin } from '@/features/admins/api'
 import { DataTableRowActions } from './data-table-row-actions'
 
-export const adminsColumns: ColumnDef<Admin>[] = [
+const roleLabels: Record<Admin['role'], string> = {
+  TENANT_ADMIN: 'Quản trị phòng khám',
+  DOCTOR: 'Bác sĩ',
+  ASSISTANT: 'Trợ lý',
+}
+
+export const adminsColumns: ColumnDef<Admin>[] = withAuditColumns([
   {
-    accessorKey: 'email',
+    accessorKey: 'userName',
     header: ({ column }) => (
-      <DataTableColumnHeader column={column} title='Email' />
+      <DataTableColumnHeader column={column} title='Tên đăng nhập' />
     ),
     cell: ({ row }) => (
-      <LongText className='max-w-36 ps-3'>{row.getValue('email')}</LongText>
+      <span className='font-mono'>{row.original.userName}</span>
     ),
-    meta: {
-      className: cn(
-        'drop-shadow-[0_1px_2px_rgb(0_0_0_/_0.1)] dark:drop-shadow-[0_1px_2px_rgb(255_255_255_/_0.1)]',
-        'ps-0.5 max-md:sticky start-6 @4xl/content:table-cell @4xl/content:drop-shadow-none'
-      ),
-    },
-    enableHiding: false,
   },
   {
     accessorKey: 'fullName',
@@ -28,36 +28,38 @@ export const adminsColumns: ColumnDef<Admin>[] = [
       <DataTableColumnHeader column={column} title='Họ tên' />
     ),
     cell: ({ row }) => (
-      <LongText className='max-w-36'>{row.getValue('fullName') || ''}</LongText>
+      <LongText className='max-w-52'>{row.original.fullName}</LongText>
     ),
-    meta: { className: 'w-36' },
+  },
+  {
+    accessorKey: 'email',
+    header: ({ column }) => (
+      <DataTableColumnHeader column={column} title='Email' />
+    ),
+    cell: ({ row }) => row.original.email ?? '—',
   },
   {
     accessorKey: 'phone',
     header: ({ column }) => (
       <DataTableColumnHeader column={column} title='SĐT' />
     ),
-    cell: ({ row }) => <div>{row.getValue('phone')}</div>,
-    enableSorting: false,
+    cell: ({ row }) => row.original.phone ?? '—',
   },
   {
-    accessorKey: 'gender',
+    accessorKey: 'role',
     header: ({ column }) => (
-      <DataTableColumnHeader column={column} title='Giới tính' />
+      <DataTableColumnHeader column={column} title='Vai trò' />
     ),
-    cell: ({ row }) => <div>{row.getValue('gender')}</div>,
-    enableSorting: false,
+    cell: ({ row }) => (
+      <Badge variant='outline'>{roleLabels[row.original.role]}</Badge>
+    ),
   },
   {
-    accessorKey: 'dateOfBirth',
+    accessorKey: 'isActive',
     header: ({ column }) => (
-      <DataTableColumnHeader column={column} title='Ngày sinh' />
+      <DataTableColumnHeader column={column} title='Trạng thái' />
     ),
-    cell: ({ row }) => <div>{row.getValue('dateOfBirth')}</div>,
-    enableSorting: false,
+    cell: ({ row }) => (row.original.isActive ? 'Đang hoạt động' : 'Đã khóa'),
   },
-  {
-    id: 'actions',
-    cell: DataTableRowActions,
-  },
-]
+  { id: 'actions', cell: DataTableRowActions },
+])

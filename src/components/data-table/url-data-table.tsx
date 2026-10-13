@@ -13,6 +13,7 @@ import {
   getPaginationRowModel,
   getSortedRowModel,
   useReactTable,
+  type VisibilityState,
 } from '@tanstack/react-table'
 import { cn } from '@/lib/utils'
 import { type NavigateFn, useTableUrlState } from '@/hooks/use-table-url-state'
@@ -25,6 +26,7 @@ import {
   TableRow,
 } from '@/components/ui/table'
 import { DataTablePagination, DataTableToolbar } from '@/components/data-table'
+import { defaultAuditVisibility } from './audit-columns'
 import { MobileDataCards } from './mobile-cards'
 
 type ToolbarFilter = {
@@ -50,6 +52,8 @@ type ToolbarFilter = {
 type UrlDataTableProps<TData> = {
   columns: ColumnDef<TData>[]
   data: TData[]
+  /** Supplying total enables server pagination, filtering and sorting. */
+  total?: number
   isLoading?: boolean
   searchPlaceholder?: string
   filters?: ToolbarFilter[]
@@ -65,6 +69,7 @@ type UrlDataTableProps<TData> = {
 export function UrlDataTable<TData>({
   columns,
   data,
+  total,
   isLoading,
   searchPlaceholder = 'Tìm kiếm...',
   filters = [],
@@ -80,6 +85,9 @@ export function UrlDataTable<TData>({
   const navigate = useNavigate()
 
   // Mở rộng dòng là trạng thái xem tạm, không đáng đưa lên URL.
+  const [columnVisibility, setColumnVisibility] = useState<VisibilityState>(
+    defaultAuditVisibility
+  )
   const [expanded, setExpanded] = useState<ExpandedState>({})
 
   // Mỗi filter tự lấy `searchKey` làm param; dùng type 'array' vì faceted
@@ -132,6 +140,7 @@ export function UrlDataTable<TData>({
       globalFilter,
       pagination,
       expanded,
+      columnVisibility,
     },
     onSortingChange,
     onColumnFiltersChange,
@@ -145,6 +154,11 @@ export function UrlDataTable<TData>({
             .toLowerCase()
             .includes(String(filterValue).toLowerCase())
       : 'auto',
+    onColumnVisibilityChange: setColumnVisibility,
+    manualPagination: total !== undefined,
+    manualFiltering: total !== undefined,
+    manualSorting: total !== undefined,
+    rowCount: total,
     getCoreRowModel: getCoreRowModel(),
     getFilteredRowModel: getFilteredRowModel(),
     getSortedRowModel: getSortedRowModel(),
@@ -157,8 +171,8 @@ export function UrlDataTable<TData>({
   // dòng này thì người dùng nhìn thấy bảng trống mà không hiểu tại sao.
   const pageCount = table.getPageCount()
   useEffect(() => {
-    ensurePageInRange(pageCount)
-  }, [pageCount, ensurePageInRange])
+    if (!isLoading) ensurePageInRange(pageCount)
+  }, [pageCount, ensurePageInRange, isLoading])
 
   const rows = table.getRowModel().rows
 
@@ -207,7 +221,7 @@ export function UrlDataTable<TData>({
             {isLoading ? (
               <TableRow>
                 <TableCell
-                  colSpan={columns.length}
+                  colSpan={table.getVisibleLeafColumns().length}
                   className='h-24 text-center text-muted-foreground'
                 >
                   Đang tải...
@@ -235,7 +249,7 @@ export function UrlDataTable<TData>({
                   {row.getIsExpanded() && renderSubRow && (
                     <TableRow className='hover:bg-transparent'>
                       <TableCell
-                        colSpan={columns.length}
+                        colSpan={table.getVisibleLeafColumns().length}
                         className='bg-muted/30 p-0'
                       >
                         {renderSubRow(row)}
@@ -247,7 +261,7 @@ export function UrlDataTable<TData>({
             ) : (
               <TableRow>
                 <TableCell
-                  colSpan={columns.length}
+                  colSpan={table.getVisibleLeafColumns().length}
                   className='h-24 text-center text-muted-foreground'
                 >
                   {emptyMessage}

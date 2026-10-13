@@ -1,3 +1,5 @@
+import type { AuditFields } from '@/components/data-table/audit-columns'
+
 export type MedicineGroup =
   | 'antibiotic'
   | 'analgesic'
@@ -5,9 +7,17 @@ export type MedicineGroup =
   | 'cardio'
   | 'digestive'
   | 'respiratory'
+  | 'allergy'
+  | 'endocrine'
+  | 'dermatology'
+  | 'ophthalmology'
+  | 'ent'
+  | 'musculoskeletal'
+  | 'neurology'
+  | 'vaccine'
   | 'other'
 
-export interface Medicine {
+export interface Medicine extends AuditFields {
   id: string
   code: string
   name: string

@@ -10,6 +10,11 @@ import {
   XAxis,
   YAxis,
 } from 'recharts'
+import {
+  formatDashboardMoney as formatMoney,
+  getCurrentYear,
+  YEAR_OPTIONS,
+} from '@/lib/utils'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import {
   Select,
@@ -25,11 +30,6 @@ import { ProfileDropdown } from '@/components/profile-dropdown'
 import { ThemeSwitch } from '@/components/theme-switch'
 import { getYearlyQueueDashboard } from '@/features/examination-queue/api'
 import { OperationalStatistics } from './operational-statistics'
-import {
-  formatDashboardMoney as formatMoney,
-  getCurrentYear,
-  YEAR_OPTIONS,
-} from './utils'
 
 export function YearlyDashboard() {
   const [year, setYear] = useState(getCurrentYear)

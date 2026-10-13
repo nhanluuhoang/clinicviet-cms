@@ -5,6 +5,7 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import { useQueryClient } from '@tanstack/react-query'
 import { Info } from 'lucide-react'
 import { toast } from 'sonner'
+import { showRequestError } from '@/lib/handle-server-error'
 import { cn } from '@/lib/utils'
 import { Button } from '@/components/ui/button'
 import {
@@ -111,20 +112,6 @@ const formSchema = z
         message: 'Mật khẩu tối thiểu 8 ký tự',
       })
     }
-    if (!/[a-z]/.test(v.password)) {
-      ctx.addIssue({
-        code: 'custom',
-        path: ['password'],
-        message: 'Mật khẩu cần ít nhất một chữ thường',
-      })
-    }
-    if (!/\d/.test(v.password)) {
-      ctx.addIssue({
-        code: 'custom',
-        path: ['password'],
-        message: 'Mật khẩu cần ít nhất một chữ số',
-      })
-    }
     if (v.password !== v.confirmPassword) {
       ctx.addIssue({
         code: 'custom',
@@ -224,11 +211,9 @@ export function PatientsMutateDialog({
       queryClient.invalidateQueries({ queryKey: ['patients'] })
       onOpenChange(false)
     } catch (error) {
-      toast.error(
-        isEdit ? 'Không cập nhật được' : 'Không thêm được bệnh nhân',
-        {
-          description: error instanceof Error ? error.message : undefined,
-        }
+      showRequestError(
+        error,
+        isEdit ? 'Không cập nhật được' : 'Không thêm được bệnh nhân'
       )
     }
   }
@@ -243,7 +228,7 @@ export function PatientsMutateDialog({
       >
         <DialogHeader className='pe-8 text-start'>
           <DialogTitle>
-            {isEdit ? 'Sửa bệnh nhân' : 'Thêm bệnh nhân'}
+            {isEdit ? 'Cập nhật bệnh nhân' : 'Thêm bệnh nhân'}
           </DialogTitle>
           <DialogDescription>
             {isEdit
@@ -298,7 +283,7 @@ export function PatientsMutateDialog({
                 name='fullName'
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Họ tên</FormLabel>
+                    <FormLabel required>Họ tên</FormLabel>
                     <FormControl>
                       <Input {...field} placeholder='VD: Nguyễn Văn A' />
                     </FormControl>
@@ -314,7 +299,7 @@ export function PatientsMutateDialog({
                 name='password'
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>
+                    <FormLabel required={!isEdit}>
                       Mật khẩu{' '}
                       {isEdit && (
                         <span className='font-normal text-muted-foreground'>
@@ -338,7 +323,11 @@ export function PatientsMutateDialog({
                 name='confirmPassword'
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Nhập lại mật khẩu</FormLabel>
+                    <FormLabel
+                      required={!isEdit || Boolean(form.watch('password'))}
+                    >
+                      Nhập lại mật khẩu
+                    </FormLabel>
                     <FormControl>
                       <PasswordInput
                         {...field}

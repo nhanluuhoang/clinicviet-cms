@@ -1,60 +1,64 @@
 import { axios } from '@/lib/axios'
+import type { AuditFields } from '@/components/data-table/audit-columns'
+
+export type StaffRole = 'DOCTOR' | 'ASSISTANT'
 
 export interface Params {
+  role?: Admin['role']
+  isActive?: 'true' | 'false'
   fullName: string
-  phone: string
-  gender: string
-  sort: string
   page: number
+  pageSize: number
 }
 
-export interface AdminDtoRequest {
-  email: string
-  fullName?: string
+export interface StaffInput {
+  email?: string
+  fullName: string
   phone?: string
-  gender?: number
-  dateOfBirth?: string
+  role: StaffRole
+  password?: string
+  passwordConfirmation?: string
+  isActive?: boolean
 }
 
-export interface AdminResponse {
-  status: boolean
-  data: Admin
+export interface Admin extends AuditFields {
+  id: string
+  userName: string
+  email: string | null
+  fullName: string
+  phone: string | null
+  role: 'TENANT_ADMIN' | StaffRole
+  isActive: boolean
 }
 
 export interface AdminsResponse {
-  status: boolean
   data: Admin[]
-  pagination: { total: number }
+  total: number
+  page: number
+  limit: number
 }
 
-export interface Admin {
-  id: string
-  email: string
-  fullName?: string
-  phone?: string
-  gender?: number
-  dateOfBirth?: string
-  isSuperAdmin: boolean
-}
+const CreateStaff = (data: StaffInput): Promise<Admin> =>
+  axios.post('/users', data)
 
-const CreateAdmin = (data: AdminDtoRequest): Promise<void> => {
-  return axios.post('/admin', data)
-}
+const FindStaff = ({
+  fullName,
+  role,
+  isActive,
+  page,
+  pageSize,
+}: Params): Promise<AdminsResponse> =>
+  axios.get('/users', {
+    params: {
+      search: fullName || undefined,
+      role,
+      isActive,
+      page,
+      limit: pageSize,
+    },
+  })
 
-const GetAdmins = (params?: Params): Promise<AdminsResponse> => {
-  return axios.get('/admin', { params })
-}
+const UpdateStaff = (id: string, data: StaffInput): Promise<Admin> =>
+  axios.patch(`/users/${id}`, data)
 
-const GetAdmin = (id: string): Promise<AdminResponse> => {
-  return axios.get(`/admin/${id}`)
-}
-
-const UpdateAdmin = (id: string, data: AdminDtoRequest): Promise<void> => {
-  return axios.patch(`/admin/${id}`, data)
-}
-
-const DeleteAdmin = (id: string): Promise<void> => {
-  return axios.delete(`/admin/${id}`)
-}
-
-export { CreateAdmin, GetAdmins, GetAdmin, UpdateAdmin, DeleteAdmin }
+export { CreateStaff, FindStaff, UpdateStaff }

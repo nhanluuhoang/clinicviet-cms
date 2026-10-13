@@ -4,7 +4,7 @@ import {
   DoubleArrowLeftIcon,
   DoubleArrowRightIcon,
 } from '@radix-ui/react-icons'
-import { getPageNumbers } from '@/lib/utils'
+import { getPageNumbers, formatTime } from '@/lib/utils'
 import { Button } from '@/components/ui/button'
 import {
   Table,
@@ -15,7 +15,6 @@ import {
   TableRow,
 } from '@/components/ui/table'
 import { type QueueEntry, type QueueStatus } from '../api'
-import { formatTime } from '../utils'
 import { QueueActions } from './queue-actions'
 import { QueueStatusBadge } from './queue-status-badge'
 
@@ -54,12 +53,18 @@ export function QueueTable({
           <p className='rounded-md border p-4 text-center'>Đang tải...</p>
         ) : data.length ? (
           data.map((item) => (
-            <div key={item.id} className='min-w-0 space-y-3 rounded-md border p-4'>
+            <div
+              key={item.id}
+              className='min-w-0 space-y-3 rounded-md border p-4'
+            >
               <div className='flex items-start justify-between gap-3'>
                 <div className='min-w-0'>
-                  <p className='break-words font-medium'>{item.patient.fullName}</p>
+                  <p className='font-medium break-words'>
+                    {item.patient.fullName}
+                  </p>
                   <p className='text-xs text-muted-foreground'>
-                    Số thứ tự: {item.queueNumber ?? '—'} · {item.patient.phone || 'Không có SĐT'}
+                    Số thứ tự: {item.queueNumber ?? '—'} ·{' '}
+                    {item.patient.phone || 'Không có SĐT'}
                     {item.isLate ? ' · Đến muộn' : ''}
                   </p>
                 </div>
@@ -189,7 +194,7 @@ export function QueueTable({
               <span className='sr-only'>Trang trước</span>
               <ChevronLeftIcon />
             </Button>
-            <span className='whitespace-nowrap text-sm sm:hidden'>
+            <span className='text-sm whitespace-nowrap sm:hidden'>
               {page}/{totalPages}
             </span>
             {pageNumbers.map((pageNumber, index) =>

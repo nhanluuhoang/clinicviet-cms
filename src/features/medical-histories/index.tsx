@@ -1,11 +1,11 @@
 import { useQuery } from '@tanstack/react-query'
 import { getRouteApi } from '@tanstack/react-router'
+import { getToday } from '@/lib/utils'
 // import { LanguageSwitcher } from '@/components/language-switcher'
 import { Header } from '@/components/layout/header'
 import { Main } from '@/components/layout/main'
 import { ProfileDropdown } from '@/components/profile-dropdown'
 import { ThemeSwitch } from '@/components/theme-switch'
-import { getToday } from '@/features/dashboard/utils'
 import { getMedicalHistoryList } from './api'
 import { MedicalHistoriesTable } from './components/medical-histories-table'
 
@@ -14,14 +14,14 @@ const route = getRouteApi('/_authenticated/medical-histories/')
 export function MedicalHistories() {
   const search = route.useSearch()
   const navigate = route.useNavigate()
-  const date = search.date || getToday()
+  const date = search.date ?? getToday()
   const { data, isLoading, isError } = useQuery({
     queryKey: ['medical-histories', search, date],
     queryFn: () =>
       getMedicalHistoryList({
         patientName: search.patientName || undefined,
         doctorName: search.doctorName || undefined,
-        date,
+        date: date || undefined,
         page: search.page ?? 1,
         limit: search.pageSize ?? 10,
       }),

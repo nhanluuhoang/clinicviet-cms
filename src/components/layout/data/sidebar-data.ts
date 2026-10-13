@@ -1,8 +1,10 @@
 import {
   CLINICAL_ADMIN_ROLES,
   STAFF_ROLES,
-  SUPER_ADMIN_ROLES,
+  TENANT_APPEARANCE_PLANS,
   TENANT_ADMIN_ROLES,
+  TENANT_STAFF_PLANS,
+  SUPER_ADMIN_ROLES,
 } from '@/config/access-control'
 import {
   LayoutDashboard,
@@ -21,16 +23,44 @@ import {
   ChartColumn,
   History,
   PanelsTopLeft,
+  Building2,
+  MessageSquare,
 } from 'lucide-react'
 import { type SidebarData } from '../types'
 
 export const sidebarData: SidebarData = {
-  user: {
-    name: 'satnaing',
-    email: 'satnaingdev@gmail.com',
-    avatar: '/avatars/shadcn.jpg',
-  },
   navGroups: [
+    {
+      items: [
+        {
+          title: 'Hệ thống',
+          icon: Building2,
+          roles: SUPER_ADMIN_ROLES,
+          items: [
+            {
+              title: 'Yêu cầu hỗ trợ',
+              url: '/system/support-requests',
+              roles: SUPER_ADMIN_ROLES,
+            },
+            {
+              title: 'Phòng khám',
+              url: '/system/tenants',
+              roles: SUPER_ADMIN_ROLES,
+            },
+            {
+              title: 'Người dùng',
+              url: '/system/users',
+              roles: SUPER_ADMIN_ROLES,
+            },
+            {
+              title: 'Yêu cầu dùng thử',
+              url: '/system/trial-requests',
+              roles: SUPER_ADMIN_ROLES,
+            },
+          ],
+        },
+      ],
+    },
     {
       title: 'Tổng quan',
       items: [
@@ -60,7 +90,8 @@ export const sidebarData: SidebarData = {
           title: 'Nhân viên',
           url: '/admins',
           icon: Users,
-          roles: SUPER_ADMIN_ROLES,
+          roles: TENANT_ADMIN_ROLES,
+          plans: TENANT_STAFF_PLANS,
         },
       ],
     },
@@ -116,6 +147,7 @@ export const sidebarData: SidebarData = {
         {
           title: 'Giao diện',
           icon: ShieldCheck,
+          plans: TENANT_APPEARANCE_PLANS,
           items: [
             {
               title: 'Trang giới thiệu',
@@ -146,8 +178,19 @@ export const sidebarData: SidebarData = {
               url: '/clinic-days-off',
               icon: CalendarOff,
               roles: CLINICAL_ADMIN_ROLES,
+              plans: TENANT_STAFF_PLANS,
             },
           ],
+        },
+      ],
+    },
+    {
+      items: [
+        {
+          title: 'Hỗ trợ & góp ý',
+          url: '/support-requests',
+          icon: MessageSquare,
+          roles: STAFF_ROLES,
         },
       ],
     },

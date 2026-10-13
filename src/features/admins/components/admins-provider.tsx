@@ -2,7 +2,7 @@ import React, { useState } from 'react'
 import useDialogState from '@/hooks/use-dialog-state'
 import { type Admin } from '../api'
 
-type AdminsDialogType = 'add' | 'edit' | 'delete'
+type AdminsDialogType = 'add' | 'edit'
 
 type AdminsContextType = {
   open: AdminsDialogType | null

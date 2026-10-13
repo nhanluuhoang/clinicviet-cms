@@ -5,6 +5,7 @@ import { useDebounce } from '@/hooks/use-debounce'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { DataTableFacetedFilter } from './faceted-filter'
+import { DataTableViewOptions } from './view-options'
 
 type DataTableToolbarProps<TData> = {
   table: Table<TData>
@@ -22,6 +23,7 @@ type DataTableToolbarProps<TData> = {
   }[]
   showSearch?: boolean
   showReset?: boolean
+  showViewOptions?: boolean
 }
 
 export function DataTableToolbar<TData>({
@@ -31,6 +33,7 @@ export function DataTableToolbar<TData>({
   filters = [],
   showSearch = true,
   showReset = true,
+  showViewOptions = true,
 }: DataTableToolbarProps<TData>) {
   const isFiltered =
     table.getState().columnFilters.length > 0 || table.getState().globalFilter
@@ -57,14 +60,17 @@ export function DataTableToolbar<TData>({
     if (!showSearch) return
 
     if (searchKey) {
-      table.getColumn(searchKey)?.setFilterValue(debouncedSearchValue)
+      const column = table.getColumn(searchKey)
+      if ((column?.getFilterValue() ?? '') === debouncedSearchValue) return
+      column?.setFilterValue(debouncedSearchValue)
     } else {
+      if ((table.getState().globalFilter ?? '') === debouncedSearchValue) return
       table.setGlobalFilter(debouncedSearchValue)
     }
   }, [debouncedSearchValue, searchKey, table, showSearch])
 
   return (
-    <div className='flex items-center justify-between'>
+    <div className='flex items-center justify-between gap-2'>
       <div className='flex flex-1 flex-col-reverse items-start gap-y-2 sm:flex-row sm:items-center sm:space-x-2'>
         {showSearch && (
           <Input
@@ -105,6 +111,7 @@ export function DataTableToolbar<TData>({
           </Button>
         )}
       </div>
+      {showViewOptions && <DataTableViewOptions table={table} />}
     </div>
   )
 }

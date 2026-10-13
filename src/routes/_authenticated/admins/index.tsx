@@ -8,6 +8,16 @@ const adminsSearchSchema = z.object({
   fullName: z.string().optional().catch(''),
   phone: z.string().optional().catch(''),
   gender: z.string().optional().catch(''),
+  role: z
+    .array(z.enum(['TENANT_ADMIN', 'DOCTOR', 'ASSISTANT']))
+    .max(1)
+    .optional()
+    .catch([]),
+  isActive: z
+    .array(z.enum(['true', 'false']))
+    .max(1)
+    .optional()
+    .catch([]),
   sort: z.string().optional().catch(''),
 })
 

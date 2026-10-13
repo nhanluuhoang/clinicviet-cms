@@ -22,7 +22,7 @@ type TourStep = {
 
 const overviewSteps: TourStep[] = [
   {
-    title: 'Chào mừng đến với iClinic',
+    title: 'Chào mừng đến với ClinicViet',
     description:
       'Tour ngắn này sẽ giới thiệu những khu vực quan trọng để bạn bắt đầu sử dụng hệ thống.',
   },
@@ -74,9 +74,9 @@ const patientWorkflowSteps: TourStep[] = [
     target: '[data-tour="create-queue"]',
   },
   {
-    title: '3. Khám và kê toa',
+    title: '3. Lập phiếu dịch vụ',
     description:
-      'Khi lượt bệnh nhân ở trạng thái Đang khám, nút Kê toa sẽ xuất hiện tại cuối dòng. Chọn nút này, nhập chẩn đoán, thêm thuốc và kiểm tra liều dùng trước khi lưu.',
+      'Khi lượt bệnh nhân ở trạng thái Đang khám, nút Lập phiếu sẽ xuất hiện tại cuối dòng. Chọn nút này để ghi nhận thông tin khám, thuốc, vaccine và phí dịch vụ trước khi lưu.',
     destination: 'queue',
     target: '[data-tour="create-prescription"]',
   },
@@ -141,9 +141,11 @@ export function ProductTour() {
   const [stepIndex, setStepIndex] = useState(0)
   const [tourKind, setTourKind] = useState<TourKind>('overview')
   const [rect, setRect] = useState<Rect | null>(null)
-  const [checkedStorageKey, setCheckedStorageKey] = useState<string | null>(null)
+  const [checkedStorageKey, setCheckedStorageKey] = useState<string | null>(
+    null
+  )
   const [hasCompletedTour, setHasCompletedTour] = useState(false)
-  const storageKey = userId ? `iclinic-product-tour:${userId}` : null
+  const storageKey = userId ? `clinicviet-product-tour:${userId}` : null
   const steps = tourSteps[tourKind]
   const step = steps[stepIndex]
 
@@ -178,12 +180,18 @@ export function ProductTour() {
   useEffect(() => {
     if (!storageKey) return
     const completed = localStorage.getItem(storageKey) === 'completed'
-    setHasCompletedTour(completed)
-    setCheckedStorageKey(storageKey)
-    if (completed) return
-    const timeout = window.setTimeout(() => setActive(true), 700)
-    return () => window.clearTimeout(timeout)
-  }, [storageKey])
+    const syncTimeout = window.setTimeout(() => {
+      setHasCompletedTour(completed)
+      setCheckedStorageKey(storageKey)
+    }, 0)
+    const timeout = completed
+      ? undefined
+      : window.setTimeout(() => setActive(true), 700)
+    return () => {
+      window.clearTimeout(syncTimeout)
+      if (timeout !== undefined) window.clearTimeout(timeout)
+    }
+  }, [storageKey, userId])
 
   useEffect(() => {
     const startRequestedTour = (event: Event) => {
@@ -194,9 +202,9 @@ export function ProductTour() {
       setActive(true)
     }
 
-    window.addEventListener('iclinic:start-tour', startRequestedTour)
+    window.addEventListener('clinicviet:start-tour', startRequestedTour)
     return () =>
-      window.removeEventListener('iclinic:start-tour', startRequestedTour)
+      window.removeEventListener('clinicviet:start-tour', startRequestedTour)
   }, [])
 
   useEffect(() => {

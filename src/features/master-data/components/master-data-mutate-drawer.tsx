@@ -4,6 +4,7 @@ import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useQueryClient } from '@tanstack/react-query'
 import { toast } from 'sonner'
+import { showRequestError } from '@/lib/handle-server-error'
 import { Button } from '@/components/ui/button'
 import {
   Form,
@@ -92,8 +93,8 @@ export function MasterDataMutateDrawer({
       queryClient.invalidateQueries({ queryKey: ['master-data'] })
       onOpenChange(false)
       form.reset()
-    } catch (_error) {
-      toast.error('Không thể lưu cấu hình chung.')
+    } catch (error) {
+      showRequestError(error, 'Không thể lưu cấu hình chung.')
     }
   }
 
@@ -107,7 +108,9 @@ export function MasterDataMutateDrawer({
     >
       <SheetContent className='flex flex-col'>
         <SheetHeader className='text-start'>
-          <SheetTitle>{isUpdate ? 'Cập nhật' : 'Tạo'} cấu hình chung</SheetTitle>
+          <SheetTitle>
+            {isUpdate ? 'Cập nhật' : 'Tạo'} cấu hình chung
+          </SheetTitle>
           <SheetDescription>
             {isUpdate
               ? 'Cập nhật các thông tin cấu hình cần thiết.'
@@ -125,7 +128,7 @@ export function MasterDataMutateDrawer({
               name='key'
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Khóa</FormLabel>
+                  <FormLabel required>Khóa</FormLabel>
                   <FormControl>
                     <Input {...field} placeholder='Nhập khóa' />
                   </FormControl>
@@ -138,7 +141,7 @@ export function MasterDataMutateDrawer({
               name='value'
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Giá trị</FormLabel>
+                  <FormLabel required>Giá trị</FormLabel>
                   <FormControl>
                     <Input {...field} placeholder='Nhập giá trị' />
                   </FormControl>

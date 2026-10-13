@@ -20,6 +20,7 @@ import {
   DataTableToolbar,
   MobileDataCards,
 } from '@/components/data-table'
+import { defaultAuditVisibility } from '@/components/data-table/audit-columns'
 import { type Admin } from '../api'
 import { adminsColumns as columns } from './admins-columns'
 
@@ -40,7 +41,9 @@ export function AdminsTable({
 }: DataTableProps) {
   // Local UI-only states
   const [rowSelection, setRowSelection] = useState({})
-  const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({})
+  const [columnVisibility, setColumnVisibility] = useState<VisibilityState>(
+    defaultAuditVisibility
+  )
 
   // Synced with URL states
   const {
@@ -56,8 +59,8 @@ export function AdminsTable({
     pagination: { defaultPage: 1, defaultPageSize: 10 },
     columnFilters: [
       { columnId: 'fullName', searchKey: 'fullName', type: 'string' },
-      { columnId: 'phone', searchKey: 'phone', type: 'string' },
-      { columnId: 'gender', searchKey: 'gender', type: 'string' },
+      { columnId: 'role', searchKey: 'role', type: 'array' },
+      { columnId: 'isActive', searchKey: 'isActive', type: 'array' },
     ],
     sorting: { defaultSort: '' },
   })
@@ -98,12 +101,22 @@ export function AdminsTable({
         searchKey='fullName'
         filters={[
           {
-            columnId: 'gender',
-            title: 'Giới tính',
+            columnId: 'role',
+            title: 'Vai trò',
+            variant: 'radio',
             options: [
-              { label: 'Nam', value: '1' },
-              { label: 'Nữ', value: '2' },
-              { label: 'Khác', value: '3' },
+              { label: 'Quản trị phòng khám', value: 'TENANT_ADMIN' },
+              { label: 'Bác sĩ', value: 'DOCTOR' },
+              { label: 'Trợ lý', value: 'ASSISTANT' },
+            ],
+          },
+          {
+            columnId: 'isActive',
+            title: 'Trạng thái',
+            variant: 'radio',
+            options: [
+              { label: 'Đang hoạt động', value: 'true' },
+              { label: 'Đã khóa', value: 'false' },
             ],
           },
         ]}
@@ -113,7 +126,7 @@ export function AdminsTable({
         isLoading={isLoading}
         emptyMessage='Không có kết quả.'
       />
-      <div className='hidden overflow-hidden rounded-md border text-nowrap sm:block'>
+      <div className='hidden overflow-x-auto rounded-md border text-nowrap sm:block'>
         <Table>
           <TableHeader>
             {table.getHeaderGroups().map((headerGroup) => (
@@ -143,7 +156,7 @@ export function AdminsTable({
             {isLoading ? (
               <TableRow>
                 <TableCell
-                  colSpan={columns.length}
+                  colSpan={table.getVisibleLeafColumns().length}
                   className='h-24 text-center'
                 >
                   Đang tải...
@@ -176,7 +189,7 @@ export function AdminsTable({
             ) : (
               <TableRow>
                 <TableCell
-                  colSpan={columns.length}
+                  colSpan={table.getVisibleLeafColumns().length}
                   className='h-24 text-center'
                 >
                   Không có kết quả.

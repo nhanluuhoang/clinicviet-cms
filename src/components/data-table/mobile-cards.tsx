@@ -1,5 +1,6 @@
 import { flexRender, type Row, type Table } from '@tanstack/react-table'
 import { useTranslation } from 'react-i18next'
+import { auditLabels, type AuditColumnId } from './audit-columns'
 
 const MOBILE_LABELS: Record<string, string> = {
   address: 'Địa chỉ',
@@ -72,6 +73,9 @@ export function MobileDataCards<TData>({
   const headers = headerGroups[headerGroups.length - 1]?.headers ?? []
 
   const labelFor = (columnId: string) => {
+    if (table.getColumn(columnId)?.columnDef.meta?.audit) {
+      return auditLabels[columnId as AuditColumnId]
+    }
     const override = labels?.[columnId]
     if (override) return i18n.exists(override) ? t(override) : override
     const key = `mobileTable.columns.${columnId}`
@@ -88,7 +92,9 @@ export function MobileDataCards<TData>({
   return (
     <div className='grid min-w-0 gap-3 sm:hidden'>
       {isLoading ? (
-        <p className='rounded-md border p-4 text-center'>{t('mobileTable.loading')}</p>
+        <p className='rounded-md border p-4 text-center'>
+          {t('mobileTable.loading')}
+        </p>
       ) : rows.length ? (
         rows.map((row) => {
           const cells = row.getVisibleCells()

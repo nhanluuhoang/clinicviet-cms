@@ -1,6 +1,8 @@
 import { Link } from '@tanstack/react-router'
 import { Menu, X } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
+import { Logo } from '@/assets/logo'
+import { useAuthStore } from '@/stores/auth-store'
 import { cn } from '@/lib/utils'
 import {
   SidebarMenu,
@@ -13,6 +15,7 @@ import { Button } from '../ui/button'
 export function AppTitle() {
   const { t } = useTranslation()
   const { setOpenMobile, state } = useSidebar()
+  const role = useAuthStore((store) => store.auth.user?.role)
   return (
     <SidebarMenu>
       <SidebarMenuItem>
@@ -23,15 +26,20 @@ export function AppTitle() {
         >
           <div>
             <Link
-              to='/admins'
+              to={role === 'SUPER_ADMIN' ? '/system/tenants' : '/admins'}
               onClick={() => setOpenMobile(false)}
               className={cn(
-                'grid flex-1 text-start text-sm leading-tight',
+                'flex flex-1 items-center gap-2 text-start text-sm leading-tight',
                 state === 'collapsed' && 'hidden'
               )}
             >
-              <span className='truncate font-bold'>{t('auth.appName')}</span>
-              <span className='truncate text-xs'>{t('auth.appDescription')}</span>
+              <Logo aria-hidden='true' />
+              <span className='grid min-w-0'>
+                <span className='truncate font-bold'>{t('auth.appName')}</span>
+                <span className='truncate text-xs'>
+                  {t('auth.appDescription')}
+                </span>
+              </span>
             </Link>
             <ToggleSidebar />
           </div>

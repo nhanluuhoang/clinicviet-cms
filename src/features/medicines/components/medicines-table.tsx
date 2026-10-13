@@ -14,9 +14,10 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
 import { DataTableColumnHeader } from '@/components/data-table'
+import { withAuditColumns } from '@/components/data-table/audit-columns'
 import { UrlDataTable } from '@/components/data-table/url-data-table'
 import { GetMedicines, type Medicine } from '../api'
-import { medicineGroupLabel, medicineGroups } from '../data/data'
+import { medicineGroupLabel, medicineGroups, medicineUnits } from '../data/data'
 import { useMedicines } from './medicines-provider'
 
 function RowActions({ medicine }: { medicine: Medicine }) {
@@ -40,7 +41,7 @@ function RowActions({ medicine }: { medicine: Medicine }) {
             setOpen('medicine-update')
           }}
         >
-          Sửa
+          Cập nhật
           <DropdownMenuShortcut>
             <Edit size={16} />
           </DropdownMenuShortcut>
@@ -66,7 +67,7 @@ function RowActions({ medicine }: { medicine: Medicine }) {
 const formatNumber = (value: number) =>
   new Intl.NumberFormat('vi-VN').format(value)
 
-const columns: ColumnDef<Medicine>[] = [
+const columns: ColumnDef<Medicine>[] = withAuditColumns([
   {
     accessorKey: 'name',
     header: ({ column }) => (
@@ -92,6 +93,7 @@ const columns: ColumnDef<Medicine>[] = [
     header: ({ column }) => (
       <DataTableColumnHeader column={column} title='Đơn vị' />
     ),
+    filterFn: (row, id, value) => value.includes(row.getValue(id)),
   },
   {
     accessorKey: 'group',
@@ -142,7 +144,7 @@ const columns: ColumnDef<Medicine>[] = [
     id: 'actions',
     cell: ({ row }) => <RowActions medicine={row.original} />,
   },
-]
+])
 
 export function MedicinesTable() {
   const search = useApiSearch()
@@ -164,6 +166,12 @@ export function MedicinesTable() {
       }
       pageSize={15}
       filters={[
+        {
+          columnId: 'unit',
+          title: 'Đơn vị',
+          variant: 'checkbox',
+          options: medicineUnits.map((unit) => ({ label: unit, value: unit })),
+        },
         {
           columnId: 'group',
           title: 'Nhóm thuốc',

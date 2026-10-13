@@ -5,10 +5,9 @@ import {
   TriangleAlert,
   Wallet,
 } from 'lucide-react'
-import { cn } from '@/lib/utils'
+import { cn, formatMoney, formatNumber } from '@/lib/utils'
 import { Card, CardContent } from '@/components/ui/card'
 import { type InventoryStats as Stats } from '../api'
-import { formatMoney, formatNumber } from '../utils'
 
 type Tile = {
   label: string

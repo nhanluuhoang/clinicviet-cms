@@ -5,6 +5,7 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import { useNavigate } from '@tanstack/react-router'
 import { Loader2, Save } from 'lucide-react'
 import { toast } from 'sonner'
+import { showRequestError } from '@/lib/handle-server-error'
 import { cn } from '@/lib/utils'
 import { Button } from '@/components/ui/button'
 import {
@@ -21,11 +22,9 @@ import { ResetPassword } from '@/features/auth/api'
 const formSchema = z.object({
   password: z
     .string()
-    .min(6, 'Mật khẩu phải có ít nhất 6 ký tự')
-    .max(255, 'Mật khẩu không được vượt quá 255 ký tự'),
-  passwordConfirmation: z
-    .string()
-    .min(1, 'Vui lòng nhập lại mật khẩu'),
+    .min(8, 'Mật khẩu phải có ít nhất 8 ký tự')
+    .max(20, 'Mật khẩu không được vượt quá 20 ký tự'),
+  passwordConfirmation: z.string().min(1, 'Vui lòng nhập lại mật khẩu'),
 })
 
 interface ResetPasswordFormProps extends React.HTMLAttributes<HTMLFormElement> {
@@ -54,8 +53,9 @@ export function ResetPasswordForm({
       await ResetPassword({ ...data, token })
       navigate({ to: '/sign-in' })
       toast.success('Đặt lại mật khẩu thành công')
-    } catch {
-      toast.error(
+    } catch (error) {
+      showRequestError(
+        error,
         'Đặt lại mật khẩu thất bại. Vui lòng kiểm tra liên kết và thử lại.'
       )
     } finally {
@@ -75,7 +75,7 @@ export function ResetPasswordForm({
           name='password'
           render={({ field }) => (
             <FormItem className='relative'>
-              <FormLabel>Mật khẩu</FormLabel>
+              <FormLabel required>Mật khẩu</FormLabel>
               <FormControl>
                 <PasswordInput placeholder='********' {...field} />
               </FormControl>
@@ -88,7 +88,7 @@ export function ResetPasswordForm({
           name='passwordConfirmation'
           render={({ field }) => (
             <FormItem className='relative'>
-              <FormLabel>Nhập lại mật khẩu</FormLabel>
+              <FormLabel required>Nhập lại mật khẩu</FormLabel>
               <FormControl>
                 <PasswordInput placeholder='********' {...field} />
               </FormControl>

@@ -18,6 +18,7 @@ type SelectDropdownProps = {
   disabled?: boolean
   className?: string
   isControlled?: boolean
+  standalone?: boolean
 }
 
 export function SelectDropdown({
@@ -29,17 +30,20 @@ export function SelectDropdown({
   disabled,
   className = '',
   isControlled = false,
+  standalone = false,
 }: SelectDropdownProps) {
   const defaultState = isControlled
     ? { value: defaultValue, onValueChange }
     : { defaultValue, onValueChange }
+  const trigger = (
+    <SelectTrigger disabled={disabled} className={cn(className)}>
+      <SelectValue placeholder={placeholder ?? 'Select'} />
+    </SelectTrigger>
+  )
+
   return (
     <Select {...defaultState}>
-      <FormControl>
-        <SelectTrigger disabled={disabled} className={cn(className)}>
-          <SelectValue placeholder={placeholder ?? 'Select'} />
-        </SelectTrigger>
-      </FormControl>
+      {standalone ? trigger : <FormControl>{trigger}</FormControl>}
       <SelectContent>
         {isPending ? (
           <SelectItem disabled value='loading' className='h-14'>

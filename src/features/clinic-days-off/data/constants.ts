@@ -1,0 +1,1 @@
+export const DAYS_OFF_KEY = 'CLINIC_ANNUAL_DAYS_OFF'

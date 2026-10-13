@@ -1,3 +1,4 @@
+import type { VisibilityState } from '@tanstack/react-table'
 import { API_URL } from '@/config'
 import {
   Table,
@@ -7,6 +8,7 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table'
+import { AuditDetails } from '@/components/data-table/audit-details'
 import { type MedicalHistoryListItem } from '../api'
 
 const money = (value: number | string) =>
@@ -14,7 +16,9 @@ const money = (value: number | string) =>
 
 export function MedicalHistoryDetails({
   history,
+  auditVisibility = {},
 }: {
+  auditVisibility?: VisibilityState
   history: MedicalHistoryListItem
 }) {
   const prescription = history.prescription
@@ -38,7 +42,8 @@ export function MedicalHistoryDetails({
           <h4 className='mb-3 text-sm font-semibold underline underline-offset-4'>
             Thuốc kê đơn
           </h4>
-          <div className='grid gap-2 sm:hidden'>
+          <AuditDetails record={prescription} visibility={auditVisibility} />
+          <div className='mt-3 grid gap-2 sm:hidden'>
             {prescription.items.map((item) => {
               const quantity = Number(item.quantity ?? 0)
               const price = Number(item.medicine?.salePrice ?? 0)
@@ -109,7 +114,8 @@ export function MedicalHistoryDetails({
           <h4 className='mb-3 text-sm font-semibold underline underline-offset-4'>
             Hóa đơn {invoice.invoiceCode && `#${invoice.invoiceCode}`}
           </h4>
-          <div className='grid gap-x-8 gap-y-4 sm:grid-cols-2 lg:grid-cols-4'>
+          <AuditDetails record={invoice} visibility={auditVisibility} />
+          <div className='mt-3 grid gap-x-8 gap-y-4 sm:grid-cols-2 lg:grid-cols-4'>
             {[
               ['Tổng tiền', invoice.totalAmount],
               ['Tiền thuốc', invoice.medicineRevenue],

@@ -1,7 +1,7 @@
 import { useQuery } from '@tanstack/react-query'
 import { type ColumnDef, type Row } from '@tanstack/react-table'
 import { ChevronDown, ChevronRight, TrendingDown } from 'lucide-react'
-import { cn } from '@/lib/utils'
+import { cn, formatMoney, formatNumber } from '@/lib/utils'
 import { useApiSearch } from '@/hooks/use-api-search'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
@@ -13,7 +13,6 @@ import {
 } from '@/features/medicines/data/data'
 import { GetStock, type StockSummary } from '../api'
 import { expiryMeta, expiryStatuses } from '../data/data'
-import { formatMoney, formatNumber } from '../utils'
 import { ExpiryBadge } from './expiry-badge'
 
 function BatchBreakdown({ row }: { row: Row<StockSummary> }) {

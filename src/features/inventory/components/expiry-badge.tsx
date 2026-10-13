@@ -1,7 +1,6 @@
-import { cn } from '@/lib/utils'
+import { cn, daysUntil, formatDate, getExpiryStatus } from '@/lib/utils'
 import { Badge } from '@/components/ui/badge'
 import { expiryMeta } from '../data/data'
-import { daysUntil, formatDate, getExpiryStatus } from '../utils'
 
 export function ExpiryBadge({
   date,

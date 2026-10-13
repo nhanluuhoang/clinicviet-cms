@@ -2,7 +2,7 @@ import { useState } from 'react'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { ClipboardCheck, ListOrdered, Plus, Stethoscope } from 'lucide-react'
 import { toast } from 'sonner'
-import { cn } from '@/lib/utils'
+import { cn, showQueueError, today } from '@/lib/utils'
 import { useDebounce } from '@/hooks/use-debounce'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -23,7 +23,6 @@ import { CreateQueueDialog } from './components/create-queue-dialog'
 import { QueueOverview } from './components/queue-overview'
 import { QueueTable } from './components/queue-table'
 import { activeQueueStatuses, processedQueueStatuses } from './data/data'
-import { showQueueError, today } from './utils'
 
 type QueueTab = 'active' | 'processed'
 const PAGE_SIZE = 20
@@ -110,7 +109,7 @@ export function ExaminationQueue() {
               <ListOrdered className='size-6' /> Thứ tự khám
             </h2>
             <p className='text-muted-foreground'>
-              Tiếp nhận và điều phối lượt khám trong ngày.
+              Tiếp nhận và điều phối lượt khám theo ngày.
             </p>
           </div>
           <div className='flex flex-wrap gap-2'>
@@ -121,7 +120,6 @@ export function ExaminationQueue() {
                 setQueueDate(value)
                 setPage(1)
               }}
-              minDate={today()}
             />
             <Button
               data-tour='create-queue'

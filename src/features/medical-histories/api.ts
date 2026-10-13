@@ -1,6 +1,10 @@
 import { axios } from '@/lib/axios'
+import type { AuditFields } from '@/components/data-table/audit-columns'
+import type { InitialPrescriptionData } from '@/features/prescriptions'
 
-export interface MedicalHistoryListItem {
+export interface MedicalHistoryListItem
+  extends InitialPrescriptionData, AuditFields {
+  examinationQueueId?: string | null
   id: string
   symptoms: string
   diagnosis: string
@@ -11,34 +15,46 @@ export interface MedicalHistoryListItem {
     id: string
     fullName: string
     phone?: string | null
+    dateOfBirth?: string | null
+    role: string
   }
-  prescription: {
-    id: string
-    items: Array<{
-      id: string
-      medicineName: string
-      quantity: number | null
-      instruction: string
-      medicine: {
-        unit: string
-        salePrice: number | string
-      } | null
-    }>
-    invoice: {
-      invoiceCode: string
-      consultationFee: number | string
-      serviceFee: number | string
-      serviceFeeLabel: string
-      medicineRevenue: number | string
-      otherFee1: number | string
-      otherFee1Label: string
-      otherFee2: number | string
-      otherFee2Label: string
-      otherFee3: number | string
-      otherFee3Label: string
-      totalAmount: number | string
-    } | null
-  } | null
+  prescription:
+    | (AuditFields & {
+        id: string
+        items: Array<{
+          id: string
+          medicineId: string
+          medicineName: string
+          quantity: number | null
+          instruction: string
+          medicine: {
+            id: string
+            name: string
+            strength: string
+            totalQty: number
+            isActive: boolean
+            unit: string
+            salePrice: number | string
+          } | null
+        }>
+        invoice:
+          | (AuditFields & {
+              invoiceCode: string
+              consultationFee: number | string
+              serviceFee: number | string
+              serviceFeeLabel: string
+              medicineRevenue: number | string
+              otherFee1: number | string
+              otherFee1Label: string
+              otherFee2: number | string
+              otherFee2Label: string
+              otherFee3: number | string
+              otherFee3Label: string
+              totalAmount: number | string
+            })
+          | null
+      })
+    | null
   images: MedicalHistoryMedia[]
   pdfs: MedicalHistoryMedia[]
   videos: MedicalHistoryMedia[]
@@ -61,7 +77,7 @@ interface MedicalHistoryPage {
 export const getMedicalHistoryList = (params: {
   patientName?: string
   doctorName?: string
-  date: string
+  date?: string
   page: number
   limit: number
 }): Promise<MedicalHistoryPage> => axios.get('/medical-histories', { params })

@@ -1,12 +1,11 @@
 import { useEffect } from 'react'
-import { useMutation } from '@tanstack/react-query'
-import { useForm } from 'react-hook-form'
-import { toast } from 'sonner'
 import { z } from 'zod'
+import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { UpdateProfile } from '@/features/auth/api'
+import { useMutation } from '@tanstack/react-query'
+import { toast } from 'sonner'
 import { useAuthStore } from '@/stores/auth-store'
-import { DatePickerInput } from '@/components/date-picker-input'
+import { showRequestError } from '@/lib/handle-server-error'
 import { Button } from '@/components/ui/button'
 import {
   Form,
@@ -25,6 +24,8 @@ import {
   SelectValue,
 } from '@/components/ui/select'
 import { Textarea } from '@/components/ui/textarea'
+import { DatePickerInput } from '@/components/date-picker-input'
+import { UpdateProfile } from '@/features/auth/api'
 
 const profileFormSchema = z
   .object({
@@ -82,8 +83,7 @@ export function ProfileForm() {
       fullName: user.fullName ?? '',
       email: user.email ?? '',
       phone: user.phone ?? '',
-      gender:
-        user.gender === '1' || user.gender === '2' ? user.gender : '0',
+      gender: user.gender === '1' || user.gender === '2' ? user.gender : '0',
       dateOfBirth: user.dateOfBirth?.slice(0, 10) ?? '',
       address: user.address ?? '',
       note: user.note ?? '',
@@ -105,7 +105,7 @@ export function ProfileForm() {
       setUser(data)
       toast.success('Đã cập nhật hồ sơ')
     },
-    onError: () => toast.error('Không thể cập nhật hồ sơ'),
+    onError: (error) => showRequestError(error, 'Không thể cập nhật hồ sơ'),
   })
 
   return (
@@ -126,7 +126,7 @@ export function ProfileForm() {
           name='fullName'
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Họ tên</FormLabel>
+              <FormLabel required>Họ tên</FormLabel>
               <FormControl>
                 <Input {...field} placeholder='Nguyễn Văn A' />
               </FormControl>
@@ -193,7 +193,10 @@ export function ProfileForm() {
             render={({ field }) => (
               <FormItem>
                 <FormLabel>Ngày sinh</FormLabel>
-                <DatePickerInput value={field.value} onChange={field.onChange} />
+                <DatePickerInput
+                  value={field.value}
+                  onChange={field.onChange}
+                />
                 <FormMessage />
               </FormItem>
             )}

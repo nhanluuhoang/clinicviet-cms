@@ -6,7 +6,15 @@ export const medicineGroups: { label: string; value: MedicineGroup }[] = [
   { label: 'Vitamin / khoáng chất', value: 'vitamin' },
   { label: 'Tim mạch', value: 'cardio' },
   { label: 'Tiêu hoá', value: 'digestive' },
-  { label: 'Hô hấp / dị ứng', value: 'respiratory' },
+  { label: 'Hô hấp', value: 'respiratory' },
+  { label: 'Dị ứng', value: 'allergy' },
+  { label: 'Nội tiết / đái tháo đường', value: 'endocrine' },
+  { label: 'Da liễu', value: 'dermatology' },
+  { label: 'Mắt', value: 'ophthalmology' },
+  { label: 'Tai mũi họng', value: 'ent' },
+  { label: 'Cơ xương khớp', value: 'musculoskeletal' },
+  { label: 'Thần kinh / tâm thần', value: 'neurology' },
+  { label: 'Vaccine', value: 'vaccine' },
   { label: 'Khác', value: 'other' },
 ]
 
@@ -22,4 +30,6 @@ export const medicineUnits = [
   'tuýp',
   'gói',
   'chai',
+  'túi',
+  'miếng',
 ]

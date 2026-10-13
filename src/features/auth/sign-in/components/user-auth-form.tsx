@@ -2,10 +2,13 @@ import { useState } from 'react'
 import { z } from 'zod'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
+import { useQueryClient } from '@tanstack/react-query'
 import { Link, useNavigate } from '@tanstack/react-router'
+import { canAccessPath, getHomePath } from '@/config/access-control'
 import { Loader2, LogIn } from 'lucide-react'
 import { toast } from 'sonner'
 import { useAuthStore } from '@/stores/auth-store'
+import { showRequestError } from '@/lib/handle-server-error'
 import { cn } from '@/lib/utils'
 import { Button } from '@/components/ui/button'
 import {
@@ -35,8 +38,6 @@ interface UserAuthFormProps extends React.HTMLAttributes<HTMLFormElement> {
   redirectTo?: string
 }
 
-type ApiError = { error?: { title?: string } }
-
 export function UserAuthForm({
   className,
   redirectTo,
@@ -45,6 +46,7 @@ export function UserAuthForm({
   const [isLoading, setIsLoading] = useState(false)
   const [submitError, setSubmitError] = useState('')
   const navigate = useNavigate()
+  const queryClient = useQueryClient()
   const { auth } = useAuthStore()
 
   const form = useForm<z.infer<typeof formSchema>>({
@@ -61,16 +63,39 @@ export function UserAuthForm({
     try {
       await Login(data)
       const profile = await Profile()
+      if (
+        !canAccessPath(
+          profile.data.role,
+          getHomePath(),
+          profile.data.tenant?.servicePlan
+        )
+      ) {
+        auth.reset()
+        setSubmitError(
+          'Tài khoản này không có quyền truy cập CMS. Vui lòng đăng nhập bằng tài khoản nhân viên.'
+        )
+        return
+      }
+      await queryClient.cancelQueries()
+      queryClient.clear()
       auth.setUser(profile.data)
 
-      const targetPath = redirectTo || '/'
+      const targetPath =
+        redirectTo &&
+        canAccessPath(
+          profile.data.role,
+          redirectTo,
+          profile.data.tenant?.servicePlan
+        )
+          ? redirectTo
+          : getHomePath()
       navigate({ to: targetPath, replace: true })
       toast.success(`Chào mừng trở lại, ${profile.data.fullName}!`)
     } catch (error) {
-      const message =
-        (error as ApiError)?.error?.title ??
+      showRequestError(
+        error,
         'Đăng nhập thất bại. Vui lòng kiểm tra lại thông tin.'
-      toast.error(message)
+      )
     } finally {
       setIsLoading(false)
     }
@@ -88,7 +113,7 @@ export function UserAuthForm({
           name='userName'
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Tên đăng nhập</FormLabel>
+              <FormLabel required>Tên đăng nhập</FormLabel>
               <FormControl>
                 <Input placeholder='name@example.com' {...field} />
               </FormControl>
@@ -101,7 +126,7 @@ export function UserAuthForm({
           name='password'
           render={({ field }) => (
             <FormItem className='relative'>
-              <FormLabel>Mật khẩu</FormLabel>
+              <FormLabel required>Mật khẩu</FormLabel>
               <FormControl>
                 <PasswordInput placeholder='********' {...field} />
               </FormControl>

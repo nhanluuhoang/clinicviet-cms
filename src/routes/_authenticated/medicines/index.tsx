@@ -7,6 +7,7 @@ const medicinesSearchSchema = z.object({
   pageSize: z.number().optional().catch(15),
   sort: z.string().optional().catch(''),
   filter: z.string().optional().catch(''),
+  unit: z.array(z.string()).optional().catch([]),
   group: z.array(z.string()).optional().catch([]),
 })
 

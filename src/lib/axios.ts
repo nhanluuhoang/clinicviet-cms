@@ -3,19 +3,77 @@ import Axios, {
   type InternalAxiosRequestConfig,
 } from 'axios'
 import { API_URL } from '@/config'
-import { getCookie } from '@/lib/cookies'
+import { toast } from 'sonner'
 
-const authRequestInterceptor = (
+let csrfToken: string | null = null
+let csrfTokenRequest: Promise<string> | null = null
+
+type ApiErrorPayload = {
+  error?: { title?: string }
+  message?: string | string[]
+}
+
+export const getApiErrorMessage = (error: unknown): string | undefined => {
+  if (!Axios.isAxiosError<ApiErrorPayload>(error) || !error.response) return
+
+  const payload = error.response.data
+  return (
+    payload?.error?.title ??
+    (Array.isArray(payload?.message)
+      ? payload.message.join(', ')
+      : payload?.message)
+  )
+}
+
+const showApiError = (error: unknown) => {
+  if (!Axios.isAxiosError(error) || !error.response) return
+
+  const { status } = error.response
+  const requestUrl = error.config?.url ?? ''
+  // Profile checks use 401 to determine whether a session exists and redirect
+  // to sign-in, so only that expected control flow is silent.
+  if (status === 401 && requestUrl.endsWith('/auth/profile')) return
+
+  const message = getApiErrorMessage(error)
+  if (message) toast.error(message, { id: 'api-error' })
+}
+
+const getCsrfToken = async (): Promise<string> => {
+  if (csrfToken) return csrfToken
+  if (!csrfTokenRequest) {
+    csrfTokenRequest = Axios.get<{ csrfToken: string }>(
+      `${API_URL}/auth/csrf`,
+      {
+        withCredentials: true,
+        headers: { Accept: 'application/json' },
+      }
+    )
+      .then(({ data }) => {
+        csrfToken = data.csrfToken
+        return data.csrfToken
+      })
+      .catch((error: unknown) => {
+        showApiError(error)
+        throw error
+      })
+      .finally(() => {
+        csrfTokenRequest = null
+      })
+  }
+  return csrfTokenRequest
+}
+
+const authRequestInterceptor = async (
   config: InternalAxiosRequestConfig
-): InternalAxiosRequestConfig => {
+): Promise<InternalAxiosRequestConfig> => {
   config.headers.Accept = 'application/json'
 
   if (!config.headers['Content-Type'])
     config.headers['Content-Type'] = 'application/json'
 
-  const csrfToken = getCookie('x-csrf-token')
-  if (csrfToken) {
-    config.headers['x-csrf-token'] = decodeURIComponent(csrfToken)
+  const method = config.method?.toUpperCase()
+  if (method && !['GET', 'HEAD', 'OPTIONS'].includes(method)) {
+    config.headers['x-csrf-token'] = await getCsrfToken()
   }
 
   return config
@@ -33,7 +91,7 @@ axios.interceptors.response.use(
     return response.data
   },
   (error) => {
-    const message = error.response?.data || error.message
-    return Promise.reject(message)
+    showApiError(error)
+    return Promise.reject(error)
   }
 )

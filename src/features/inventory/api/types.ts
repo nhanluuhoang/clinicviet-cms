@@ -1,3 +1,4 @@
+import type { AuditFields } from '@/components/data-table/audit-columns'
 import { type MedicineGroup } from '@/features/medicines/api/types'
 
 /**
@@ -76,25 +77,27 @@ export interface GoodsReceiptLine extends GoodsReceiptLineInput {
 }
 
 /** Phiếu nhập — một đơn hàng, gồm nhiều dòng, mỗi dòng sinh ra một lô. */
-export interface GoodsReceipt {
+export interface GoodsReceipt extends AuditFields {
   id: string
   code: string
   supplierName: string
   invoiceNo: string
   receivedAt: string
   note: string
+  operatorName: string | null
   lines: GoodsReceiptLine[]
   totalQty: number
   totalAmount: number
 }
 
-export interface GoodsReceiptSummary {
+export interface GoodsReceiptSummary extends AuditFields {
   id: string
   code: string
   supplierName: string
   invoiceNo: string
   receivedAt: string
   note: string
+  operatorName: string | null
   lineCount: number
 }
 
@@ -115,7 +118,7 @@ export interface GoodsIssueLine {
   quantity: number
 }
 
-export interface GoodsIssue {
+export interface GoodsIssue extends AuditFields {
   id: string
   code: string
   userId?: string
@@ -123,11 +126,12 @@ export interface GoodsIssue {
   recipientName: string
   issuedAt: string
   note: string
+  operatorName: string | null
   lines: GoodsIssueLine[]
   totalQty: number
 }
 
-export interface GoodsIssueSummary {
+export interface GoodsIssueSummary extends AuditFields {
   id: string
   code: string
   userId?: string
@@ -135,6 +139,7 @@ export interface GoodsIssueSummary {
   recipientName: string
   issuedAt: string
   note: string
+  operatorName: string | null
   lineCount: number
 }
 
@@ -158,20 +163,22 @@ export interface StockTakeLine {
 }
 
 /** Phiếu kiểm kê — chốt lại số thực đếm của từng lô. */
-export interface StockTake {
+export interface StockTake extends AuditFields {
   id: string
   code: string
   countedAt: string
   note: string
+  operatorName: string | null
   lines: StockTakeLine[]
   totalDiff: number
 }
 
-export interface StockTakeSummary {
+export interface StockTakeSummary extends AuditFields {
   id: string
   code: string
   countedAt: string
   note: string
+  operatorName: string | null
   lineCount: number
 }
 

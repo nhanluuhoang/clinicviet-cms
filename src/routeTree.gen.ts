@@ -20,6 +20,7 @@ import { Route as errors500RouteImport } from './routes/(errors)/500'
 import { Route as errors503RouteImport } from './routes/(errors)/503'
 import { Route as AuthenticatedIndexRouteImport } from './routes/_authenticated/index'
 import { Route as AuthenticatedSettingsRouteRouteImport } from './routes/_authenticated/settings/route'
+import { Route as AuthenticatedSupportRequestsRouteImport } from './routes/_authenticated/support-requests'
 import { Route as AuthenticatedAdminsIndexRouteImport } from './routes/_authenticated/admins/index'
 import { Route as AuthenticatedClinicDaysOffIndexRouteImport } from './routes/_authenticated/clinic-days-off/index'
 import { Route as AuthenticatedDashboardsIndexRouteImport } from './routes/_authenticated/dashboards/index'
@@ -37,6 +38,11 @@ import { Route as AuthenticatedPrescriptionTemplatesIndexRouteImport } from './r
 import { Route as AuthenticatedSettingsIndexRouteImport } from './routes/_authenticated/settings/index'
 import { Route as AuthenticatedSettingsChangePasswordRouteImport } from './routes/_authenticated/settings/change-password'
 import { Route as AuthenticatedSettingsTenantRouteImport } from './routes/_authenticated/settings/tenant'
+import { Route as AuthenticatedSystemSupportRequestsRouteImport } from './routes/_authenticated/system/support-requests'
+import { Route as AuthenticatedSystemTenantsRouteImport } from './routes/_authenticated/system/tenants'
+import { Route as AuthenticatedSystemTrialRequestsRouteImport } from './routes/_authenticated/system/trial-requests'
+import { Route as AuthenticatedSystemUsersRouteImport } from './routes/_authenticated/system/users'
+import { Route as AuthenticatedTenantsIndexRouteImport } from './routes/_authenticated/tenants/index'
 import { Route as AuthenticatedYearlyStatisticsIndexRouteImport } from './routes/_authenticated/yearly-statistics/index'
 
 const AuthenticatedRouteRoute = AuthenticatedRouteRouteImport.update({
@@ -92,6 +98,12 @@ const AuthenticatedSettingsRouteRoute =
   AuthenticatedSettingsRouteRouteImport.update({
     id: '/settings',
     path: '/settings',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
+const AuthenticatedSupportRequestsRoute =
+  AuthenticatedSupportRequestsRouteImport.update({
+    id: '/support-requests',
+    path: '/support-requests',
     getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
 const AuthenticatedAdminsIndexRoute =
@@ -195,6 +207,36 @@ const AuthenticatedSettingsTenantRoute =
     path: '/tenant',
     getParentRoute: () => AuthenticatedSettingsRouteRoute,
   } as any)
+const AuthenticatedSystemSupportRequestsRoute =
+  AuthenticatedSystemSupportRequestsRouteImport.update({
+    id: '/system/support-requests',
+    path: '/system/support-requests',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
+const AuthenticatedSystemTenantsRoute =
+  AuthenticatedSystemTenantsRouteImport.update({
+    id: '/system/tenants',
+    path: '/system/tenants',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
+const AuthenticatedSystemTrialRequestsRoute =
+  AuthenticatedSystemTrialRequestsRouteImport.update({
+    id: '/system/trial-requests',
+    path: '/system/trial-requests',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
+const AuthenticatedSystemUsersRoute =
+  AuthenticatedSystemUsersRouteImport.update({
+    id: '/system/users',
+    path: '/system/users',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
+const AuthenticatedTenantsIndexRoute =
+  AuthenticatedTenantsIndexRouteImport.update({
+    id: '/tenants/',
+    path: '/tenants/',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
 const AuthenticatedYearlyStatisticsIndexRoute =
   AuthenticatedYearlyStatisticsIndexRouteImport.update({
     id: '/yearly-statistics/',
@@ -213,9 +255,14 @@ export interface FileRoutesByFullPath {
   '/404': typeof errors404Route
   '/500': typeof errors500Route
   '/503': typeof errors503Route
+  '/support-requests': typeof AuthenticatedSupportRequestsRoute
   '/errors/$error': typeof AuthenticatedErrorsErrorRoute
   '/settings/change-password': typeof AuthenticatedSettingsChangePasswordRoute
   '/settings/tenant': typeof AuthenticatedSettingsTenantRoute
+  '/system/support-requests': typeof AuthenticatedSystemSupportRequestsRoute
+  '/system/tenants': typeof AuthenticatedSystemTenantsRoute
+  '/system/trial-requests': typeof AuthenticatedSystemTrialRequestsRoute
+  '/system/users': typeof AuthenticatedSystemUsersRoute
   '/admins/': typeof AuthenticatedAdminsIndexRoute
   '/clinic-days-off/': typeof AuthenticatedClinicDaysOffIndexRoute
   '/dashboards/': typeof AuthenticatedDashboardsIndexRoute
@@ -230,6 +277,7 @@ export interface FileRoutesByFullPath {
   '/posts/': typeof AuthenticatedPostsIndexRoute
   '/prescription-templates/': typeof AuthenticatedPrescriptionTemplatesIndexRoute
   '/settings/': typeof AuthenticatedSettingsIndexRoute
+  '/tenants/': typeof AuthenticatedTenantsIndexRoute
   '/yearly-statistics/': typeof AuthenticatedYearlyStatisticsIndexRoute
 }
 export interface FileRoutesByTo {
@@ -241,10 +289,15 @@ export interface FileRoutesByTo {
   '/404': typeof errors404Route
   '/500': typeof errors500Route
   '/503': typeof errors503Route
+  '/support-requests': typeof AuthenticatedSupportRequestsRoute
   '/': typeof AuthenticatedIndexRoute
   '/errors/$error': typeof AuthenticatedErrorsErrorRoute
   '/settings/change-password': typeof AuthenticatedSettingsChangePasswordRoute
   '/settings/tenant': typeof AuthenticatedSettingsTenantRoute
+  '/system/support-requests': typeof AuthenticatedSystemSupportRequestsRoute
+  '/system/tenants': typeof AuthenticatedSystemTenantsRoute
+  '/system/trial-requests': typeof AuthenticatedSystemTrialRequestsRoute
+  '/system/users': typeof AuthenticatedSystemUsersRoute
   '/admins': typeof AuthenticatedAdminsIndexRoute
   '/clinic-days-off': typeof AuthenticatedClinicDaysOffIndexRoute
   '/dashboards': typeof AuthenticatedDashboardsIndexRoute
@@ -259,6 +312,7 @@ export interface FileRoutesByTo {
   '/posts': typeof AuthenticatedPostsIndexRoute
   '/prescription-templates': typeof AuthenticatedPrescriptionTemplatesIndexRoute
   '/settings': typeof AuthenticatedSettingsIndexRoute
+  '/tenants': typeof AuthenticatedTenantsIndexRoute
   '/yearly-statistics': typeof AuthenticatedYearlyStatisticsIndexRoute
 }
 export interface FileRoutesById {
@@ -273,10 +327,15 @@ export interface FileRoutesById {
   '/(errors)/404': typeof errors404Route
   '/(errors)/500': typeof errors500Route
   '/(errors)/503': typeof errors503Route
+  '/_authenticated/support-requests': typeof AuthenticatedSupportRequestsRoute
   '/_authenticated/': typeof AuthenticatedIndexRoute
   '/_authenticated/errors/$error': typeof AuthenticatedErrorsErrorRoute
   '/_authenticated/settings/change-password': typeof AuthenticatedSettingsChangePasswordRoute
   '/_authenticated/settings/tenant': typeof AuthenticatedSettingsTenantRoute
+  '/_authenticated/system/support-requests': typeof AuthenticatedSystemSupportRequestsRoute
+  '/_authenticated/system/tenants': typeof AuthenticatedSystemTenantsRoute
+  '/_authenticated/system/trial-requests': typeof AuthenticatedSystemTrialRequestsRoute
+  '/_authenticated/system/users': typeof AuthenticatedSystemUsersRoute
   '/_authenticated/admins/': typeof AuthenticatedAdminsIndexRoute
   '/_authenticated/clinic-days-off/': typeof AuthenticatedClinicDaysOffIndexRoute
   '/_authenticated/dashboards/': typeof AuthenticatedDashboardsIndexRoute
@@ -291,6 +350,7 @@ export interface FileRoutesById {
   '/_authenticated/posts/': typeof AuthenticatedPostsIndexRoute
   '/_authenticated/prescription-templates/': typeof AuthenticatedPrescriptionTemplatesIndexRoute
   '/_authenticated/settings/': typeof AuthenticatedSettingsIndexRoute
+  '/_authenticated/tenants/': typeof AuthenticatedTenantsIndexRoute
   '/_authenticated/yearly-statistics/': typeof AuthenticatedYearlyStatisticsIndexRoute
 }
 export interface FileRouteTypes {
@@ -306,9 +366,14 @@ export interface FileRouteTypes {
     | '/404'
     | '/500'
     | '/503'
+    | '/support-requests'
     | '/errors/$error'
     | '/settings/change-password'
     | '/settings/tenant'
+    | '/system/support-requests'
+    | '/system/tenants'
+    | '/system/trial-requests'
+    | '/system/users'
     | '/admins/'
     | '/clinic-days-off/'
     | '/dashboards/'
@@ -323,6 +388,7 @@ export interface FileRouteTypes {
     | '/posts/'
     | '/prescription-templates/'
     | '/settings/'
+    | '/tenants/'
     | '/yearly-statistics/'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -334,10 +400,15 @@ export interface FileRouteTypes {
     | '/404'
     | '/500'
     | '/503'
+    | '/support-requests'
     | '/'
     | '/errors/$error'
     | '/settings/change-password'
     | '/settings/tenant'
+    | '/system/support-requests'
+    | '/system/tenants'
+    | '/system/trial-requests'
+    | '/system/users'
     | '/admins'
     | '/clinic-days-off'
     | '/dashboards'
@@ -352,6 +423,7 @@ export interface FileRouteTypes {
     | '/posts'
     | '/prescription-templates'
     | '/settings'
+    | '/tenants'
     | '/yearly-statistics'
   id:
     | '__root__'
@@ -365,10 +437,15 @@ export interface FileRouteTypes {
     | '/(errors)/404'
     | '/(errors)/500'
     | '/(errors)/503'
+    | '/_authenticated/support-requests'
     | '/_authenticated/'
     | '/_authenticated/errors/$error'
     | '/_authenticated/settings/change-password'
     | '/_authenticated/settings/tenant'
+    | '/_authenticated/system/support-requests'
+    | '/_authenticated/system/tenants'
+    | '/_authenticated/system/trial-requests'
+    | '/_authenticated/system/users'
     | '/_authenticated/admins/'
     | '/_authenticated/clinic-days-off/'
     | '/_authenticated/dashboards/'
@@ -383,6 +460,7 @@ export interface FileRouteTypes {
     | '/_authenticated/posts/'
     | '/_authenticated/prescription-templates/'
     | '/_authenticated/settings/'
+    | '/_authenticated/tenants/'
     | '/_authenticated/yearly-statistics/'
   fileRoutesById: FileRoutesById
 }
@@ -475,6 +553,13 @@ declare module '@tanstack/react-router' {
       path: '/settings'
       fullPath: '/settings'
       preLoaderRoute: typeof AuthenticatedSettingsRouteRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/support-requests': {
+      id: '/_authenticated/support-requests'
+      path: '/support-requests'
+      fullPath: '/support-requests'
+      preLoaderRoute: typeof AuthenticatedSupportRequestsRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
     '/_authenticated/admins/': {
@@ -596,6 +681,41 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedSettingsTenantRouteImport
       parentRoute: typeof AuthenticatedSettingsRouteRoute
     }
+    '/_authenticated/system/support-requests': {
+      id: '/_authenticated/system/support-requests'
+      path: '/system/support-requests'
+      fullPath: '/system/support-requests'
+      preLoaderRoute: typeof AuthenticatedSystemSupportRequestsRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/system/tenants': {
+      id: '/_authenticated/system/tenants'
+      path: '/system/tenants'
+      fullPath: '/system/tenants'
+      preLoaderRoute: typeof AuthenticatedSystemTenantsRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/system/trial-requests': {
+      id: '/_authenticated/system/trial-requests'
+      path: '/system/trial-requests'
+      fullPath: '/system/trial-requests'
+      preLoaderRoute: typeof AuthenticatedSystemTrialRequestsRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/system/users': {
+      id: '/_authenticated/system/users'
+      path: '/system/users'
+      fullPath: '/system/users'
+      preLoaderRoute: typeof AuthenticatedSystemUsersRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/tenants/': {
+      id: '/_authenticated/tenants/'
+      path: '/tenants'
+      fullPath: '/tenants/'
+      preLoaderRoute: typeof AuthenticatedTenantsIndexRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/yearly-statistics/': {
       id: '/_authenticated/yearly-statistics/'
       path: '/yearly-statistics'
@@ -627,8 +747,13 @@ const AuthenticatedSettingsRouteRouteWithChildren =
 
 interface AuthenticatedRouteRouteChildren {
   AuthenticatedSettingsRouteRoute: typeof AuthenticatedSettingsRouteRouteWithChildren
+  AuthenticatedSupportRequestsRoute: typeof AuthenticatedSupportRequestsRoute
   AuthenticatedIndexRoute: typeof AuthenticatedIndexRoute
   AuthenticatedErrorsErrorRoute: typeof AuthenticatedErrorsErrorRoute
+  AuthenticatedSystemSupportRequestsRoute: typeof AuthenticatedSystemSupportRequestsRoute
+  AuthenticatedSystemTenantsRoute: typeof AuthenticatedSystemTenantsRoute
+  AuthenticatedSystemTrialRequestsRoute: typeof AuthenticatedSystemTrialRequestsRoute
+  AuthenticatedSystemUsersRoute: typeof AuthenticatedSystemUsersRoute
   AuthenticatedAdminsIndexRoute: typeof AuthenticatedAdminsIndexRoute
   AuthenticatedClinicDaysOffIndexRoute: typeof AuthenticatedClinicDaysOffIndexRoute
   AuthenticatedDashboardsIndexRoute: typeof AuthenticatedDashboardsIndexRoute
@@ -642,13 +767,20 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedPatientsIndexRoute: typeof AuthenticatedPatientsIndexRoute
   AuthenticatedPostsIndexRoute: typeof AuthenticatedPostsIndexRoute
   AuthenticatedPrescriptionTemplatesIndexRoute: typeof AuthenticatedPrescriptionTemplatesIndexRoute
+  AuthenticatedTenantsIndexRoute: typeof AuthenticatedTenantsIndexRoute
   AuthenticatedYearlyStatisticsIndexRoute: typeof AuthenticatedYearlyStatisticsIndexRoute
 }
 
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedSettingsRouteRoute: AuthenticatedSettingsRouteRouteWithChildren,
+  AuthenticatedSupportRequestsRoute: AuthenticatedSupportRequestsRoute,
   AuthenticatedIndexRoute: AuthenticatedIndexRoute,
   AuthenticatedErrorsErrorRoute: AuthenticatedErrorsErrorRoute,
+  AuthenticatedSystemSupportRequestsRoute:
+    AuthenticatedSystemSupportRequestsRoute,
+  AuthenticatedSystemTenantsRoute: AuthenticatedSystemTenantsRoute,
+  AuthenticatedSystemTrialRequestsRoute: AuthenticatedSystemTrialRequestsRoute,
+  AuthenticatedSystemUsersRoute: AuthenticatedSystemUsersRoute,
   AuthenticatedAdminsIndexRoute: AuthenticatedAdminsIndexRoute,
   AuthenticatedClinicDaysOffIndexRoute: AuthenticatedClinicDaysOffIndexRoute,
   AuthenticatedDashboardsIndexRoute: AuthenticatedDashboardsIndexRoute,
@@ -665,6 +797,7 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedPostsIndexRoute: AuthenticatedPostsIndexRoute,
   AuthenticatedPrescriptionTemplatesIndexRoute:
     AuthenticatedPrescriptionTemplatesIndexRoute,
+  AuthenticatedTenantsIndexRoute: AuthenticatedTenantsIndexRoute,
   AuthenticatedYearlyStatisticsIndexRoute:
     AuthenticatedYearlyStatisticsIndexRoute,
 }

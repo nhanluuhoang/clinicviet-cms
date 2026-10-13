@@ -1,9 +1,10 @@
 import { useQueryClient } from '@tanstack/react-query'
 import { toast } from 'sonner'
+import { showRequestError } from '@/lib/handle-server-error'
 import { ConfirmDialog } from '@/components/confirm-dialog'
+import { PrescriptionDialog } from '@/features/examination-queue/components/prescription-dialog'
 import { DeletePatient } from '../api'
 import { PatientHistoryDialog } from './patient-history-dialog'
-import { PrescriptionDialog } from '@/features/examination-queue/components/prescription-dialog'
 import { PatientsMutateDialog } from './patients-mutate-dialog'
 import { usePatients } from './patients-provider'
 
@@ -25,9 +26,7 @@ export function PatientsDialogs() {
       toast.success('Đã xoá bệnh nhân')
       closeAndClear()
     } catch (error) {
-      toast.error('Không xoá được bệnh nhân', {
-        description: error instanceof Error ? error.message : undefined,
-      })
+      showRequestError(error, 'Không xoá được bệnh nhân')
     }
   }
 
@@ -83,7 +82,8 @@ export function PatientsDialogs() {
               <>
                 Bệnh nhân <strong>{currentRow.fullName}</strong> (tên đăng nhập{' '}
                 <strong>{currentRow.userName}</strong>) sẽ bị xoá. <br />
-                Hành động này không thể hoàn tác.
+                Chỉ có thể xoá bệnh nhân chưa có lịch khám, hồ sơ khám hoặc
+                phiếu xuất kho. Hành động này không thể hoàn tác.
               </>
             }
             confirmText='Xoá'

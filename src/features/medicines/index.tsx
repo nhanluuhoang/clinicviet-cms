@@ -6,7 +6,6 @@ import { Main } from '@/components/layout/main'
 import { ProfileDropdown } from '@/components/profile-dropdown'
 import { ThemeSwitch } from '@/components/theme-switch'
 import { MedicinesDialogs } from './components/medicines-dialogs'
-import { MedicinesExcelActions } from './components/medicines-excel-actions'
 import {
   MedicinesProvider,
   useMedicines,
@@ -37,7 +36,6 @@ function MedicinesContent() {
             </p>
           </div>
           <div className='flex flex-wrap items-center gap-2'>
-            <MedicinesExcelActions />
             <Button
               data-tour='create-medicine'
               onClick={() => setOpen('medicine-create')}

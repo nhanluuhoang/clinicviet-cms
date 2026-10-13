@@ -1,12 +1,13 @@
 import { useQuery } from '@tanstack/react-query'
 import { type ColumnDef, type Row } from '@tanstack/react-table'
 import { ChevronDown, ChevronRight } from 'lucide-react'
+import { formatDate, formatNumber } from '@/lib/utils'
 import { useApiSearch } from '@/hooks/use-api-search'
 import { Button } from '@/components/ui/button'
 import { DataTableColumnHeader } from '@/components/data-table'
+import { withAuditColumns } from '@/components/data-table/audit-columns'
 import { UrlDataTable } from '@/components/data-table/url-data-table'
 import { GetGoodsIssue, GetGoodsIssues, type GoodsIssueSummary } from '../api'
-import { formatDate, formatNumber } from '../utils'
 
 function IssueLines({ row }: { row: Row<GoodsIssueSummary> }) {
   const {
@@ -146,7 +147,7 @@ export function IssuesTab() {
         </p>
       )}
       <UrlDataTable
-        columns={columns}
+        columns={withAuditColumns(columns)}
         data={data ?? []}
         isLoading={isLoading}
         searchPlaceholder='Tìm mã phiếu hoặc người nhận...'

@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { USER_ROLES } from '@/config/access-control'
+import { hasAnyRole, PRESCRIBER_ROLES } from '@/config/access-control'
 import { ClipboardList, Printer, UserRoundCheck } from 'lucide-react'
 import { useAuthStore } from '@/stores/auth-store'
 import { Button } from '@/components/ui/button'
@@ -27,8 +27,8 @@ export function QueueActions({
   align?: 'start' | 'end'
 }) {
   const [prescriptionOpen, setPrescriptionOpen] = useState(false)
-  const canPrescribe =
-    useAuthStore((state) => state.auth.user?.role) === USER_ROLES.DOCTOR
+  const role = useAuthStore((state) => state.auth.user?.role)
+  const canPrescribe = hasAnyRole(role, PRESCRIBER_ROLES)
   const invoice = item.medicalHistory?.prescription?.invoice
 
   return (
@@ -66,7 +66,7 @@ export function QueueActions({
             disabled={pending}
             onClick={onCheckIn}
           >
-            <UserRoundCheck /> Check-in
+            <UserRoundCheck /> Tiếp nhận
           </Button>
         )}
         {item.status === 'IN_EXAMINATION' && canPrescribe && (
@@ -77,7 +77,7 @@ export function QueueActions({
               data-tour='create-prescription'
               onClick={() => setPrescriptionOpen(true)}
             >
-              <ClipboardList /> Kê toa
+              <ClipboardList /> Lập phiếu
             </Button>
           </>
         )}

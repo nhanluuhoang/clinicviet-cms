@@ -1,9 +1,9 @@
-import { useMutation } from '@tanstack/react-query'
-import { useForm } from 'react-hook-form'
-import { toast } from 'sonner'
 import { z } from 'zod'
+import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { ChangePassword } from '@/features/auth/api'
+import { useMutation } from '@tanstack/react-query'
+import { toast } from 'sonner'
+import { showRequestError } from '@/lib/handle-server-error'
 import { Button } from '@/components/ui/button'
 import {
   Form,
@@ -14,6 +14,7 @@ import {
   FormMessage,
 } from '@/components/ui/form'
 import { PasswordInput } from '@/components/password-input'
+import { ChangePassword } from '@/features/auth/api'
 
 const schema = z
   .object({
@@ -23,7 +24,7 @@ const schema = z
       .max(20, 'Mật khẩu không được quá 20 ký tự'),
     password: z
       .string()
-      .min(6, 'Mật khẩu phải có ít nhất 6 ký tự')
+      .min(8, 'Mật khẩu phải có ít nhất 8 ký tự')
       .max(20, 'Mật khẩu không được quá 20 ký tự'),
     passwordConfirmation: z.string(),
   })
@@ -49,7 +50,7 @@ export function ChangePasswordForm() {
       form.reset()
       toast.success('Đã đổi mật khẩu')
     },
-    onError: () => toast.error('Không thể đổi mật khẩu'),
+    onError: (error) => showRequestError(error, 'Không thể đổi mật khẩu'),
   })
 
   return (
@@ -63,7 +64,7 @@ export function ChangePasswordForm() {
           name='currentPassword'
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Mật khẩu hiện tại</FormLabel>
+              <FormLabel required>Mật khẩu hiện tại</FormLabel>
               <FormControl>
                 <PasswordInput
                   {...field}
@@ -80,12 +81,12 @@ export function ChangePasswordForm() {
           name='password'
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Mật khẩu mới</FormLabel>
+              <FormLabel required>Mật khẩu mới</FormLabel>
               <FormControl>
                 <PasswordInput
                   {...field}
                   autoComplete='new-password'
-                  placeholder='Từ 6 đến 20 ký tự'
+                  placeholder='Từ 8 đến 20 ký tự'
                 />
               </FormControl>
               <FormMessage />
@@ -97,7 +98,7 @@ export function ChangePasswordForm() {
           name='passwordConfirmation'
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Xác nhận mật khẩu mới</FormLabel>
+              <FormLabel required>Xác nhận mật khẩu mới</FormLabel>
               <FormControl>
                 <PasswordInput
                   {...field}

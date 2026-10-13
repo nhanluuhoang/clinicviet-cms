@@ -1,4 +1,4 @@
-import { Button } from '@/components/ui/button'
+import { ErrorSignInButton } from './sign-in-button'
 
 export function MaintenanceError() {
   return (
@@ -11,7 +11,7 @@ export function MaintenanceError() {
           lại.
         </p>
         <div className='mt-6 flex gap-4'>
-          <Button variant='outline'>Tìm hiểu thêm</Button>
+          <ErrorSignInButton />
         </div>
       </div>
     </div>
