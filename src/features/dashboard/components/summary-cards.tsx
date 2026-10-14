@@ -1,5 +1,5 @@
 import { Banknote, Package, Pill, Users } from 'lucide-react'
-import { formatDashboardMoney as formatMoney } from '@/lib/utils'
+import { formatNumber } from '@/lib/utils'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import {
   type DashboardStatistics,
@@ -48,7 +48,7 @@ export function SummaryCards({
           </CardHeader>
           <CardContent>
             <p className='text-2xl font-bold tabular-nums'>
-              {card.money ? `${formatMoney(card.value)} VNĐ` : card.value}
+              {card.money ? `${formatNumber(card.value)} VNĐ` : card.value}
             </p>
           </CardContent>
         </Card>

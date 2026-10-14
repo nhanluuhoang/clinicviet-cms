@@ -8,7 +8,7 @@ import {
   UserPlus,
   Users,
 } from 'lucide-react'
-import { formatDashboardMoney as formatMoney } from '@/lib/utils'
+import { formatNumber } from '@/lib/utils'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import {
   Table,
@@ -74,7 +74,7 @@ export function OperationalStatistics({
     {
       label: 'Lô sắp hết hạn',
       value: inventory?.expiringBatchCount ?? 0,
-      detail: `${formatMoney(inventory?.expiringStockValue ?? 0)} VNĐ`,
+      detail: `${formatNumber(inventory?.expiringStockValue ?? 0)} VNĐ`,
       icon: Stethoscope,
     },
   ]
@@ -123,7 +123,7 @@ export function OperationalStatistics({
                   <p>
                     Số lượng: {batch.quantity} {batch.unit}
                   </p>
-                  <p>Giá trị tồn: {formatMoney(batch.stockValue)} VNĐ</p>
+                  <p>Giá trị tồn: {formatNumber(batch.stockValue)} VNĐ</p>
                 </div>
               ))
             ) : (
@@ -160,7 +160,7 @@ export function OperationalStatistics({
                         {batch.quantity} {batch.unit}
                       </TableCell>
                       <TableCell className='text-right'>
-                        {formatMoney(batch.stockValue)} VNĐ
+                        {formatNumber(batch.stockValue)} VNĐ
                       </TableCell>
                     </TableRow>
                   ))
