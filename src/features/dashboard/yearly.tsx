@@ -11,8 +11,9 @@ import {
   YAxis,
 } from 'recharts'
 import {
-  formatDashboardMoney as formatMoney,
+  formatNumber,
   getCurrentYear,
+  YEAR_PATTERN,
   YEAR_OPTIONS,
 } from '@/lib/utils'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
@@ -36,7 +37,7 @@ export function YearlyDashboard() {
   const { data, isLoading, isError } = useQuery({
     queryKey: ['dashboard', 'year', year],
     queryFn: () => getYearlyQueueDashboard(year),
-    enabled: /^\d{4}$/.test(year),
+    enabled: YEAR_PATTERN.test(year),
   })
   const chartData = (data?.monthlyRevenue ?? []).map((item) => ({
     ...item,
@@ -127,8 +128,8 @@ export function YearlyDashboard() {
               <CardContent>
                 <p className='text-2xl font-bold tabular-nums'>
                   {card.money
-                    ? `${formatMoney(card.value)} VNĐ`
-                    : formatMoney(card.value)}
+                    ? `${formatNumber(card.value)} VNĐ`
+                    : formatNumber(card.value)}
                 </p>
               </CardContent>
             </Card>
@@ -156,11 +157,11 @@ export function YearlyDashboard() {
                   tickLine={false}
                   axisLine={false}
                   width={85}
-                  tickFormatter={(value) => formatMoney(Number(value))}
+                  tickFormatter={(value) => formatNumber(Number(value))}
                 />
                 <Tooltip
                   formatter={(value, name) => [
-                    `${formatMoney(Number(value))} VNĐ`,
+                    `${formatNumber(Number(value))} VNĐ`,
                     name,
                   ]}
                   contentStyle={{

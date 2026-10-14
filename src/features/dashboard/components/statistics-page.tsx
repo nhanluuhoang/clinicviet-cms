@@ -2,10 +2,12 @@ import { useState } from 'react'
 import { useQuery } from '@tanstack/react-query'
 import { CalendarDays } from 'lucide-react'
 import {
-  formatDashboardMoney as formatMoney,
+  formatNumber,
   getCurrentMonth,
   getToday,
   MONTH_OPTIONS,
+  YEAR_MONTH_PATTERN,
+  DATE_ONLY_PATTERN,
   YEAR_OPTIONS,
 } from '@/lib/utils'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
@@ -53,8 +55,8 @@ export function StatisticsPage({ period }: { period: 'day' | 'month' }) {
         ? await getMonthlyQueueDashboard(selectedPeriod)
         : await getQueueDashboard(selectedPeriod),
     enabled: isMonthly
-      ? /^\d{4}-\d{2}$/.test(selectedPeriod)
-      : /^\d{4}-\d{2}-\d{2}$/.test(selectedPeriod),
+      ? YEAR_MONTH_PATTERN.test(selectedPeriod)
+      : DATE_ONLY_PATTERN.test(selectedPeriod),
   })
   const periodLabel = isMonthly ? 'trong tháng' : 'trong ngày'
   const totalMedicineQuantity =
@@ -160,7 +162,7 @@ export function StatisticsPage({ period }: { period: 'day' | 'month' }) {
                 <div className='rounded-md bg-primary/10 px-3 py-1.5 text-sm text-primary'>
                   Tổng số lượng:{' '}
                   <strong className='tabular-nums'>
-                    {formatMoney(totalMedicineQuantity)}
+                    {formatNumber(totalMedicineQuantity)}
                   </strong>
                 </div>
               </div>
@@ -173,7 +175,7 @@ export function StatisticsPage({ period }: { period: 'day' | 'month' }) {
                     >
                       <p className='font-medium'>{medicine.medicineName}</p>
                       <p className='text-muted-foreground'>
-                        Số lượng: {formatMoney(medicine.quantity)}{' '}
+                        Số lượng: {formatNumber(medicine.quantity)}{' '}
                         {medicine.unit || ''}
                       </p>
                     </div>
@@ -204,7 +206,7 @@ export function StatisticsPage({ period }: { period: 'day' | 'month' }) {
                           </TableCell>
                           <TableCell>{medicine.unit || '-'}</TableCell>
                           <TableCell className='text-right font-semibold tabular-nums'>
-                            {formatMoney(medicine.quantity)}
+                            {formatNumber(medicine.quantity)}
                           </TableCell>
                         </TableRow>
                       ))

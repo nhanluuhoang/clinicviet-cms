@@ -1,55 +1,27 @@
 ## User
 
-- Giao tiếp tiếng Việt; ưu tiên thay đổi gọn. Không thêm test frontend nếu không được yêu cầu.
+- Giao tiếp tiếng Việt, thay đổi gọn; không thêm test frontend nếu không được yêu cầu.
 
 ## Project
 
-- Product brand: ClinicViet; technical names and browser storage keys use `clinicviet`, while checked-out repo folders keep `iclinic-*`. Rename storage keys directly without a migration function. CMS and both landing apps use the shared medical favicon; CMS has a ClinicViet page title.
-
-- CMS React 19/TypeScript/Vite/TanStack Router+Query, shadcn/ui; dùng pnpm. API backend qua `VITE_APP_API_URL`.
+- ClinicViet CMS dùng React 19, TypeScript, Vite, TanStack Router/Query và shadcn/ui; API qua `VITE_APP_API_URL`. Tên kỹ thuật và browser storage key dùng `clinicviet`, còn thư mục checkout vẫn là `iclinic-*`; đổi key trực tiếp, không tạo migration. CMS và hai landing dùng chung medical favicon.
 
 ## Architecture
 
-- Master-data caching belongs to the API. Settings, days off, prescriptions and templates use useQuery directly with tenant-scoped key `['master-data', tenantId]`, staleTime 0 and gcTime 0; refetch on mount, discard inactive data and inherit global focus behavior. CRUD invalidates the `['master-data']` prefix. No separate useMasterDataQuery hook.
-
-- Medical-history PATCH sends the complete retained media lists, including empty arrays. Recognize HLS MIME `application/vnd.apple.mpegurl` as video. Removing existing media only changes draft state until Save; DELETE and close-dialog cleanup apply only to new uploads. Limits: 5 images, 5 PDFs, 1 video per history.
-
-- Full error pages (401/403/404/500/503) show only the shared sign-in button (no back/home buttons) that resets CMS auth, cancels queries and clears cache before navigating to `/sign-in`; it does not log out the shared API session. Minimal embedded errors keep their compact layout.
-
-- Trang lịch sử khám có action cập nhật trong menu ba chấm ở cột cuối cho PRESCRIBER_ROLES, dùng chung PrescriptionDialog 3 tab. Khi cập nhật khóa 2 tab khác loại phiếu đã lưu. Lưu PATCH theo history.id, làm mới query medical-histories; hồ sơ không có prescription chỉ sửa thông tin hồ sơ, ẩn thuốc/chi phí.
-
-- Vaccination API fields are flat on MedicalHistory. getVaccinationFields maps database date responses to YYYY-MM-DD for the form; no vaccination JSON object.
-
-- Form tiêm hiện nhiệt độ (°C), huyết áp (mmHg), mũi số, liều, đường/vị trí tiêm, người tiêm, hạn dùng, ngày tiêm và hẹn mũi tiếp theo. Người tiêm lấy từ `/users/staff-options`, mặc định user hiện tại; ngày tiêm mặc định ngày local hiện tại. Mở phiếu cũ giữ giá trị đã lưu.
-
-- Phiếu dịch vụ có 3 tab EXAMINATION/PHARMACY/VACCINATION, mỗi tab giữ form và chi phí riêng; chỉ gửi tab đang mở. localStorage nhớ tab gần nhất theo user, không lưu dữ liệu bệnh nhân; sửa phiếu mở đúng loại đã lưu. Phí khám chỉ áp dụng EXAMINATION.
-
-- Feature ở `src/features`, route ở `src/routes/_authenticated`; `UrlDataTable` dùng chung toolbar, bộ lọc/phan trang đồng bộ URL và thẻ mobile. Axios interceptor trả `response.data`, giữ `AxiosError` để nhận diện 401.
-- CMS lấy CSRF qua `/auth/csrf` rồi gửi header cho request ghi. `SUPER_ADMIN` có toàn quyền; tenant admin bị giới hạn theo vai trò/gói.
-- Landing config và posts dùng API thật; ảnh POST có thumbnail public, ảnh bệnh nhân giữ kiểm soát truy cập. Mẫu đơn thuốc chỉ tải thuốc và tùy chọn hướng dẫn khi mở dialog tạo/sửa. Landing config chỉ tải bài viết công khai khi mở phần chọn bài nổi bật; lưu form vẫn giữ featuredPostIds khi phần này đóng.
-- Lập phiếu và đơn mẫu dùng chung `MedicineInstructionInput`: nhập tự do tối đa 255 ký tự, gợi ý riêng và mẫu liều cụ thể theo buổi dùng, xem trước câu hiển thị; không cảnh báo riêng khi để trống.
+- Tính năng ở `src/features/`, route ở `src/routes/_authenticated/`; API và kiểu dữ liệu nằm trong `api.ts` của feature, gọi qua `src/lib/axios.ts`. Interceptor trả `response.data`, giữ `AxiosError` để nhận diện 401; CSRF lấy từ `/auth/csrf` và gửi cho request ghi.
+- Master data cache thuộc BE. Settings, ngày nghỉ, đơn thuốc và template dùng `useQuery` trực tiếp với key `['master-data', tenantId]`, `staleTime: 0`, `gcTime: 0`; refetch khi mount, bỏ dữ liệu không active, giữ focus behavior toàn cục. Mutation invalidate tiền tố `['master-data']`; không tạo hook master data riêng.
+- PATCH medical history gửi đủ các danh sách media còn giữ, kể cả mảng rỗng; bỏ trường nghĩa là không đổi. Nhận HLS MIME `application/vnd.apple.mpegurl` là video. Bỏ media cũ chỉ sửa draft đến lúc Save; DELETE và dọn khi đóng dialog chỉ áp dụng upload mới. Giới hạn 5 ảnh, 5 PDF, 1 video.
+- PrescriptionDialog dùng chung ba tab EXAMINATION/PHARMACY/VACCINATION; mỗi tab giữ form và chi phí riêng, chỉ gửi tab mở. Nhớ tab gần nhất theo user trong localStorage, không lưu dữ liệu bệnh nhân. Sửa phiếu mở đúng loại đã lưu và khóa hai tab khác; PATCH theo history.id, refresh medical histories. Hồ sơ không có prescription chỉ sửa thông tin hồ sơ, ẩn thuốc và chi phí. Phí khám chỉ áp dụng EXAMINATION.
+- Vaccination API dùng trường phẳng; `getVaccinationFields` đổi ngày DB sang `YYYY-MM-DD`. Form hiện dấu hiệu sinh tồn, mũi/liều/đường/vị trí/người tiêm và các ngày; người tiêm từ `/users/staff-options`, mặc định user hiện tại, ngày tiêm mặc định hôm nay local, sửa phiếu giữ dữ liệu cũ.
+- Landing config và posts dùng API thật. Ảnh bài viết có thumbnail public, ảnh bệnh nhân cần kiểm soát truy cập. Template đơn thuốc chỉ tải thuốc và tùy chọn hướng dẫn khi mở dialog; landing config chỉ tải bài viết công khai khi mở bộ chọn và vẫn giữ `featuredPostIds` khi đóng. Lập phiếu và template dùng `MedicineInstructionInput`: nhập tự do tối đa 255 ký tự, gợi ý theo buổi dùng, xem trước câu hiển thị; không báo lỗi riêng khi để trống.
 
 ## Convention
 
-- Mật khẩu mới cho nhân viên, bệnh nhân và người dùng hệ thống dùng 8–20 ký tự, không bắt buộc chữ/số; CMS và BE cùng validate. Mật khẩu hiện tại khi đăng nhập/đổi mật khẩu vẫn chấp nhận tài khoản cũ.
-- Nhãn danh sách mobile lấy từ mobileTable.columns/context; dùng mobileLabels cho tên cột có ngữ cảnh khác nhau. Nút bộ lọc dùng icon nút tròn cho chọn một và danh sách ô chọn cho chọn nhiều, giữ bố cục gọn.
-
-- Medical history date defaults to today only when the URL date is absent; explicit `date=''` clears the date filter, including on Reset. Omit date from the API request when empty to query all dates.
-
-- Audit columns use shared `withAuditColumns` and `DataTableViewOptions` for createdAt/createdBy/updatedAt/updatedBy; all four default to hidden via `defaultAuditVisibility`. Visibility is local table state and applies to desktop/mobile; history prescription/invoice details follow the same visibility. API returns creator/updater objects with fullName for display; retain these relations, actor UUIDs and template audit fields during mapping (including inventory list/detail adapters).
-
-- Required editable fields use `Label required` / `FormLabel required`; conditional requirements follow create/edit mode and the selected plan. Tenant create/edit forms show subdomain only for PRO; switching to PLUS clears it, while existing PLUS subdomains remain on unrelated edits. Shared plan, subscription and role labels live in `src/config/`; trial-request status labels live in its feature `data.ts`.
-
-- Prescriptions: keep tab coordination in `index.tsx`, form logic in `hooks/use-service-prescription-form.ts`, UI sections/pickers in `components/`, shared types/constants in `types.ts` and `data/`.
-
-- Shared utility functions live in `src/lib/utils.ts`; feature code imports them through `@/lib/utils` rather than feature-local utility modules.
-
-- Resource pages keep layout in `index.tsx` and tables, columns, row actions, dialogs and forms in `components/`; complex form state goes in `hooks/`. Prescription templates follow this structure and use the shared Select for medicine selection. Settings pages keep their form beside the entry point, matching profile/change-password.
-
-- Dev dùng cổng 5173 với strictPort; khi VITE_APP_API_URL là API loopback, API_URL chuyển thành `/api`, Vite proxy sang backend để request cùng origin. Production giữ URL API cấu hình.
-
-- Đặt màn hình theo tính năng trong `src/features/<feature>/`, khai báo route trong `src/routes/_authenticated/`; gọi API qua `src/lib/axios.ts` và gom hàm/kiểu API tại `api.ts` của feature.
-- Trang danh sách dùng `UrlDataTable`: cột action luôn đặt cuối, khai báo `mobileLabels`/`getSearchText`; filter đặt trong toolbar, `columnId` khớp cột, `searchKey`/schema route khớp URL, dùng `radio` cho lựa chọn đơn và `checkbox` cho đa chọn. Giữ tìm kiếm, lọc, sort/phân trang đồng bộ URL và thẻ mobile.
-- Form dùng các component UI hiện có; chọn ngày dùng `DatePickerInput`. Giữ phân quyền vai trò/gói nhất quán với BE; không cho sửa vai trò `PATIENT`/`USER` qua form quản lý nhân sự. CMS không tự sinh mã phòng khám: BE sinh khi tạo tenant, duyệt trial chỉ nhập mã.
-- Dùng TanStack Query cho dữ liệu từ API và invalidate query liên quan sau mutation; giữ `AxiosError` để nhận diện 401. Chạy `pnpm build` để kiểm tra type/build; không thêm test frontend nếu không được yêu cầu.
-- Lỗi API có message được Axios interceptor hiển thị một lần; callback `catch`/`onError` gọi `showRequestError(error, fallback)` để chỉ hiện fallback khi API không có message. Toast kiểm tra dữ liệu nhập vẫn hiện tại chỗ.
+- Mật khẩu mới (nhân viên, bệnh nhân, system user) dài 8–20 ký tự, không ép chữ/số; đăng nhập và kiểm tra mật khẩu cũ vẫn hỗ trợ tài khoản cũ. `SUPER_ADMIN` có toàn quyền; tenant admin theo vai trò và gói. Không sửa vai trò PATIENT/USER qua form nhân sự.
+- Trang lỗi đầy đủ 401/403/404/500/503 chỉ có nút sign-in dùng chung: xóa auth CMS, hủy query/clear cache rồi tới `/sign-in`, không logout API session; lỗi nhúng giữ layout gọn. API error do interceptor toast một lần; `showRequestError(error, fallback)` chỉ hiện fallback khi API không có message; lỗi nhập liệu toast tại chỗ.
+- Danh sách dùng `UrlDataTable`: toolbar chứa filter, tìm kiếm/lọc/sort/phân trang theo URL, action column luôn cuối, desktop/mobile chung visibility; `columnId` khớp cột và `searchKey`/schema khớp URL. Dùng radio cho chọn một, checkbox cho nhiều, `mobileLabels` khi nhãn theo ngữ cảnh khác. Nút filter chọn một là nút icon tròn. Resource page giữ layout ở `index.tsx`, table/columns/actions/dialog/forms trong `components/`, state form phức tạp trong `hooks/`; settings form đặt cạnh entry point.
+- Audit dùng `withAuditColumns` và `DataTableViewOptions`; createdAt/createdBy/updatedAt/updatedBy mặc định ẩn qua `defaultAuditVisibility`, kể cả bảng mobile và prescription/invoice chi tiết. API trả creator/updater với fullName; giữ quan hệ, actor UUID và audit của template khi map dữ liệu, inventory có fallback creator.userName.
+- Input bắt buộc dùng `Label required`/`FormLabel required`; điều kiện phụ thuộc mode/gói. Form tenant chỉ hiện subdomain cho PRO; chuyển sang PLUS xóa trường trên form, còn PLUS đã có subdomain không bị xóa bởi sửa đổi khác. CMS không sinh mã phòng khám: BE sinh khi tạo tenant; duyệt trial nhập mã. Nhãn plan/subscription/role ở `src/config/`, trạng thái trial ở feature `data.ts`.
+- Ngày lọc medical history mặc định hôm nay chỉ khi URL thiếu date; `date=''` và Reset xóa lọc, không gửi date lên API. Form ngày dùng `DatePickerInput`. Hàm dùng chung ở `src/lib/utils.ts`; dashboard dùng `formatNumber` và các pattern kỳ thống kê tại đây. Dùng TanStack Query/invalidate sau mutation; chạy `pnpm build` để kiểm tra.
+- Trang lịch sử khám đặt action cập nhật trong menu ba chấm cột cuối cho `PRESCRIBER_ROLES`; prescription giữ tab coordination ở `index.tsx`, logic form ở `hooks/use-service-prescription-form.ts`, UI trong `components/`, kiểu/hằng số ở `types.ts` và `data/`.
+- Dev port 5173 với strictPort; khi API loopback, `API_URL` đổi thành `/api` qua Vite proxy để request cùng origin, production giữ URL API cấu hình.
