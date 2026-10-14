@@ -141,9 +141,6 @@ export function showQueueError(error: unknown) {
   showRequestError(error, 'Không thể cập nhật thứ tự khám')
 }
 
-export const formatDashboardMoney = (value: number) =>
-  new Intl.NumberFormat('vi-VN').format(value)
-
 export const getToday = () => {
   const date = new Date()
   const offset = date.getTimezoneOffset()
@@ -151,6 +148,10 @@ export const getToday = () => {
 }
 
 export const getCurrentMonth = () => getToday().slice(0, 7)
+
+export const YEAR_PATTERN = /^\d{4}$/
+export const YEAR_MONTH_PATTERN = /^\d{4}-\d{2}$/
+export const DATE_ONLY_PATTERN = /^\d{4}-\d{2}-\d{2}$/
 
 export const MONTH_OPTIONS = Array.from({ length: 12 }, (_, index) => ({
   value: String(index + 1).padStart(2, '0'),

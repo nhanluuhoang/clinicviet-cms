@@ -1,5 +1,5 @@
 import { Cell, Pie, PieChart, ResponsiveContainer, Tooltip } from 'recharts'
-import { formatDashboardMoney as formatMoney } from '@/lib/utils'
+import { formatNumber } from '@/lib/utils'
 import {
   type DashboardStatistics,
   type QueueDashboard,
@@ -32,7 +32,7 @@ export function DailyRevenueChart({
           Tổng thu {periodLabel}
         </span>
         <strong className='text-xl tabular-nums'>
-          {formatMoney(dashboard?.billing.totalAmount ?? 0)} VNĐ
+          {formatNumber(dashboard?.billing.totalAmount ?? 0)} VNĐ
         </strong>
       </div>
     )
@@ -55,7 +55,7 @@ export function DailyRevenueChart({
               stroke='hsl(var(--card))'
               strokeWidth={3}
               labelLine={{ stroke: 'hsl(var(--foreground))' }}
-              label={({ value }) => formatMoney(Number(value))}
+              label={({ value }) => formatNumber(Number(value))}
             >
               {chartData.map((entry) => (
                 <Cell key={entry.name} fill={entry.color} />
@@ -63,7 +63,7 @@ export function DailyRevenueChart({
             </Pie>
             <Tooltip
               formatter={(value) => [
-                `${formatMoney(Number(value))} VNĐ`,
+                `${formatNumber(Number(value))} VNĐ`,
                 'Doanh thu',
               ]}
               contentStyle={{
@@ -82,7 +82,7 @@ export function DailyRevenueChart({
             Tổng thu {periodLabel}
           </span>
           <strong className='text-sm whitespace-nowrap tabular-nums'>
-            {formatMoney(dashboard?.billing.totalAmount ?? 0)} VNĐ
+            {formatNumber(dashboard?.billing.totalAmount ?? 0)} VNĐ
           </strong>
         </div>
       </div>
