@@ -26,7 +26,7 @@ import { Login, Profile } from '@/features/auth/api'
 const formSchema = z.object({
   userName: z.string({
     error: (iss) =>
-      iss.input === '' ? 'Vui lòng nhập tên đăng nhập' : undefined,
+      iss.input === '' ? 'Vui lòng nhập tên đăng nhập hoặc email' : undefined,
   }),
   password: z
     .string()
@@ -113,7 +113,7 @@ export function UserAuthForm({
           name='userName'
           render={({ field }) => (
             <FormItem>
-              <FormLabel required>Tên đăng nhập</FormLabel>
+              <FormLabel required>Tên đăng nhập hoặc email</FormLabel>
               <FormControl>
                 <Input placeholder='name@example.com' {...field} />
               </FormControl>
