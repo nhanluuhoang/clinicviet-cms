@@ -1,6 +1,7 @@
 import { axios } from '@/lib/axios'
 
-export type RequestType = 'BUG' | 'FEATURE'
+export type RequestType = 'BUG' | 'FEATURE' | 'GENERAL'
+export type SupportTenant = { id: string; code: string; name: string }
 export type RequestStatus =
   | 'NEW'
   | 'IN_PROGRESS'
@@ -9,7 +10,11 @@ export type RequestStatus =
   | 'DECLINED'
 export type SupportRequest = {
   id: string
-  tenantId: string
+  tenantId: string | null
+  contactName: string | null
+  contactEmail: string | null
+  contactPhone: string | null
+  organization: string | null
   type: RequestType
   title: string
   content: string
@@ -17,10 +22,11 @@ export type SupportRequest = {
   status: RequestStatus
   createdAt: string
   updatedAt: string
-  tenant: { id: string; code: string; name: string }
+  tenant: SupportTenant | null
   creator: { id: string; fullName: string } | null
 }
 export type SupportActivity = {
+  guestReply: boolean
   id: string
   content: string | null
   fromStatus: RequestStatus | null
@@ -58,5 +64,5 @@ export const updateSupportStatus = (
   status: RequestStatus,
   content?: string
 ) => axios.patch(`/support-requests/${id}/status`, { status, content })
-export const getSupportTenants = (): Promise<Array<SupportRequest['tenant']>> =>
+export const getSupportTenants = (): Promise<SupportTenant[]> =>
   axios.get('/support-requests/tenant-options')

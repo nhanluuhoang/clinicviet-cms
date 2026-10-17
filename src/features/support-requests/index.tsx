@@ -54,7 +54,7 @@ export function SupportRequests() {
             </h2>
             <p className='text-muted-foreground'>
               {system
-                ? 'Tiếp nhận, phản hồi và xử lý yêu cầu từ các phòng khám.'
+                ? 'Tiếp nhận, phản hồi và xử lý yêu cầu từ phòng khám và khách trên website.'
                 : 'Gửi báo lỗi, đề xuất tính năng và theo dõi phản hồi.'}
             </p>
           </div>

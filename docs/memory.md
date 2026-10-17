@@ -8,6 +8,8 @@
 
 ## Architecture
 
+- System support handles both tenant tickets and guests from the main landing. SupportRequest.tenant/tenantId are nullable; guest contactName/contactEmail/contactPhone/organization identify the sender. guestReply distinguishes guest messages from deleted staff accounts. Guest replies/status history are visible on the landing; guests revisit using cookies/private links, with no email notifications or grouping by email.
+
 - Tính năng ở `src/features/`, route ở `src/routes/_authenticated/`; API và kiểu dữ liệu nằm trong `api.ts` của feature, gọi qua `src/lib/axios.ts`. Interceptor trả `response.data`, giữ `AxiosError` để nhận diện 401; CSRF lấy từ `/auth/csrf` và gửi cho request ghi.
 - Master data cache thuộc BE. Settings, ngày nghỉ, đơn thuốc và template dùng `useQuery` trực tiếp với key `['master-data', tenantId]`, `staleTime: 0`, `gcTime: 0`; refetch khi mount, bỏ dữ liệu không active, giữ focus behavior toàn cục. Mutation invalidate tiền tố `['master-data']`; không tạo hook master data riêng.
 - PATCH medical history gửi đủ các danh sách media còn giữ, kể cả mảng rỗng; bỏ trường nghĩa là không đổi. Nhận HLS MIME `application/vnd.apple.mpegurl` là video. Bỏ media cũ chỉ sửa draft đến lúc Save; DELETE và dọn khi đóng dialog chỉ áp dụng upload mới. Giới hạn 5 ảnh, 5 PDF, 1 video.

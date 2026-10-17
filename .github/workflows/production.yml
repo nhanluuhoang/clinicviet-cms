@@ -18,7 +18,7 @@ jobs:
     runs-on: ubuntu-latest
     environment: production
     env:
-      VITE_APP_API_URL: ${{ vars.PUBLIC_API_URL }}
+      VITE_APP_API_URL: ${{ vars.API_URL }}
 
     steps:
       - name: Checkout source
