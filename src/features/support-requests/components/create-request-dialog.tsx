@@ -96,6 +96,7 @@ export function CreateRequestDialog({
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
+                  <SelectItem value='GENERAL'>Hỗ trợ chung</SelectItem>
                   <SelectItem value='BUG'>Báo lỗi</SelectItem>
                   <SelectItem value='FEATURE'>Đề xuất tính năng</SelectItem>
                 </SelectContent>
