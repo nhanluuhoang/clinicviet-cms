@@ -50,3 +50,8 @@ export const updateSystemUser = (
   id: string,
   data: UpdateSystemUserInput
 ): Promise<SystemUser> => axios.patch(`/system/users/${id}`, data)
+
+export const updateSystemUserPassword = (
+  id: string,
+  data: { password: string; passwordConfirmation: string }
+): Promise<{ status: true }> => axios.patch(`/system/users/${id}/password`, data)

@@ -7,6 +7,15 @@ export interface TenantData {
   address: string
   subdomain: string | null
   servicePlan: 'BASIC' | 'PLUS' | 'PRO'
+  storageLimitGb: number
+  storage: {
+    limitBytes: number
+    usedBytes: number
+    imagesBytes: number
+    pdfsBytes: number
+    videosBytes: number
+    unmeasuredFiles: number
+  }
   isActive: boolean
   subscriptionStatus: 'TRIAL' | 'ACTIVE' | 'EXPIRED' | 'SUSPENDED'
   trialEndsAt?: string | null

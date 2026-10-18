@@ -7,7 +7,9 @@ export type Tenant = {
   name: string
   subdomain: string | null
   address: string
+  note: string
   servicePlan: ServicePlan
+  storageLimitGb: number
   isActive: boolean
   lastActiveAt: string | null
   subscriptionStatus: 'TRIAL' | 'ACTIVE' | 'EXPIRED' | 'SUSPENDED'
@@ -37,7 +39,7 @@ export type TenantsResponse = {
 
 export type TenantUpdate = Pick<
   Tenant,
-  'code' | 'name' | 'address' | 'servicePlan' | 'isActive'
+  'code' | 'name' | 'address' | 'note' | 'servicePlan' | 'storageLimitGb' | 'isActive'
 > &
   Partial<Pick<Tenant, 'subscriptionStatus'>> & {
     subdomain?: string | null

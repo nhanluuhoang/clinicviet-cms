@@ -37,6 +37,7 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { DatePickerInput } from '@/components/date-picker-input'
 import { SelectDropdown } from '@/components/select-dropdown'
+import { Textarea } from '@/components/ui/textarea'
 import { deleteTenant, updateTenant, type Tenant } from '../api'
 
 export function TenantActions({ tenant }: { tenant: Tenant }) {
@@ -56,7 +57,9 @@ export function TenantActions({ tenant }: { tenant: Tenant }) {
     name: tenant.name,
     subdomain: tenant.subdomain ?? '',
     address: tenant.address,
+    note: tenant.note,
     servicePlan: tenant.servicePlan,
+    storageLimitGb: tenant.storageLimitGb,
     isActive: tenant.isActive,
   })
   const refresh = () => queryClient.invalidateQueries({ queryKey: ['tenants'] })
@@ -122,7 +125,9 @@ export function TenantActions({ tenant }: { tenant: Tenant }) {
                 name: tenant.name,
                 subdomain: tenant.subdomain ?? '',
                 address: tenant.address,
+                note: tenant.note,
                 servicePlan: tenant.servicePlan,
+                storageLimitGb: tenant.storageLimitGb,
                 isActive: tenant.isActive,
               })
               setEditOpen(true)
@@ -145,7 +150,7 @@ export function TenantActions({ tenant }: { tenant: Tenant }) {
         </DropdownMenuContent>
       </DropdownMenu>
       <Dialog open={editOpen} onOpenChange={setEditOpen}>
-        <DialogContent className='sm:max-w-xl'>
+        <DialogContent className='max-h-[90vh] overflow-y-auto sm:max-w-xl'>
           <DialogHeader>
             <DialogTitle>Cập nhật phòng khám</DialogTitle>
           </DialogHeader>
@@ -172,6 +177,34 @@ export function TenantActions({ tenant }: { tenant: Tenant }) {
                   />
                 </div>
               ))}
+            <div className='space-y-2 sm:col-span-2'>
+              <Label required htmlFor={`tenant-storage-${tenant.id}`}>
+                Dung lượng lưu trữ (GB)
+              </Label>
+              <Input
+                id={`tenant-storage-${tenant.id}`}
+                type='number'
+                min={1}
+                max={100000}
+                step={1}
+                value={values.storageLimitGb}
+                onChange={(event) =>
+                  setValues({ ...values, storageLimitGb: Number(event.target.value) })
+                }
+              />
+            </div>
+            <div className='space-y-2 sm:col-span-2'>
+              <Label htmlFor={`tenant-note-${tenant.id}`}>Ghi chú nội bộ</Label>
+              <Textarea
+                id={`tenant-note-${tenant.id}`}
+                maxLength={1000}
+                rows={3}
+                value={values.note}
+                onChange={(event) =>
+                  setValues({ ...values, note: event.target.value })
+                }
+              />
+            </div>
             <div className='space-y-2 sm:col-span-2'>
               <Label required>Gói dịch vụ</Label>
               <SelectDropdown
@@ -231,7 +264,7 @@ export function TenantActions({ tenant }: { tenant: Tenant }) {
             </Button>
             <Button
               onClick={() => update.mutate()}
-              disabled={update.isPending || !endsOn}
+              disabled={update.isPending || !endsOn || !Number.isInteger(values.storageLimitGb) || values.storageLimitGb < 1 || values.storageLimitGb > 100000}
             >
               Lưu thay đổi
             </Button>
