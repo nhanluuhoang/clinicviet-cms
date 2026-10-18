@@ -4,7 +4,7 @@
 
 ## Project
 
-- ClinicViet CMS dùng React 19, TypeScript, Vite, TanStack Router/Query và shadcn/ui; API qua `VITE_APP_API_URL`. Tên kỹ thuật và browser storage key dùng `clinicviet`, còn thư mục checkout vẫn là `iclinic-*`; đổi key trực tiếp, không tạo migration. CMS và hai landing dùng chung medical favicon.
+- ClinicViet CMS dùng React 19, TypeScript, Vite, TanStack Router/Query và shadcn/ui; API qua `VITE_APP_API_URL`. Tên kỹ thuật và browser storage key dùng `clinicviet`, còn thư mục checkout vẫn là `iclinic-*`; đổi key trực tiếp, không tạo migration. CMS và hai landing dùng chung favicon C–V, đồng bộ với logo chính ClinicViet.
 
 ## Architecture
 
