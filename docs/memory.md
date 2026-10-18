@@ -9,6 +9,7 @@
 ## Architecture
 
 - System support handles both tenant tickets and guests from the main landing. SupportRequest.tenant/tenantId are nullable; guest contactName/contactEmail/contactPhone/organization identify the sender. guestReply distinguishes guest messages from deleted staff accounts. Guest replies/status history are visible on the landing; guests revisit using cookies/private links, with no email notifications or grouping by email.
+- Trang `/system/users` cho Super Admin đặt lại mật khẩu từng tài khoản bằng hộp thoại riêng; đổi thành công sẽ đăng xuất các phiên hiện tại của tài khoản đó.
 
 - Tính năng ở `src/features/`, route ở `src/routes/_authenticated/`; API và kiểu dữ liệu nằm trong `api.ts` của feature, gọi qua `src/lib/axios.ts`. Interceptor trả `response.data`, giữ `AxiosError` để nhận diện 401; CSRF lấy từ `/auth/csrf` và gửi cho request ghi.
 - Master data cache thuộc BE. Settings, ngày nghỉ, đơn thuốc và template dùng `useQuery` trực tiếp với key `['master-data', tenantId]`, `staleTime: 0`, `gcTime: 0`; refetch khi mount, bỏ dữ liệu không active, giữ focus behavior toàn cục. Mutation invalidate tiền tố `['master-data']`; không tạo hook master data riêng.
@@ -16,6 +17,7 @@
 - PrescriptionDialog dùng chung ba tab EXAMINATION/PHARMACY/VACCINATION; mỗi tab giữ form và chi phí riêng, chỉ gửi tab mở. Nhớ tab gần nhất theo user trong localStorage, không lưu dữ liệu bệnh nhân. Sửa phiếu mở đúng loại đã lưu và khóa hai tab khác; PATCH theo history.id, refresh medical histories. Hồ sơ không có prescription chỉ sửa thông tin hồ sơ, ẩn thuốc và chi phí. Phí khám chỉ áp dụng EXAMINATION.
 - Vaccination API dùng trường phẳng; `getVaccinationFields` đổi ngày DB sang `YYYY-MM-DD`. Form hiện dấu hiệu sinh tồn, mũi/liều/đường/vị trí/người tiêm và các ngày; người tiêm từ `/users/staff-options`, mặc định user hiện tại, ngày tiêm mặc định hôm nay local, sửa phiếu giữ dữ liệu cũ.
 - Landing config và posts dùng API thật. Ảnh bài viết có thumbnail public, ảnh bệnh nhân cần kiểm soát truy cập. Template đơn thuốc chỉ tải thuốc và tùy chọn hướng dẫn khi mở dialog; landing config chỉ tải bài viết công khai khi mở bộ chọn và vẫn giữ `featuredPostIds` khi đóng. Lập phiếu và template dùng `MedicineInstructionInput`: nhập tự do tối đa 255 ký tự, gợi ý theo buổi dùng, xem trước câu hiển thị; không báo lỗi riêng khi để trống.
+- Settings/tenant hiển thị hạn mức lưu trữ chỉ đọc và thanh dung lượng ảnh/PDF/video từ `storage` trong `/tenants/me`; `/system/tenants` cho Super Admin sửa hạn mức GB và ghi chú nội bộ của phòng khám.
 
 ## Convention
 

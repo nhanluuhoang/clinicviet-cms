@@ -42,7 +42,9 @@ export function Tenants() {
             code: 'Mã',
             name: 'Phòng khám',
             subdomain: 'Subdomain',
+            note: 'Ghi chú',
             servicePlan: 'Gói',
+            storageLimitGb: 'Dung lượng',
             subscriptionStatus: 'Trạng thái đăng ký',
             trialStartedAt: 'Bắt đầu dùng thử',
             trialEndsAt: 'Hạn dùng thử',
@@ -51,7 +53,7 @@ export function Tenants() {
             actions: 'Thao tác',
           }}
           getSearchText={(tenant) =>
-            `${tenant.code} ${tenant.name} ${tenant.subdomain}`
+            `${tenant.code} ${tenant.name} ${tenant.subdomain ?? ''} ${tenant.note}`
           }
           filters={[
             {
