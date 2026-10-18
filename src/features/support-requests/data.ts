@@ -1,6 +1,10 @@
 import { z } from 'zod'
 
-export const typeLabels = { BUG: 'Báo lỗi', FEATURE: 'Đề xuất tính năng' }
+export const typeLabels = {
+  BUG: 'Báo lỗi',
+  FEATURE: 'Đề xuất tính năng',
+  GENERAL: 'Hỗ trợ chung',
+}
 export const statusLabels = {
   NEW: 'Mới gửi',
   IN_PROGRESS: 'Đang xử lý',
@@ -18,7 +22,7 @@ export const supportSearchSchema = z.object({
     .optional()
     .catch(''),
   type: z
-    .array(z.enum(['BUG', 'FEATURE']))
+    .array(z.enum(['BUG', 'FEATURE', 'GENERAL']))
     .max(1)
     .optional()
     .catch([]),

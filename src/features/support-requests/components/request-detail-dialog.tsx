@@ -109,10 +109,23 @@ export function RequestDetailDialog({
                   <strong>{statusLabels[request.status]}</strong>
                 </p>
                 <p className='text-sm text-muted-foreground'>
-                  {request.tenant.name} ({request.tenant.code}) ·{' '}
-                  {request.creator?.fullName ?? 'Tài khoản đã xóa'} ·{' '}
-                  {new Date(request.createdAt).toLocaleString('vi-VN')}
+                  {request.tenant
+                    ? `${request.tenant.name} (${request.tenant.code})`
+                    : request.organization || 'Khách từ website'}{' '}
+                  ·{' '}
+                  {request.creator?.fullName ??
+                    request.contactName ??
+                    'Tài khoản đã xóa'}{' '}
+                  · {new Date(request.createdAt).toLocaleString('vi-VN')}
                 </p>
+                {request.contactEmail && (
+                  <p className='text-sm break-all text-muted-foreground'>
+                    Email: {request.contactEmail}
+                    {request.contactPhone && (
+                      <> · Điện thoại: {request.contactPhone}</>
+                    )}
+                  </p>
+                )}
                 <p className='break-words whitespace-pre-wrap'>
                   {request.content}
                 </p>
@@ -138,7 +151,9 @@ export function RequestDetailDialog({
                     className='space-y-2 rounded-md border p-3'
                   >
                     <p className='text-sm font-medium'>
-                      {activity.actor?.fullName ?? 'Tài khoản đã xóa'}{' '}
+                      {activity.guestReply
+                        ? request.contactName
+                        : (activity.actor?.fullName ?? 'Tài khoản đã xóa')}{' '}
                       <span className='font-normal text-muted-foreground'>
                         · {new Date(activity.createdAt).toLocaleString('vi-VN')}
                       </span>
@@ -160,6 +175,13 @@ export function RequestDetailDialog({
                 ))}
               </section>
               <form onSubmit={submit} className='space-y-3 border-t pt-4'>
+                {request.contactEmail && (
+                  <p className='text-sm text-muted-foreground'>
+                    Phản hồi và lịch sử trạng thái hiển thị cho khách trên trang
+                    theo dõi. Khách chủ động quay lại website để xem phản hồi;
+                    hệ thống không gửi email thông báo.
+                  </p>
+                )}
                 {system && (
                   <div className='space-y-2'>
                     <Label htmlFor='support-status'>Trạng thái</Label>

@@ -15,7 +15,7 @@ jobs:
     runs-on: ubuntu-latest
     environment: staging
     env:
-      VITE_APP_API_URL: ${{ vars.PUBLIC_API_URL }}
+      VITE_APP_API_URL: ${{ vars.API_URL }}
 
     steps:
       - name: Checkout source

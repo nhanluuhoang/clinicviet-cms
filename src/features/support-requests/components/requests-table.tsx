@@ -2,7 +2,7 @@ import { type ColumnDef } from '@tanstack/react-table'
 import { Button } from '@/components/ui/button'
 import { DataTableColumnHeader } from '@/components/data-table/column-header'
 import { UrlDataTable } from '@/components/data-table/url-data-table'
-import { type SupportRequest } from '../api'
+import { type SupportRequest, type SupportTenant } from '../api'
 import { statusLabels, typeLabels } from '../data'
 
 type Props = {
@@ -10,7 +10,7 @@ type Props = {
   total: number
   isLoading: boolean
   system: boolean
-  tenants: SupportRequest['tenant'][]
+  tenants: SupportTenant[]
   onOpen: (id: string) => void
 }
 export function RequestsTable({
@@ -39,14 +39,17 @@ export function RequestsTable({
             header: 'Phòng khám',
             enableSorting: false,
             cell: ({ row }: { row: { original: SupportRequest } }) =>
-              `${row.original.tenant.name} (${row.original.tenant.code})`,
+              row.original.tenant
+                ? `${row.original.tenant.name} (${row.original.tenant.code})`
+                : row.original.organization || 'Khách từ website',
           },
         ]
       : []),
     {
       id: 'creator',
       header: 'Người gửi',
-      accessorFn: (request) => request.creator?.fullName ?? 'Tài khoản đã xóa',
+      accessorFn: (request) =>
+        request.creator?.fullName ?? request.contactName ?? 'Tài khoản đã xóa',
       enableSorting: false,
     },
     {
@@ -100,7 +103,7 @@ export function RequestsTable({
       searchPlaceholder='Tìm yêu cầu, phòng khám…'
       emptyMessage='Chưa có yêu cầu phù hợp.'
       getSearchText={(request) =>
-        `${request.title} ${request.tenant.name} ${request.tenant.code}`
+        `${request.title} ${request.tenant?.name ?? request.organization ?? ''} ${request.tenant?.code ?? ''} ${request.contactName ?? ''} ${request.contactEmail ?? ''}`
       }
       mobileLabels={{
         title: 'Tiêu đề',

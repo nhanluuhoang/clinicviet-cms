@@ -4,9 +4,11 @@
 
 ## Project
 
-- ClinicViet CMS dùng React 19, TypeScript, Vite, TanStack Router/Query và shadcn/ui; API qua `VITE_APP_API_URL`. Tên kỹ thuật và browser storage key dùng `clinicviet`, còn thư mục checkout vẫn là `iclinic-*`; đổi key trực tiếp, không tạo migration. CMS và hai landing dùng chung medical favicon.
+- ClinicViet CMS dùng React 19, TypeScript, Vite, TanStack Router/Query và shadcn/ui; API qua `VITE_APP_API_URL`. Tên kỹ thuật và browser storage key dùng `clinicviet`, còn thư mục checkout vẫn là `iclinic-*`; đổi key trực tiếp, không tạo migration. CMS và hai landing dùng chung favicon C–V, đồng bộ với logo chính ClinicViet.
 
 ## Architecture
+
+- System support handles both tenant tickets and guests from the main landing. SupportRequest.tenant/tenantId are nullable; guest contactName/contactEmail/contactPhone/organization identify the sender. guestReply distinguishes guest messages from deleted staff accounts. Guest replies/status history are visible on the landing; guests revisit using cookies/private links, with no email notifications or grouping by email.
 
 - Tính năng ở `src/features/`, route ở `src/routes/_authenticated/`; API và kiểu dữ liệu nằm trong `api.ts` của feature, gọi qua `src/lib/axios.ts`. Interceptor trả `response.data`, giữ `AxiosError` để nhận diện 401; CSRF lấy từ `/auth/csrf` và gửi cho request ghi.
 - Master data cache thuộc BE. Settings, ngày nghỉ, đơn thuốc và template dùng `useQuery` trực tiếp với key `['master-data', tenantId]`, `staleTime: 0`, `gcTime: 0`; refetch khi mount, bỏ dữ liệu không active, giữ focus behavior toàn cục. Mutation invalidate tiền tố `['master-data']`; không tạo hook master data riêng.

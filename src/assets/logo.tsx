@@ -4,25 +4,30 @@ import { cn } from '@/lib/utils'
 export function Logo({ className, ...props }: SVGProps<SVGSVGElement>) {
   return (
     <svg
-      viewBox='0 0 64 64'
+      viewBox='0 0 112 112'
       xmlns='http://www.w3.org/2000/svg'
       role='img'
       aria-label='ClinicViet'
-      className={cn('size-8 shrink-0', className)}
+      className={cn('size-8 shrink-0 rounded-lg bg-white', className)}
       {...props}
     >
       <title>ClinicViet</title>
-      <rect width='64' height='64' rx='16' fill='#176b5b' />
-      <path d='M26 14h12v12h12v12H38v12H26V38H14V26h12z' fill='#fff' />
-      <circle cx='48' cy='48' r='11' fill='#b77b35' />
       <path
-        d='m43 48 3.5 3.5 6-7'
+        d='M78 29A36 36 0 1 0 78 83'
         fill='none'
-        stroke='#fff'
-        strokeWidth='3'
+        stroke='#0F766E'
+        strokeWidth='11'
+        strokeLinecap='round'
+      />
+      <path
+        d='m39 48 15 20 18-26'
+        fill='none'
+        stroke='#153E3A'
+        strokeWidth='9'
         strokeLinecap='round'
         strokeLinejoin='round'
       />
+      <circle cx='82' cy='30' r='7' fill='#C4823A' />
     </svg>
   )
 }
