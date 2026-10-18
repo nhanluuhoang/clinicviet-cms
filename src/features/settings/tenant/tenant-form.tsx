@@ -20,6 +20,7 @@ import { SERVICE_PLAN_LABELS } from '@/config/service-plans'
 import { SUBSCRIPTION_STATUS_SUMMARY_LABELS } from '@/config/subscription-statuses'
 import { ContentSection } from '../components/content-section'
 import { getOwnTenant, updateOwnTenant } from './api'
+import { StorageUsage } from './storage-usage'
 
 const schema = z.object({
   name: z.string().trim().min(1, 'Vui lòng nhập tên phòng khám').max(255),
@@ -150,6 +151,8 @@ export function TenantForm() {
               </p>
             </div>
           </div>
+
+          {tenant.data && <StorageUsage tenant={tenant.data} />}
 
           <Button type='submit' disabled={update.isPending}>
             {update.isPending ? 'Đang lưu...' : 'Lưu thay đổi'}

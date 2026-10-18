@@ -4,7 +4,7 @@ import { useForm } from 'react-hook-form'
 import { DotsHorizontalIcon } from '@radix-ui/react-icons'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
-import { Pencil } from 'lucide-react'
+import { KeyRound, Pencil } from 'lucide-react'
 import { toast } from 'sonner'
 import { showRequestError } from '@/lib/handle-server-error'
 import { Button } from '@/components/ui/button'
@@ -39,6 +39,7 @@ import {
   USER_ROLE_LABELS,
 } from '@/config/user-role-labels'
 import { updateSystemUser, type ManagedRole, type SystemUser } from '../api'
+import { UpdateSystemUserPasswordDialog } from './update-system-user-password-dialog'
 
 const schema = z.object({
   fullName: z.string().trim().min(1, 'Vui lòng nhập họ tên.'),
@@ -52,6 +53,7 @@ type Values = z.infer<typeof schema>
 
 export function UpdateSystemUserDialog({ user }: { user: SystemUser }) {
   const [open, setOpen] = useState(false)
+  const [passwordOpen, setPasswordOpen] = useState(false)
   const queryClient = useQueryClient()
   const form = useForm<Values>({
     resolver: zodResolver(schema),
@@ -117,6 +119,12 @@ export function UpdateSystemUserDialog({ user }: { user: SystemUser }) {
             Cập nhật
             <DropdownMenuShortcut>
               <Pencil size={16} />
+            </DropdownMenuShortcut>
+          </DropdownMenuItem>
+          <DropdownMenuItem onClick={() => setPasswordOpen(true)}>
+            Đặt lại mật khẩu
+            <DropdownMenuShortcut>
+              <KeyRound size={16} />
             </DropdownMenuShortcut>
           </DropdownMenuItem>
         </DropdownMenuContent>
@@ -227,6 +235,11 @@ export function UpdateSystemUserDialog({ user }: { user: SystemUser }) {
           </DialogFooter>
         </DialogContent>
       </Dialog>
+      <UpdateSystemUserPasswordDialog
+        user={user}
+        open={passwordOpen}
+        onOpenChange={setPasswordOpen}
+      />
     </>
   )
 }

@@ -9,10 +9,20 @@ export const columns: ColumnDef<Tenant>[] = [
   { accessorKey: 'name', header: 'Phòng khám' },
   { accessorKey: 'subdomain', header: 'Tên miền phụ' },
   {
+    accessorKey: 'note',
+    header: 'Ghi chú',
+    cell: ({ row }) => row.original.note || '—',
+  },
+  {
     accessorKey: 'servicePlan',
     header: 'Gói',
     cell: ({ row }) => SERVICE_PLAN_LABELS[row.original.servicePlan],
     filterFn: (row, id, value: string[]) => value.includes(row.getValue(id)),
+  },
+  {
+    accessorKey: 'storageLimitGb',
+    header: 'Dung lượng',
+    cell: ({ row }) => `${row.original.storageLimitGb} GB`,
   },
   {
     accessorKey: 'subscriptionStatus',
