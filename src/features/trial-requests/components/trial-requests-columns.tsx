@@ -7,6 +7,34 @@ import { TrialRequestActions } from './trial-request-actions'
 export const columns: ColumnDef<TrialRequest>[] = [
   { accessorKey: 'phone', header: 'Số điện thoại' },
   {
+    accessorKey: 'source',
+    header: 'Nguồn',
+    cell: ({ row }) =>
+      row.original.source === 'REFERRAL' ? 'Bạn bè giới thiệu' : 'Website',
+    filterFn: (row, id, value: string[]) => value.includes(row.getValue(id)),
+  },
+  {
+    accessorKey: 'contactName',
+    header: 'Người được giới thiệu',
+    cell: ({ row }) => (
+      <div className='max-w-64 whitespace-normal'>
+        <p>{row.original.contactName || '—'}</p>
+      </div>
+    ),
+  },
+  {
+    accessorKey: 'referrerName',
+    header: 'Người giới thiệu',
+    cell: ({ row }) => (
+      <div className='max-w-64 whitespace-normal'>
+        <p>{row.original.referrerName || '—'}</p>
+        <p className='text-xs text-muted-foreground'>
+          {row.original.referrerClinicName}
+        </p>
+      </div>
+    ),
+  },
+  {
     accessorKey: 'createdAt',
     header: 'Ngày đăng ký',
     cell: ({ row }) =>

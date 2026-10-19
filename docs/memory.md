@@ -8,6 +8,10 @@
 
 ## Architecture
 
+- Both account menus link directly to clinic information (`/settings/tenant`, tenant admins only). "Giới thiệu cho bạn bè" opens a name/phone-only referral form for tenant staff; it explains the one-month reward on a successful purchase. Referral leads share the trial requests list with source/referrer details and a source filter. Purchase confirmation and reward extension are handled manually by the owner; no automatic reward workflow.
+
+- Function search opens pages only via the shared Header button or Ctrl/Cmd+K. Search and sidebar share `useNavigationGroups` for role/plan visibility; searchable destinations come from `sidebarData`. Search supports Vietnamese without diacritics and aliases for reports/settings.
+
 - System support handles both tenant tickets and guests from the main landing. SupportRequest.tenant/tenantId are nullable; guest contactName/contactEmail/contactPhone/organization identify the sender. guestReply distinguishes guest messages from deleted staff accounts. Guest replies/status history are visible on the landing; guests revisit using cookies/private links, with no email notifications or grouping by email.
 - Trang `/system/users` cho Super Admin đặt lại mật khẩu từng tài khoản bằng hộp thoại riêng; đổi thành công sẽ đăng xuất các phiên hiện tại của tài khoản đó.
 

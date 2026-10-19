@@ -9,6 +9,7 @@ export const Route = createFileRoute('/_authenticated/system/trial-requests')({
     sort: z.string().optional().catch(''),
     filter: z.string().optional().catch(''),
     status: z.array(z.string()).optional().catch([]),
+    source: z.array(z.string()).optional().catch([]),
   }),
   component: TrialRequests,
 })
