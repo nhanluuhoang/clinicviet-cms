@@ -18,7 +18,7 @@ function Command({
     <CommandPrimitive
       data-slot='command'
       className={cn(
-        'flex h-full w-full flex-col overflow-hidden rounded-md bg-popover text-popover-foreground',
+        'flex h-full min-h-0 w-full flex-col overflow-hidden rounded-md bg-popover text-popover-foreground',
         className
       )}
       {...props}
@@ -48,7 +48,10 @@ function CommandDialog({
         <DialogDescription>{description}</DialogDescription>
       </DialogHeader>
       <DialogContent
-        className={cn('overflow-hidden p-0', className)}
+        className={cn(
+          'flex max-h-[calc(100dvh-2rem)] flex-col overflow-hidden p-0',
+          className
+        )}
         showCloseButton={showCloseButton}
       >
         <Command
@@ -69,7 +72,7 @@ function CommandInput({
   return (
     <div
       data-slot='command-input-wrapper'
-      className='flex h-9 items-center gap-2 border-b px-3'
+      className='flex h-9 shrink-0 items-center gap-2 border-b px-3'
     >
       <SearchIcon className='size-4 shrink-0 opacity-50' />
       <CommandPrimitive.Input
@@ -92,7 +95,7 @@ function CommandList({
     <CommandPrimitive.List
       data-slot='command-list'
       className={cn(
-        'max-h-[300px] scroll-py-1 overflow-x-hidden overflow-y-auto',
+        'max-h-[300px] min-h-0 touch-pan-y scroll-py-1 overflow-x-hidden overflow-y-auto overscroll-y-contain',
         className
       )}
       {...props}
