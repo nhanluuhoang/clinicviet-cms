@@ -189,7 +189,7 @@ export function LandingConfigForm({
           label='Địa chỉ'
           value={data?.tenant.address ?? ''}
           readOnly
-          hint='Cập nhật tại Hồ sơ cá nhân → Thông tin phòng khám.'
+          hint='Cập nhật tại menu tài khoản → Thông tin phòng khám.'
         />
         <Field
           label='URL Google Maps'

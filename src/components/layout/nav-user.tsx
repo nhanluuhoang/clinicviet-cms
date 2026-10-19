@@ -1,7 +1,14 @@
+import { useState } from 'react'
 import { Link } from '@tanstack/react-router'
-import { BadgeCheck, ChevronsUpDown, LogOut } from 'lucide-react'
+import { hasAnyRole, STAFF_ROLES } from '@/config/access-control'
+import {
+  BadgeCheck,
+  Building2,
+  ChevronsUpDown,
+  Info,
+  LogOut,
+} from 'lucide-react'
 import useDialogState from '@/hooks/use-dialog-state'
-import type { ProfileData } from '@/features/auth/api'
 import { Avatar, AvatarFallback } from '@/components/ui/avatar'
 import {
   DropdownMenu,
@@ -18,7 +25,9 @@ import {
   SidebarMenuItem,
   useSidebar,
 } from '@/components/ui/sidebar'
+import { ReferralDialog } from '@/components/referral-dialog'
 import { SignOutDialog } from '@/components/sign-out-dialog'
+import type { ProfileData } from '@/features/auth/api'
 
 type NavUserProps = {
   user: ProfileData | null
@@ -27,6 +36,7 @@ type NavUserProps = {
 export function NavUser({ user }: NavUserProps) {
   const { isMobile } = useSidebar()
   const [open, setOpen] = useDialogState()
+  const [referralOpen, setReferralOpen] = useState(false)
   const displayName = user?.fullName?.trim() || user?.userName || 'Tài khoản'
   const email = user?.email?.trim() || null
   const initials = displayName
@@ -72,7 +82,9 @@ export function NavUser({ user }: NavUserProps) {
                     </AvatarFallback>
                   </Avatar>
                   <div className='grid flex-1 text-start text-sm leading-tight'>
-                    <span className='truncate font-semibold'>{displayName}</span>
+                    <span className='truncate font-semibold'>
+                      {displayName}
+                    </span>
                     {email && <span className='truncate text-xs'>{email}</span>}
                   </div>
                 </div>
@@ -85,6 +97,20 @@ export function NavUser({ user }: NavUserProps) {
                     Hồ sơ cá nhân
                   </Link>
                 </DropdownMenuItem>
+                {user?.role === 'TENANT_ADMIN' && (
+                  <DropdownMenuItem asChild>
+                    <Link to='/settings/tenant'>
+                      <Building2 />
+                      Thông tin phòng khám
+                    </Link>
+                  </DropdownMenuItem>
+                )}
+                {user?.tenant && hasAnyRole(user.role, STAFF_ROLES) && (
+                  <DropdownMenuItem onSelect={() => setReferralOpen(true)}>
+                    <Info />
+                    Giới thiệu cho bạn bè
+                  </DropdownMenuItem>
+                )}
               </DropdownMenuGroup>
               <DropdownMenuSeparator />
               <DropdownMenuItem
@@ -100,6 +126,7 @@ export function NavUser({ user }: NavUserProps) {
       </SidebarMenu>
 
       <SignOutDialog open={!!open} onOpenChange={setOpen} />
+      <ReferralDialog open={referralOpen} onOpenChange={setReferralOpen} />
     </>
   )
 }
