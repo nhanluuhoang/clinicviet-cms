@@ -2,6 +2,12 @@ import { axios } from '@/lib/axios'
 
 export type TrialRequestStatus = 'PENDING' | 'APPROVED' | 'REJECTED'
 export type TrialRequest = {
+  source: 'WEBSITE' | 'REFERRAL'
+  contactName: string | null
+  referrerUserId: string | null
+  referrerTenantId: string | null
+  referrerName: string | null
+  referrerClinicName: string | null
   id: string
   code: string | null
   phone: string

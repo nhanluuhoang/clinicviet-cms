@@ -1,5 +1,7 @@
+import { useState } from 'react'
 import { Link } from '@tanstack/react-router'
-import { BookOpen, PackageOpen } from 'lucide-react'
+import { hasAnyRole, STAFF_ROLES } from '@/config/access-control'
+import { BookOpen, Building2, Info, PackageOpen } from 'lucide-react'
 import { useAuthStore } from '@/stores/auth-store'
 import useDialogState from '@/hooks/use-dialog-state'
 import { Avatar, AvatarFallback } from '@/components/ui/avatar'
@@ -13,10 +15,12 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
+import { ReferralDialog } from '@/components/referral-dialog'
 import { SignOutDialog } from '@/components/sign-out-dialog'
 
 export function ProfileDropdown() {
   const [open, setOpen] = useDialogState()
+  const [referralOpen, setReferralOpen] = useState(false)
   const user = useAuthStore((state) => state.auth.user)
   const displayName = user?.fullName?.trim() || user?.userName || 'Tài khoản'
   const email = user?.email?.trim() || null
@@ -53,6 +57,20 @@ export function ProfileDropdown() {
             <DropdownMenuItem asChild>
               <Link to='/settings'>Hồ sơ cá nhân</Link>
             </DropdownMenuItem>
+            {user?.role === 'TENANT_ADMIN' && (
+              <DropdownMenuItem asChild>
+                <Link to='/settings/tenant'>
+                  <Building2 />
+                  Thông tin phòng khám
+                </Link>
+              </DropdownMenuItem>
+            )}
+            {user?.tenant && hasAnyRole(user.role, STAFF_ROLES) && (
+              <DropdownMenuItem onSelect={() => setReferralOpen(true)}>
+                <Info />
+                Giới thiệu cho bạn bè
+              </DropdownMenuItem>
+            )}
           </DropdownMenuGroup>
           <DropdownMenuSeparator />
           <DropdownMenuLabel className='text-xs text-muted-foreground'>
@@ -92,6 +110,7 @@ export function ProfileDropdown() {
       </DropdownMenu>
 
       <SignOutDialog open={!!open} onOpenChange={setOpen} />
+      <ReferralDialog open={referralOpen} onOpenChange={setReferralOpen} />
     </>
   )
 }

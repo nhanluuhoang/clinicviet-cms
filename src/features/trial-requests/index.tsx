@@ -4,8 +4,8 @@ import { Main } from '@/components/layout/main'
 import { ProfileDropdown } from '@/components/profile-dropdown'
 import { ThemeSwitch } from '@/components/theme-switch'
 import { findTrialRequests } from './api'
-import { TRIAL_REQUEST_STATUS_OPTIONS } from './data'
 import { TrialRequestsTable } from './components/trial-requests-table'
+import { TRIAL_REQUEST_STATUS_OPTIONS } from './data'
 
 export function TrialRequests() {
   const query = useQuery({
@@ -26,7 +26,7 @@ export function TrialRequests() {
             Yêu cầu dùng thử
           </h2>
           <p className='text-muted-foreground'>
-            Duyệt hoặc từ chối đăng ký dùng thử từ khách hàng.
+            Tiếp nhận yêu cầu từ website và khách hàng giới thiệu bạn bè.
           </p>
         </div>
         <TrialRequestsTable
@@ -41,9 +41,31 @@ export function TrialRequests() {
             code: 'Mã phòng khám',
             rejectionReason: 'Lý do từ chối',
             actions: 'Thao tác',
+            source: 'Nguồn',
+            contactName: 'Người được giới thiệu',
+            referrerName: 'Người giới thiệu',
           }}
-          getSearchText={(request) => `${request.phone} ${request.code ?? ''}`}
+          getSearchText={(request) =>
+            [
+              request.phone,
+              request.code,
+              request.contactName,
+              request.referrerName,
+              request.referrerClinicName,
+            ]
+              .filter(Boolean)
+              .join(' ')
+          }
           filters={[
+            {
+              columnId: 'source',
+              title: 'Nguồn',
+              variant: 'radio',
+              options: [
+                { label: 'Website', value: 'WEBSITE' },
+                { label: 'Bạn bè giới thiệu', value: 'REFERRAL' },
+              ],
+            },
             {
               columnId: 'status',
               title: 'Trạng thái',
