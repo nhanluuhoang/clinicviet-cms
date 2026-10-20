@@ -102,7 +102,7 @@ export function MobileDataCards<TData>({
             (cell) =>
               !['actions', 'expand', 'expander', 'select'].includes(
                 cell.column.id
-              )
+              ) && !cell.column.columnDef.meta?.hideOnMobile?.(row.original)
           )
           const actionCells = cells.filter((cell) =>
             ['actions', 'expand', 'expander', 'select'].includes(cell.column.id)

@@ -3,7 +3,11 @@ import { DataTableToolbar } from '@/components/data-table'
 import { UrlDataTable } from '@/components/data-table/url-data-table'
 import { DatePickerInput } from '@/components/date-picker-input'
 import type { Invoice } from '../api'
-import { invoiceColumns, invoiceServiceTypes } from './invoice-columns'
+import {
+  invoiceColumns,
+  invoiceMobileLabels,
+  invoiceServiceTypes,
+} from './invoice-columns'
 
 const route = getRouteApi('/_authenticated/invoices/')
 const filters = [
@@ -30,6 +34,7 @@ export function InvoicesTable({
   return (
     <UrlDataTable
       columns={invoiceColumns}
+      mobileLabels={invoiceMobileLabels}
       data={data}
       total={total}
       isLoading={isLoading}
@@ -55,6 +60,7 @@ export function InvoicesTable({
           </label>
           <DatePickerInput
             id='invoice-date'
+            placeholder='Chọn ngày lập'
             value={date}
             onChange={(value) =>
               navigate({
