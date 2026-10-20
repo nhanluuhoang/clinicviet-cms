@@ -5,6 +5,7 @@ import {
   type ExpandedState,
   type Row,
   type SortingState,
+  type Table as ReactTable,
   flexRender,
   getCoreRowModel,
   getExpandedRowModel,
@@ -64,6 +65,7 @@ type UrlDataTableProps<TData> = {
   renderSubRow?: (row: Row<TData>) => React.ReactNode
   rowClassName?: (row: Row<TData>) => string | undefined
   getSearchText?: (row: TData) => string
+  renderToolbar?: (table: ReactTable<TData>) => React.ReactNode
 }
 
 export function UrlDataTable<TData>({
@@ -80,6 +82,7 @@ export function UrlDataTable<TData>({
   renderSubRow,
   rowClassName,
   getSearchText,
+  renderToolbar,
 }: UrlDataTableProps<TData>) {
   const search = useSearch({ strict: false })
   const navigate = useNavigate()
@@ -178,11 +181,15 @@ export function UrlDataTable<TData>({
 
   return (
     <div className='flex min-w-0 flex-1 flex-col gap-4'>
-      <DataTableToolbar
-        table={table}
-        searchPlaceholder={searchPlaceholder}
-        filters={filters}
-      />
+      {renderToolbar ? (
+        renderToolbar(table)
+      ) : (
+        <DataTableToolbar
+          table={table}
+          searchPlaceholder={searchPlaceholder}
+          filters={filters}
+        />
+      )}
       <MobileDataCards
         table={table}
         rows={rows}

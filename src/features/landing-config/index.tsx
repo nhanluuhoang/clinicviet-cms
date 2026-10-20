@@ -18,7 +18,7 @@ export function LandingConfigPage() {
 
   return (
     <>
-      <Header fixed>
+      <Header>
         <div className='ms-auto flex items-center gap-3'>
           <ThemeSwitch />
           <ProfileDropdown />

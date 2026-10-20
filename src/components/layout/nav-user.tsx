@@ -1,13 +1,7 @@
 import { useState } from 'react'
 import { Link } from '@tanstack/react-router'
 import { hasAnyRole, STAFF_ROLES } from '@/config/access-control'
-import {
-  BadgeCheck,
-  Building2,
-  ChevronsUpDown,
-  Info,
-  LogOut,
-} from 'lucide-react'
+import { BadgeCheck, Building2, ChevronsUpDown, Gift, LogOut } from 'lucide-react'
 import useDialogState from '@/hooks/use-dialog-state'
 import { Avatar, AvatarFallback } from '@/components/ui/avatar'
 import {
@@ -107,7 +101,7 @@ export function NavUser({ user }: NavUserProps) {
                 )}
                 {user?.tenant && hasAnyRole(user.role, STAFF_ROLES) && (
                   <DropdownMenuItem onSelect={() => setReferralOpen(true)}>
-                    <Info />
+                    <Gift aria-hidden='true' />
                     Giới thiệu cho bạn bè
                   </DropdownMenuItem>
                 )}

@@ -1,6 +1,7 @@
 import {
   Dialog,
-  DialogContent,
+  DialogBody,
+  DialogFormContent,
   DialogDescription,
   DialogHeader,
   DialogTitle,
@@ -19,13 +20,15 @@ export function PatientHistoryDialog({
 }) {
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className='max-h-[90dvh] overflow-y-auto sm:max-w-4xl'>
-        <DialogHeader>
-          <DialogTitle>Lịch sử khám</DialogTitle>
-          <DialogDescription>{patient.fullName}</DialogDescription>
-        </DialogHeader>
-        <MedicalHistoryContent patient={patient} />
-      </DialogContent>
+      <DialogFormContent className='sm:max-w-4xl'>
+        <DialogBody>
+          <DialogHeader>
+            <DialogTitle>Lịch sử khám</DialogTitle>
+            <DialogDescription>{patient.fullName}</DialogDescription>
+          </DialogHeader>
+          <MedicalHistoryContent patient={patient} />
+        </DialogBody>
+      </DialogFormContent>
     </Dialog>
   )
 }

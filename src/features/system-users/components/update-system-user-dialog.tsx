@@ -4,6 +4,10 @@ import { useForm } from 'react-hook-form'
 import { DotsHorizontalIcon } from '@radix-ui/react-icons'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
+import {
+  MANAGED_USER_ROLE_OPTIONS,
+  USER_ROLE_LABELS,
+} from '@/config/user-role-labels'
 import { KeyRound, Pencil } from 'lucide-react'
 import { toast } from 'sonner'
 import { showRequestError } from '@/lib/handle-server-error'
@@ -11,7 +15,8 @@ import { Button } from '@/components/ui/button'
 import { Checkbox } from '@/components/ui/checkbox'
 import {
   Dialog,
-  DialogContent,
+  DialogBody,
+  DialogFormContent,
   DialogDescription,
   DialogFooter,
   DialogHeader,
@@ -34,10 +39,6 @@ import {
 } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
 import { SelectDropdown } from '@/components/select-dropdown'
-import {
-  MANAGED_USER_ROLE_OPTIONS,
-  USER_ROLE_LABELS,
-} from '@/config/user-role-labels'
 import { updateSystemUser, type ManagedRole, type SystemUser } from '../api'
 import { UpdateSystemUserPasswordDialog } from './update-system-user-password-dialog'
 
@@ -130,97 +131,99 @@ export function UpdateSystemUserDialog({ user }: { user: SystemUser }) {
         </DropdownMenuContent>
       </DropdownMenu>
       <Dialog open={open} onOpenChange={setOpen}>
-        <DialogContent className='sm:max-w-lg'>
-          <DialogHeader>
-            <DialogTitle>Cập nhật người dùng</DialogTitle>
-            <DialogDescription>
-              {user.userName} · {user.tenant.code} - {user.tenant.name}
-            </DialogDescription>
-          </DialogHeader>
-          <Form {...form}>
-            <form
-              id={`system-user-update-${user.id}`}
-              onSubmit={form.handleSubmit((values) => save.mutate(values))}
-              className='space-y-4'
-            >
-              <FormField
-                control={form.control}
-                name='fullName'
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel required>Họ tên</FormLabel>
-                    <FormControl>
-                      <Input {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              <FormField
-                control={form.control}
-                name='email'
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Email</FormLabel>
-                    <FormControl>
-                      <Input type='email' {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              <FormField
-                control={form.control}
-                name='phone'
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Số điện thoại</FormLabel>
-                    <FormControl>
-                      <Input {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              <FormField
-                control={form.control}
-                name='role'
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel required>Vai trò</FormLabel>
-                    {user.role === 'PATIENT' || user.role === 'USER' ? (
-                      <Input value={USER_ROLE_LABELS[user.role]} readOnly />
-                    ) : (
-                      <SelectDropdown
-                        defaultValue={field.value}
-                        isControlled
-                        onValueChange={field.onChange}
-                        items={MANAGED_USER_ROLE_OPTIONS}
-                      />
-                    )}
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              <FormField
-                control={form.control}
-                name='isActive'
-                render={({ field }) => (
-                  <FormItem className='flex items-center justify-between rounded-md border p-3'>
-                    <FormLabel>Kích hoạt tài khoản</FormLabel>
-                    <FormControl>
-                      <Checkbox
-                        checked={field.value}
-                        onCheckedChange={(checked) =>
-                          field.onChange(checked === true)
-                        }
-                      />
-                    </FormControl>
-                  </FormItem>
-                )}
-              />
-            </form>
-          </Form>
+        <DialogFormContent className='sm:max-w-lg'>
+          <DialogBody>
+            <DialogHeader>
+              <DialogTitle>Cập nhật người dùng</DialogTitle>
+              <DialogDescription>
+                {user.userName} · {user.tenant.code} - {user.tenant.name}
+              </DialogDescription>
+            </DialogHeader>
+            <Form {...form}>
+              <form
+                id={`system-user-update-${user.id}`}
+                onSubmit={form.handleSubmit((values) => save.mutate(values))}
+                className='space-y-4'
+              >
+                <FormField
+                  control={form.control}
+                  name='fullName'
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel required>Họ tên</FormLabel>
+                      <FormControl>
+                        <Input {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={form.control}
+                  name='email'
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Email</FormLabel>
+                      <FormControl>
+                        <Input type='email' {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={form.control}
+                  name='phone'
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Số điện thoại</FormLabel>
+                      <FormControl>
+                        <Input {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={form.control}
+                  name='role'
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel required>Vai trò</FormLabel>
+                      {user.role === 'PATIENT' || user.role === 'USER' ? (
+                        <Input value={USER_ROLE_LABELS[user.role]} readOnly />
+                      ) : (
+                        <SelectDropdown
+                          defaultValue={field.value}
+                          isControlled
+                          onValueChange={field.onChange}
+                          items={MANAGED_USER_ROLE_OPTIONS}
+                        />
+                      )}
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={form.control}
+                  name='isActive'
+                  render={({ field }) => (
+                    <FormItem className='flex items-center justify-between rounded-md border p-3'>
+                      <FormLabel>Kích hoạt tài khoản</FormLabel>
+                      <FormControl>
+                        <Checkbox
+                          checked={field.value}
+                          onCheckedChange={(checked) =>
+                            field.onChange(checked === true)
+                          }
+                        />
+                      </FormControl>
+                    </FormItem>
+                  )}
+                />
+              </form>
+            </Form>
+          </DialogBody>
           <DialogFooter>
             <Button variant='outline' onClick={() => setOpen(false)}>
               Hủy
@@ -233,7 +236,7 @@ export function UpdateSystemUserDialog({ user }: { user: SystemUser }) {
               {save.isPending ? 'Đang lưu...' : 'Lưu thay đổi'}
             </Button>
           </DialogFooter>
-        </DialogContent>
+        </DialogFormContent>
       </Dialog>
       <UpdateSystemUserPasswordDialog
         user={user}

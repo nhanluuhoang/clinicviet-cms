@@ -106,65 +106,67 @@ export function MasterDataMutateDrawer({
         form.reset()
       }}
     >
-      <SheetContent className='flex flex-col'>
-        <SheetHeader className='text-start'>
-          <SheetTitle>
-            {isUpdate ? 'Cập nhật' : 'Tạo'} cấu hình chung
-          </SheetTitle>
-          <SheetDescription>
-            {isUpdate
-              ? 'Cập nhật các thông tin cấu hình cần thiết.'
-              : 'Nhập các thông tin để tạo cấu hình mới.'}
-          </SheetDescription>
-        </SheetHeader>
-        <Form {...form}>
-          <form
-            id='master-data-form'
-            onSubmit={form.handleSubmit(onSubmit)}
-            className='flex-1 space-y-6 overflow-y-auto px-4'
-          >
-            <FormField
-              control={form.control}
-              name='key'
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel required>Khóa</FormLabel>
-                  <FormControl>
-                    <Input {...field} placeholder='Nhập khóa' />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name='value'
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel required>Giá trị</FormLabel>
-                  <FormControl>
-                    <Input {...field} placeholder='Nhập giá trị' />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name='searchKey'
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Khóa tìm kiếm</FormLabel>
-                  <FormControl>
-                    <Input {...field} placeholder='Nhập khóa tìm kiếm' />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-          </form>
-        </Form>
-        <SheetFooter className='gap-2'>
+      <SheetContent className='block h-dvh w-screen max-w-none overflow-x-hidden overflow-y-auto overscroll-contain border-0 sm:flex sm:w-3/4 sm:max-w-sm sm:flex-col sm:overflow-hidden sm:border-s'>
+        <div className='min-w-0 sm:min-h-0 sm:flex-1 sm:overflow-x-hidden sm:overflow-y-auto sm:overscroll-contain'>
+          <SheetHeader className='text-start'>
+            <SheetTitle>
+              {isUpdate ? 'Cập nhật' : 'Tạo'} cấu hình chung
+            </SheetTitle>
+            <SheetDescription>
+              {isUpdate
+                ? 'Cập nhật các thông tin cấu hình cần thiết.'
+                : 'Nhập các thông tin để tạo cấu hình mới.'}
+            </SheetDescription>
+          </SheetHeader>
+          <Form {...form}>
+            <form
+              id='master-data-form'
+              onSubmit={form.handleSubmit(onSubmit)}
+              className='space-y-6 px-4'
+            >
+              <FormField
+                control={form.control}
+                name='key'
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel required>Khóa</FormLabel>
+                    <FormControl>
+                      <Input {...field} placeholder='Nhập khóa' />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name='value'
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel required>Giá trị</FormLabel>
+                    <FormControl>
+                      <Input {...field} placeholder='Nhập giá trị' />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name='searchKey'
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Khóa tìm kiếm</FormLabel>
+                    <FormControl>
+                      <Input {...field} placeholder='Nhập khóa tìm kiếm' />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            </form>
+          </Form>
+        </div>
+        <SheetFooter className='mt-4 flex-row justify-end gap-2 border-t pb-[max(1rem,env(safe-area-inset-bottom))]'>
           <SheetClose asChild>
             <Button variant='outline'>Đóng</Button>
           </SheetClose>

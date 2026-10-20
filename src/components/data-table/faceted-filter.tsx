@@ -38,6 +38,7 @@ export function DataTableFacetedFilter<TData, TValue>({
   options,
   variant = 'checkbox',
 }: DataTableFacetedFilterProps<TData, TValue>) {
+  const [open, setOpen] = React.useState(false)
   const facets = column?.getFacetedUniqueValues()
   const filterValue = column?.getFilterValue()
   const selectedValues = new Set(
@@ -45,7 +46,7 @@ export function DataTableFacetedFilter<TData, TValue>({
   )
 
   return (
-    <Popover>
+    <Popover open={open} onOpenChange={setOpen}>
       <PopoverTrigger asChild>
         <Button
           variant='outline'
@@ -112,6 +113,7 @@ export function DataTableFacetedFilter<TData, TValue>({
                         } else {
                           column?.setFilterValue([option.value])
                         }
+                        setOpen(false)
                       } else {
                         if (isSelected) {
                           selectedValues.delete(option.value)
@@ -154,7 +156,10 @@ export function DataTableFacetedFilter<TData, TValue>({
                 <CommandSeparator />
                 <CommandGroup>
                   <CommandItem
-                    onSelect={() => column?.setFilterValue(undefined)}
+                    onSelect={() => {
+                      column?.setFilterValue(undefined)
+                      setOpen(false)
+                    }}
                     className='justify-center text-center'
                   >
                     Xóa bộ lọc

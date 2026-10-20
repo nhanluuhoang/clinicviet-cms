@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
 import { CalendarIcon } from 'lucide-react'
+import { vi } from 'react-day-picker/locale'
 import { cn } from '@/lib/utils'
 import { Button } from '@/components/ui/button'
 import { Calendar } from '@/components/ui/calendar'
@@ -55,6 +56,7 @@ export function DatePickerInput({
   className,
   inputClassName,
   minDate,
+  placeholder = 'dd/mm/yyyy',
 }: {
   id?: string
   value: string
@@ -62,6 +64,7 @@ export function DatePickerInput({
   className?: string
   inputClassName?: string
   minDate?: string
+  placeholder?: string
 }) {
   const [open, setOpen] = useState(false)
   const [inputValue, setInputValue] = useState(() =>
@@ -91,7 +94,7 @@ export function DatePickerInput({
         id={id}
         value={inputValue}
         inputMode='numeric'
-        placeholder='dd/mm/yyyy'
+        placeholder={placeholder}
         className={cn('pr-10', inputClassName)}
         onChange={(event) => setInputValue(event.target.value)}
         onBlur={commitInput}
@@ -116,6 +119,11 @@ export function DatePickerInput({
         </PopoverTrigger>
         <PopoverContent className='w-auto p-0' align='end'>
           <Calendar
+            locale={vi}
+            labels={{
+              labelNext: () => 'Tháng sau',
+              labelPrevious: () => 'Tháng trước',
+            }}
             mode='single'
             selected={selected}
             defaultMonth={selected ?? minimum}

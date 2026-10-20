@@ -16,7 +16,8 @@ import {
 import {
   Dialog,
   DialogClose,
-  DialogContent,
+  DialogBody,
+  DialogFormContent,
   DialogDescription,
   DialogFooter,
   DialogHeader,
@@ -82,137 +83,139 @@ export function CreateQueueDialog({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent>
-        <DialogHeader>
-          <DialogTitle>Tiếp nhận bệnh nhân</DialogTitle>
-          <DialogDescription>
-            Thêm bệnh nhân vào thứ tự khám ngày {queueDate}.
-          </DialogDescription>
-        </DialogHeader>
-        <div className='grid gap-4'>
-          <div className='grid gap-2'>
-            <Label required>Bệnh nhân</Label>
-            <Popover open={comboboxOpen} onOpenChange={setComboboxOpen}>
-              <PopoverTrigger asChild>
-                <Button
-                  variant='outline'
-                  role='combobox'
-                  aria-expanded={comboboxOpen}
-                  className='w-full justify-between font-normal'
+      <DialogFormContent>
+        <DialogBody>
+          <DialogHeader>
+            <DialogTitle>Tiếp nhận bệnh nhân</DialogTitle>
+            <DialogDescription>
+              Thêm bệnh nhân vào thứ tự khám ngày {queueDate}.
+            </DialogDescription>
+          </DialogHeader>
+          <div className='grid gap-4'>
+            <div className='grid gap-2'>
+              <Label required>Bệnh nhân</Label>
+              <Popover open={comboboxOpen} onOpenChange={setComboboxOpen}>
+                <PopoverTrigger asChild>
+                  <Button
+                    variant='outline'
+                    role='combobox'
+                    aria-expanded={comboboxOpen}
+                    className='w-full justify-between font-normal'
+                  >
+                    {selectedPatient ? (
+                      <span className='truncate'>
+                        {selectedPatient.fullName}
+                        {selectedPatient.phone
+                          ? ` · ${selectedPatient.phone}`
+                          : ''}
+                      </span>
+                    ) : (
+                      <span className='text-muted-foreground'>
+                        Tìm tên, SĐT bệnh nhân...
+                      </span>
+                    )}
+                    <ChevronsUpDown className='ms-2 size-4 shrink-0 opacity-50' />
+                  </Button>
+                </PopoverTrigger>
+                <PopoverContent
+                  className='w-(--radix-popover-trigger-width) p-0'
+                  align='start'
                 >
-                  {selectedPatient ? (
-                    <span className='truncate'>
-                      {selectedPatient.fullName}
-                      {selectedPatient.phone
-                        ? ` · ${selectedPatient.phone}`
-                        : ''}
-                    </span>
-                  ) : (
-                    <span className='text-muted-foreground'>
-                      Tìm tên, SĐT bệnh nhân...
-                    </span>
-                  )}
-                  <ChevronsUpDown className='ms-2 size-4 shrink-0 opacity-50' />
-                </Button>
-              </PopoverTrigger>
-              <PopoverContent
-                className='w-(--radix-popover-trigger-width) p-0'
-                align='start'
-              >
-                <Command shouldFilter={false}>
-                  <CommandInput
-                    value={patientSearch}
-                    onValueChange={setPatientSearch}
-                    placeholder='Tìm theo tên, số điện thoại...'
-                  />
-                  <CommandList>
-                    <CommandEmpty>
-                      {patients.isLoading
-                        ? 'Đang tìm...'
-                        : 'Không tìm thấy bệnh nhân nào.'}
-                    </CommandEmpty>
-                    <CommandGroup>
-                      {(patients.data ?? []).map((patient) => (
-                        <CommandItem
-                          key={patient.id}
-                          value={patient.id}
-                          onSelect={() => {
-                            setPatientId(patient.id)
-                            setSelectedPatient(patient)
-                            setComboboxOpen(false)
-                          }}
-                        >
-                          <Check
-                            className={cn(
-                              'me-2 size-4',
-                              patientId === patient.id
-                                ? 'opacity-100'
-                                : 'opacity-0'
-                            )}
-                          />
-                          <div className='flex flex-col'>
-                            <div className='flex items-center gap-2'>
-                              <span className='font-medium'>
-                                {patient.fullName}
-                              </span>
-                              {patient.dateOfBirth && (
-                                <span className='text-xs text-muted-foreground'>
-                                  (
-                                  {new Date(
-                                    patient.dateOfBirth
-                                  ).toLocaleDateString('vi-VN')}
-                                  )
-                                </span>
+                  <Command shouldFilter={false}>
+                    <CommandInput
+                      value={patientSearch}
+                      onValueChange={setPatientSearch}
+                      placeholder='Tìm theo tên, số điện thoại...'
+                    />
+                    <CommandList>
+                      <CommandEmpty>
+                        {patients.isLoading
+                          ? 'Đang tìm...'
+                          : 'Không tìm thấy bệnh nhân nào.'}
+                      </CommandEmpty>
+                      <CommandGroup>
+                        {(patients.data ?? []).map((patient) => (
+                          <CommandItem
+                            key={patient.id}
+                            value={patient.id}
+                            onSelect={() => {
+                              setPatientId(patient.id)
+                              setSelectedPatient(patient)
+                              setComboboxOpen(false)
+                            }}
+                          >
+                            <Check
+                              className={cn(
+                                'me-2 size-4',
+                                patientId === patient.id
+                                  ? 'opacity-100'
+                                  : 'opacity-0'
                               )}
-                              {patient.phone && (
-                                <span className='text-xs text-muted-foreground'>
-                                  SĐT: {patient.phone}
+                            />
+                            <div className='flex flex-col'>
+                              <div className='flex items-center gap-2'>
+                                <span className='font-medium'>
+                                  {patient.fullName}
+                                </span>
+                                {patient.dateOfBirth && (
+                                  <span className='text-xs text-muted-foreground'>
+                                    (
+                                    {new Date(
+                                      patient.dateOfBirth
+                                    ).toLocaleDateString('vi-VN')}
+                                    )
+                                  </span>
+                                )}
+                                {patient.phone && (
+                                  <span className='text-xs text-muted-foreground'>
+                                    SĐT: {patient.phone}
+                                  </span>
+                                )}
+                              </div>
+                              {patient.address && (
+                                <span className='truncate text-xs text-muted-foreground'>
+                                  {patient.address}
                                 </span>
                               )}
                             </div>
-                            {patient.address && (
-                              <span className='truncate text-xs text-muted-foreground'>
-                                {patient.address}
-                              </span>
-                            )}
-                          </div>
-                        </CommandItem>
-                      ))}
-                    </CommandGroup>
-                  </CommandList>
-                </Command>
-              </PopoverContent>
-            </Popover>
+                          </CommandItem>
+                        ))}
+                      </CommandGroup>
+                    </CommandList>
+                  </Command>
+                </PopoverContent>
+              </Popover>
+            </div>
+            <div className='grid gap-2'>
+              <Label htmlFor='queue-priority'>Mức ưu tiên (0–100)</Label>
+              <Input
+                id='queue-priority'
+                type='number'
+                min={0}
+                max={100}
+                value={priority}
+                onChange={(event) => setPriority(Number(event.target.value))}
+              />
+            </div>
+            <div className='grid gap-2'>
+              <Label htmlFor='queue-reason'>Lý do khám</Label>
+              <Input
+                id='queue-reason'
+                maxLength={500}
+                value={reason}
+                onChange={(event) => setReason(event.target.value)}
+              />
+            </div>
+            <div className='grid gap-2'>
+              <Label htmlFor='queue-note'>Ghi chú</Label>
+              <Textarea
+                id='queue-note'
+                value={note}
+                onChange={(event) => setNote(event.target.value)}
+              />
+            </div>
           </div>
-          <div className='grid gap-2'>
-            <Label htmlFor='queue-priority'>Mức ưu tiên (0–100)</Label>
-            <Input
-              id='queue-priority'
-              type='number'
-              min={0}
-              max={100}
-              value={priority}
-              onChange={(event) => setPriority(Number(event.target.value))}
-            />
-          </div>
-          <div className='grid gap-2'>
-            <Label htmlFor='queue-reason'>Lý do khám</Label>
-            <Input
-              id='queue-reason'
-              maxLength={500}
-              value={reason}
-              onChange={(event) => setReason(event.target.value)}
-            />
-          </div>
-          <div className='grid gap-2'>
-            <Label htmlFor='queue-note'>Ghi chú</Label>
-            <Textarea
-              id='queue-note'
-              value={note}
-              onChange={(event) => setNote(event.target.value)}
-            />
-          </div>
-        </div>
+        </DialogBody>
         <DialogFooter>
           <DialogClose asChild>
             <Button variant='outline'>Đóng</Button>
@@ -224,7 +227,7 @@ export function CreateQueueDialog({
             {create.isPending ? 'Đang lưu...' : 'Tiếp nhận'}
           </Button>
         </DialogFooter>
-      </DialogContent>
+      </DialogFormContent>
     </Dialog>
   )
 }

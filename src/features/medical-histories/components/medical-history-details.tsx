@@ -9,6 +9,7 @@ import {
   TableRow,
 } from '@/components/ui/table'
 import { AuditDetails } from '@/components/data-table/audit-details'
+import { VideoPlayer } from '@/components/video-player'
 import { type MedicalHistoryListItem } from '../api'
 
 const money = (value: number | string) =>
@@ -192,14 +193,10 @@ export function MedicalHistoryDetails({
           <div className='grid gap-3 sm:grid-cols-2 xl:grid-cols-3'>
             {history.videos.map((file) => (
               <div key={file.id} className='overflow-hidden rounded-md border'>
-                <video
+                <VideoPlayer
                   src={`${API_URL}/videos/${encodeURIComponent(file.fileName)}/master.m3u8`}
                   className='aspect-video w-full bg-black object-contain'
-                  controls
-                  preload='metadata'
-                >
-                  Trình duyệt không hỗ trợ phát video.
-                </video>
+                />
                 <p className='truncate bg-background p-2 text-xs'>
                   {file.fileName}
                 </p>

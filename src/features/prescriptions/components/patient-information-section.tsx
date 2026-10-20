@@ -1,4 +1,6 @@
 import { ImagePlus } from 'lucide-react'
+import { IMAGE_UPLOAD_ACCEPT } from '@/lib/image-upload'
+import { VIDEO_UPLOAD_ACCEPT } from '@/lib/video-upload'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
@@ -57,8 +59,8 @@ export function PatientInformationSection({
   | 'removeMedia'
 >) {
   return (
-    <Card>
-      <CardHeader>
+    <Card className='relative min-w-0'>
+      <CardHeader className='px-4 sm:px-6'>
         <CardTitle>
           {isPharmacy
             ? 'Thông tin bán thuốc'
@@ -67,7 +69,7 @@ export function PatientInformationSection({
               : 'Thông tin lượt khám'}
         </CardTitle>
       </CardHeader>
-      <CardContent className='grid gap-5 md:grid-cols-2'>
+      <CardContent className='grid min-w-0 grid-cols-[minmax(0,1fr)] gap-5 px-4 sm:px-6 md:grid-cols-2'>
         <Field
           label={
             isPharmacy
@@ -164,8 +166,9 @@ export function PatientInformationSection({
                 {isPharmacy ? 'Đơn thuốc đính kèm' : 'Tệp hồ sơ'}
               </Label>
               <p className='mt-1 text-xs text-muted-foreground'>
-                Tối đa 5 ảnh, 5 PDF và 1 video. Ảnh/PDF không quá 5 MB; video
-                MP4, WebM hoặc MOV không quá 100 MB.
+                Tối đa 5 ảnh, 5 PDF và 1 video. Ảnh không quá 5 MB; PDF không
+                quá 1 MB; video MP4, MOV, M4V, WebM, 3GP hoặc 3G2 không quá 100
+                MB và 10 phút.
               </p>
             </div>
             <label
@@ -184,9 +187,9 @@ export function PatientInformationSection({
             </label>
             <Input
               id={formId + '-diagnosis-media'}
-              className='sr-only'
+              className='sr-only h-px w-px p-0'
               type='file'
-              accept='image/jpeg,image/png,application/pdf,video/mp4,video/webm,video/quicktime'
+              accept={`${IMAGE_UPLOAD_ACCEPT},application/pdf,${VIDEO_UPLOAD_ACCEPT}`}
               multiple
               disabled={isUploadingMedia || save.isPending}
               onChange={(event) => {

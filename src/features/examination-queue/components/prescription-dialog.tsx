@@ -53,7 +53,7 @@ export function PrescriptionDialog({
       }}
     >
       <DialogContent
-        className='max-h-[96dvh] w-[98vw] max-w-[98vw] overflow-y-auto sm:max-w-[min(98vw,90rem)]'
+        className='block h-dvh max-h-dvh w-screen max-w-none overflow-x-hidden overflow-y-auto overscroll-contain rounded-none border-0 p-0 sm:flex sm:h-auto sm:max-h-[96dvh] sm:w-[98vw] sm:max-w-[min(98vw,90rem)] sm:flex-col sm:gap-0 sm:overflow-hidden sm:rounded-lg sm:border'
         onInteractOutside={(event) => event.preventDefault()}
       >
         {isUploading &&
@@ -70,45 +70,47 @@ export function PrescriptionDialog({
             </div>,
             document.body
           )}
-        <DialogHeader>
-          <DialogTitle>
-            {initialData ? 'Cập nhật lịch sử khám bệnh' : 'Phiếu dịch vụ'}
-          </DialogTitle>
-        </DialogHeader>
-        <Tabs
-          value={view}
-          onValueChange={(value) => {
-            if (!isUploading && !isSaving) setView(value as View)
-          }}
-          className='gap-3'
-        >
-          <TabsList>
-            <TabsTrigger value='prescription'>
-              <ClipboardList /> {initialData ? 'Cập nhật phiếu' : 'Lập phiếu'}
-            </TabsTrigger>
-            <TabsTrigger value='history'>
-              <FileClock /> Lịch sử khám
-            </TabsTrigger>
-          </TabsList>
-          <TabsContent value='prescription' className='pe-1'>
-            <Prescriptions
-              patient={patient}
-              examinationQueueId={queueId}
-              initialData={initialData}
-              onUploadingChange={setIsUploading}
-              onSavingChange={setIsSaving}
-              onActiveFormChange={handleActiveFormChange}
-              onSaved={() => {
-                setView('prescription')
-                onOpenChange(false)
-              }}
-            />
-          </TabsContent>
-          <TabsContent value='history' className='pe-1'>
-            <MedicalHistoryContent patient={patient} />
-          </TabsContent>
-        </Tabs>
-        <div className='sticky bottom-0 z-10 -mx-6 -mb-6 flex justify-end gap-2 border-t bg-background px-6 py-4'>
+        <div className='min-w-0 sm:min-h-0 sm:flex-1 sm:overflow-x-hidden sm:overflow-y-auto sm:overscroll-contain'>
+          <DialogHeader className='px-6 pt-6 pb-4'>
+            <DialogTitle>
+              {initialData ? 'Cập nhật lịch sử khám bệnh' : 'Phiếu dịch vụ'}
+            </DialogTitle>
+          </DialogHeader>
+          <Tabs
+            value={view}
+            onValueChange={(value) => {
+              if (!isUploading && !isSaving) setView(value as View)
+            }}
+            className='min-w-0 gap-3 px-4 pb-6 sm:px-6'
+          >
+            <TabsList>
+              <TabsTrigger value='prescription'>
+                <ClipboardList /> {initialData ? 'Cập nhật phiếu' : 'Lập phiếu'}
+              </TabsTrigger>
+              <TabsTrigger value='history'>
+                <FileClock /> Lịch sử khám
+              </TabsTrigger>
+            </TabsList>
+            <TabsContent value='prescription' className='min-w-0 shrink-0 pe-1'>
+              <Prescriptions
+                patient={patient}
+                examinationQueueId={queueId}
+                initialData={initialData}
+                onUploadingChange={setIsUploading}
+                onSavingChange={setIsSaving}
+                onActiveFormChange={handleActiveFormChange}
+                onSaved={() => {
+                  setView('prescription')
+                  onOpenChange(false)
+                }}
+              />
+            </TabsContent>
+            <TabsContent value='history' className='min-w-0 shrink-0 pe-1'>
+              <MedicalHistoryContent patient={patient} />
+            </TabsContent>
+          </Tabs>
+        </div>
+        <div className='flex shrink-0 justify-end gap-2 border-t bg-background px-6 pt-4 pb-[max(1rem,env(safe-area-inset-bottom))]'>
           {view === 'prescription' && (
             <Button
               type='submit'

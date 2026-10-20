@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { DEFAULT_MEDICINE_INSTRUCTIONS } from '@/lib/medicine-instructions'
 import { Button } from '@/components/ui/button'
 import {
   Command,
@@ -14,7 +15,6 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from '@/components/ui/popover'
-import { DEFAULT_MEDICINE_INSTRUCTIONS } from '@/lib/medicine-instructions'
 
 export function MedicineInstructionInput({
   value,
@@ -32,8 +32,8 @@ export function MedicineInstructionInput({
   )
 
   return (
-    <div className='space-y-2'>
-      <div className='flex gap-2'>
+    <div className='min-w-0 space-y-2'>
+      <div className='flex min-w-0 gap-2'>
         <Input
           aria-label='Hướng dẫn sử dụng'
           value={value}
@@ -43,11 +43,18 @@ export function MedicineInstructionInput({
         />
         <Popover open={open} onOpenChange={setOpen}>
           <PopoverTrigger asChild>
-            <Button type='button' variant='outline' aria-label='Chọn hướng dẫn gợi ý'>
+            <Button
+              type='button'
+              variant='outline'
+              aria-label='Chọn hướng dẫn gợi ý'
+            >
               Gợi ý
             </Button>
           </PopoverTrigger>
-          <PopoverContent align='end' className='w-80 p-0'>
+          <PopoverContent
+            align='end'
+            className='w-80 max-w-[calc(100vw-2rem)] p-0'
+          >
             <Command>
               <CommandInput placeholder='Tìm hướng dẫn...' />
               <CommandList>
@@ -89,7 +96,7 @@ export function MedicineInstructionInput({
           </PopoverContent>
         </Popover>
       </div>
-      <p className='text-xs leading-5 text-muted-foreground'>
+      <p className='text-xs leading-5 break-words text-muted-foreground'>
         {value.trim()
           ? `Hiển thị trên phiếu: ${value.trim()}`
           : 'Có thể ghi lượng mỗi lần, thời điểm và thời gian dùng.'}

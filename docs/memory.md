@@ -8,6 +8,8 @@
 
 ## Architecture
 
+- `/invoices` is a read-only staff invoice list (no row actions), using `UrlDataTable` and `DatePickerInput`. Audit columns are hidden by default and can be enabled through desktop column options. Defaults to today's issuance date; reset clears date and all filters. Search covers invoice code/patient name/phone; service type is a single-choice filter. Shows consultation and medicine charges, plus one service-fee group containing the service charge and up to three named extra fees. Items with no label and zero amount are omitted; mobile hides the group when empty. All list queries are server-paginated and tenant-scoped; there is no creator filter or creator-options API.
+
 - Both account menus link directly to clinic information (`/settings/tenant`, tenant admins only). "Giới thiệu cho bạn bè" opens a name/phone-only referral form for tenant staff; it explains the one-month reward on a successful purchase. Referral leads share the trial requests list with source/referrer details and a source filter. Purchase confirmation and reward extension are handled manually by the owner; no automatic reward workflow.
 
 - Function search opens pages only via the shared Header button or Ctrl/Cmd+K. Search and sidebar share `useNavigationGroups` for role/plan visibility; searchable destinations come from `sidebarData`. Search supports Vietnamese without diacritics and aliases for reports/settings.
@@ -24,6 +26,14 @@
 - Settings/tenant hiển thị hạn mức lưu trữ chỉ đọc và thanh dung lượng ảnh/PDF/video từ `storage` trong `/tenants/me`; `/system/tenants` cho Super Admin sửa hạn mức GB và ghi chú nội bộ của phòng khám.
 
 ## Convention
+
+- Video uploads share `src/lib/video-upload.ts` for phone MIME/extension selection and empty/octet-stream normalization. Use `VideoPlayer` for authenticated native HLS/hls.js playback in previews and medical histories.
+
+- Photo uploads share `src/lib/image-upload.ts` for JPG/JPEG, PNG, WebP and HEIC/HEIF MIME/extension selection; normalize empty/octet-stream MIME types before validation and upload. Backend converts photos to WebP; retain the 5 MB upload limit.
+
+- Form popups use `DialogFormContent` with `DialogBody` containing the header and a sibling `DialogFooter`: fullscreen on mobile, constrained width on desktop. Mobile scrolls the entire popup, including header and actions; desktop pins only the footer actions while header and body scroll together. Keep submit buttons associated through `form`/`id`. Use CSS classes only, without viewport resize effects. Master-data retains Sheet with the same responsive layout.
+
+- List toolbars share `DataTableToolbar`: full-width search inputs on mobile, 32px controls, wrapping filters/dates, and desktop-only column visibility (`sm` and up). Use Vietnamese `Xóa bộ lọc`, shown only for a non-empty search/filter, including an active date. Custom date and multi-search pages use toolbar children/searchFields plus hasExtraFilters/onReset; clear pending debounced search when resetting.
 
 - Mật khẩu mới (nhân viên, bệnh nhân, system user) dài 8–20 ký tự, không ép chữ/số; đăng nhập và kiểm tra mật khẩu cũ vẫn hỗ trợ tài khoản cũ. `SUPER_ADMIN` có toàn quyền; tenant admin theo vai trò và gói. Không sửa vai trò PATIENT/USER qua form nhân sự.
 - Trang lỗi đầy đủ 401/403/404/500/503 chỉ có nút sign-in dùng chung: xóa auth CMS, hủy query/clear cache rồi tới `/sign-in`, không logout API session; lỗi nhúng giữ layout gọn. API error do interceptor toast một lần; `showRequestError(error, fallback)` chỉ hiện fallback khi API không có message; lỗi nhập liệu toast tại chỗ.
