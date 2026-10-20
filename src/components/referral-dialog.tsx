@@ -68,8 +68,8 @@ export function ReferralDialog({
           </DialogDescription>
         </DialogHeader>
         <div className='rounded-lg border border-primary/20 bg-primary/5 p-4 text-sm leading-6'>
-          Khi người bạn giới thiệu mua gói dịch vụ thành công, phòng khám của
-          bạn được cộng thêm <strong>1 tháng sử dụng theo gói đang dùng</strong>
+          Khi người bạn giới thiệu mua gói dịch vụ thành công, bạn được cộng
+          thêm <strong>1 tháng sử dụng theo gói đang dùng</strong>
           {plan ? ` (${SERVICE_PLAN_LABELS[plan]})` : ''} tại thời điểm ghi nhận
           thưởng. Đội ngũ ClinicViet sẽ xác nhận và cập nhật thời hạn sử dụng
           cho bạn.
@@ -78,8 +78,7 @@ export function ReferralDialog({
           <div className='space-y-4'>
             <p className='text-sm leading-6'>
               Đã nhận thông tin giới thiệu. ClinicViet sẽ liên hệ người được
-              giới thiệu để tư vấn. Người giới thiệu và phòng khám của bạn đã
-              được ghi nhận.
+              giới thiệu để tư vấn.
             </p>
             <Button
               className='w-full'
