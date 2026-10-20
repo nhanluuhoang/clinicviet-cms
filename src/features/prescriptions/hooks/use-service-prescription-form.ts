@@ -30,6 +30,7 @@ import {
   emptyMedicine,
   MAX_MEDIA_FILES,
   MAX_MEDIA_FILE_SIZE,
+  MAX_PDF_SIZE,
   MAX_VIDEO_SIZE,
   ACCEPTED_MEDIA_TYPES,
 } from '../data/constants'
@@ -429,7 +430,7 @@ export function useServicePrescriptionForm({
       const maxSize = file.type.startsWith('video/')
         ? MAX_VIDEO_SIZE
         : file.type === 'application/pdf'
-          ? 1024 * 1024
+          ? MAX_PDF_SIZE
           : MAX_MEDIA_FILE_SIZE
       if (file.size > maxSize) {
         toast.error(
