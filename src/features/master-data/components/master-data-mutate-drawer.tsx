@@ -106,8 +106,8 @@ export function MasterDataMutateDrawer({
         form.reset()
       }}
     >
-      <SheetContent className='flex h-dvh w-screen max-w-none flex-col overflow-hidden border-0 sm:w-3/4 sm:max-w-sm sm:border-s'>
-        <div className='min-h-0 min-w-0 flex-1 overflow-x-hidden overflow-y-auto overscroll-contain'>
+      <SheetContent className='block h-dvh w-screen max-w-none overflow-x-hidden overflow-y-auto overscroll-contain border-0 sm:flex sm:w-3/4 sm:max-w-sm sm:flex-col sm:overflow-hidden sm:border-s'>
+        <div className='min-w-0 sm:min-h-0 sm:flex-1 sm:overflow-x-hidden sm:overflow-y-auto sm:overscroll-contain'>
           <SheetHeader className='text-start'>
             <SheetTitle>
               {isUpdate ? 'Cập nhật' : 'Tạo'} cấu hình chung
@@ -166,7 +166,7 @@ export function MasterDataMutateDrawer({
             </form>
           </Form>
         </div>
-        <SheetFooter className='shrink-0 flex-row justify-end gap-2 border-t pb-[max(1rem,env(safe-area-inset-bottom))]'>
+        <SheetFooter className='mt-4 flex-row justify-end gap-2 border-t pb-[max(1rem,env(safe-area-inset-bottom))]'>
           <SheetClose asChild>
             <Button variant='outline'>Đóng</Button>
           </SheetClose>

@@ -53,7 +53,7 @@ export function PrescriptionDialog({
       }}
     >
       <DialogContent
-        className='flex h-dvh max-h-dvh w-screen max-w-none flex-col gap-0 overflow-hidden rounded-none border-0 p-0 sm:h-auto sm:max-h-[96dvh] sm:w-[98vw] sm:max-w-[min(98vw,90rem)] sm:rounded-lg sm:border'
+        className='block h-dvh max-h-dvh w-screen max-w-none overflow-x-hidden overflow-y-auto overscroll-contain rounded-none border-0 p-0 sm:flex sm:h-auto sm:max-h-[96dvh] sm:w-[98vw] sm:max-w-[min(98vw,90rem)] sm:flex-col sm:gap-0 sm:overflow-hidden sm:rounded-lg sm:border'
         onInteractOutside={(event) => event.preventDefault()}
       >
         {isUploading &&
@@ -70,7 +70,7 @@ export function PrescriptionDialog({
             </div>,
             document.body
           )}
-        <div className='min-h-0 min-w-0 flex-1 overflow-x-hidden overflow-y-auto overscroll-contain'>
+        <div className='min-w-0 sm:min-h-0 sm:flex-1 sm:overflow-x-hidden sm:overflow-y-auto sm:overscroll-contain'>
           <DialogHeader className='px-6 pt-6 pb-4'>
             <DialogTitle>
               {initialData ? 'Cập nhật lịch sử khám bệnh' : 'Phiếu dịch vụ'}
