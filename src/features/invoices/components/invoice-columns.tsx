@@ -4,6 +4,38 @@ import { DataTableColumnHeader } from '@/components/data-table'
 import { withAuditColumns } from '@/components/data-table/audit-columns'
 import type { Invoice } from '../api'
 
+export const invoiceMobileLabels = {
+  invoiceCode: 'Mã hóa đơn',
+  issuedAt: 'Ngày lập hóa đơn',
+  patientName: 'Bệnh nhân',
+  phone: 'Số điện thoại',
+  serviceType: 'Loại dịch vụ',
+  doctorName: 'Bác sĩ',
+  totalAmount: 'Tổng tiền',
+  consultationFee: 'Phí khám',
+  medicineRevenue: 'Tiền thuốc',
+  serviceFee: 'Phí dịch vụ',
+  otherFees: 'Phí khác',
+}
+
+const feeKeys = [
+  ['otherFee1', 'otherFee1Label'],
+  ['otherFee2', 'otherFee2Label'],
+  ['otherFee3', 'otherFee3Label'],
+] as const
+
+function otherFees(invoice: Invoice) {
+  return feeKeys
+    .map(([amountKey, labelKey], index) => ({
+      amount: Number(invoice[amountKey]),
+      label: invoice[labelKey].trim(),
+      fallback: `Phí khác ${index + 1}`,
+    }))
+    .filter((fee) => fee.amount !== 0 || fee.label !== '')
+}
+
+const currency = (value: number | string) => `${formatNumber(Number(value))} ₫`
+
 export const invoiceServiceTypes = [
   { label: 'Khám bệnh', value: 'EXAMINATION' },
   { label: 'Nhà thuốc', value: 'PHARMACY' },
@@ -63,6 +95,70 @@ export const invoiceColumns: ColumnDef<Invoice>[] = withAuditColumns([
     header: ({ column }) => (
       <DataTableColumnHeader column={column} title='Bác sĩ' />
     ),
+    enableSorting: false,
+  },
+  {
+    accessorKey: 'consultationFee',
+    header: 'Phí khám',
+    cell: ({ row }) => (
+      <span className='whitespace-nowrap tabular-nums'>
+        {currency(row.original.consultationFee)}
+      </span>
+    ),
+    meta: { thClassName: 'text-right', tdClassName: 'text-right' },
+    enableSorting: false,
+  },
+  {
+    accessorKey: 'medicineRevenue',
+    header: 'Tiền thuốc',
+    cell: ({ row }) => (
+      <span className='whitespace-nowrap tabular-nums'>
+        {currency(row.original.medicineRevenue)}
+      </span>
+    ),
+    meta: { thClassName: 'text-right', tdClassName: 'text-right' },
+    enableSorting: false,
+  },
+  {
+    accessorKey: 'serviceFee',
+    header: 'Phí dịch vụ',
+    cell: ({ row }) => (
+      <div className='space-y-1'>
+        {row.original.serviceFeeLabel.trim() && (
+          <div className='text-xs text-muted-foreground'>
+            {row.original.serviceFeeLabel}
+          </div>
+        )}
+        <span className='whitespace-nowrap tabular-nums'>
+          {currency(row.original.serviceFee)}
+        </span>
+      </div>
+    ),
+    meta: { thClassName: 'text-right', tdClassName: 'text-right' },
+    enableSorting: false,
+  },
+  {
+    id: 'otherFees',
+    header: 'Phí khác',
+    cell: ({ row }) => (
+      <div className='space-y-2'>
+        {otherFees(row.original).map((fee) => (
+          <div key={fee.fallback} className='space-y-1'>
+            <div className='text-xs text-muted-foreground'>
+              {fee.label || fee.fallback}
+            </div>
+            <span className='whitespace-nowrap tabular-nums'>
+              {currency(fee.amount)}
+            </span>
+          </div>
+        ))}
+      </div>
+    ),
+    meta: {
+      thClassName: 'text-right',
+      tdClassName: 'text-right',
+      hideOnMobile: (invoice) => otherFees(invoice).length === 0,
+    },
     enableSorting: false,
   },
   {

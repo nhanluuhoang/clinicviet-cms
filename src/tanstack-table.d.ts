@@ -7,5 +7,6 @@ declare module '@tanstack/react-table' {
     tdClassName?: string
     thClassName?: string
     audit?: boolean
+    hideOnMobile?: (row: TData) => boolean
   }
 }

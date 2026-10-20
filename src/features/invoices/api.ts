@@ -8,6 +8,16 @@ export type Invoice = AuditFields & {
   invoiceCode: string
   issuedAt: string
   totalAmount: number | string
+  consultationFee: number | string
+  medicineRevenue: number | string
+  serviceFee: number | string
+  serviceFeeLabel: string
+  otherFee1: number | string
+  otherFee1Label: string
+  otherFee2: number | string
+  otherFee2Label: string
+  otherFee3: number | string
+  otherFee3Label: string
   prescription: {
     patient: { fullName: string; phone: string | null }
     medicalHistory: { serviceType: string; doctorName: string }
