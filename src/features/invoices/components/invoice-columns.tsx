@@ -15,21 +15,21 @@ export const invoiceMobileLabels = {
   consultationFee: 'Phí khám',
   medicineRevenue: 'Tiền thuốc',
   serviceFee: 'Phí dịch vụ',
-  otherFees: 'Phí khác',
 }
 
 const feeKeys = [
+  ['serviceFee', 'serviceFeeLabel'],
   ['otherFee1', 'otherFee1Label'],
   ['otherFee2', 'otherFee2Label'],
   ['otherFee3', 'otherFee3Label'],
 ] as const
 
-function otherFees(invoice: Invoice) {
+function serviceFees(invoice: Invoice) {
   return feeKeys
     .map(([amountKey, labelKey], index) => ({
       amount: Number(invoice[amountKey]),
       label: invoice[labelKey].trim(),
-      fallback: `Phí khác ${index + 1}`,
+      fallback: index === 0 ? 'Phí dịch vụ' : `Phí khác ${index}`,
     }))
     .filter((fee) => fee.amount !== 0 || fee.label !== '')
 }
@@ -123,26 +123,8 @@ export const invoiceColumns: ColumnDef<Invoice>[] = withAuditColumns([
     accessorKey: 'serviceFee',
     header: 'Phí dịch vụ',
     cell: ({ row }) => (
-      <div className='space-y-1'>
-        {row.original.serviceFeeLabel.trim() && (
-          <div className='text-xs text-muted-foreground'>
-            {row.original.serviceFeeLabel}
-          </div>
-        )}
-        <span className='whitespace-nowrap tabular-nums'>
-          {currency(row.original.serviceFee)}
-        </span>
-      </div>
-    ),
-    meta: { thClassName: 'text-right', tdClassName: 'text-right' },
-    enableSorting: false,
-  },
-  {
-    id: 'otherFees',
-    header: 'Phí khác',
-    cell: ({ row }) => (
       <div className='min-w-0 space-y-2 sm:min-w-[220px]'>
-        {otherFees(row.original).map((fee) => (
+        {serviceFees(row.original).map((fee) => (
           <div
             key={fee.fallback}
             className='flex items-baseline justify-between gap-4'
@@ -160,7 +142,7 @@ export const invoiceColumns: ColumnDef<Invoice>[] = withAuditColumns([
     meta: {
       thClassName: 'text-right',
       tdClassName: 'text-right',
-      hideOnMobile: (invoice) => otherFees(invoice).length === 0,
+      hideOnMobile: (invoice) => serviceFees(invoice).length === 0,
       mobileStacked: true,
     },
     enableSorting: false,
