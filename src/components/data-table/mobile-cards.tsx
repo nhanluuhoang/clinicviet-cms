@@ -1,5 +1,6 @@
 import { flexRender, type Row, type Table } from '@tanstack/react-table'
 import { useTranslation } from 'react-i18next'
+import { cn } from '@/lib/utils'
 import { auditLabels, type AuditColumnId } from './audit-columns'
 
 const MOBILE_LABELS: Record<string, string> = {
@@ -117,12 +118,24 @@ export function MobileDataCards<TData>({
                 {detailCells.map((cell) => (
                   <div
                     key={cell.id}
-                    className='flex min-w-0 justify-between gap-3 text-sm'
+                    className={cn(
+                      'flex min-w-0 text-sm',
+                      cell.column.columnDef.meta?.mobileStacked
+                        ? 'flex-col gap-2'
+                        : 'justify-between gap-3'
+                    )}
                   >
                     <span className='shrink-0 text-muted-foreground'>
                       {labelFor(cell.column.id)}
                     </span>
-                    <div className='min-w-0 text-right break-words'>
+                    <div
+                      className={cn(
+                        'min-w-0 break-words',
+                        cell.column.columnDef.meta?.mobileStacked
+                          ? 'pl-3'
+                          : 'text-right'
+                      )}
+                    >
                       {flexRender(
                         cell.column.columnDef.cell,
                         cell.getContext()

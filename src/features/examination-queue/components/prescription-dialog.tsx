@@ -53,7 +53,7 @@ export function PrescriptionDialog({
       }}
     >
       <DialogContent
-        className='max-h-[96dvh] w-[98vw] max-w-[98vw] overflow-y-auto sm:max-w-[min(98vw,90rem)]'
+        className='flex h-dvh max-h-dvh w-screen max-w-none flex-col gap-0 overflow-hidden rounded-none border-0 p-0 sm:h-auto sm:max-h-[96dvh] sm:w-[98vw] sm:max-w-[min(98vw,90rem)] sm:rounded-lg sm:border'
         onInteractOutside={(event) => event.preventDefault()}
       >
         {isUploading &&
@@ -70,7 +70,7 @@ export function PrescriptionDialog({
             </div>,
             document.body
           )}
-        <DialogHeader>
+        <DialogHeader className='shrink-0 px-6 pt-6 pb-4'>
           <DialogTitle>
             {initialData ? 'Cập nhật lịch sử khám bệnh' : 'Phiếu dịch vụ'}
           </DialogTitle>
@@ -80,7 +80,7 @@ export function PrescriptionDialog({
           onValueChange={(value) => {
             if (!isUploading && !isSaving) setView(value as View)
           }}
-          className='gap-3'
+          className='min-h-0 min-w-0 flex-1 scroll-py-4 gap-3 overflow-x-hidden overflow-y-auto overscroll-contain px-4 pb-6 sm:px-6'
         >
           <TabsList>
             <TabsTrigger value='prescription'>
@@ -90,7 +90,7 @@ export function PrescriptionDialog({
               <FileClock /> Lịch sử khám
             </TabsTrigger>
           </TabsList>
-          <TabsContent value='prescription' className='pe-1'>
+          <TabsContent value='prescription' className='min-w-0 shrink-0 pe-1'>
             <Prescriptions
               patient={patient}
               examinationQueueId={queueId}
@@ -104,11 +104,11 @@ export function PrescriptionDialog({
               }}
             />
           </TabsContent>
-          <TabsContent value='history' className='pe-1'>
+          <TabsContent value='history' className='min-w-0 shrink-0 pe-1'>
             <MedicalHistoryContent patient={patient} />
           </TabsContent>
         </Tabs>
-        <div className='sticky bottom-0 z-10 -mx-6 -mb-6 flex justify-end gap-2 border-t bg-background px-6 py-4'>
+        <div className='flex shrink-0 justify-end gap-2 border-t bg-background px-6 pt-4 pb-[max(1rem,env(safe-area-inset-bottom))]'>
           {view === 'prescription' && (
             <Button
               type='submit'
