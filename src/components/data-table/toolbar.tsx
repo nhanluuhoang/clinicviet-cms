@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useState, type ReactNode } from 'react'
 import { Cross2Icon } from '@radix-ui/react-icons'
 import { type Table } from '@tanstack/react-table'
 import { useDebounce } from '@/hooks/use-debounce'
@@ -11,6 +11,7 @@ type DataTableToolbarProps<TData> = {
   table: Table<TData>
   searchPlaceholder?: string
   searchKey?: string
+  searchFields?: { columnId: string; placeholder: string }[]
   filters?: {
     columnId: string
     title: string
@@ -24,40 +25,116 @@ type DataTableToolbarProps<TData> = {
   showSearch?: boolean
   showReset?: boolean
   showViewOptions?: boolean
+  children?: ReactNode
+  hasExtraFilters?: boolean
+  onReset?: () => void
 }
 
 export function DataTableToolbar<TData>({
   table,
   searchPlaceholder = 'Lọc dữ liệu...',
   searchKey,
+  searchFields,
   filters = [],
   showSearch = true,
   showReset = true,
   showViewOptions = true,
+  children,
+  hasExtraFilters = false,
+  onReset,
 }: DataTableToolbarProps<TData>) {
   const isFiltered =
-    table.getState().columnFilters.length > 0 || table.getState().globalFilter
+    hasExtraFilters ||
+    table
+      .getState()
+      .columnFilters.some(({ value }) =>
+        Array.isArray(value)
+          ? value.length > 0
+          : String(value ?? '').trim() !== ''
+      ) ||
+    String(table.getState().globalFilter ?? '').trim() !== ''
 
-  // Support local state for debouncing
-  const [searchValue, setSearchValue] = useState<string>(
-    (searchKey
-      ? (table.getColumn(searchKey)?.getFilterValue() as string)
-      : table.getState().globalFilter) ?? ''
+  return (
+    <div className='flex min-w-0 flex-wrap items-center gap-2'>
+      {showSearch &&
+        (searchFields ? (
+          searchFields.map((field) => (
+            <DataTableSearchInput
+              key={field.columnId}
+              table={table}
+              searchKey={field.columnId}
+              placeholder={field.placeholder}
+            />
+          ))
+        ) : (
+          <DataTableSearchInput
+            table={table}
+            searchKey={searchKey}
+            placeholder={searchPlaceholder}
+          />
+        ))}
+      {(filters.length > 0 || children) && (
+        <div className='flex w-full min-w-0 flex-wrap items-center gap-2 sm:w-auto'>
+          {filters.map((filter) => {
+            const column = table.getColumn(filter.columnId)
+            return column ? (
+              <DataTableFacetedFilter
+                key={filter.columnId}
+                column={column}
+                title={filter.title}
+                options={filter.options}
+                variant={filter.variant}
+              />
+            ) : null
+          })}
+          {children}
+        </div>
+      )}
+      {showReset && isFiltered && (
+        <Button
+          type='button'
+          variant='ghost'
+          onClick={() => {
+            table.resetColumnFilters(true)
+            table.setGlobalFilter('')
+            onReset?.()
+          }}
+          className='h-8 shrink-0 gap-2 px-2'
+        >
+          Xóa bộ lọc <Cross2Icon className='size-4' />
+        </Button>
+      )}
+      {showViewOptions && <DataTableViewOptions table={table} />}
+    </div>
   )
-  const debouncedSearchValue = useDebounce(searchValue, 500)
+}
 
-  // Sync internal state with external state (e.g. on reset or URL change)
+function DataTableSearchInput<TData>({
+  table,
+  searchKey,
+  placeholder,
+}: {
+  table: Table<TData>
+  searchKey?: string
+  placeholder: string
+}) {
   const externalValue =
     (searchKey
       ? (table.getColumn(searchKey)?.getFilterValue() as string)
       : table.getState().globalFilter) ?? ''
 
-  useEffect(() => {
-    setSearchValue(externalValue)
-  }, [externalValue])
+  const [draft, setDraft] = useState({ externalValue, value: externalValue })
+  if (draft.externalValue !== externalValue) {
+    setDraft({ externalValue, value: externalValue })
+  }
+  const debouncedSearchValue = useDebounce(draft.value, 500)
 
   useEffect(() => {
-    if (!showSearch) return
+    if (
+      draft.externalValue !== externalValue ||
+      debouncedSearchValue !== draft.value
+    )
+      return
 
     if (searchKey) {
       const column = table.getColumn(searchKey)
@@ -67,51 +144,16 @@ export function DataTableToolbar<TData>({
       if ((table.getState().globalFilter ?? '') === debouncedSearchValue) return
       table.setGlobalFilter(debouncedSearchValue)
     }
-  }, [debouncedSearchValue, searchKey, table, showSearch])
+  }, [debouncedSearchValue, draft, externalValue, searchKey, table])
 
   return (
-    <div className='flex items-center justify-between gap-2'>
-      <div className='flex flex-1 flex-col-reverse items-start gap-y-2 sm:flex-row sm:items-center sm:space-x-2'>
-        {showSearch && (
-          <Input
-            placeholder={searchPlaceholder}
-            value={searchValue}
-            onChange={(event) => setSearchValue(event.target.value)}
-            className='h-8 w-[150px] lg:w-[250px]'
-          />
-        )}
-        {filters.length > 0 && (
-          <div className='flex gap-x-2'>
-            {filters.map((filter) => {
-              const column = table.getColumn(filter.columnId)
-              if (!column) return null
-              return (
-                <DataTableFacetedFilter
-                  key={filter.columnId}
-                  column={column}
-                  title={filter.title}
-                  options={filter.options}
-                  variant={filter.variant}
-                />
-              )
-            })}
-          </div>
-        )}
-        {showReset && isFiltered && (
-          <Button
-            variant='ghost'
-            onClick={() => {
-              table.resetColumnFilters()
-              table.setGlobalFilter('')
-            }}
-            className='h-8 px-2 lg:px-3'
-          >
-            Đặt lại
-            <Cross2Icon className='ms-2 h-4 w-4' />
-          </Button>
-        )}
-      </div>
-      {showViewOptions && <DataTableViewOptions table={table} />}
-    </div>
+    <Input
+      placeholder={placeholder}
+      value={draft.value}
+      onChange={(event) => {
+        setDraft({ externalValue, value: event.target.value })
+      }}
+      className='h-8 w-full sm:w-[250px]'
+    />
   )
 }
