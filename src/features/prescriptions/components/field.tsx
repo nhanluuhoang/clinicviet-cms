@@ -14,7 +14,7 @@ export function Field({
   const required = label.endsWith(' *')
 
   return (
-    <div className={`grid gap-2 ${className ?? ''}`}>
+    <div className={`grid min-w-0 gap-2 ${className ?? ''}`}>
       <Label htmlFor={htmlFor} required={required}>
         {required ? label.slice(0, -2) : label}
       </Label>

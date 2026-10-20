@@ -40,9 +40,9 @@ export function PrescriptionItemsSection({
   | 'getQuantityError'
 >) {
   return (
-    <Card>
-      <CardHeader className='gap-3 sm:flex-row sm:items-end sm:justify-between'>
-        <div>
+    <Card className='min-w-0'>
+      <CardHeader className='gap-3 px-4 sm:flex-row sm:items-end sm:justify-between sm:px-6'>
+        <div className='min-w-0'>
           <CardTitle>
             {isVaccination
               ? 'Vắc xin / thuốc'
@@ -54,16 +54,19 @@ export function PrescriptionItemsSection({
             Tìm kiếm và chọn thuốc trong danh mục.
           </CardDescription>
         </div>
-        <div className='grid min-w-56 gap-1.5'>
+        <div className='grid min-w-0 gap-1.5 sm:min-w-56'>
           <Label htmlFor={formId + '-prescription-template'}>
             Mẫu đơn thuốc
           </Label>
           <PrescriptionTemplatePicker onSelect={applyTemplate} />
         </div>
       </CardHeader>
-      <CardContent className='grid gap-4'>
+      <CardContent className='grid min-w-0 grid-cols-[minmax(0,1fr)] gap-4 px-3 sm:px-6'>
         {items.map((item, index) => (
-          <div key={item.key} className='grid gap-4 rounded-lg border p-4'>
+          <div
+            key={item.key}
+            className='grid min-w-0 grid-cols-[minmax(0,1fr)] gap-4 rounded-lg border p-3 sm:p-4'
+          >
             <div className='flex items-center justify-between'>
               <p className='font-medium'>Thuốc {index + 1}</p>
               <Button
@@ -91,8 +94,8 @@ export function PrescriptionItemsSection({
                 đ
               </p>
             )}
-            <div className='grid gap-4 md:grid-cols-2 lg:grid-cols-[minmax(0,2fr)_minmax(8rem,0.6fr)_minmax(0,1.4fr)]'>
-              <div className='grid grid-rows-[auto_2.25rem_1rem] content-start gap-2 md:col-span-2 lg:col-span-1'>
+            <div className='grid min-w-0 grid-cols-[minmax(0,1fr)] gap-4 md:grid-cols-2 lg:grid-cols-[minmax(0,2fr)_minmax(8rem,0.6fr)_minmax(0,1.4fr)]'>
+              <div className='grid min-w-0 grid-rows-[auto_2.25rem_1rem] content-start gap-2 md:col-span-2 lg:col-span-1'>
                 <Label required>Thuốc</Label>
                 <MedicinePicker
                   selected={item.selectedMedicine}

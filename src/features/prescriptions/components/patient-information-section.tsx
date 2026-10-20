@@ -57,8 +57,8 @@ export function PatientInformationSection({
   | 'removeMedia'
 >) {
   return (
-    <Card>
-      <CardHeader>
+    <Card className='relative min-w-0'>
+      <CardHeader className='px-4 sm:px-6'>
         <CardTitle>
           {isPharmacy
             ? 'Thông tin bán thuốc'
@@ -67,7 +67,7 @@ export function PatientInformationSection({
               : 'Thông tin lượt khám'}
         </CardTitle>
       </CardHeader>
-      <CardContent className='grid gap-5 md:grid-cols-2'>
+      <CardContent className='grid min-w-0 grid-cols-[minmax(0,1fr)] gap-5 px-4 sm:px-6 md:grid-cols-2'>
         <Field
           label={
             isPharmacy
@@ -184,7 +184,7 @@ export function PatientInformationSection({
             </label>
             <Input
               id={formId + '-diagnosis-media'}
-              className='sr-only'
+              className='sr-only h-px w-px p-0'
               type='file'
               accept='image/jpeg,image/png,application/pdf,video/mp4,video/webm,video/quicktime'
               multiple
