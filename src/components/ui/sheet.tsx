@@ -69,8 +69,8 @@ function SheetContent({
         {...props}
       >
         {children}
-        <SheetPrimitive.Close className='absolute end-4 top-4 rounded-xs opacity-70 ring-offset-background transition-opacity hover:opacity-100 focus:ring-2 focus:ring-ring focus:ring-offset-2 focus:outline-hidden disabled:pointer-events-none data-[state=open]:bg-secondary'>
-          <XIcon className='size-4' />
+        <SheetPrimitive.Close className='absolute end-3 top-3 z-10 inline-flex size-9 items-center justify-center rounded-full border border-border bg-muted text-foreground shadow-sm transition-colors hover:bg-accent hover:text-accent-foreground focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:outline-none disabled:pointer-events-none'>
+          <XIcon className='size-5' />
           <span className='sr-only'>Đóng</span>
         </SheetPrimitive.Close>
       </SheetPrimitive.Content>
@@ -82,7 +82,7 @@ function SheetHeader({ className, ...props }: React.ComponentProps<'div'>) {
   return (
     <div
       data-slot='sheet-header'
-      className={cn('flex flex-col gap-1.5 p-4', className)}
+      className={cn('flex flex-col gap-1.5 p-4 pe-14', className)}
       {...props}
     />
   )

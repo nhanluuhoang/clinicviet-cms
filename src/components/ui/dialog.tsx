@@ -68,7 +68,7 @@ function DialogContent({
         {showCloseButton && (
           <DialogPrimitive.Close
             data-slot='dialog-close'
-            className="absolute end-4 top-4 rounded-xs opacity-70 ring-offset-background transition-opacity hover:opacity-100 focus:ring-2 focus:ring-ring focus:ring-offset-2 focus:outline-hidden disabled:pointer-events-none data-[state=open]:bg-accent data-[state=open]:text-muted-foreground [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4"
+            className='absolute end-3 top-3 z-10 inline-flex size-9 items-center justify-center rounded-full border border-border bg-muted text-foreground shadow-sm transition-colors hover:bg-accent hover:text-accent-foreground focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:outline-none disabled:pointer-events-none [&_svg]:pointer-events-none [&_svg]:size-5 [&_svg]:shrink-0'
           >
             <XIcon />
             <span className='sr-only'>Đóng</span>
@@ -86,7 +86,7 @@ function DialogFormContent({
   return (
     <DialogContent
       className={cn(
-        'grid h-dvh max-h-dvh w-screen max-w-none grid-rows-[minmax(0,1fr)_auto] overflow-hidden rounded-none border-0 p-4 pb-[max(1rem,env(safe-area-inset-bottom))] sm:h-auto sm:max-h-[90dvh] sm:w-full sm:max-w-lg sm:rounded-lg sm:border sm:p-6 [&>[data-slot=dialog-footer]]:flex-row [&>[data-slot=dialog-footer]]:flex-wrap [&>[data-slot=dialog-footer]]:justify-end [&>[data-slot=dialog-footer]]:border-t [&>[data-slot=dialog-footer]]:pt-4',
+        'block h-dvh max-h-dvh w-screen max-w-none overflow-x-hidden overflow-y-auto overscroll-contain rounded-none border-0 p-4 pb-[max(1rem,env(safe-area-inset-bottom))] sm:grid sm:h-auto sm:max-h-[90dvh] sm:w-full sm:max-w-lg sm:grid-rows-[minmax(0,1fr)_auto] sm:overflow-hidden sm:rounded-lg sm:border sm:p-6 [&>[data-slot=dialog-footer]]:mt-4 [&>[data-slot=dialog-footer]]:flex-row [&>[data-slot=dialog-footer]]:flex-wrap [&>[data-slot=dialog-footer]]:justify-end [&>[data-slot=dialog-footer]]:border-t [&>[data-slot=dialog-footer]]:pt-4',
         className
       )}
       {...props}
@@ -98,7 +98,7 @@ function DialogBody({ className, ...props }: React.ComponentProps<'div'>) {
   return (
     <div
       className={cn(
-        'relative -mx-1 min-h-0 min-w-0 space-y-4 overflow-x-hidden overflow-y-auto overscroll-contain px-1',
+        'relative -mx-1 min-w-0 space-y-4 px-1 sm:min-h-0 sm:overflow-x-hidden sm:overflow-y-auto sm:overscroll-contain',
         className
       )}
       {...props}
@@ -110,7 +110,10 @@ function DialogHeader({ className, ...props }: React.ComponentProps<'div'>) {
   return (
     <div
       data-slot='dialog-header'
-      className={cn('flex flex-col gap-2 text-center sm:text-start', className)}
+      className={cn(
+        'flex flex-col gap-2 pe-10 text-center sm:text-start',
+        className
+      )}
       {...props}
     />
   )
