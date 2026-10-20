@@ -27,6 +27,8 @@
 
 ## Convention
 
+- List toolbars share `DataTableToolbar`: full-width search inputs on mobile, 32px controls, wrapping filters/dates, and desktop-only column visibility (`sm` and up). Use Vietnamese `Xóa bộ lọc`, shown only for a non-empty search/filter, including an active date. Custom date and multi-search pages use toolbar children/searchFields plus hasExtraFilters/onReset; clear pending debounced search when resetting.
+
 - Mật khẩu mới (nhân viên, bệnh nhân, system user) dài 8–20 ký tự, không ép chữ/số; đăng nhập và kiểm tra mật khẩu cũ vẫn hỗ trợ tài khoản cũ. `SUPER_ADMIN` có toàn quyền; tenant admin theo vai trò và gói. Không sửa vai trò PATIENT/USER qua form nhân sự.
 - Trang lỗi đầy đủ 401/403/404/500/503 chỉ có nút sign-in dùng chung: xóa auth CMS, hủy query/clear cache rồi tới `/sign-in`, không logout API session; lỗi nhúng giữ layout gọn. API error do interceptor toast một lần; `showRequestError(error, fallback)` chỉ hiện fallback khi API không có message; lỗi nhập liệu toast tại chỗ.
 - Danh sách dùng `UrlDataTable`: toolbar chứa filter, tìm kiếm/lọc/sort/phân trang theo URL, action column luôn cuối, desktop/mobile chung visibility; `columnId` khớp cột và `searchKey`/schema khớp URL. Dùng radio cho chọn một, checkbox cho nhiều, `mobileLabels` khi nhãn theo ngữ cảnh khác. Nút filter chọn một là nút icon tròn. Resource page giữ layout ở `index.tsx`, table/columns/actions/dialog/forms trong `components/`, state form phức tạp trong `hooks/`; settings form đặt cạnh entry point.

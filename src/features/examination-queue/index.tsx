@@ -175,7 +175,7 @@ export function ExaminationQueue() {
         </div>
         <div className='flex flex-1 flex-col gap-4'>
           <Input
-            className='h-8 w-[150px] lg:w-[250px]'
+            className='h-8 w-full sm:w-[250px]'
             value={search}
             onChange={(event) => {
               setSearch(event.target.value)

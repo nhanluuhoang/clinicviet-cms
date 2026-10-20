@@ -22,7 +22,7 @@ export function DataTableViewOptions<T>({ table }: { table: Table<T> }) {
         <Button
           variant='outline'
           size='sm'
-          className='ms-auto h-8 shrink-0 gap-2'
+          className='ms-auto hidden h-8 shrink-0 gap-2 sm:inline-flex'
         >
           <MixerHorizontalIcon className='size-4' /> Hiển thị cột
         </Button>

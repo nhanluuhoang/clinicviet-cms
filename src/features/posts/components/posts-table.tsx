@@ -108,7 +108,7 @@ export function PostsTable({ data, total, isLoading }: PostsTableProps) {
       <DataTableToolbar
         table={table}
         showSearch={true}
-        searchPlaceholder='Filter by title...'
+        searchPlaceholder='Tìm theo tiêu đề...'
         filters={[
           {
             columnId: 'isPublished',
