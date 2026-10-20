@@ -3,6 +3,7 @@ import { formatNumber } from '@/lib/utils'
 import { DataTableColumnHeader } from '@/components/data-table'
 import { withAuditColumns } from '@/components/data-table/audit-columns'
 import type { Invoice } from '../api'
+import { InvoiceServiceFees } from './invoice-service-fees'
 
 export const invoiceMobileLabels = {
   invoiceCode: 'Mã hóa đơn',
@@ -122,23 +123,7 @@ export const invoiceColumns: ColumnDef<Invoice>[] = withAuditColumns([
   {
     accessorKey: 'serviceFee',
     header: 'Phí dịch vụ',
-    cell: ({ row }) => (
-      <div className='min-w-0 space-y-2 sm:min-w-[220px]'>
-        {serviceFees(row.original).map((fee) => (
-          <div
-            key={fee.fallback}
-            className='flex items-baseline justify-between gap-4'
-          >
-            <div className='min-w-0 text-left break-words text-muted-foreground'>
-              {fee.label || fee.fallback}
-            </div>
-            <span className='shrink-0 whitespace-nowrap tabular-nums'>
-              {currency(fee.amount)}
-            </span>
-          </div>
-        ))}
-      </div>
-    ),
+    cell: ({ row }) => <InvoiceServiceFees fees={serviceFees(row.original)} />,
     meta: {
       thClassName: 'text-right',
       tdClassName: 'text-right',
