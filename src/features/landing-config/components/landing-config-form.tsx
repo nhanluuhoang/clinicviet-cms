@@ -293,7 +293,7 @@ export function LandingConfigForm({
         />
       </Section>
 
-      <div className='sticky bottom-4 flex justify-end rounded-xl border bg-background/95 p-4 shadow-lg backdrop-blur'>
+      <div className='flex justify-end rounded-xl border bg-background/95 p-4 shadow-lg backdrop-blur sm:sticky sm:bottom-4'>
         <Button
           disabled={mutation.isPending || !clinicName.trim()}
           onClick={() => {
