@@ -8,6 +8,8 @@
 
 ## Architecture
 
+- `/invoices` is a read-only staff invoice list (no row actions), using `UrlDataTable` and `DatePickerInput`. Defaults to today's issuance date; reset clears date and all filters. Search covers invoice code/patient name/phone; service type is a single-choice filter. All list queries are server-paginated and tenant-scoped; there is no creator filter or creator-options API.
+
 - Both account menus link directly to clinic information (`/settings/tenant`, tenant admins only). "Giới thiệu cho bạn bè" opens a name/phone-only referral form for tenant staff; it explains the one-month reward on a successful purchase. Referral leads share the trial requests list with source/referrer details and a source filter. Purchase confirmation and reward extension are handled manually by the owner; no automatic reward workflow.
 
 - Function search opens pages only via the shared Header button or Ctrl/Cmd+K. Search and sidebar share `useNavigationGroups` for role/plan visibility; searchable destinations come from `sidebarData`. Search supports Vietnamese without diacritics and aliases for reports/settings.

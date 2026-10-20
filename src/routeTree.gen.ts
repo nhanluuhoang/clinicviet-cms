@@ -27,6 +27,7 @@ import { Route as AuthenticatedDashboardsIndexRouteImport } from './routes/_auth
 import { Route as AuthenticatedErrorsErrorRouteImport } from './routes/_authenticated/errors/$error'
 import { Route as AuthenticatedHelpCenterIndexRouteImport } from './routes/_authenticated/help-center/index'
 import { Route as AuthenticatedInventoryIndexRouteImport } from './routes/_authenticated/inventory/index'
+import { Route as AuthenticatedInvoicesIndexRouteImport } from './routes/_authenticated/invoices/index'
 import { Route as AuthenticatedLandingConfigIndexRouteImport } from './routes/_authenticated/landing-config/index'
 import { Route as AuthenticatedMasterDataIndexRouteImport } from './routes/_authenticated/master-data/index'
 import { Route as AuthenticatedMedicalHistoriesIndexRouteImport } from './routes/_authenticated/medical-histories/index'
@@ -140,6 +141,12 @@ const AuthenticatedInventoryIndexRoute =
   AuthenticatedInventoryIndexRouteImport.update({
     id: '/inventory/',
     path: '/inventory/',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
+const AuthenticatedInvoicesIndexRoute =
+  AuthenticatedInvoicesIndexRouteImport.update({
+    id: '/invoices/',
+    path: '/invoices/',
     getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
 const AuthenticatedLandingConfigIndexRoute =
@@ -268,6 +275,7 @@ export interface FileRoutesByFullPath {
   '/dashboards/': typeof AuthenticatedDashboardsIndexRoute
   '/help-center/': typeof AuthenticatedHelpCenterIndexRoute
   '/inventory/': typeof AuthenticatedInventoryIndexRoute
+  '/invoices/': typeof AuthenticatedInvoicesIndexRoute
   '/landing-config/': typeof AuthenticatedLandingConfigIndexRoute
   '/master-data/': typeof AuthenticatedMasterDataIndexRoute
   '/medical-histories/': typeof AuthenticatedMedicalHistoriesIndexRoute
@@ -303,6 +311,7 @@ export interface FileRoutesByTo {
   '/dashboards': typeof AuthenticatedDashboardsIndexRoute
   '/help-center': typeof AuthenticatedHelpCenterIndexRoute
   '/inventory': typeof AuthenticatedInventoryIndexRoute
+  '/invoices': typeof AuthenticatedInvoicesIndexRoute
   '/landing-config': typeof AuthenticatedLandingConfigIndexRoute
   '/master-data': typeof AuthenticatedMasterDataIndexRoute
   '/medical-histories': typeof AuthenticatedMedicalHistoriesIndexRoute
@@ -341,6 +350,7 @@ export interface FileRoutesById {
   '/_authenticated/dashboards/': typeof AuthenticatedDashboardsIndexRoute
   '/_authenticated/help-center/': typeof AuthenticatedHelpCenterIndexRoute
   '/_authenticated/inventory/': typeof AuthenticatedInventoryIndexRoute
+  '/_authenticated/invoices/': typeof AuthenticatedInvoicesIndexRoute
   '/_authenticated/landing-config/': typeof AuthenticatedLandingConfigIndexRoute
   '/_authenticated/master-data/': typeof AuthenticatedMasterDataIndexRoute
   '/_authenticated/medical-histories/': typeof AuthenticatedMedicalHistoriesIndexRoute
@@ -379,6 +389,7 @@ export interface FileRouteTypes {
     | '/dashboards/'
     | '/help-center/'
     | '/inventory/'
+    | '/invoices/'
     | '/landing-config/'
     | '/master-data/'
     | '/medical-histories/'
@@ -414,6 +425,7 @@ export interface FileRouteTypes {
     | '/dashboards'
     | '/help-center'
     | '/inventory'
+    | '/invoices'
     | '/landing-config'
     | '/master-data'
     | '/medical-histories'
@@ -451,6 +463,7 @@ export interface FileRouteTypes {
     | '/_authenticated/dashboards/'
     | '/_authenticated/help-center/'
     | '/_authenticated/inventory/'
+    | '/_authenticated/invoices/'
     | '/_authenticated/landing-config/'
     | '/_authenticated/master-data/'
     | '/_authenticated/medical-histories/'
@@ -602,6 +615,13 @@ declare module '@tanstack/react-router' {
       path: '/inventory'
       fullPath: '/inventory/'
       preLoaderRoute: typeof AuthenticatedInventoryIndexRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/invoices/': {
+      id: '/_authenticated/invoices/'
+      path: '/invoices'
+      fullPath: '/invoices/'
+      preLoaderRoute: typeof AuthenticatedInvoicesIndexRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
     '/_authenticated/landing-config/': {
@@ -759,6 +779,7 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedDashboardsIndexRoute: typeof AuthenticatedDashboardsIndexRoute
   AuthenticatedHelpCenterIndexRoute: typeof AuthenticatedHelpCenterIndexRoute
   AuthenticatedInventoryIndexRoute: typeof AuthenticatedInventoryIndexRoute
+  AuthenticatedInvoicesIndexRoute: typeof AuthenticatedInvoicesIndexRoute
   AuthenticatedLandingConfigIndexRoute: typeof AuthenticatedLandingConfigIndexRoute
   AuthenticatedMasterDataIndexRoute: typeof AuthenticatedMasterDataIndexRoute
   AuthenticatedMedicalHistoriesIndexRoute: typeof AuthenticatedMedicalHistoriesIndexRoute
@@ -786,6 +807,7 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedDashboardsIndexRoute: AuthenticatedDashboardsIndexRoute,
   AuthenticatedHelpCenterIndexRoute: AuthenticatedHelpCenterIndexRoute,
   AuthenticatedInventoryIndexRoute: AuthenticatedInventoryIndexRoute,
+  AuthenticatedInvoicesIndexRoute: AuthenticatedInvoicesIndexRoute,
   AuthenticatedLandingConfigIndexRoute: AuthenticatedLandingConfigIndexRoute,
   AuthenticatedMasterDataIndexRoute: AuthenticatedMasterDataIndexRoute,
   AuthenticatedMedicalHistoriesIndexRoute:

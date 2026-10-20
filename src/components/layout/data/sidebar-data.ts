@@ -25,6 +25,7 @@ import {
   PanelsTopLeft,
   Building2,
   MessageSquare,
+  ReceiptText,
 } from 'lucide-react'
 import { type SidebarData } from '../types'
 
@@ -80,6 +81,12 @@ export const sidebarData: SidebarData = {
           title: 'Lịch sử khám bệnh',
           url: '/medical-histories',
           icon: History,
+          roles: STAFF_ROLES,
+        },
+        {
+          title: 'Quản lý hóa đơn',
+          url: '/invoices',
+          icon: ReceiptText,
           roles: STAFF_ROLES,
         },
       ],
