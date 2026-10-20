@@ -7,6 +7,11 @@ import { API_URL } from '@/config'
 import { ImagePlus, Loader2, X } from 'lucide-react'
 import { toast } from 'sonner'
 import { showRequestError } from '@/lib/handle-server-error'
+import {
+  IMAGE_UPLOAD_ACCEPT,
+  IMAGE_UPLOAD_TYPES,
+  normalizeImageFile,
+} from '@/lib/image-upload'
 import { Button } from '@/components/ui/button'
 import {
   Dialog,
@@ -92,11 +97,14 @@ export function PostsMutateDialog({ open, onOpenChange, currentRow }: Props) {
 
   const uploadThumbnail = async (file: File | undefined) => {
     if (!file) return
+    file = normalizeImageFile(file)
     if (
-      !['image/jpeg', 'image/png', 'image/webp'].includes(file.type) ||
+      !IMAGE_UPLOAD_TYPES.includes(file.type) ||
       file.size > 5 * 1024 * 1024
     ) {
-      toast.error('Chỉ nhận ảnh JPG, PNG hoặc WebP, dung lượng tối đa 5 MB')
+      toast.error(
+        'Chỉ nhận ảnh JPG, PNG, WebP, HEIC hoặc HEIF, dung lượng tối đa 5 MB'
+      )
       return
     }
     const localPreview = URL.createObjectURL(file)
@@ -249,7 +257,7 @@ export function PostsMutateDialog({ open, onOpenChange, currentRow }: Props) {
                         <Input
                           id='post-thumbnail'
                           type='file'
-                          accept='image/jpeg,image/png,image/webp'
+                          accept={IMAGE_UPLOAD_ACCEPT}
                           className='sr-only'
                           disabled={isUploadingThumbnail}
                           onChange={(event) => {

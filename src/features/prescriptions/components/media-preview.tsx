@@ -1,6 +1,7 @@
 import { FileText, X } from 'lucide-react'
 import { isVideoMedia } from '@/lib/utils'
 import { Button } from '@/components/ui/button'
+import { VideoPlayer } from '@/components/video-player'
 import {
   type UploadedImage,
   type UploadedPdf,
@@ -30,14 +31,10 @@ export function MediaPreview({
           </span>
         </div>
       ) : isVideo ? (
-        <video
+        <VideoPlayer
           src={media.url}
-          className='size-full object-cover'
-          controls
-          preload='metadata'
-        >
-          Trình duyệt không hỗ trợ phát video.
-        </video>
+          className='size-full bg-black object-contain'
+        />
       ) : (
         <img
           src={media.url}

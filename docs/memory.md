@@ -27,6 +27,10 @@
 
 ## Convention
 
+- Video uploads share `src/lib/video-upload.ts` for phone MIME/extension selection and empty/octet-stream normalization. Use `VideoPlayer` for authenticated native HLS/hls.js playback in previews and medical histories.
+
+- Photo uploads share `src/lib/image-upload.ts` for JPG/JPEG, PNG, WebP and HEIC/HEIF MIME/extension selection; normalize empty/octet-stream MIME types before validation and upload. Backend converts photos to WebP; retain the 5 MB upload limit.
+
 - Form popups use `DialogFormContent` with `DialogBody` containing the header and a sibling `DialogFooter`: fullscreen on mobile, constrained width on desktop. Mobile scrolls the entire popup, including header and actions; desktop pins only the footer actions while header and body scroll together. Keep submit buttons associated through `form`/`id`. Use CSS classes only, without viewport resize effects. Master-data retains Sheet with the same responsive layout.
 
 - List toolbars share `DataTableToolbar`: full-width search inputs on mobile, 32px controls, wrapping filters/dates, and desktop-only column visibility (`sm` and up). Use Vietnamese `Xóa bộ lọc`, shown only for a non-empty search/filter, including an active date. Custom date and multi-search pages use toolbar children/searchFields plus hasExtraFilters/onReset; clear pending debounced search when resetting.

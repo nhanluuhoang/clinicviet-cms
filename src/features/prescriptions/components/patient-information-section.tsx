@@ -1,4 +1,6 @@
 import { ImagePlus } from 'lucide-react'
+import { IMAGE_UPLOAD_ACCEPT } from '@/lib/image-upload'
+import { VIDEO_UPLOAD_ACCEPT } from '@/lib/video-upload'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
@@ -165,7 +167,7 @@ export function PatientInformationSection({
               </Label>
               <p className='mt-1 text-xs text-muted-foreground'>
                 Tối đa 5 ảnh, 5 PDF và 1 video. Ảnh/PDF không quá 5 MB; video
-                MP4, WebM hoặc MOV không quá 100 MB.
+                MP4, MOV, M4V, WebM, 3GP hoặc 3G2 không quá 100 MB và 10 phút.
               </p>
             </div>
             <label
@@ -186,7 +188,7 @@ export function PatientInformationSection({
               id={formId + '-diagnosis-media'}
               className='sr-only h-px w-px p-0'
               type='file'
-              accept='image/jpeg,image/png,application/pdf,video/mp4,video/webm,video/quicktime'
+              accept={`${IMAGE_UPLOAD_ACCEPT},application/pdf,${VIDEO_UPLOAD_ACCEPT}`}
               multiple
               disabled={isUploadingMedia || save.isPending}
               onChange={(event) => {
