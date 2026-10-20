@@ -27,6 +27,8 @@
 
 ## Convention
 
+- Video uploads share `src/lib/video-upload.ts` for phone MIME/extension selection and empty/octet-stream normalization. Use `VideoPlayer` for authenticated native HLS/hls.js playback in previews and medical histories.
+
 - Photo uploads share `src/lib/image-upload.ts` for JPG/JPEG, PNG, WebP and HEIC/HEIF MIME/extension selection; normalize empty/octet-stream MIME types before validation and upload. Backend converts photos to WebP; retain the 5 MB upload limit.
 
 - Form popups use `DialogFormContent` with `DialogBody` containing the header and a sibling `DialogFooter`: fullscreen on mobile, constrained width on desktop. Mobile scrolls the entire popup, including header and actions; desktop pins only the footer actions while header and body scroll together. Keep submit buttons associated through `form`/`id`. Use CSS classes only, without viewport resize effects. Master-data retains Sheet with the same responsive layout.
