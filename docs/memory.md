@@ -8,7 +8,7 @@
 
 ## Architecture
 
-- `/invoices` is a read-only staff invoice list (no row actions), using `UrlDataTable` and `DatePickerInput`. Audit columns are hidden by default and can be enabled through desktop column options. Defaults to today's issuance date; reset clears date and all filters. Search covers invoice code/patient name/phone; service type is a single-choice filter. Shows consultation and medicine charges, plus one service-fee group containing the service charge and up to three named extra fees. Items with no label and zero amount are omitted; mobile hides the group when empty. All list queries are server-paginated and tenant-scoped; there is no creator filter or creator-options API.
+- `/invoices` is a read-only staff invoice list (no row actions), using `UrlDataTable` and `DatePickerInput`. Audit columns are hidden by default and can be enabled through desktop column options. Defaults to today's issuance date; reset clears date and all filters. Search covers invoice code/patient name/phone; service type is a single-choice filter. Shows consultation and medicine charges, plus one service-fee group containing the service charge and up to three named extra fees. Desktop shows the combined service-fee total with a popover breakdown; mobile keeps the inline breakdown. Items with no label and zero amount are omitted; mobile hides the group when empty. All list queries are server-paginated and tenant-scoped; there is no creator filter or creator-options API.
 
 - Both account menus link directly to clinic information (`/settings/tenant`, tenant admins only). "Giới thiệu cho bạn bè" opens a name/phone-only referral form for tenant staff; it explains the one-month reward on a successful purchase. Referral leads share the trial requests list with source/referrer details and a source filter. Purchase confirmation and reward extension are handled manually by the owner; no automatic reward workflow.
 
@@ -27,7 +27,9 @@
 
 ## Convention
 
-- CMS bundles Inter/Manrope through `@fontsource-variable` CSS imports in `src/styles/index.css` (including Vietnamese and Inter italic). Font assets must load from the same origin for production CSP; do not add Google Fonts CDN links. Families in `theme.css` use unquoted generic fallbacks.
+- Shared toast defaults: top-right on desktop, top-center below 768px, with top safe-area spacing. Keep placement in `src/components/ui/sonner.tsx`.
+
+- CMS bundles Inter/Manrope through `@fontsource-variable` CSS imports in `src/styles/index.css` (including Vietnamese and Inter italic). Font assets must load from the same origin for production CSP; do not add Google Fonts CDN links. Families in `theme.css` use unquoted generic fallbacks. `FontProvider` maps settings to literal Tailwind class names so font utilities are emitted in production builds.
 
 - Video uploads share `src/lib/video-upload.ts` for phone MIME/extension selection and empty/octet-stream normalization. Use `VideoPlayer` for authenticated native HLS/hls.js playback in previews and medical histories.
 
