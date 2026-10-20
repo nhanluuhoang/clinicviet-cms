@@ -4,6 +4,12 @@ import { getCookie, setCookie, removeCookie } from '@/lib/cookies'
 
 type Font = (typeof fonts)[number]
 
+const fontClasses: Record<Font, string> = {
+  inter: 'font-inter',
+  manrope: 'font-manrope',
+  system: 'font-sans',
+}
+
 const FONT_COOKIE_NAME = 'font'
 const FONT_COOKIE_MAX_AGE = 60 * 60 * 24 * 365 // 1 year
 
@@ -22,12 +28,12 @@ export function FontProvider({ children }: { children: React.ReactNode }) {
   })
 
   useEffect(() => {
-    const applyFont = (font: string) => {
+    const applyFont = (font: Font) => {
       const root = document.documentElement
       root.classList.forEach((cls) => {
         if (cls.startsWith('font-')) root.classList.remove(cls)
       })
-      root.classList.add(`font-${font}`)
+      root.classList.add(fontClasses[font])
     }
 
     applyFont(font)

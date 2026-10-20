@@ -8,7 +8,7 @@
 
 ## Architecture
 
-- `/invoices` is a read-only staff invoice list (no row actions), using `UrlDataTable` and `DatePickerInput`. Audit columns are hidden by default and can be enabled through desktop column options. Defaults to today's issuance date; reset clears date and all filters. Search covers invoice code/patient name/phone; service type is a single-choice filter. Shows consultation and medicine charges, plus one service-fee group containing the service charge and up to three named extra fees. Items with no label and zero amount are omitted; mobile hides the group when empty. All list queries are server-paginated and tenant-scoped; there is no creator filter or creator-options API.
+- `/invoices` is a read-only staff invoice list (no row actions), using `UrlDataTable` and `DatePickerInput`. Audit columns are hidden by default and can be enabled through desktop column options. Defaults to today's issuance date; reset clears date and all filters. Search covers invoice code/patient name/phone; service type is a single-choice filter. Shows consultation and medicine charges, plus one service-fee group containing the service charge and up to three named extra fees. Desktop shows the combined service-fee total with a popover breakdown; mobile keeps the inline breakdown. Items with no label and zero amount are omitted; mobile hides the group when empty. All list queries are server-paginated and tenant-scoped; there is no creator filter or creator-options API.
 
 - Both account menus link directly to clinic information (`/settings/tenant`, tenant admins only). "Giới thiệu cho bạn bè" opens a name/phone-only referral form for tenant staff; it explains the one-month reward on a successful purchase. Referral leads share the trial requests list with source/referrer details and a source filter. Purchase confirmation and reward extension are handled manually by the owner; no automatic reward workflow.
 
@@ -27,7 +27,9 @@
 
 ## Convention
 
-- CMS bundles Inter/Manrope through `@fontsource-variable` CSS imports in `src/styles/index.css` (including Vietnamese and Inter italic). Font assets must load from the same origin for production CSP; do not add Google Fonts CDN links. Families in `theme.css` use unquoted generic fallbacks.
+- Shared toast defaults: top-right on desktop, top-center below 768px, with top safe-area spacing. Keep placement in `src/components/ui/sonner.tsx`.
+
+- CMS bundles Inter/Manrope through `@fontsource-variable` CSS imports in `src/styles/index.css` (including Vietnamese and Inter italic). Font assets must load from the same origin for production CSP; do not add Google Fonts CDN links. Families in `theme.css` use unquoted generic fallbacks. `FontProvider` maps settings to literal Tailwind class names so font utilities are emitted in production builds.
 
 - Video uploads share `src/lib/video-upload.ts` for phone MIME/extension selection and empty/octet-stream normalization. Use `VideoPlayer` for authenticated native HLS/hls.js playback in previews and medical histories.
 
@@ -42,6 +44,6 @@
 - Danh sách dùng `UrlDataTable`: toolbar chứa filter, tìm kiếm/lọc/sort/phân trang theo URL, action column luôn cuối, desktop/mobile chung visibility; `columnId` khớp cột và `searchKey`/schema khớp URL. Dùng radio cho chọn một, checkbox cho nhiều, `mobileLabels` khi nhãn theo ngữ cảnh khác. Nút filter chọn một là nút icon tròn. Resource page giữ layout ở `index.tsx`, table/columns/actions/dialog/forms trong `components/`, state form phức tạp trong `hooks/`; settings form đặt cạnh entry point.
 - Audit dùng `withAuditColumns` và `DataTableViewOptions`; createdAt/createdBy/updatedAt/updatedBy mặc định ẩn qua `defaultAuditVisibility`, kể cả bảng mobile và prescription/invoice chi tiết. API trả creator/updater với fullName; giữ quan hệ, actor UUID và audit của template khi map dữ liệu, inventory có fallback creator.userName.
 - Input bắt buộc dùng `Label required`/`FormLabel required`; điều kiện phụ thuộc mode/gói. Form tenant chỉ hiện subdomain cho PRO; chuyển sang PLUS xóa trường trên form, còn PLUS đã có subdomain không bị xóa bởi sửa đổi khác. CMS không sinh mã phòng khám: BE sinh khi tạo tenant; duyệt trial nhập mã. Nhãn plan/subscription/role ở `src/config/`, trạng thái trial ở feature `data.ts`.
-- Ngày lọc medical history mặc định hôm nay chỉ khi URL thiếu date; `date=''` và Reset xóa lọc, không gửi date lên API. Form ngày dùng `DatePickerInput`. Hàm dùng chung ở `src/lib/utils.ts`; dashboard dùng `formatNumber` và các pattern kỳ thống kê tại đây. Dùng TanStack Query/invalidate sau mutation; chạy `pnpm build` để kiểm tra.
+- Ngày lọc medical history mặc định hôm nay chỉ khi URL thiếu date; `date=''` và Reset xóa lọc, không gửi date lên API. Form ngày dùng `DatePickerInput`; `Calendar` mặc định `fixedWeeks=true` để giữ chiều cao popup khi chuyển tháng. Hàm dùng chung ở `src/lib/utils.ts`; dashboard dùng `formatNumber` và các pattern kỳ thống kê tại đây. Dùng TanStack Query/invalidate sau mutation; chạy `pnpm build` để kiểm tra.
 - Trang lịch sử khám đặt action cập nhật trong menu ba chấm cột cuối cho `PRESCRIBER_ROLES`; prescription giữ tab coordination ở `index.tsx`, logic form ở `hooks/use-service-prescription-form.ts`, UI trong `components/`, kiểu/hằng số ở `types.ts` và `data/`.
 - Dev port 5173 với strictPort; khi API loopback, `API_URL` đổi thành `/api` qua Vite proxy để request cùng origin, production giữ URL API cấu hình.
