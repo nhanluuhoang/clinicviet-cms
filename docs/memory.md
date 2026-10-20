@@ -27,6 +27,8 @@
 
 ## Convention
 
+- CMS bundles Inter/Manrope through `@fontsource-variable` CSS imports in `src/styles/index.css` (including Vietnamese and Inter italic). Font assets must load from the same origin for production CSP; do not add Google Fonts CDN links. Families in `theme.css` use unquoted generic fallbacks.
+
 - Video uploads share `src/lib/video-upload.ts` for phone MIME/extension selection and empty/octet-stream normalization. Use `VideoPlayer` for authenticated native HLS/hls.js playback in previews and medical histories.
 
 - Photo uploads share `src/lib/image-upload.ts` for JPG/JPEG, PNG, WebP and HEIC/HEIF MIME/extension selection; normalize empty/octet-stream MIME types before validation and upload. Backend converts photos to WebP; retain the 5 MB upload limit.
