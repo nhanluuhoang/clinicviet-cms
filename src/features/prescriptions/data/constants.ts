@@ -1,3 +1,4 @@
+import { IMAGE_UPLOAD_TYPES } from '@/lib/image-upload'
 import type { MedicineRow } from '../types'
 
 export const emptyMedicine = (key: number): MedicineRow => ({
@@ -13,8 +14,7 @@ export const MAX_MEDIA_FILE_SIZE = 5 * 1024 * 1024
 export const MAX_VIDEO_SIZE = 100 * 1024 * 1024
 
 export const ACCEPTED_MEDIA_TYPES = [
-  'image/jpeg',
-  'image/png',
+  ...IMAGE_UPLOAD_TYPES,
   'application/pdf',
   'video/mp4',
   'video/webm',

@@ -5,6 +5,7 @@ import { toast } from 'sonner'
 import { useAuthStore } from '@/stores/auth-store'
 import { getApiErrorMessage } from '@/lib/axios'
 import { showRequestError } from '@/lib/handle-server-error'
+import { normalizeImageFile } from '@/lib/image-upload'
 import { deleteMediaFile, isVideoMedia } from '@/lib/utils'
 import {
   uploadImage,
@@ -414,7 +415,7 @@ export function useServicePrescriptionForm({
 
   const addMedia = async (files: FileList | null) => {
     if (!files || isUploadingMedia || save.isPending) return
-    const selected = Array.from(files)
+    const selected = Array.from(files, normalizeImageFile)
     const invalid = selected.find((file) => {
       const maxSize = file.type.startsWith('video/')
         ? MAX_VIDEO_SIZE
@@ -423,7 +424,7 @@ export function useServicePrescriptionForm({
     })
     if (invalid) {
       toast.error(
-        'Chỉ nhận JPG, JPEG, PNG, PDF (tối đa 5 MB) hoặc MP4, WebM, MOV (tối đa 100 MB)'
+        'Chỉ nhận JPG, JPEG, PNG, WebP, HEIC, HEIF, PDF (tối đa 5 MB) hoặc MP4, WebM, MOV (tối đa 100 MB)'
       )
       return
     }
