@@ -141,13 +141,16 @@ export const invoiceColumns: ColumnDef<Invoice>[] = withAuditColumns([
     id: 'otherFees',
     header: 'Phí khác',
     cell: ({ row }) => (
-      <div className='space-y-2'>
+      <div className='min-w-0 space-y-2 sm:min-w-[220px]'>
         {otherFees(row.original).map((fee) => (
-          <div key={fee.fallback} className='space-y-1'>
-            <div className='text-xs text-muted-foreground'>
+          <div
+            key={fee.fallback}
+            className='flex items-baseline justify-between gap-4'
+          >
+            <div className='min-w-0 text-left break-words text-muted-foreground'>
               {fee.label || fee.fallback}
             </div>
-            <span className='whitespace-nowrap tabular-nums'>
+            <span className='shrink-0 whitespace-nowrap tabular-nums'>
               {currency(fee.amount)}
             </span>
           </div>
@@ -158,6 +161,7 @@ export const invoiceColumns: ColumnDef<Invoice>[] = withAuditColumns([
       thClassName: 'text-right',
       tdClassName: 'text-right',
       hideOnMobile: (invoice) => otherFees(invoice).length === 0,
+      mobileStacked: true,
     },
     enableSorting: false,
   },
