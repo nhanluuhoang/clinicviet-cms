@@ -27,6 +27,8 @@
 
 ## Convention
 
+- Form popups use `DialogFormContent` with a scrollable `DialogBody` containing the header and a sibling `DialogFooter`: fullscreen on mobile, constrained width on desktop, actions outside the scrolling form. Keep submit buttons associated through `form`/`id`. Use CSS classes only, without viewport resize effects. Master-data retains Sheet with the same mobile layout.
+
 - List toolbars share `DataTableToolbar`: full-width search inputs on mobile, 32px controls, wrapping filters/dates, and desktop-only column visibility (`sm` and up). Use Vietnamese `Xóa bộ lọc`, shown only for a non-empty search/filter, including an active date. Custom date and multi-search pages use toolbar children/searchFields plus hasExtraFilters/onReset; clear pending debounced search when resetting.
 
 - Mật khẩu mới (nhân viên, bệnh nhân, system user) dài 8–20 ký tự, không ép chữ/số; đăng nhập và kiểm tra mật khẩu cũ vẫn hỗ trợ tài khoản cũ. `SUPER_ADMIN` có toàn quyền; tenant admin theo vai trò và gói. Không sửa vai trò PATIENT/USER qua form nhân sự.

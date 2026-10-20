@@ -5,7 +5,8 @@ import { showRequestError } from '@/lib/handle-server-error'
 import { Button } from '@/components/ui/button'
 import {
   Dialog,
-  DialogContent,
+  DialogBody,
+  DialogFormContent,
   DialogFooter,
   DialogHeader,
   DialogTitle,
@@ -55,23 +56,25 @@ export function TrialRequestActions({ request }: { request: TrialRequest }) {
         open={mode === 'approve'}
         onOpenChange={(open) => !open && setMode(null)}
       >
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>Duyệt yêu cầu {request.phone}</DialogTitle>
-          </DialogHeader>
-          <div className='space-y-2'>
-            <Label required htmlFor='trial-clinic-code'>
-              Mã phòng khám
-            </Label>
-            <Input
-              id='trial-clinic-code'
-              inputMode='numeric'
-              maxLength={9}
-              value={form.code}
-              onChange={(event) => setForm({ code: event.target.value })}
-              placeholder='Nhập mã gồm 9 chữ số'
-            />
-          </div>
+        <DialogFormContent>
+          <DialogBody>
+            <DialogHeader>
+              <DialogTitle>Duyệt yêu cầu {request.phone}</DialogTitle>
+            </DialogHeader>
+            <div className='space-y-2'>
+              <Label required htmlFor='trial-clinic-code'>
+                Mã phòng khám
+              </Label>
+              <Input
+                id='trial-clinic-code'
+                inputMode='numeric'
+                maxLength={9}
+                value={form.code}
+                onChange={(event) => setForm({ code: event.target.value })}
+                placeholder='Nhập mã gồm 9 chữ số'
+              />
+            </div>
+          </DialogBody>
           <DialogFooter>
             <Button variant='outline' onClick={() => setMode(null)}>
               Hủy
@@ -83,24 +86,26 @@ export function TrialRequestActions({ request }: { request: TrialRequest }) {
               Xác nhận duyệt
             </Button>
           </DialogFooter>
-        </DialogContent>
+        </DialogFormContent>
       </Dialog>
       <Dialog
         open={mode === 'reject'}
         onOpenChange={(open) => !open && setMode(null)}
       >
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>Từ chối yêu cầu {request.phone}</DialogTitle>
-          </DialogHeader>
-          <div className='space-y-2'>
-            <Label required>Lý do</Label>
-            <Textarea
-              value={reason}
-              onChange={(event) => setReason(event.target.value)}
-              maxLength={500}
-            />
-          </div>
+        <DialogFormContent>
+          <DialogBody>
+            <DialogHeader>
+              <DialogTitle>Từ chối yêu cầu {request.phone}</DialogTitle>
+            </DialogHeader>
+            <div className='space-y-2'>
+              <Label required>Lý do</Label>
+              <Textarea
+                value={reason}
+                onChange={(event) => setReason(event.target.value)}
+                maxLength={500}
+              />
+            </div>
+          </DialogBody>
           <DialogFooter>
             <Button variant='outline' onClick={() => setMode(null)}>
               Hủy
@@ -112,7 +117,7 @@ export function TrialRequestActions({ request }: { request: TrialRequest }) {
               Xác nhận từ chối
             </Button>
           </DialogFooter>
-        </DialogContent>
+        </DialogFormContent>
       </Dialog>
     </>
   )

@@ -9,7 +9,8 @@ import { Button } from '@/components/ui/button'
 import { Checkbox } from '@/components/ui/checkbox'
 import {
   Dialog,
-  DialogContent,
+  DialogBody,
+  DialogFormContent,
   DialogDescription,
   DialogFooter,
   DialogHeader,
@@ -147,141 +148,146 @@ export function AdminsActionDialog({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className='sm:max-w-lg'>
-        <DialogHeader className='text-start'>
-          <DialogTitle>
-            {isEdit ? 'Cập nhật nhân viên' : 'Thêm nhân viên'}
-          </DialogTitle>
-          <DialogDescription>
-            Tài khoản nhân viên chỉ thuộc phòng khám hiện tại.
-          </DialogDescription>
-        </DialogHeader>
-        <Form {...form}>
-          <form
-            id='staff-form'
-            onSubmit={form.handleSubmit((values) => save.mutate(values))}
-            className='space-y-4'
-          >
-            <FormField
-              control={form.control}
-              name='fullName'
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel required>Họ tên</FormLabel>
-                  <FormControl>
-                    <Input {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name='email'
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Email</FormLabel>
-                  <FormControl>
-                    <Input type='email' {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name='phone'
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Số điện thoại</FormLabel>
-                  <FormControl>
-                    <Input {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name='role'
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel required>Vai trò</FormLabel>
-                  <SelectDropdown
-                    defaultValue={field.value}
-                    isControlled
-                    onValueChange={field.onChange}
-                    items={roles.map(({ label, value }) => ({ label, value }))}
-                  />
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name='isActive'
-              render={({ field }) => (
-                <FormItem className='flex items-center justify-between rounded-md border p-3'>
-                  <div className='space-y-1'>
-                    <FormLabel>Kích hoạt tài khoản</FormLabel>
-                    <p className='text-sm text-muted-foreground'>
-                      Chỉ tài khoản được kích hoạt mới có thể đăng nhập.
-                    </p>
-                  </div>
-                  <FormControl>
-                    <Checkbox
-                      checked={field.value}
-                      onCheckedChange={(checked) =>
-                        field.onChange(checked === true)
-                      }
-                      onBlur={field.onBlur}
-                      ref={field.ref}
+      <DialogFormContent className='sm:max-w-lg'>
+        <DialogBody>
+          <DialogHeader className='text-start'>
+            <DialogTitle>
+              {isEdit ? 'Cập nhật nhân viên' : 'Thêm nhân viên'}
+            </DialogTitle>
+            <DialogDescription>
+              Tài khoản nhân viên chỉ thuộc phòng khám hiện tại.
+            </DialogDescription>
+          </DialogHeader>
+          <Form {...form}>
+            <form
+              id='staff-form'
+              onSubmit={form.handleSubmit((values) => save.mutate(values))}
+              className='space-y-4'
+            >
+              <FormField
+                control={form.control}
+                name='fullName'
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel required>Họ tên</FormLabel>
+                    <FormControl>
+                      <Input {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name='email'
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Email</FormLabel>
+                    <FormControl>
+                      <Input type='email' {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name='phone'
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Số điện thoại</FormLabel>
+                    <FormControl>
+                      <Input {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name='role'
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel required>Vai trò</FormLabel>
+                    <SelectDropdown
+                      defaultValue={field.value}
+                      isControlled
+                      onValueChange={field.onChange}
+                      items={roles.map(({ label, value }) => ({
+                        label,
+                        value,
+                      }))}
                     />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name='password'
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel required={!isEdit}>
-                    {isEdit ? 'Mật khẩu mới (không bắt buộc)' : 'Mật khẩu'}
-                  </FormLabel>
-                  <FormControl>
-                    <PasswordInput {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name='passwordConfirmation'
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel
-                    required={!isEdit || Boolean(form.watch('password'))}
-                  >
-                    Nhập lại mật khẩu
-                  </FormLabel>
-                  <FormControl>
-                    <PasswordInput {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-          </form>
-        </Form>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name='isActive'
+                render={({ field }) => (
+                  <FormItem className='flex items-center justify-between rounded-md border p-3'>
+                    <div className='space-y-1'>
+                      <FormLabel>Kích hoạt tài khoản</FormLabel>
+                      <p className='text-sm text-muted-foreground'>
+                        Chỉ tài khoản được kích hoạt mới có thể đăng nhập.
+                      </p>
+                    </div>
+                    <FormControl>
+                      <Checkbox
+                        checked={field.value}
+                        onCheckedChange={(checked) =>
+                          field.onChange(checked === true)
+                        }
+                        onBlur={field.onBlur}
+                        ref={field.ref}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name='password'
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel required={!isEdit}>
+                      {isEdit ? 'Mật khẩu mới (không bắt buộc)' : 'Mật khẩu'}
+                    </FormLabel>
+                    <FormControl>
+                      <PasswordInput {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name='passwordConfirmation'
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel
+                      required={!isEdit || Boolean(form.watch('password'))}
+                    >
+                      Nhập lại mật khẩu
+                    </FormLabel>
+                    <FormControl>
+                      <PasswordInput {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            </form>
+          </Form>
+        </DialogBody>
         <DialogFooter>
           <Button type='submit' form='staff-form' disabled={save.isPending}>
             {save.isPending ? 'Đang lưu...' : 'Lưu thay đổi'}
           </Button>
         </DialogFooter>
-      </DialogContent>
+      </DialogFormContent>
     </Dialog>
   )
 }

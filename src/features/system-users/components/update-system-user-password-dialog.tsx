@@ -7,7 +7,8 @@ import { showRequestError } from '@/lib/handle-server-error'
 import { Button } from '@/components/ui/button'
 import {
   Dialog,
-  DialogContent,
+  DialogBody,
+  DialogFormContent,
   DialogDescription,
   DialogFooter,
   DialogHeader,
@@ -68,47 +69,50 @@ export function UpdateSystemUserPasswordDialog({
 
   return (
     <Dialog open={open} onOpenChange={handleOpenChange}>
-      <DialogContent className='sm:max-w-md'>
-        <DialogHeader>
-          <DialogTitle>Đặt lại mật khẩu</DialogTitle>
-          <DialogDescription>
-            {user.userName} · {user.tenant.code} - {user.tenant.name}. Các phiên đăng nhập hiện tại sẽ bị đăng xuất.
-          </DialogDescription>
-        </DialogHeader>
-        <Form {...form}>
-          <form
-            id={`system-user-password-${user.id}`}
-            onSubmit={form.handleSubmit((values) => save.mutate(values))}
-            className='space-y-4'
-          >
-            <FormField
-              control={form.control}
-              name='password'
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel required>Mật khẩu mới</FormLabel>
-                  <FormControl>
-                    <PasswordInput autoComplete='new-password' {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name='passwordConfirmation'
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel required>Nhập lại mật khẩu</FormLabel>
-                  <FormControl>
-                    <PasswordInput autoComplete='new-password' {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-          </form>
-        </Form>
+      <DialogFormContent className='sm:max-w-md'>
+        <DialogBody>
+          <DialogHeader>
+            <DialogTitle>Đặt lại mật khẩu</DialogTitle>
+            <DialogDescription>
+              {user.userName} · {user.tenant.code} - {user.tenant.name}. Các
+              phiên đăng nhập hiện tại sẽ bị đăng xuất.
+            </DialogDescription>
+          </DialogHeader>
+          <Form {...form}>
+            <form
+              id={`system-user-password-${user.id}`}
+              onSubmit={form.handleSubmit((values) => save.mutate(values))}
+              className='space-y-4'
+            >
+              <FormField
+                control={form.control}
+                name='password'
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel required>Mật khẩu mới</FormLabel>
+                    <FormControl>
+                      <PasswordInput autoComplete='new-password' {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name='passwordConfirmation'
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel required>Nhập lại mật khẩu</FormLabel>
+                    <FormControl>
+                      <PasswordInput autoComplete='new-password' {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            </form>
+          </Form>
+        </DialogBody>
         <DialogFooter>
           <Button variant='outline' onClick={() => handleOpenChange(false)}>
             Hủy
@@ -121,7 +125,7 @@ export function UpdateSystemUserPasswordDialog({
             {save.isPending ? 'Đang lưu...' : 'Cập nhật mật khẩu'}
           </Button>
         </DialogFooter>
-      </DialogContent>
+      </DialogFormContent>
     </Dialog>
   )
 }

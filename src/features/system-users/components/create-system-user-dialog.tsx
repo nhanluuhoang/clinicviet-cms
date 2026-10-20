@@ -3,6 +3,7 @@ import { z } from 'zod'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
+import { MANAGED_USER_ROLE_OPTIONS } from '@/config/user-role-labels'
 import { Check, ChevronsUpDown } from 'lucide-react'
 import { toast } from 'sonner'
 import { showRequestError } from '@/lib/handle-server-error'
@@ -19,7 +20,8 @@ import {
 } from '@/components/ui/command'
 import {
   Dialog,
-  DialogContent,
+  DialogBody,
+  DialogFormContent,
   DialogDescription,
   DialogFooter,
   DialogHeader,
@@ -41,7 +43,6 @@ import {
 } from '@/components/ui/popover'
 import { PasswordInput } from '@/components/password-input'
 import { SelectDropdown } from '@/components/select-dropdown'
-import { MANAGED_USER_ROLE_OPTIONS } from '@/config/user-role-labels'
 import { searchTenants, type Tenant } from '@/features/tenants/api'
 import { createSystemUser } from '../api'
 
@@ -142,157 +143,160 @@ export function CreateSystemUserDialog({
 
   return (
     <Dialog open={open} onOpenChange={handleOpenChange}>
-      <DialogContent className='max-h-[90vh] overflow-y-auto sm:max-w-xl'>
-        <DialogHeader className='text-start'>
-          <DialogTitle>Tạo tài khoản cho phòng khám</DialogTitle>
-          <DialogDescription>
-            Chọn phòng khám và vai trò của tài khoản mới.
-          </DialogDescription>
-        </DialogHeader>
-        <Form {...form}>
-          <form
-            id='system-user-form'
-            onSubmit={form.handleSubmit((value) => mutation.mutate(value))}
-            className='grid gap-4 sm:grid-cols-2'
-          >
-            <FormField
-              control={form.control}
-              name='tenantId'
-              render={({ field }) => (
-                <FormItem className='sm:col-span-2'>
-                  <FormLabel required>Phòng khám</FormLabel>
-                  <Popover open={clinicOpen} onOpenChange={setClinicOpen}>
-                    <PopoverTrigger asChild>
-                      <Button
-                        type='button'
-                        variant='outline'
-                        role='combobox'
-                        aria-expanded={clinicOpen}
-                        className='w-full justify-between font-normal'
+      <DialogFormContent className='sm:max-w-xl'>
+        <DialogBody>
+          <DialogHeader className='text-start'>
+            <DialogTitle>Tạo tài khoản cho phòng khám</DialogTitle>
+            <DialogDescription>
+              Chọn phòng khám và vai trò của tài khoản mới.
+            </DialogDescription>
+          </DialogHeader>
+          <Form {...form}>
+            <form
+              id='system-user-form'
+              onSubmit={form.handleSubmit((value) => mutation.mutate(value))}
+              className='grid gap-4 sm:grid-cols-2'
+            >
+              <FormField
+                control={form.control}
+                name='tenantId'
+                render={({ field }) => (
+                  <FormItem className='sm:col-span-2'>
+                    <FormLabel required>Phòng khám</FormLabel>
+                    <Popover open={clinicOpen} onOpenChange={setClinicOpen}>
+                      <PopoverTrigger asChild>
+                        <Button
+                          type='button'
+                          variant='outline'
+                          role='combobox'
+                          aria-expanded={clinicOpen}
+                          className='w-full justify-between font-normal'
+                        >
+                          <span className='truncate'>
+                            {selectedTenant
+                              ? `${selectedTenant.code} - ${selectedTenant.name}`
+                              : 'Tìm mã hoặc tên phòng khám...'}
+                          </span>
+                          <ChevronsUpDown className='ms-2 size-4 shrink-0 opacity-50' />
+                        </Button>
+                      </PopoverTrigger>
+                      <PopoverContent
+                        className='w-(--radix-popover-trigger-width) p-0'
+                        align='start'
                       >
-                        <span className='truncate'>
-                          {selectedTenant
-                            ? `${selectedTenant.code} - ${selectedTenant.name}`
-                            : 'Tìm mã hoặc tên phòng khám...'}
-                        </span>
-                        <ChevronsUpDown className='ms-2 size-4 shrink-0 opacity-50' />
-                      </Button>
-                    </PopoverTrigger>
-                    <PopoverContent
-                      className='w-(--radix-popover-trigger-width) p-0'
-                      align='start'
-                    >
-                      <Command shouldFilter={false}>
-                        <CommandInput
-                          value={clinicSearch}
-                          onValueChange={setClinicSearch}
-                          placeholder='Tìm theo mã hoặc tên...'
+                        <Command shouldFilter={false}>
+                          <CommandInput
+                            value={clinicSearch}
+                            onValueChange={setClinicSearch}
+                            placeholder='Tìm theo mã hoặc tên...'
+                          />
+                          <CommandList>
+                            <CommandEmpty>
+                              {(isSearching &&
+                                clinicSearch.trim() !==
+                                  debouncedSearch.trim()) ||
+                              clinicResults.isFetching
+                                ? 'Đang tìm...'
+                                : 'Không tìm thấy phòng khám.'}
+                            </CommandEmpty>
+                            <CommandGroup>
+                              {availableTenants.map((tenant) => (
+                                <CommandItem
+                                  key={tenant.id}
+                                  value={tenant.id}
+                                  onSelect={() => {
+                                    field.onChange(tenant.id)
+                                    setSelectedTenant(tenant)
+                                    setClinicOpen(false)
+                                  }}
+                                >
+                                  <Check
+                                    className={cn(
+                                      'me-2 size-4',
+                                      field.value === tenant.id
+                                        ? 'opacity-100'
+                                        : 'opacity-0'
+                                    )}
+                                  />
+                                  {tenant.code} - {tenant.name}
+                                </CommandItem>
+                              ))}
+                            </CommandGroup>
+                          </CommandList>
+                        </Command>
+                      </PopoverContent>
+                    </Popover>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              {(
+                [
+                  ['userName', 'Tên đăng nhập'],
+                  ['fullName', 'Họ tên'],
+                  ['email', 'Email'],
+                  ['phone', 'Số điện thoại'],
+                ] as const
+              ).map(([name, label]) => (
+                <FormField
+                  key={name}
+                  control={form.control}
+                  name={name}
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel
+                        required={name === 'userName' || name === 'fullName'}
+                      >
+                        {label}
+                      </FormLabel>
+                      <FormControl>
+                        <Input
+                          type={name === 'email' ? 'email' : 'text'}
+                          {...field}
                         />
-                        <CommandList>
-                          <CommandEmpty>
-                            {(isSearching &&
-                              clinicSearch.trim() !== debouncedSearch.trim()) ||
-                            clinicResults.isFetching
-                              ? 'Đang tìm...'
-                              : 'Không tìm thấy phòng khám.'}
-                          </CommandEmpty>
-                          <CommandGroup>
-                            {availableTenants.map((tenant) => (
-                              <CommandItem
-                                key={tenant.id}
-                                value={tenant.id}
-                                onSelect={() => {
-                                  field.onChange(tenant.id)
-                                  setSelectedTenant(tenant)
-                                  setClinicOpen(false)
-                                }}
-                              >
-                                <Check
-                                  className={cn(
-                                    'me-2 size-4',
-                                    field.value === tenant.id
-                                      ? 'opacity-100'
-                                      : 'opacity-0'
-                                  )}
-                                />
-                                {tenant.code} - {tenant.name}
-                              </CommandItem>
-                            ))}
-                          </CommandGroup>
-                        </CommandList>
-                      </Command>
-                    </PopoverContent>
-                  </Popover>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            {(
-              [
-                ['userName', 'Tên đăng nhập'],
-                ['fullName', 'Họ tên'],
-                ['email', 'Email'],
-                ['phone', 'Số điện thoại'],
-              ] as const
-            ).map(([name, label]) => (
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              ))}
               <FormField
-                key={name}
                 control={form.control}
-                name={name}
+                name='role'
                 render={({ field }) => (
-                  <FormItem>
-                    <FormLabel
-                      required={name === 'userName' || name === 'fullName'}
-                    >
-                      {label}
-                    </FormLabel>
-                    <FormControl>
-                      <Input
-                        type={name === 'email' ? 'email' : 'text'}
-                        {...field}
-                      />
-                    </FormControl>
+                  <FormItem className='sm:col-span-2'>
+                    <FormLabel required>Vai trò</FormLabel>
+                    <SelectDropdown
+                      defaultValue={field.value}
+                      isControlled
+                      onValueChange={field.onChange}
+                      items={MANAGED_USER_ROLE_OPTIONS}
+                    />
                     <FormMessage />
                   </FormItem>
                 )}
               />
-            ))}
-            <FormField
-              control={form.control}
-              name='role'
-              render={({ field }) => (
-                <FormItem className='sm:col-span-2'>
-                  <FormLabel required>Vai trò</FormLabel>
-                  <SelectDropdown
-                    defaultValue={field.value}
-                    isControlled
-                    onValueChange={field.onChange}
-                    items={MANAGED_USER_ROLE_OPTIONS}
-                  />
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            {(['password', 'passwordConfirmation'] as const).map((name) => (
-              <FormField
-                key={name}
-                control={form.control}
-                name={name}
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel required>
-                      {name === 'password' ? 'Mật khẩu' : 'Nhập lại mật khẩu'}
-                    </FormLabel>
-                    <FormControl>
-                      <PasswordInput {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-            ))}
-          </form>
-        </Form>
+              {(['password', 'passwordConfirmation'] as const).map((name) => (
+                <FormField
+                  key={name}
+                  control={form.control}
+                  name={name}
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel required>
+                        {name === 'password' ? 'Mật khẩu' : 'Nhập lại mật khẩu'}
+                      </FormLabel>
+                      <FormControl>
+                        <PasswordInput {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              ))}
+            </form>
+          </Form>
+        </DialogBody>
         <DialogFooter>
           <Button variant='outline' onClick={() => onOpenChange(false)}>
             Hủy
@@ -305,7 +309,7 @@ export function CreateSystemUserDialog({
             {mutation.isPending ? 'Đang tạo...' : 'Tạo tài khoản'}
           </Button>
         </DialogFooter>
-      </DialogContent>
+      </DialogFormContent>
     </Dialog>
   )
 }

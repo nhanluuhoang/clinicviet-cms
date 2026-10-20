@@ -5,7 +5,9 @@ import { showRequestError } from '@/lib/handle-server-error'
 import { Button } from '@/components/ui/button'
 import {
   Dialog,
-  DialogContent,
+  DialogBody,
+  DialogFormContent,
+  DialogFooter,
   DialogDescription,
   DialogHeader,
   DialogTitle,
@@ -75,84 +77,99 @@ export function CreateRequestDialog({
       <DialogTrigger asChild>
         <Button>Gửi yêu cầu</Button>
       </DialogTrigger>
-      <DialogContent className='max-h-[90svh] overflow-y-auto'>
-        <DialogHeader>
-          <DialogTitle>Gửi yêu cầu hỗ trợ</DialogTitle>
-          <DialogDescription>
-            Báo lỗi hoặc đề xuất cải thiện cho phòng khám của bạn.
-          </DialogDescription>
-        </DialogHeader>
-        <form onSubmit={submit} className='space-y-4'>
-          <fieldset disabled={mutation.isPending} className='space-y-4'>
-            <div className='space-y-2'>
-              <Label htmlFor='request-type' required>
-                Loại yêu cầu
-              </Label>
-              <Select
-                value={type}
-                onValueChange={(value) => setType(value as RequestType)}
-              >
-                <SelectTrigger id='request-type'>
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value='GENERAL'>Hỗ trợ chung</SelectItem>
-                  <SelectItem value='BUG'>Báo lỗi</SelectItem>
-                  <SelectItem value='FEATURE'>Đề xuất tính năng</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-            <div className='space-y-2'>
-              <Label htmlFor='request-title' required>
-                Tiêu đề
-              </Label>
-              <Input id='request-title' name='title' required maxLength={200} />
-            </div>
-            <div className='space-y-2'>
-              <Label htmlFor='request-content' required>
-                Nội dung
-              </Label>
-              <Textarea
-                id='request-content'
-                name='content'
-                required
-                maxLength={10000}
-                rows={7}
-                placeholder={
-                  type === 'BUG'
-                    ? 'Thao tác đã thực hiện, kết quả mong muốn và lỗi thực tế…'
-                    : 'Bạn muốn thêm tính năng gì? Tính năng đó giúp ích như thế nào?'
-                }
-              />
-            </div>
-            <div className='space-y-2'>
-              <Label htmlFor='request-path'>Trang gặp lỗi</Label>
-              <Input
-                id='request-path'
-                name='pagePath'
-                maxLength={500}
-                placeholder='/medical-histories'
-              />
-              <p className='text-xs text-muted-foreground'>
-                Nhập đường dẫn trang nếu có.
-              </p>
-            </div>
-          </fieldset>
-          <div className='flex justify-end gap-2'>
-            <Button
-              type='button'
-              variant='outline'
-              disabled={mutation.isPending}
-              onClick={() => setOpen(false)}
-            >
-              Hủy
-            </Button>
-            <Button type='submit' disabled={mutation.isPending}>
-              {mutation.isPending ? 'Đang gửi…' : 'Gửi yêu cầu'}
-            </Button>
-          </div>
-        </form>
-      </DialogContent>
+      <DialogFormContent>
+        <DialogBody>
+          <DialogHeader>
+            <DialogTitle>Gửi yêu cầu hỗ trợ</DialogTitle>
+            <DialogDescription>
+              Báo lỗi hoặc đề xuất cải thiện cho phòng khám của bạn.
+            </DialogDescription>
+          </DialogHeader>
+          <form
+            id='create-support-request-form'
+            onSubmit={submit}
+            className='space-y-4'
+          >
+            <fieldset disabled={mutation.isPending} className='space-y-4'>
+              <div className='space-y-2'>
+                <Label htmlFor='request-type' required>
+                  Loại yêu cầu
+                </Label>
+                <Select
+                  value={type}
+                  onValueChange={(value) => setType(value as RequestType)}
+                >
+                  <SelectTrigger id='request-type'>
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value='GENERAL'>Hỗ trợ chung</SelectItem>
+                    <SelectItem value='BUG'>Báo lỗi</SelectItem>
+                    <SelectItem value='FEATURE'>Đề xuất tính năng</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+              <div className='space-y-2'>
+                <Label htmlFor='request-title' required>
+                  Tiêu đề
+                </Label>
+                <Input
+                  id='request-title'
+                  name='title'
+                  required
+                  maxLength={200}
+                />
+              </div>
+              <div className='space-y-2'>
+                <Label htmlFor='request-content' required>
+                  Nội dung
+                </Label>
+                <Textarea
+                  id='request-content'
+                  name='content'
+                  required
+                  maxLength={10000}
+                  rows={7}
+                  placeholder={
+                    type === 'BUG'
+                      ? 'Thao tác đã thực hiện, kết quả mong muốn và lỗi thực tế…'
+                      : 'Bạn muốn thêm tính năng gì? Tính năng đó giúp ích như thế nào?'
+                  }
+                />
+              </div>
+              <div className='space-y-2'>
+                <Label htmlFor='request-path'>Trang gặp lỗi</Label>
+                <Input
+                  id='request-path'
+                  name='pagePath'
+                  maxLength={500}
+                  placeholder='/medical-histories'
+                />
+                <p className='text-xs text-muted-foreground'>
+                  Nhập đường dẫn trang nếu có.
+                </p>
+              </div>
+            </fieldset>
+          </form>
+        </DialogBody>
+        <DialogFooter>
+          <Button
+            type='button'
+            variant='outline'
+            disabled={mutation.isPending}
+            onClick={() => setOpen(false)}
+          >
+            Hủy
+          </Button>
+          <Button
+            type='submit'
+            form='create-support-request-form'
+            disabled={mutation.isPending}
+          >
+            {mutation.isPending ? 'Đang gửi…' : 'Gửi yêu cầu'}
+          </Button>
+        </DialogFooter>
+      </DialogFormContent>
     </Dialog>
   )
 }

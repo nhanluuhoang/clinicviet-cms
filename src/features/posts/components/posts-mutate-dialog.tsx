@@ -11,7 +11,8 @@ import { Button } from '@/components/ui/button'
 import {
   Dialog,
   DialogClose,
-  DialogContent,
+  DialogBody,
+  DialogFormContent,
   DialogDescription,
   DialogFooter,
   DialogHeader,
@@ -135,45 +136,32 @@ export function PostsMutateDialog({ open, onOpenChange, currentRow }: Props) {
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent
-        className='grid max-h-[90dvh] grid-rows-[auto_minmax(0,1fr)_auto] overflow-hidden sm:max-w-4xl'
+      <DialogFormContent
+        className='sm:max-w-4xl'
         onInteractOutside={(event) => event.preventDefault()}
         onEscapeKeyDown={(event) => event.preventDefault()}
       >
-        <DialogHeader className='pe-8 text-start'>
-          <DialogTitle>
-            {currentRow ? 'Cập nhật bài viết' : 'Tạo bài viết'}
-          </DialogTitle>
-          <DialogDescription>
-            Nội dung công khai sẽ xuất hiện trên trang phòng khám.
-          </DialogDescription>
-        </DialogHeader>
-        <Form {...form}>
-          <form
-            id='posts-form'
-            onSubmit={form.handleSubmit(submit)}
-            className='-mx-1 space-y-5 overflow-y-auto px-1'
-          >
-            <FormField
-              control={form.control}
-              name='title'
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel required>Tiêu đề</FormLabel>
-                  <FormControl>
-                    <Input {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <div className='grid gap-4 sm:grid-cols-2'>
+        <DialogBody>
+          <DialogHeader className='pe-8 text-start'>
+            <DialogTitle>
+              {currentRow ? 'Cập nhật bài viết' : 'Tạo bài viết'}
+            </DialogTitle>
+            <DialogDescription>
+              Nội dung công khai sẽ xuất hiện trên trang phòng khám.
+            </DialogDescription>
+          </DialogHeader>
+          <Form {...form}>
+            <form
+              id='posts-form'
+              onSubmit={form.handleSubmit(submit)}
+              className='-mx-1 space-y-5 overflow-y-auto px-1'
+            >
               <FormField
                 control={form.control}
-                name='category'
+                name='title'
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel required>Chuyên mục</FormLabel>
+                    <FormLabel required>Tiêu đề</FormLabel>
                     <FormControl>
                       <Input {...field} />
                     </FormControl>
@@ -181,145 +169,162 @@ export function PostsMutateDialog({ open, onOpenChange, currentRow }: Props) {
                   </FormItem>
                 )}
               />
+              <div className='grid gap-4 sm:grid-cols-2'>
+                <FormField
+                  control={form.control}
+                  name='category'
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel required>Chuyên mục</FormLabel>
+                      <FormControl>
+                        <Input {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={form.control}
+                  name='readTime'
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel required>Thời gian đọc (phút)</FormLabel>
+                      <FormControl>
+                        <Input
+                          type='number'
+                          min={1}
+                          max={120}
+                          value={field.value}
+                          onChange={(event) =>
+                            field.onChange(Number(event.target.value))
+                          }
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              </div>
               <FormField
                 control={form.control}
-                name='readTime'
+                name='excerpt'
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel required>Thời gian đọc (phút)</FormLabel>
+                    <FormLabel required>Mô tả ngắn</FormLabel>
                     <FormControl>
-                      <Input
-                        type='number'
-                        min={1}
-                        max={120}
+                      <Textarea rows={3} {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name='thumbnailUrl'
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>
+                      Ảnh đại diện — khuyến nghị 1200 × 675 px (16:9)
+                    </FormLabel>
+                    <FormControl>
+                      <div className='space-y-3'>
+                        <label
+                          htmlFor='post-thumbnail'
+                          className='flex cursor-pointer flex-col items-center justify-center gap-2 rounded-lg border border-dashed p-6 text-center transition-colors hover:bg-muted/50'
+                        >
+                          {isUploadingThumbnail ? (
+                            <Loader2 className='size-7 animate-spin text-muted-foreground' />
+                          ) : (
+                            <ImagePlus className='size-7 text-muted-foreground' />
+                          )}
+                          <span className='text-sm font-medium'>
+                            {isUploadingThumbnail
+                              ? 'Đang tải ảnh...'
+                              : 'Chọn ảnh đại diện'}
+                          </span>
+                          <span className='text-xs text-muted-foreground'>
+                            JPG, PNG hoặc WebP, tối đa 5 MB.
+                          </span>
+                        </label>
+                        <Input
+                          id='post-thumbnail'
+                          type='file'
+                          accept='image/jpeg,image/png,image/webp'
+                          className='sr-only'
+                          disabled={isUploadingThumbnail}
+                          onChange={(event) => {
+                            void uploadThumbnail(event.target.files?.[0])
+                            event.target.value = ''
+                          }}
+                        />
+                        {thumbnailPreview && (
+                          <div className='relative overflow-hidden rounded-lg border bg-muted'>
+                            <img
+                              src={thumbnailPreview}
+                              alt='Xem trước ảnh đại diện'
+                              className='aspect-video w-full object-cover'
+                            />
+                            <Button
+                              type='button'
+                              variant='destructive'
+                              size='icon'
+                              className='absolute top-2 right-2 size-8'
+                              aria-label='Xóa ảnh đại diện'
+                              onClick={() => {
+                                field.onChange('')
+                                setThumbnailPreview('')
+                              }}
+                            >
+                              <X />
+                            </Button>
+                          </div>
+                        )}
+                        <input type='hidden' {...field} />
+                      </div>
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name='content'
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel required>Nội dung</FormLabel>
+                    <FormControl>
+                      <PostContentEditor
                         value={field.value}
-                        onChange={(event) =>
-                          field.onChange(Number(event.target.value))
-                        }
+                        onChange={field.onChange}
                       />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
                 )}
               />
-            </div>
-            <FormField
-              control={form.control}
-              name='excerpt'
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel required>Mô tả ngắn</FormLabel>
-                  <FormControl>
-                    <Textarea rows={3} {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name='thumbnailUrl'
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>
-                    Ảnh đại diện — khuyến nghị 1200 × 675 px (16:9)
-                  </FormLabel>
-                  <FormControl>
-                    <div className='space-y-3'>
-                      <label
-                        htmlFor='post-thumbnail'
-                        className='flex cursor-pointer flex-col items-center justify-center gap-2 rounded-lg border border-dashed p-6 text-center transition-colors hover:bg-muted/50'
-                      >
-                        {isUploadingThumbnail ? (
-                          <Loader2 className='size-7 animate-spin text-muted-foreground' />
-                        ) : (
-                          <ImagePlus className='size-7 text-muted-foreground' />
-                        )}
-                        <span className='text-sm font-medium'>
-                          {isUploadingThumbnail
-                            ? 'Đang tải ảnh...'
-                            : 'Chọn ảnh đại diện'}
-                        </span>
-                        <span className='text-xs text-muted-foreground'>
-                          JPG, PNG hoặc WebP, tối đa 5 MB.
-                        </span>
-                      </label>
-                      <Input
-                        id='post-thumbnail'
-                        type='file'
-                        accept='image/jpeg,image/png,image/webp'
-                        className='sr-only'
-                        disabled={isUploadingThumbnail}
-                        onChange={(event) => {
-                          void uploadThumbnail(event.target.files?.[0])
-                          event.target.value = ''
-                        }}
-                      />
-                      {thumbnailPreview && (
-                        <div className='relative overflow-hidden rounded-lg border bg-muted'>
-                          <img
-                            src={thumbnailPreview}
-                            alt='Xem trước ảnh đại diện'
-                            className='aspect-video w-full object-cover'
-                          />
-                          <Button
-                            type='button'
-                            variant='destructive'
-                            size='icon'
-                            className='absolute top-2 right-2 size-8'
-                            aria-label='Xóa ảnh đại diện'
-                            onClick={() => {
-                              field.onChange('')
-                              setThumbnailPreview('')
-                            }}
-                          >
-                            <X />
-                          </Button>
-                        </div>
-                      )}
-                      <input type='hidden' {...field} />
-                    </div>
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name='content'
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel required>Nội dung</FormLabel>
-                  <FormControl>
-                    <PostContentEditor
-                      value={field.value}
-                      onChange={field.onChange}
+              <FormField
+                control={form.control}
+                name='isPublished'
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Trạng thái</FormLabel>
+                    <SelectDropdown
+                      defaultValue={String(field.value)}
+                      onValueChange={(value) =>
+                        field.onChange(value === 'true')
+                      }
+                      items={postStatuses.map((status) => ({
+                        label: status.label,
+                        value: String(status.value),
+                      }))}
                     />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name='isPublished'
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Trạng thái</FormLabel>
-                  <SelectDropdown
-                    defaultValue={String(field.value)}
-                    onValueChange={(value) => field.onChange(value === 'true')}
-                    items={postStatuses.map((status) => ({
-                      label: status.label,
-                      value: String(status.value),
-                    }))}
-                  />
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-          </form>
-        </Form>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            </form>
+          </Form>
+        </DialogBody>
         <DialogFooter className='border-t pt-4'>
           <DialogClose asChild>
             <Button variant='outline'>Đóng</Button>
@@ -332,7 +337,7 @@ export function PostsMutateDialog({ open, onOpenChange, currentRow }: Props) {
             {form.formState.isSubmitting ? 'Đang lưu...' : 'Lưu bài viết'}
           </Button>
         </DialogFooter>
-      </DialogContent>
+      </DialogFormContent>
     </Dialog>
   )
 }

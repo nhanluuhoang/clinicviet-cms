@@ -21,7 +21,8 @@ import { Button } from '@/components/ui/button'
 import { Checkbox } from '@/components/ui/checkbox'
 import {
   Dialog,
-  DialogContent,
+  DialogBody,
+  DialogFormContent,
   DialogFooter,
   DialogHeader,
   DialogTitle,
@@ -35,9 +36,9 @@ import {
 } from '@/components/ui/dropdown-menu'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
+import { Textarea } from '@/components/ui/textarea'
 import { DatePickerInput } from '@/components/date-picker-input'
 import { SelectDropdown } from '@/components/select-dropdown'
-import { Textarea } from '@/components/ui/textarea'
 import { deleteTenant, updateTenant, type Tenant } from '../api'
 
 export function TenantActions({ tenant }: { tenant: Tenant }) {
@@ -150,126 +151,139 @@ export function TenantActions({ tenant }: { tenant: Tenant }) {
         </DropdownMenuContent>
       </DropdownMenu>
       <Dialog open={editOpen} onOpenChange={setEditOpen}>
-        <DialogContent className='max-h-[90vh] overflow-y-auto sm:max-w-xl'>
-          <DialogHeader>
-            <DialogTitle>Cập nhật phòng khám</DialogTitle>
-          </DialogHeader>
-          <div className='grid gap-4 sm:grid-cols-2'>
-            {(
-              [
-                ['code', 'Mã phòng khám'],
-                ['name', 'Tên phòng khám'],
-                ['subdomain', 'Subdomain'],
-                ['address', 'Địa chỉ'],
-              ] as const
-            )
-              .filter(
-                ([key]) => key !== 'subdomain' || values.servicePlan === 'PRO'
+        <DialogFormContent className='sm:max-w-xl'>
+          <DialogBody>
+            <DialogHeader>
+              <DialogTitle>Cập nhật phòng khám</DialogTitle>
+            </DialogHeader>
+            <div className='grid gap-4 sm:grid-cols-2'>
+              {(
+                [
+                  ['code', 'Mã phòng khám'],
+                  ['name', 'Tên phòng khám'],
+                  ['subdomain', 'Subdomain'],
+                  ['address', 'Địa chỉ'],
+                ] as const
               )
-              .map(([key, label]) => (
-                <div className='space-y-2' key={key}>
-                  <Label required>{label}</Label>
-                  <Input
-                    value={values[key]}
-                    onChange={(event) =>
-                      setValues({ ...values, [key]: event.target.value })
-                    }
-                  />
-                </div>
-              ))}
-            <div className='space-y-2 sm:col-span-2'>
-              <Label required htmlFor={`tenant-storage-${tenant.id}`}>
-                Dung lượng lưu trữ (GB)
-              </Label>
-              <Input
-                id={`tenant-storage-${tenant.id}`}
-                type='number'
-                min={1}
-                max={100000}
-                step={1}
-                value={values.storageLimitGb}
-                onChange={(event) =>
-                  setValues({ ...values, storageLimitGb: Number(event.target.value) })
-                }
-              />
+                .filter(
+                  ([key]) => key !== 'subdomain' || values.servicePlan === 'PRO'
+                )
+                .map(([key, label]) => (
+                  <div className='space-y-2' key={key}>
+                    <Label required>{label}</Label>
+                    <Input
+                      value={values[key]}
+                      onChange={(event) =>
+                        setValues({ ...values, [key]: event.target.value })
+                      }
+                    />
+                  </div>
+                ))}
+              <div className='space-y-2 sm:col-span-2'>
+                <Label required htmlFor={`tenant-storage-${tenant.id}`}>
+                  Dung lượng lưu trữ (GB)
+                </Label>
+                <Input
+                  id={`tenant-storage-${tenant.id}`}
+                  type='number'
+                  min={1}
+                  max={100000}
+                  step={1}
+                  value={values.storageLimitGb}
+                  onChange={(event) =>
+                    setValues({
+                      ...values,
+                      storageLimitGb: Number(event.target.value),
+                    })
+                  }
+                />
+              </div>
+              <div className='space-y-2 sm:col-span-2'>
+                <Label htmlFor={`tenant-note-${tenant.id}`}>
+                  Ghi chú nội bộ
+                </Label>
+                <Textarea
+                  id={`tenant-note-${tenant.id}`}
+                  maxLength={1000}
+                  rows={3}
+                  value={values.note}
+                  onChange={(event) =>
+                    setValues({ ...values, note: event.target.value })
+                  }
+                />
+              </div>
+              <div className='space-y-2 sm:col-span-2'>
+                <Label required>Gói dịch vụ</Label>
+                <SelectDropdown
+                  standalone
+                  defaultValue={values.servicePlan}
+                  isControlled
+                  onValueChange={(servicePlan) =>
+                    setValues({
+                      ...values,
+                      servicePlan: servicePlan as Tenant['servicePlan'],
+                    })
+                  }
+                  items={SERVICE_PLAN_OPTIONS}
+                />
+              </div>
+              <div className='space-y-2 sm:col-span-2'>
+                <Label required>Hình thức đăng ký</Label>
+                <SelectDropdown
+                  standalone
+                  isControlled
+                  defaultValue={subscriptionStatus}
+                  onValueChange={(value) => {
+                    const status = value as Tenant['subscriptionStatus']
+                    setSubscriptionStatus(status)
+                    const date =
+                      status === 'TRIAL'
+                        ? tenant.trialEndsAt
+                        : tenant.subscriptionEndsAt
+                    setEndsOn(date ? toDateInput(date) : '')
+                  }}
+                  items={SUBSCRIPTION_STATUS_OPTIONS}
+                />
+              </div>
+              <div className='space-y-2 sm:col-span-2'>
+                <Label required htmlFor={`tenant-expiry-${tenant.id}`}>
+                  {isTrial ? 'Ngày kết thúc dùng thử' : 'Ngày hết hạn gói'}
+                </Label>
+                <DatePickerInput
+                  id={`tenant-expiry-${tenant.id}`}
+                  value={endsOn}
+                  onChange={setEndsOn}
+                />
+              </div>
+              <label className='flex items-center gap-2 sm:col-span-2'>
+                <Checkbox
+                  checked={values.isActive}
+                  onCheckedChange={(checked) =>
+                    setValues({ ...values, isActive: checked === true })
+                  }
+                />
+                Đang hoạt động
+              </label>
             </div>
-            <div className='space-y-2 sm:col-span-2'>
-              <Label htmlFor={`tenant-note-${tenant.id}`}>Ghi chú nội bộ</Label>
-              <Textarea
-                id={`tenant-note-${tenant.id}`}
-                maxLength={1000}
-                rows={3}
-                value={values.note}
-                onChange={(event) =>
-                  setValues({ ...values, note: event.target.value })
-                }
-              />
-            </div>
-            <div className='space-y-2 sm:col-span-2'>
-              <Label required>Gói dịch vụ</Label>
-              <SelectDropdown
-                standalone
-                defaultValue={values.servicePlan}
-                isControlled
-                onValueChange={(servicePlan) =>
-                  setValues({
-                    ...values,
-                    servicePlan: servicePlan as Tenant['servicePlan'],
-                  })
-                }
-                items={SERVICE_PLAN_OPTIONS}
-              />
-            </div>
-            <div className='space-y-2 sm:col-span-2'>
-              <Label required>Hình thức đăng ký</Label>
-              <SelectDropdown
-                standalone
-                isControlled
-                defaultValue={subscriptionStatus}
-                onValueChange={(value) => {
-                  const status = value as Tenant['subscriptionStatus']
-                  setSubscriptionStatus(status)
-                  const date =
-                    status === 'TRIAL'
-                      ? tenant.trialEndsAt
-                      : tenant.subscriptionEndsAt
-                  setEndsOn(date ? toDateInput(date) : '')
-                }}
-                items={SUBSCRIPTION_STATUS_OPTIONS}
-              />
-            </div>
-            <div className='space-y-2 sm:col-span-2'>
-              <Label required htmlFor={`tenant-expiry-${tenant.id}`}>
-                {isTrial ? 'Ngày kết thúc dùng thử' : 'Ngày hết hạn gói'}
-              </Label>
-              <DatePickerInput
-                id={`tenant-expiry-${tenant.id}`}
-                value={endsOn}
-                onChange={setEndsOn}
-              />
-            </div>
-            <label className='flex items-center gap-2 sm:col-span-2'>
-              <Checkbox
-                checked={values.isActive}
-                onCheckedChange={(checked) =>
-                  setValues({ ...values, isActive: checked === true })
-                }
-              />
-              Đang hoạt động
-            </label>
-          </div>
+          </DialogBody>
           <DialogFooter>
             <Button variant='outline' onClick={() => setEditOpen(false)}>
               Hủy
             </Button>
             <Button
               onClick={() => update.mutate()}
-              disabled={update.isPending || !endsOn || !Number.isInteger(values.storageLimitGb) || values.storageLimitGb < 1 || values.storageLimitGb > 100000}
+              disabled={
+                update.isPending ||
+                !endsOn ||
+                !Number.isInteger(values.storageLimitGb) ||
+                values.storageLimitGb < 1 ||
+                values.storageLimitGb > 100000
+              }
             >
               Lưu thay đổi
             </Button>
           </DialogFooter>
-        </DialogContent>
+        </DialogFormContent>
       </Dialog>
       <AlertDialog open={deleteOpen} onOpenChange={setDeleteOpen}>
         <AlertDialogContent>

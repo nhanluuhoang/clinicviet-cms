@@ -17,7 +17,8 @@ import {
 import {
   Dialog,
   DialogClose,
-  DialogContent,
+  DialogBody,
+  DialogFormContent,
   DialogDescription,
   DialogFooter,
   DialogHeader,
@@ -191,206 +192,211 @@ export function StockTakeMutateDrawer({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent
-        className='grid max-h-[90dvh] grid-rows-[auto_minmax(0,1fr)_auto] overflow-hidden sm:max-w-2xl'
+      <DialogFormContent
+        className='sm:max-w-2xl'
         onInteractOutside={(e) => e.preventDefault()}
         onEscapeKeyDown={(e) => e.preventDefault()}
       >
-        <DialogHeader className='pe-8 text-start'>
-          <DialogTitle>Kiểm kê tồn kho</DialogTitle>
-          <DialogDescription>
-            Chọn thuốc rồi nhập số thực đếm cho từng lô. Chỉ những lô có số lệch
-            mới được ghi vào phiếu.
-          </DialogDescription>
-        </DialogHeader>
-
-        <div className='-mx-1 space-y-6 overflow-y-auto px-1'>
-          <div className='grid gap-4 sm:grid-cols-2'>
-            <div className='space-y-2'>
-              <Label required htmlFor='stocktake-medicine'>
-                Thuốc
-              </Label>
-              <MedicinePicker
-                selected={selectedMedicine}
-                onChange={(medicine) => {
-                  setSelectedMedicine(medicine)
-                  setMedicineId(medicine.id)
-                }}
-              />
+        <DialogBody>
+          <DialogHeader className='pe-8 text-start'>
+            <DialogTitle>Kiểm kê tồn kho</DialogTitle>
+            <DialogDescription>
+              Chọn thuốc rồi nhập số thực đếm cho từng lô. Chỉ những lô có số
+              lệch mới được ghi vào phiếu.
+            </DialogDescription>
+          </DialogHeader>
+          <div className='-mx-1 space-y-6 overflow-y-auto px-1'>
+            <div className='grid gap-4 sm:grid-cols-2'>
+              <div className='space-y-2'>
+                <Label required htmlFor='stocktake-medicine'>
+                  Thuốc
+                </Label>
+                <MedicinePicker
+                  selected={selectedMedicine}
+                  onChange={(medicine) => {
+                    setSelectedMedicine(medicine)
+                    setMedicineId(medicine.id)
+                  }}
+                />
+              </div>
+              <div className='space-y-2'>
+                <Label required htmlFor='stocktake-date'>
+                  Ngày kiểm kê
+                </Label>
+                <DatePickerInput
+                  id='stocktake-date'
+                  value={countedAt}
+                  onChange={setCountedAt}
+                />
+              </div>
             </div>
-            <div className='space-y-2'>
-              <Label required htmlFor='stocktake-date'>
-                Ngày kiểm kê
-              </Label>
-              <DatePickerInput
-                id='stocktake-date'
-                value={countedAt}
-                onChange={setCountedAt}
-              />
-            </div>
-          </div>
 
-          {medicineId && (
-            <div className='space-y-2'>
-              <Label>Các lô đang còn tồn ({batches.length})</Label>
-              {batches.length === 0 ? (
-                <p className='rounded-md border border-dashed p-4 text-center text-sm text-muted-foreground'>
-                  Thuốc này không còn lô nào có tồn.
-                </p>
-              ) : (
-                <>
-                  <div className='grid gap-2 sm:hidden'>
-                    {batches.map((batch) => {
-                      const counted = counts[batch.id]
-                      const diff =
-                        counted === undefined
-                          ? null
-                          : counted - batch.qtyRemaining
-                      return (
-                        <div
-                          key={batch.id}
-                          className='space-y-2 rounded-md border p-3 text-sm'
-                        >
-                          <p className='font-medium'>Lô {batch.batchNo}</p>
-                          <p>
-                            Hạn sử dụng: <ExpiryBadge date={batch.expiryDate} />
-                          </p>
-                          <p>
-                            Tồn hệ thống: {formatNumber(batch.qtyRemaining)}
-                          </p>
-                          <label className='block space-y-1'>
-                            <span>Thực đếm</span>
-                            <Input
-                              type='number'
-                              min={0}
-                              className='h-8 w-full'
-                              placeholder={String(batch.qtyRemaining)}
-                              value={counted ?? ''}
-                              onChange={(event) =>
-                                setCounts((previous) => {
-                                  const next = { ...previous }
-                                  if (event.target.value === '')
-                                    delete next[batch.id]
-                                  else
-                                    next[batch.id] = Number(event.target.value)
-                                  return next
-                                })
-                              }
-                            />
-                          </label>
-                          <p>
-                            Lệch:{' '}
-                            {diff === null
-                              ? '—'
-                              : diff > 0
-                                ? `+${formatNumber(diff)}`
-                                : formatNumber(diff)}
-                          </p>
-                        </div>
-                      )
-                    })}
-                  </div>
-                  <div className='hidden overflow-x-auto rounded-md border sm:block'>
-                    <table className='w-full text-sm'>
-                      <thead className='bg-muted/50 text-xs text-muted-foreground'>
-                        <tr>
-                          <th className='px-3 py-2 text-start font-medium'>
-                            Số lô
-                          </th>
-                          <th className='px-3 py-2 text-start font-medium'>
-                            Hạn sử dụng
-                          </th>
-                          <th className='px-3 py-2 text-end font-medium'>
-                            Tồn hệ thống
-                          </th>
-                          <th className='px-3 py-2 text-end font-medium'>
-                            Thực đếm
-                          </th>
-                          <th className='px-3 py-2 text-end font-medium'>
-                            Lệch
-                          </th>
-                        </tr>
-                      </thead>
-                      <tbody>
-                        {batches.map((batch) => {
-                          const counted = counts[batch.id]
-                          const diff =
-                            counted === undefined
-                              ? null
-                              : counted - batch.qtyRemaining
+            {medicineId && (
+              <div className='space-y-2'>
+                <Label>Các lô đang còn tồn ({batches.length})</Label>
+                {batches.length === 0 ? (
+                  <p className='rounded-md border border-dashed p-4 text-center text-sm text-muted-foreground'>
+                    Thuốc này không còn lô nào có tồn.
+                  </p>
+                ) : (
+                  <>
+                    <div className='grid gap-2 sm:hidden'>
+                      {batches.map((batch) => {
+                        const counted = counts[batch.id]
+                        const diff =
+                          counted === undefined
+                            ? null
+                            : counted - batch.qtyRemaining
+                        return (
+                          <div
+                            key={batch.id}
+                            className='space-y-2 rounded-md border p-3 text-sm'
+                          >
+                            <p className='font-medium'>Lô {batch.batchNo}</p>
+                            <p>
+                              Hạn sử dụng:{' '}
+                              <ExpiryBadge date={batch.expiryDate} />
+                            </p>
+                            <p>
+                              Tồn hệ thống: {formatNumber(batch.qtyRemaining)}
+                            </p>
+                            <label className='block space-y-1'>
+                              <span>Thực đếm</span>
+                              <Input
+                                type='number'
+                                min={0}
+                                className='h-8 w-full'
+                                placeholder={String(batch.qtyRemaining)}
+                                value={counted ?? ''}
+                                onChange={(event) =>
+                                  setCounts((previous) => {
+                                    const next = { ...previous }
+                                    if (event.target.value === '')
+                                      delete next[batch.id]
+                                    else
+                                      next[batch.id] = Number(
+                                        event.target.value
+                                      )
+                                    return next
+                                  })
+                                }
+                              />
+                            </label>
+                            <p>
+                              Lệch:{' '}
+                              {diff === null
+                                ? '—'
+                                : diff > 0
+                                  ? `+${formatNumber(diff)}`
+                                  : formatNumber(diff)}
+                            </p>
+                          </div>
+                        )
+                      })}
+                    </div>
+                    <div className='hidden overflow-x-auto rounded-md border sm:block'>
+                      <table className='w-full text-sm'>
+                        <thead className='bg-muted/50 text-xs text-muted-foreground'>
+                          <tr>
+                            <th className='px-3 py-2 text-start font-medium'>
+                              Số lô
+                            </th>
+                            <th className='px-3 py-2 text-start font-medium'>
+                              Hạn sử dụng
+                            </th>
+                            <th className='px-3 py-2 text-end font-medium'>
+                              Tồn hệ thống
+                            </th>
+                            <th className='px-3 py-2 text-end font-medium'>
+                              Thực đếm
+                            </th>
+                            <th className='px-3 py-2 text-end font-medium'>
+                              Lệch
+                            </th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          {batches.map((batch) => {
+                            const counted = counts[batch.id]
+                            const diff =
+                              counted === undefined
+                                ? null
+                                : counted - batch.qtyRemaining
 
-                          return (
-                            <tr key={batch.id} className='border-t'>
-                              <td className='px-3 py-2 font-mono text-xs'>
-                                {batch.batchNo}
-                              </td>
-                              <td className='px-3 py-2'>
-                                <ExpiryBadge date={batch.expiryDate} />
-                              </td>
-                              <td className='px-3 py-2 text-end tabular-nums'>
-                                {formatNumber(batch.qtyRemaining)}
-                              </td>
-                              <td className='px-3 py-2 text-end'>
-                                <Input
-                                  type='number'
-                                  min={0}
-                                  className='ms-auto h-8 w-24 text-end'
-                                  placeholder={String(batch.qtyRemaining)}
-                                  value={counted ?? ''}
-                                  onChange={(e) =>
-                                    setCounts((prev) => {
-                                      const next = { ...prev }
-                                      if (e.target.value === '') {
-                                        delete next[batch.id]
-                                      } else {
-                                        next[batch.id] = Number(e.target.value)
-                                      }
-                                      return next
-                                    })
-                                  }
-                                />
-                              </td>
-                              <td
-                                className={cn(
-                                  'px-3 py-2 text-end font-medium tabular-nums',
-                                  diff === null || diff === 0
-                                    ? 'text-muted-foreground'
+                            return (
+                              <tr key={batch.id} className='border-t'>
+                                <td className='px-3 py-2 font-mono text-xs'>
+                                  {batch.batchNo}
+                                </td>
+                                <td className='px-3 py-2'>
+                                  <ExpiryBadge date={batch.expiryDate} />
+                                </td>
+                                <td className='px-3 py-2 text-end tabular-nums'>
+                                  {formatNumber(batch.qtyRemaining)}
+                                </td>
+                                <td className='px-3 py-2 text-end'>
+                                  <Input
+                                    type='number'
+                                    min={0}
+                                    className='ms-auto h-8 w-24 text-end'
+                                    placeholder={String(batch.qtyRemaining)}
+                                    value={counted ?? ''}
+                                    onChange={(e) =>
+                                      setCounts((prev) => {
+                                        const next = { ...prev }
+                                        if (e.target.value === '') {
+                                          delete next[batch.id]
+                                        } else {
+                                          next[batch.id] = Number(
+                                            e.target.value
+                                          )
+                                        }
+                                        return next
+                                      })
+                                    }
+                                  />
+                                </td>
+                                <td
+                                  className={cn(
+                                    'px-3 py-2 text-end font-medium tabular-nums',
+                                    diff === null || diff === 0
+                                      ? 'text-muted-foreground'
+                                      : diff > 0
+                                        ? 'text-emerald-600 dark:text-emerald-400'
+                                        : 'text-red-600 dark:text-red-400'
+                                  )}
+                                >
+                                  {diff === null
+                                    ? '—'
                                     : diff > 0
-                                      ? 'text-emerald-600 dark:text-emerald-400'
-                                      : 'text-red-600 dark:text-red-400'
-                                )}
-                              >
-                                {diff === null
-                                  ? '—'
-                                  : diff > 0
-                                    ? `+${formatNumber(diff)}`
-                                    : formatNumber(diff)}
-                              </td>
-                            </tr>
-                          )
-                        })}
-                      </tbody>
-                    </table>
-                  </div>
-                </>
-              )}
+                                      ? `+${formatNumber(diff)}`
+                                      : formatNumber(diff)}
+                                </td>
+                              </tr>
+                            )
+                          })}
+                        </tbody>
+                      </table>
+                    </div>
+                  </>
+                )}
+              </div>
+            )}
+
+            <div className='space-y-2'>
+              <Label htmlFor='stocktake-note'>Ghi chú</Label>
+              <Textarea
+                id='stocktake-note'
+                rows={2}
+                value={note}
+                onChange={(e) => setNote(e.target.value)}
+                placeholder='Lý do lệch tồn, người kiểm kê... (không bắt buộc)'
+              />
             </div>
-          )}
-
-          <div className='space-y-2'>
-            <Label htmlFor='stocktake-note'>Ghi chú</Label>
-            <Textarea
-              id='stocktake-note'
-              rows={2}
-              value={note}
-              onChange={(e) => setNote(e.target.value)}
-              placeholder='Lý do lệch tồn, người kiểm kê... (không bắt buộc)'
-            />
           </div>
-        </div>
-
+        </DialogBody>
         <DialogFooter className='border-t pt-4 sm:items-center'>
-          <span className='flex-1 text-sm text-muted-foreground'>
+          <span className='flex-1 basis-full text-sm text-muted-foreground sm:basis-auto'>
             {changedLines.length} lô có số lệch
           </span>
           <DialogClose asChild>
@@ -403,7 +409,7 @@ export function StockTakeMutateDrawer({
             {isSubmitting ? 'Đang lưu...' : 'Lưu phiếu kiểm kê'}
           </Button>
         </DialogFooter>
-      </DialogContent>
+      </DialogFormContent>
     </Dialog>
   )
 }

@@ -10,7 +10,8 @@ import { Checkbox } from '@/components/ui/checkbox'
 import {
   Dialog,
   DialogClose,
-  DialogContent,
+  DialogBody,
+  DialogFormContent,
   DialogDescription,
   DialogFooter,
   DialogHeader,
@@ -127,62 +128,34 @@ export function MedicineMutateDialog({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent
-        className='grid max-h-[90dvh] grid-rows-[auto_minmax(0,1fr)_auto] overflow-hidden'
+      <DialogFormContent
         onInteractOutside={(e) => e.preventDefault()}
         onEscapeKeyDown={(e) => e.preventDefault()}
       >
-        <DialogHeader className='pe-8 text-start'>
-          <DialogTitle>
-            {isUpdate ? 'Cập nhật thuốc' : 'Thêm thuốc vào danh mục'}
-          </DialogTitle>
-          <DialogDescription>
-            Danh mục chỉ khai báo thông tin thuốc. Số lượng và hạn sử dụng đến
-            từ các phiếu nhập.
-          </DialogDescription>
-        </DialogHeader>
-
-        <Form {...form}>
-          <form
-            id='medicine-form'
-            onSubmit={form.handleSubmit(onSubmit)}
-            className='-mx-1 space-y-4 overflow-y-auto px-1'
-          >
-            <FormField
-              control={form.control}
-              name='name'
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel required>Tên thuốc</FormLabel>
-                  <FormControl>
-                    <Input {...field} placeholder='VD: Paracetamol 500mg' />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name='activeIngredient'
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel required>Hoạt chất</FormLabel>
-                  <FormControl>
-                    <Input {...field} placeholder='VD: Paracetamol' />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <div className='grid gap-4 sm:grid-cols-2'>
+        <DialogBody>
+          <DialogHeader className='pe-8 text-start'>
+            <DialogTitle>
+              {isUpdate ? 'Cập nhật thuốc' : 'Thêm thuốc vào danh mục'}
+            </DialogTitle>
+            <DialogDescription>
+              Danh mục chỉ khai báo thông tin thuốc. Số lượng và hạn sử dụng đến
+              từ các phiếu nhập.
+            </DialogDescription>
+          </DialogHeader>
+          <Form {...form}>
+            <form
+              id='medicine-form'
+              onSubmit={form.handleSubmit(onSubmit)}
+              className='-mx-1 space-y-4 overflow-y-auto px-1'
+            >
               <FormField
                 control={form.control}
-                name='strength'
+                name='name'
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel required>Hàm lượng</FormLabel>
+                    <FormLabel required>Tên thuốc</FormLabel>
                     <FormControl>
-                      <Input {...field} placeholder='VD: 500mg' />
+                      <Input {...field} placeholder='VD: Paracetamol 500mg' />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -190,132 +163,159 @@ export function MedicineMutateDialog({
               />
               <FormField
                 control={form.control}
-                name='unit'
+                name='activeIngredient'
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel required>Đơn vị</FormLabel>
+                    <FormLabel required>Hoạt chất</FormLabel>
+                    <FormControl>
+                      <Input {...field} placeholder='VD: Paracetamol' />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <div className='grid gap-4 sm:grid-cols-2'>
+                <FormField
+                  control={form.control}
+                  name='strength'
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel required>Hàm lượng</FormLabel>
+                      <FormControl>
+                        <Input {...field} placeholder='VD: 500mg' />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={form.control}
+                  name='unit'
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel required>Đơn vị</FormLabel>
+                      <SelectDropdown
+                        isControlled
+                        defaultValue={field.value}
+                        onValueChange={field.onChange}
+                        placeholder='Chọn đơn vị'
+                        items={medicineUnits.map((u) => ({
+                          label: u,
+                          value: u,
+                        }))}
+                      />
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              </div>
+              <FormField
+                control={form.control}
+                name='group'
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel required>Nhóm thuốc</FormLabel>
                     <SelectDropdown
                       isControlled
                       defaultValue={field.value}
                       onValueChange={field.onChange}
-                      placeholder='Chọn đơn vị'
-                      items={medicineUnits.map((u) => ({
-                        label: u,
-                        value: u,
+                      placeholder='Chọn nhóm'
+                      items={medicineGroups.map((g) => ({
+                        label: g.label,
+                        value: g.value,
                       }))}
                     />
                     <FormMessage />
                   </FormItem>
                 )}
               />
-            </div>
-            <FormField
-              control={form.control}
-              name='group'
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel required>Nhóm thuốc</FormLabel>
-                  <SelectDropdown
-                    isControlled
-                    defaultValue={field.value}
-                    onValueChange={field.onChange}
-                    placeholder='Chọn nhóm'
-                    items={medicineGroups.map((g) => ({
-                      label: g.label,
-                      value: g.value,
-                    }))}
-                  />
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name='manufacturer'
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel required>Nhà sản xuất</FormLabel>
-                  <FormControl>
-                    <Input {...field} placeholder='VD: Traphaco' />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name='salePrice'
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel required>Giá bán</FormLabel>
-                  <FormControl>
-                    <Input
-                      {...field}
-                      type='number'
-                      min={0}
-                      onChange={(e) =>
-                        field.onChange(Number(e.target.value || 0))
-                      }
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name='minStock'
-              render={({ field }) => (
-                <FormItem>
-                  <div className='flex items-center gap-1'>
-                    <FormLabel required>Định mức tồn tối thiểu</FormLabel>
-                    <InfoHint label='Giải thích định mức tồn tối thiểu'>
-                      Ngưỡng tồn thấp nhất cần duy trì cho thuốc này. Hệ thống
-                      so ngưỡng với tổng tồn của tất cả các lô; khi tồn xuống
-                      thấp hơn, thuốc hiện cảnh báo &quot;dưới định mức&quot; ở
-                      tab Tồn kho để nhắc nhập thêm. Để 0 nếu không cần theo
-                      dõi.
-                    </InfoHint>
-                  </div>
-                  <FormControl>
-                    <Input
-                      {...field}
-                      type='number'
-                      min={0}
-                      onChange={(e) =>
-                        field.onChange(
-                          e.target.value === '' ? 0 : Number(e.target.value)
-                        )
-                      }
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name='isActive'
-              render={({ field }) => (
-                <FormItem className='flex items-center justify-between rounded-md border p-3'>
-                  <FormLabel>Kích hoạt thuốc</FormLabel>
-                  <FormControl>
-                    <Checkbox
-                      checked={field.value}
-                      onCheckedChange={(checked) =>
-                        field.onChange(checked === true)
-                      }
-                      onBlur={field.onBlur}
-                      ref={field.ref}
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-          </form>
-        </Form>
-
+              <FormField
+                control={form.control}
+                name='manufacturer'
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel required>Nhà sản xuất</FormLabel>
+                    <FormControl>
+                      <Input {...field} placeholder='VD: Traphaco' />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name='salePrice'
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel required>Giá bán</FormLabel>
+                    <FormControl>
+                      <Input
+                        {...field}
+                        type='number'
+                        min={0}
+                        onChange={(e) =>
+                          field.onChange(Number(e.target.value || 0))
+                        }
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name='minStock'
+                render={({ field }) => (
+                  <FormItem>
+                    <div className='flex items-center gap-1'>
+                      <FormLabel required>Định mức tồn tối thiểu</FormLabel>
+                      <InfoHint label='Giải thích định mức tồn tối thiểu'>
+                        Ngưỡng tồn thấp nhất cần duy trì cho thuốc này. Hệ thống
+                        so ngưỡng với tổng tồn của tất cả các lô; khi tồn xuống
+                        thấp hơn, thuốc hiện cảnh báo &quot;dưới định mức&quot;
+                        ở tab Tồn kho để nhắc nhập thêm. Để 0 nếu không cần theo
+                        dõi.
+                      </InfoHint>
+                    </div>
+                    <FormControl>
+                      <Input
+                        {...field}
+                        type='number'
+                        min={0}
+                        onChange={(e) =>
+                          field.onChange(
+                            e.target.value === '' ? 0 : Number(e.target.value)
+                          )
+                        }
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name='isActive'
+                render={({ field }) => (
+                  <FormItem className='flex items-center justify-between rounded-md border p-3'>
+                    <FormLabel>Kích hoạt thuốc</FormLabel>
+                    <FormControl>
+                      <Checkbox
+                        checked={field.value}
+                        onCheckedChange={(checked) =>
+                          field.onChange(checked === true)
+                        }
+                        onBlur={field.onBlur}
+                        ref={field.ref}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            </form>
+          </Form>
+        </DialogBody>
         <DialogFooter>
           <DialogClose asChild>
             <Button variant='outline'>Đóng</Button>
@@ -328,7 +328,7 @@ export function MedicineMutateDialog({
             {form.formState.isSubmitting ? 'Đang lưu...' : 'Lưu'}
           </Button>
         </DialogFooter>
-      </DialogContent>
+      </DialogFormContent>
     </Dialog>
   )
 }
