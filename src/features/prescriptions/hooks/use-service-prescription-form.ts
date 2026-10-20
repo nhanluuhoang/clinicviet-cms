@@ -419,17 +419,24 @@ export function useServicePrescriptionForm({
     const selected = Array.from(files, (file) =>
       normalizeVideoFile(normalizeImageFile(file))
     )
-    const invalid = selected.find((file) => {
+    for (const file of selected) {
+      if (!ACCEPTED_MEDIA_TYPES.includes(file.type)) {
+        toast.error(
+          `Tệp "${file.name}" có định dạng không được hỗ trợ. Chỉ nhận JPG, JPEG, PNG, WebP, HEIC, HEIF, PDF, MP4, MOV, M4V, WebM, 3GP hoặc 3G2.`
+        )
+        return
+      }
       const maxSize = file.type.startsWith('video/')
         ? MAX_VIDEO_SIZE
-        : MAX_MEDIA_FILE_SIZE
-      return !ACCEPTED_MEDIA_TYPES.includes(file.type) || file.size > maxSize
-    })
-    if (invalid) {
-      toast.error(
-        'Chỉ nhận JPG, JPEG, PNG, WebP, HEIC, HEIF, PDF (tối đa 5 MB) hoặc MP4, MOV, M4V, WebM, 3GP, 3G2 (tối đa 100 MB, 10 phút)'
-      )
-      return
+        : file.type === 'application/pdf'
+          ? 1024 * 1024
+          : MAX_MEDIA_FILE_SIZE
+      if (file.size > maxSize) {
+        toast.error(
+          `Tệp "${file.name}" có dung lượng ${(file.size / 1024 / 1024).toFixed(2)} MB, vượt giới hạn ${maxSize / 1024 / 1024} MB.`
+        )
+        return
+      }
     }
     if (media.length + selected.length > MAX_MEDIA_FILES) {
       toast.error(`Chỉ được tải lên tối đa ${MAX_MEDIA_FILES} tệp`)
@@ -445,7 +452,13 @@ export function useServicePrescriptionForm({
       media.filter(isVideoMedia).length +
       selected.filter((file) => file.type.startsWith('video/')).length
     if (imageCount > 5 || pdfCount > 5 || videoCount > 1) {
-      toast.error('Mỗi hồ sơ tối đa 5 ảnh, 5 PDF và 1 video.')
+      toast.error(
+        imageCount > 5
+          ? 'Mỗi hồ sơ chỉ được đính kèm tối đa 5 ảnh.'
+          : pdfCount > 5
+            ? 'Mỗi hồ sơ chỉ được đính kèm tối đa 5 tệp PDF.'
+            : 'Mỗi hồ sơ chỉ được đính kèm tối đa 1 video.'
+      )
       return
     }
     setIsUploadingMedia(true)

@@ -98,12 +98,15 @@ export function PostsMutateDialog({ open, onOpenChange, currentRow }: Props) {
   const uploadThumbnail = async (file: File | undefined) => {
     if (!file) return
     file = normalizeImageFile(file)
-    if (
-      !IMAGE_UPLOAD_TYPES.includes(file.type) ||
-      file.size > 5 * 1024 * 1024
-    ) {
+    if (!IMAGE_UPLOAD_TYPES.includes(file.type)) {
       toast.error(
-        'Chỉ nhận ảnh JPG, PNG, WebP, HEIC hoặc HEIF, dung lượng tối đa 5 MB'
+        `Tệp "${file.name}" có định dạng không được hỗ trợ. Chỉ nhận ảnh JPG, JPEG, PNG, WebP, HEIC hoặc HEIF.`
+      )
+      return
+    }
+    if (file.size > 5 * 1024 * 1024) {
+      toast.error(
+        `Ảnh "${file.name}" có dung lượng ${(file.size / 1024 / 1024).toFixed(2)} MB, vượt giới hạn 5 MB.`
       )
       return
     }
