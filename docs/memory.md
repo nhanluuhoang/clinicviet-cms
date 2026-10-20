@@ -27,6 +27,8 @@
 
 ## Convention
 
+- PDF uploads are limited to 3 MB per file; keep validation and error/help text aligned across CMS and API.
+
 - Shared toast defaults: top-right on desktop, top-center below 768px, with top safe-area spacing. Keep placement in `src/components/ui/sonner.tsx`.
 
 - CMS bundles Inter/Manrope through `@fontsource-variable` CSS imports in `src/styles/index.css` (including Vietnamese and Inter italic). Font assets must load from the same origin for production CSP; do not add Google Fonts CDN links. Families in `theme.css` use unquoted generic fallbacks. `FontProvider` maps settings to literal Tailwind class names so font utilities are emitted in production builds.

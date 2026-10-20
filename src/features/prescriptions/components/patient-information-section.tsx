@@ -167,7 +167,7 @@ export function PatientInformationSection({
               </Label>
               <p className='mt-1 text-xs text-muted-foreground'>
                 Tối đa 5 ảnh, 5 PDF và 1 video. Ảnh không quá 5 MB; PDF không
-                quá 1 MB; video MP4, MOV, M4V, WebM, 3GP hoặc 3G2 không quá 100
+                quá 3 MB; video MP4, MOV, M4V, WebM, 3GP hoặc 3G2 không quá 100
                 MB và 10 phút.
               </p>
             </div>

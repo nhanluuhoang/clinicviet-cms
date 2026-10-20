@@ -12,6 +12,8 @@ export const MAX_MEDIA_FILES = 11
 
 export const MAX_MEDIA_FILE_SIZE = 5 * 1024 * 1024
 
+export const MAX_PDF_SIZE = 3 * 1024 * 1024
+
 export const MAX_VIDEO_SIZE = 100 * 1024 * 1024
 
 export const ACCEPTED_MEDIA_TYPES = [
