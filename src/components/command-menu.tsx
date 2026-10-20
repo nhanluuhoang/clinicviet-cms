@@ -41,7 +41,11 @@ export function CommandMenu() {
       }}
     >
       <CommandInput placeholder='Tìm chức năng…' />
-      <CommandList>
+      <CommandList
+        // Keep Safari's native list scrolling out of the modal's document touch lock.
+        onTouchMove={(event) => event.stopPropagation()}
+        style={{ WebkitOverflowScrolling: 'touch' }}
+      >
         <CommandEmpty>Không tìm thấy chức năng phù hợp.</CommandEmpty>
         {groups.map((group, index) => (
           <CommandGroup key={index} heading={group.title}>

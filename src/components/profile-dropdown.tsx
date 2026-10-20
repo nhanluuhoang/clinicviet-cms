@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { Link } from '@tanstack/react-router'
 import { hasAnyRole, STAFF_ROLES } from '@/config/access-control'
-import { BookOpen, Building2, Info, PackageOpen } from 'lucide-react'
+import { BookOpen, Building2, PackageOpen } from 'lucide-react'
 import { useAuthStore } from '@/stores/auth-store'
 import useDialogState from '@/hooks/use-dialog-state'
 import { Avatar, AvatarFallback } from '@/components/ui/avatar'
@@ -67,7 +67,6 @@ export function ProfileDropdown() {
             )}
             {user?.tenant && hasAnyRole(user.role, STAFF_ROLES) && (
               <DropdownMenuItem onSelect={() => setReferralOpen(true)}>
-                <Info />
                 Giới thiệu cho bạn bè
               </DropdownMenuItem>
             )}
