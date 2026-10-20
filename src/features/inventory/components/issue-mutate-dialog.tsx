@@ -20,7 +20,8 @@ import {
 import {
   Dialog,
   DialogClose,
-  DialogContent,
+  DialogBody,
+  DialogFormContent,
   DialogDescription,
   DialogFooter,
   DialogHeader,
@@ -212,146 +213,151 @@ export function IssueMutateDialog({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className='grid max-h-[90dvh] grid-rows-[auto_minmax(0,1fr)_auto] overflow-hidden sm:max-w-3xl'>
-        <DialogHeader>
-          <DialogTitle>Xuất hàng</DialogTitle>
-          <DialogDescription>
-            Chọn từng lô thuốc và số lượng cần xuất. Không thể xuất vượt số tồn
-            hiện tại của lô.
-          </DialogDescription>
-        </DialogHeader>
-        <Form {...form}>
-          <form
-            id='issue-form'
-            onSubmit={form.handleSubmit(onSubmit)}
-            className='space-y-5 overflow-y-auto px-1'
-          >
-            <div className='grid gap-4 sm:grid-cols-2'>
-              <FormField
-                control={form.control}
-                name='recipientName'
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel required>Người nhận</FormLabel>
-                    <FormControl>
-                      <Input {...field} placeholder='Tên người hoặc bộ phận' />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              <FormField
-                control={form.control}
-                name='issuedAt'
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel required>Ngày xuất</FormLabel>
-                    <DatePickerInput
-                      value={field.value}
-                      onChange={field.onChange}
-                    />
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-            </div>
-
-            <div className='space-y-3'>
-              <div className='flex items-center justify-between'>
-                <FormLabel>Chi tiết xuất kho</FormLabel>
-                <Button
-                  type='button'
-                  variant='outline'
-                  size='sm'
-                  onClick={() => append({ ...emptyLine })}
-                >
-                  <Plus className='size-4' /> Thêm dòng
-                </Button>
+      <DialogFormContent className='sm:max-w-3xl'>
+        <DialogBody>
+          <DialogHeader>
+            <DialogTitle>Xuất hàng</DialogTitle>
+            <DialogDescription>
+              Chọn từng lô thuốc và số lượng cần xuất. Không thể xuất vượt số
+              tồn hiện tại của lô.
+            </DialogDescription>
+          </DialogHeader>
+          <Form {...form}>
+            <form
+              id='issue-form'
+              onSubmit={form.handleSubmit(onSubmit)}
+              className='space-y-5 overflow-y-auto px-1'
+            >
+              <div className='grid gap-4 sm:grid-cols-2'>
+                <FormField
+                  control={form.control}
+                  name='recipientName'
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel required>Người nhận</FormLabel>
+                      <FormControl>
+                        <Input
+                          {...field}
+                          placeholder='Tên người hoặc bộ phận'
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={form.control}
+                  name='issuedAt'
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel required>Ngày xuất</FormLabel>
+                      <DatePickerInput
+                        value={field.value}
+                        onChange={field.onChange}
+                      />
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
               </div>
-              {fields.map((item, index) => {
-                const selected =
-                  selectedBatches[form.watch(`lines.${index}.batchId`)]
-                return (
-                  <div
-                    key={item.id}
-                    className='grid items-start gap-3 rounded-md border p-3 sm:grid-cols-[minmax(0,1fr)_8rem_auto]'
-                  >
-                    <FormField
-                      control={form.control}
-                      name={`lines.${index}.batchId`}
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel required className='text-xs'>
-                            Thuốc / lô
-                          </FormLabel>
-                          <BatchPicker
-                            selected={selected}
-                            onChange={(batch) => {
-                              setSelectedBatches((current) => ({
-                                ...current,
-                                [batch.id]: batch,
-                              }))
-                              field.onChange(batch.id)
-                            }}
-                          />
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                    <FormField
-                      control={form.control}
-                      name={`lines.${index}.quantity`}
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel required className='text-xs'>
-                            Số lượng
-                          </FormLabel>
-                          <FormControl>
-                            <Input
-                              {...field}
-                              type='number'
-                              min={1}
-                              step={1}
-                              max={selected?.qtyRemaining}
-                              onChange={(event) =>
-                                field.onChange(Number(event.target.value))
-                              }
-                            />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                    <Button
-                      type='button'
-                      variant='ghost'
-                      size='icon'
-                      className='mt-6 text-red-600'
-                      disabled={fields.length === 1}
-                      onClick={() => remove(index)}
-                      aria-label={`Xoá dòng ${index + 1}`}
-                    >
-                      <Trash2 className='size-4' />
-                    </Button>
-                  </div>
-                )
-              })}
-            </div>
 
-            <FormField
-              control={form.control}
-              name='note'
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Ghi chú</FormLabel>
-                  <FormControl>
-                    <Textarea {...field} placeholder='Lý do xuất kho...' />
-                  </FormControl>
-                </FormItem>
-              )}
-            />
-          </form>
-        </Form>
+              <div className='space-y-3'>
+                <div className='flex items-center justify-between'>
+                  <FormLabel>Chi tiết xuất kho</FormLabel>
+                  <Button
+                    type='button'
+                    variant='outline'
+                    size='sm'
+                    onClick={() => append({ ...emptyLine })}
+                  >
+                    <Plus className='size-4' /> Thêm dòng
+                  </Button>
+                </div>
+                {fields.map((item, index) => {
+                  const selected =
+                    selectedBatches[form.watch(`lines.${index}.batchId`)]
+                  return (
+                    <div
+                      key={item.id}
+                      className='grid items-start gap-3 rounded-md border p-3 sm:grid-cols-[minmax(0,1fr)_8rem_auto]'
+                    >
+                      <FormField
+                        control={form.control}
+                        name={`lines.${index}.batchId`}
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel required className='text-xs'>
+                              Thuốc / lô
+                            </FormLabel>
+                            <BatchPicker
+                              selected={selected}
+                              onChange={(batch) => {
+                                setSelectedBatches((current) => ({
+                                  ...current,
+                                  [batch.id]: batch,
+                                }))
+                                field.onChange(batch.id)
+                              }}
+                            />
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                      <FormField
+                        control={form.control}
+                        name={`lines.${index}.quantity`}
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel required className='text-xs'>
+                              Số lượng
+                            </FormLabel>
+                            <FormControl>
+                              <Input
+                                {...field}
+                                type='number'
+                                min={1}
+                                step={1}
+                                max={selected?.qtyRemaining}
+                                onChange={(event) =>
+                                  field.onChange(Number(event.target.value))
+                                }
+                              />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                      <Button
+                        type='button'
+                        variant='ghost'
+                        size='icon'
+                        className='mt-6 text-red-600'
+                        disabled={fields.length === 1}
+                        onClick={() => remove(index)}
+                        aria-label={`Xoá dòng ${index + 1}`}
+                      >
+                        <Trash2 className='size-4' />
+                      </Button>
+                    </div>
+                  )
+                })}
+              </div>
+
+              <FormField
+                control={form.control}
+                name='note'
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Ghi chú</FormLabel>
+                    <FormControl>
+                      <Textarea {...field} placeholder='Lý do xuất kho...' />
+                    </FormControl>
+                  </FormItem>
+                )}
+              />
+            </form>
+          </Form>
+        </DialogBody>
         <DialogFooter>
           <DialogClose asChild>
             <Button variant='outline'>Đóng</Button>
@@ -364,7 +370,7 @@ export function IssueMutateDialog({
             {form.formState.isSubmitting ? 'Đang lưu...' : 'Xuất hàng'}
           </Button>
         </DialogFooter>
-      </DialogContent>
+      </DialogFormContent>
     </Dialog>
   )
 }

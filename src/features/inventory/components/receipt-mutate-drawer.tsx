@@ -21,7 +21,8 @@ import {
 import {
   Dialog,
   DialogClose,
-  DialogContent,
+  DialogBody,
+  DialogFormContent,
   DialogDescription,
   DialogFooter,
   DialogHeader,
@@ -241,293 +242,289 @@ export function ReceiptMutateDrawer({
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       {/* Chỉ đóng bằng nút X hoặc Đóng — xem ghi chú ở medicine-mutate-drawer. */}
-      <DialogContent
-        className='grid max-h-[90dvh] grid-rows-[auto_minmax(0,1fr)_auto] overflow-hidden sm:max-w-4xl lg:max-w-6xl'
+      <DialogFormContent
+        className='sm:max-w-4xl lg:max-w-6xl'
         onInteractOutside={(e) => e.preventDefault()}
         onEscapeKeyDown={(e) => e.preventDefault()}
       >
-        <DialogHeader className='pe-8 text-start'>
-          <DialogTitle>Nhập hàng</DialogTitle>
-          <DialogDescription>
-            Mỗi dòng dưới đây tạo ra một lô riêng trong kho. Số lô và hạn sử
-            dụng là bắt buộc để phân biệt được các đợt nhập của cùng một thuốc.
-          </DialogDescription>
-        </DialogHeader>
-
-        <Form {...form}>
-          <form
-            id='receipt-form'
-            onSubmit={form.handleSubmit(onSubmit)}
-            className='-mx-1 space-y-6 overflow-y-auto px-1'
-          >
-            <div className='grid gap-4 sm:grid-cols-3'>
-              <FormField
-                control={form.control}
-                name='supplierName'
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel required>Nhà cung cấp</FormLabel>
-                    <FormControl>
-                      <Input {...field} placeholder='VD: Dược Hậu Giang' />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              <FormField
-                control={form.control}
-                name='invoiceNo'
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel required>Số hoá đơn</FormLabel>
-                    <FormControl>
-                      <Input {...field} placeholder='VD: HD12345' />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              <FormField
-                control={form.control}
-                name='receivedAt'
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel required>Ngày nhập</FormLabel>
-                    <DatePickerInput
-                      value={field.value}
-                      onChange={field.onChange}
-                    />
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-            </div>
-
-            <div className='space-y-3'>
-              <div className='flex items-center justify-between'>
-                <FormLabel className='text-base'>
-                  Chi tiết hàng nhập ({fields.length} lô)
-                </FormLabel>
-                <Button
-                  type='button'
-                  variant='outline'
-                  size='sm'
-                  onClick={() => append({ ...emptyLine })}
-                >
-                  <Plus className='size-4' />
-                  Thêm lô
-                </Button>
+        <DialogBody>
+          <DialogHeader className='pe-8 text-start'>
+            <DialogTitle>Nhập hàng</DialogTitle>
+            <DialogDescription>
+              Mỗi dòng dưới đây tạo ra một lô riêng trong kho. Số lô và hạn sử
+              dụng là bắt buộc để phân biệt được các đợt nhập của cùng một
+              thuốc.
+            </DialogDescription>
+          </DialogHeader>
+          <Form {...form}>
+            <form
+              id='receipt-form'
+              onSubmit={form.handleSubmit(onSubmit)}
+              className='-mx-1 space-y-6 overflow-y-auto px-1'
+            >
+              <div className='grid gap-4 sm:grid-cols-3'>
+                <FormField
+                  control={form.control}
+                  name='supplierName'
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel required>Nhà cung cấp</FormLabel>
+                      <FormControl>
+                        <Input {...field} placeholder='VD: Dược Hậu Giang' />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={form.control}
+                  name='invoiceNo'
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel required>Số hoá đơn</FormLabel>
+                      <FormControl>
+                        <Input {...field} placeholder='VD: HD12345' />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={form.control}
+                  name='receivedAt'
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel required>Ngày nhập</FormLabel>
+                      <DatePickerInput
+                        value={field.value}
+                        onChange={field.onChange}
+                      />
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
               </div>
 
-              {fields.map((fieldItem, index) => {
-                const line = lines[index]
-                const status = line?.expiryDate
-                  ? getExpiryStatus(line.expiryDate)
-                  : null
-                const meta = status ? expiryMeta(status) : null
-
-                return (
-                  <div
-                    key={fieldItem.id}
-                    className='space-y-3 rounded-md border p-3 lg:pb-8'
+              <div className='space-y-3'>
+                <div className='flex items-center justify-between'>
+                  <FormLabel className='text-base'>
+                    Chi tiết hàng nhập ({fields.length} lô)
+                  </FormLabel>
+                  <Button
+                    type='button'
+                    variant='outline'
+                    size='sm'
+                    onClick={() => append({ ...emptyLine })}
                   >
-                    <div className='flex items-center justify-between'>
-                      <span className='text-xs font-medium text-muted-foreground'>
-                        Lô #{index + 1}
-                      </span>
-                      <div className='flex items-center gap-2'>
-                        <span className='text-sm font-medium tabular-nums'>
-                          {formatMoney(
-                            (line?.qty || 0) * (line?.unitCost || 0)
-                          )}
+                    <Plus className='size-4' />
+                    Thêm lô
+                  </Button>
+                </div>
+
+                {fields.map((fieldItem, index) => {
+                  const line = lines[index]
+                  const status = line?.expiryDate
+                    ? getExpiryStatus(line.expiryDate)
+                    : null
+                  const meta = status ? expiryMeta(status) : null
+
+                  return (
+                    <div
+                      key={fieldItem.id}
+                      className='space-y-3 rounded-md border p-3 lg:pb-8'
+                    >
+                      <div className='flex items-center justify-between'>
+                        <span className='text-xs font-medium text-muted-foreground'>
+                          Lô #{index + 1}
                         </span>
-                        <Button
-                          type='button'
-                          variant='ghost'
-                          size='icon'
-                          className='size-7 text-red-600 dark:text-red-400'
-                          disabled={fields.length === 1}
-                          onClick={() => remove(index)}
-                          aria-label={`Xoá lô ${index + 1}`}
+                        <div className='flex items-center gap-2'>
+                          <span className='text-sm font-medium tabular-nums'>
+                            {formatMoney(
+                              (line?.qty || 0) * (line?.unitCost || 0)
+                            )}
+                          </span>
+                          <Button
+                            type='button'
+                            variant='ghost'
+                            size='icon'
+                            className='size-7 text-red-600 dark:text-red-400'
+                            disabled={fields.length === 1}
+                            onClick={() => remove(index)}
+                            aria-label={`Xoá lô ${index + 1}`}
+                          >
+                            <Trash2 className='size-4' />
+                          </Button>
+                        </div>
+                      </div>
+
+                      <div className='grid items-start gap-3 sm:grid-cols-2 lg:grid-cols-12'>
+                        <FormField
+                          control={form.control}
+                          name={`lines.${index}.medicineId`}
+                          render={({ field }) => (
+                            <FormItem className='min-w-0 lg:col-span-6'>
+                              <FormLabel required className='text-xs'>
+                                Thuốc
+                              </FormLabel>
+                              <MedicinePicker onChange={field.onChange} />
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
+                        <FormField
+                          control={form.control}
+                          name={`lines.${index}.batchNo`}
+                          render={({ field }) => (
+                            <FormItem className='lg:col-span-6'>
+                              <FormLabel required className='text-xs'>
+                                Số lô
+                              </FormLabel>
+                              <FormControl>
+                                <Input
+                                  {...field}
+                                  placeholder='VD: L2408AB'
+                                  className='font-mono'
+                                />
+                              </FormControl>
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
+                        <FormField
+                          control={form.control}
+                          name={`lines.${index}.mfgDate`}
+                          render={({ field }) => (
+                            <FormItem className='lg:col-span-3'>
+                              <FormLabel className='text-xs'>Ngày SX</FormLabel>
+                              <DatePickerInput
+                                value={field.value}
+                                onChange={field.onChange}
+                              />
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
+                        <FormField
+                          control={form.control}
+                          name={`lines.${index}.expiryDate`}
+                          render={({ field }) => (
+                            <FormItem className='lg:col-span-3'>
+                              <FormLabel required className='text-xs'>
+                                Hạn dùng
+                              </FormLabel>
+                              <DatePickerInput
+                                value={field.value}
+                                onChange={field.onChange}
+                                inputClassName={cn(
+                                  status === 'expired' &&
+                                    'border-red-400 dark:border-red-700'
+                                )}
+                              />
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
+                        <FormField
+                          control={form.control}
+                          name={`lines.${index}.qty`}
+                          render={({ field }) => (
+                            <FormItem className='lg:col-span-2'>
+                              <FormLabel required className='text-xs'>
+                                Số lượng
+                              </FormLabel>
+                              <FormControl>
+                                <Input
+                                  {...field}
+                                  type='number'
+                                  min={1}
+                                  onChange={(e) =>
+                                    field.onChange(
+                                      e.target.value === ''
+                                        ? 0
+                                        : Number(e.target.value)
+                                    )
+                                  }
+                                />
+                              </FormControl>
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
+                        <FormField
+                          control={form.control}
+                          name={`lines.${index}.unitCost`}
+                          render={({ field }) => (
+                            <FormItem className='lg:col-span-4'>
+                              <FormLabel required className='text-xs'>
+                                Đơn giá nhập (₫)
+                              </FormLabel>
+                              <FormControl>
+                                <Input
+                                  {...field}
+                                  type='number'
+                                  min={0}
+                                  onChange={(e) =>
+                                    field.onChange(
+                                      e.target.value === ''
+                                        ? 0
+                                        : Number(e.target.value)
+                                    )
+                                  }
+                                />
+                              </FormControl>
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
+                      </div>
+
+                      {/* Cảnh báo ngay tại dòng, trước khi hàng vào kho. */}
+                      {meta && status !== 'ok' && (
+                        <div
+                          className={cn(
+                            'flex items-center gap-1.5 text-xs',
+                            meta.textClass
+                          )}
                         >
-                          <Trash2 className='size-4' />
-                        </Button>
-                      </div>
+                          <meta.icon className='size-3.5' />
+                          {status === 'expired'
+                            ? 'Lô này đã hết hạn — kiểm tra lại trước khi nhập.'
+                            : `${meta.label} — nên ưu tiên xuất lô này trước.`}
+                        </div>
+                      )}
                     </div>
+                  )
+                })}
 
-                    <div className='grid items-start gap-3 sm:grid-cols-2 lg:grid-cols-12'>
-                      <FormField
-                        control={form.control}
-                        name={`lines.${index}.medicineId`}
-                        render={({ field }) => (
-                          <FormItem className='min-w-0 lg:col-span-6'>
-                            <FormLabel required className='text-xs'>
-                              Thuốc
-                            </FormLabel>
-                            <MedicinePicker onChange={field.onChange} />
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-                      <FormField
-                        control={form.control}
-                        name={`lines.${index}.batchNo`}
-                        render={({ field }) => (
-                          <FormItem className='lg:col-span-6'>
-                            <FormLabel required className='text-xs'>
-                              Số lô
-                            </FormLabel>
-                            <FormControl>
-                              <Input
-                                {...field}
-                                placeholder='VD: L2408AB'
-                                className='font-mono'
-                              />
-                            </FormControl>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-                      <FormField
-                        control={form.control}
-                        name={`lines.${index}.mfgDate`}
-                        render={({ field }) => (
-                          <FormItem className='lg:col-span-3'>
-                            <FormLabel className='text-xs'>Ngày SX</FormLabel>
-                            <DatePickerInput
-                              value={field.value}
-                              onChange={field.onChange}
-                            />
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-                      <FormField
-                        control={form.control}
-                        name={`lines.${index}.expiryDate`}
-                        render={({ field }) => (
-                          <FormItem className='lg:col-span-3'>
-                            <FormLabel required className='text-xs'>
-                              Hạn dùng
-                            </FormLabel>
-                            <DatePickerInput
-                              value={field.value}
-                              onChange={field.onChange}
-                              inputClassName={cn(
-                                status === 'expired' &&
-                                  'border-red-400 dark:border-red-700'
-                              )}
-                            />
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-                      <FormField
-                        control={form.control}
-                        name={`lines.${index}.qty`}
-                        render={({ field }) => (
-                          <FormItem className='lg:col-span-2'>
-                            <FormLabel required className='text-xs'>
-                              Số lượng
-                            </FormLabel>
-                            <FormControl>
-                              <Input
-                                {...field}
-                                type='number'
-                                min={1}
-                                onChange={(e) =>
-                                  field.onChange(
-                                    e.target.value === ''
-                                      ? 0
-                                      : Number(e.target.value)
-                                  )
-                                }
-                              />
-                            </FormControl>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-                      <FormField
-                        control={form.control}
-                        name={`lines.${index}.unitCost`}
-                        render={({ field }) => (
-                          <FormItem className='lg:col-span-4'>
-                            <FormLabel required className='text-xs'>
-                              Đơn giá nhập (₫)
-                            </FormLabel>
-                            <FormControl>
-                              <Input
-                                {...field}
-                                type='number'
-                                min={0}
-                                onChange={(e) =>
-                                  field.onChange(
-                                    e.target.value === ''
-                                      ? 0
-                                      : Number(e.target.value)
-                                  )
-                                }
-                              />
-                            </FormControl>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-                    </div>
+                {form.formState.errors.lines?.root && (
+                  <p className='text-sm text-destructive'>
+                    {form.formState.errors.lines.root.message}
+                  </p>
+                )}
+              </div>
 
-                    {/* Cảnh báo ngay tại dòng, trước khi hàng vào kho. */}
-                    {meta && status !== 'ok' && (
-                      <div
-                        className={cn(
-                          'flex items-center gap-1.5 text-xs',
-                          meta.textClass
-                        )}
-                      >
-                        <meta.icon className='size-3.5' />
-                        {status === 'expired'
-                          ? 'Lô này đã hết hạn — kiểm tra lại trước khi nhập.'
-                          : `${meta.label} — nên ưu tiên xuất lô này trước.`}
-                      </div>
-                    )}
-                  </div>
-                )
-              })}
-
-              {form.formState.errors.lines?.root && (
-                <p className='text-sm text-destructive'>
-                  {form.formState.errors.lines.root.message}
-                </p>
-              )}
-            </div>
-
-            <FormField
-              control={form.control}
-              name='note'
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Ghi chú</FormLabel>
-                  <FormControl>
-                    <Textarea
-                      {...field}
-                      rows={2}
-                      placeholder='Ghi chú thêm về đơn hàng (không bắt buộc)'
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-          </form>
-        </Form>
-
-        {/*
-          DialogFooter là flex-col-reverse trên mobile rồi sm:flex-row. `flex-1`
-          ở khối tổng đẩy hai nút sang phải; sm:items-center để chữ và nút cùng
-          hàng ngang. border-t pt-4 vì DialogFooter không có padding sẵn.
-        */}
+              <FormField
+                control={form.control}
+                name='note'
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Ghi chú</FormLabel>
+                    <FormControl>
+                      <Textarea
+                        {...field}
+                        rows={2}
+                        placeholder='Ghi chú thêm về đơn hàng (không bắt buộc)'
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            </form>
+          </Form>
+        </DialogBody>
         <DialogFooter className='border-t pt-4 sm:items-center'>
-          <div className='flex flex-1 flex-wrap items-center gap-x-6 gap-y-1 text-sm'>
+          <div className='flex flex-1 basis-full flex-wrap items-center gap-x-6 gap-y-1 text-sm sm:basis-auto'>
             <span className='text-muted-foreground'>
               Tổng số lượng:{' '}
               <span className='font-medium text-foreground tabular-nums'>
@@ -552,7 +549,7 @@ export function ReceiptMutateDrawer({
             {form.formState.isSubmitting ? 'Đang lưu...' : 'Nhập hàng'}
           </Button>
         </DialogFooter>
-      </DialogContent>
+      </DialogFormContent>
     </Dialog>
   )
 }

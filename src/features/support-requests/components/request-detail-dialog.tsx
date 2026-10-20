@@ -5,7 +5,9 @@ import { showRequestError } from '@/lib/handle-server-error'
 import { Button } from '@/components/ui/button'
 import {
   Dialog,
-  DialogContent,
+  DialogFormContent,
+  DialogBody,
+  DialogFooter,
   DialogDescription,
   DialogHeader,
   DialogTitle,
@@ -84,163 +86,187 @@ export function RequestDetailDialog({
         if (!open && !mutation.isPending) onClose()
       }}
     >
-      <DialogContent className='max-h-[90svh] overflow-y-auto sm:max-w-2xl'>
-        <DialogHeader>
-          <DialogTitle>{request?.title ?? 'Chi tiết yêu cầu'}</DialogTitle>
-          <DialogDescription>
-            Theo dõi phản hồi và lịch sử xử lý yêu cầu.
-          </DialogDescription>
-        </DialogHeader>
-        {query.isPending ? (
-          <p role='status'>Đang tải…</p>
-        ) : query.isError ? (
-          <div role='alert'>
-            <p>Không thể tải yêu cầu hoặc bạn không có quyền truy cập.</p>
-            <Button variant='outline' onClick={() => void query.refetch()}>
-              Thử lại
-            </Button>
-          </div>
-        ) : (
-          request && (
-            <>
-              <div className='space-y-3 rounded-md border p-4'>
-                <p className='text-sm'>
-                  {typeLabels[request.type]} ·{' '}
-                  <strong>{statusLabels[request.status]}</strong>
-                </p>
-                <p className='text-sm text-muted-foreground'>
-                  {request.tenant
-                    ? `${request.tenant.name} (${request.tenant.code})`
-                    : request.organization || 'Khách từ website'}{' '}
-                  ·{' '}
-                  {request.creator?.fullName ??
-                    request.contactName ??
-                    'Tài khoản đã xóa'}{' '}
-                  · {new Date(request.createdAt).toLocaleString('vi-VN')}
-                </p>
-                {request.contactEmail && (
-                  <p className='text-sm break-all text-muted-foreground'>
-                    Email: {request.contactEmail}
-                    {request.contactPhone && (
-                      <> · Điện thoại: {request.contactPhone}</>
-                    )}
+      <DialogFormContent className='sm:max-w-2xl'>
+        <DialogBody className='space-y-4'>
+          <DialogHeader>
+            <DialogTitle>{request?.title ?? 'Chi tiết yêu cầu'}</DialogTitle>
+            <DialogDescription>
+              Theo dõi phản hồi và lịch sử xử lý yêu cầu.
+            </DialogDescription>
+          </DialogHeader>
+          {query.isPending ? (
+            <p role='status'>Đang tải…</p>
+          ) : query.isError ? (
+            <div role='alert'>
+              <p>Không thể tải yêu cầu hoặc bạn không có quyền truy cập.</p>
+              <Button variant='outline' onClick={() => void query.refetch()}>
+                Thử lại
+              </Button>
+            </div>
+          ) : (
+            request && (
+              <>
+                <div className='space-y-3 rounded-md border p-4'>
+                  <p className='text-sm'>
+                    {typeLabels[request.type]} ·{' '}
+                    <strong>{statusLabels[request.status]}</strong>
                   </p>
-                )}
-                <p className='break-words whitespace-pre-wrap'>
-                  {request.content}
-                </p>
-                {request.pagePath && (
-                  <p className='text-sm break-all text-muted-foreground'>
-                    Trang: {request.pagePath}
-                  </p>
-                )}
-              </div>
-              <section
-                className='space-y-3'
-                aria-label='Trao đổi và lịch sử trạng thái'
-              >
-                <h3 className='font-semibold'>Trao đổi & lịch sử xử lý</h3>
-                {!request.activities.length && (
                   <p className='text-sm text-muted-foreground'>
-                    Chưa có phản hồi.
+                    {request.tenant
+                      ? `${request.tenant.name} (${request.tenant.code})`
+                      : request.organization || 'Khách từ website'}{' '}
+                    ·{' '}
+                    {request.creator?.fullName ??
+                      request.contactName ??
+                      'Tài khoản đã xóa'}{' '}
+                    · {new Date(request.createdAt).toLocaleString('vi-VN')}
                   </p>
-                )}
-                {request.activities.map((activity) => (
-                  <article
-                    key={activity.id}
-                    className='space-y-2 rounded-md border p-3'
-                  >
-                    <p className='text-sm font-medium'>
-                      {activity.guestReply
-                        ? request.contactName
-                        : (activity.actor?.fullName ?? 'Tài khoản đã xóa')}{' '}
-                      <span className='font-normal text-muted-foreground'>
-                        · {new Date(activity.createdAt).toLocaleString('vi-VN')}
-                      </span>
+                  {request.contactEmail && (
+                    <p className='text-sm break-all text-muted-foreground'>
+                      Email: {request.contactEmail}
+                      {request.contactPhone && (
+                        <> · Điện thoại: {request.contactPhone}</>
+                      )}
                     </p>
-                    {activity.toStatus && (
-                      <p className='text-sm text-muted-foreground'>
-                        {activity.fromStatus
-                          ? statusLabels[activity.fromStatus]
-                          : ''}{' '}
-                        → {statusLabels[activity.toStatus]}
-                      </p>
-                    )}
-                    {activity.content && (
-                      <p className='text-sm break-words whitespace-pre-wrap'>
-                        {activity.content}
-                      </p>
-                    )}
-                  </article>
-                ))}
-              </section>
-              <form onSubmit={submit} className='space-y-3 border-t pt-4'>
-                {request.contactEmail && (
-                  <p className='text-sm text-muted-foreground'>
-                    Phản hồi và lịch sử trạng thái hiển thị cho khách trên trang
-                    theo dõi. Khách chủ động quay lại website để xem phản hồi;
-                    hệ thống không gửi email thông báo.
+                  )}
+                  <p className='break-words whitespace-pre-wrap'>
+                    {request.content}
                   </p>
-                )}
-                {system && (
+                  {request.pagePath && (
+                    <p className='text-sm break-all text-muted-foreground'>
+                      Trang: {request.pagePath}
+                    </p>
+                  )}
+                </div>
+                <section
+                  className='space-y-3'
+                  aria-label='Trao đổi và lịch sử trạng thái'
+                >
+                  <h3 className='font-semibold'>Trao đổi & lịch sử xử lý</h3>
+                  {!request.activities.length && (
+                    <p className='text-sm text-muted-foreground'>
+                      Chưa có phản hồi.
+                    </p>
+                  )}
+                  {request.activities.map((activity) => (
+                    <article
+                      key={activity.id}
+                      className='space-y-2 rounded-md border p-3'
+                    >
+                      <p className='text-sm font-medium'>
+                        {activity.guestReply
+                          ? request.contactName
+                          : (activity.actor?.fullName ??
+                            'Tài khoản đã xóa')}{' '}
+                        <span className='font-normal text-muted-foreground'>
+                          ·{' '}
+                          {new Date(activity.createdAt).toLocaleString('vi-VN')}
+                        </span>
+                      </p>
+                      {activity.toStatus && (
+                        <p className='text-sm text-muted-foreground'>
+                          {activity.fromStatus
+                            ? statusLabels[activity.fromStatus]
+                            : ''}{' '}
+                          → {statusLabels[activity.toStatus]}
+                        </p>
+                      )}
+                      {activity.content && (
+                        <p className='text-sm break-words whitespace-pre-wrap'>
+                          {activity.content}
+                        </p>
+                      )}
+                    </article>
+                  ))}
+                </section>
+                <form
+                  id='support-request-reply-form'
+                  onSubmit={submit}
+                  className='space-y-3 border-t pt-4'
+                >
+                  {request.contactEmail && (
+                    <p className='text-sm text-muted-foreground'>
+                      Phản hồi và lịch sử trạng thái hiển thị cho khách trên
+                      trang theo dõi. Khách chủ động quay lại website để xem
+                      phản hồi; hệ thống không gửi email thông báo.
+                    </p>
+                  )}
+                  {system && (
+                    <div className='space-y-2'>
+                      <Label htmlFor='support-status'>Trạng thái</Label>
+                      <Select
+                        disabled={mutation.isPending}
+                        value={status || request.status}
+                        onValueChange={(value) =>
+                          setStatus(value as RequestStatus)
+                        }
+                      >
+                        <SelectTrigger id='support-status'>
+                          <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {Object.entries(statusLabels).map(
+                            ([value, label]) => (
+                              <SelectItem key={value} value={value}>
+                                {label}
+                              </SelectItem>
+                            )
+                          )}
+                        </SelectContent>
+                      </Select>
+                    </div>
+                  )}
                   <div className='space-y-2'>
-                    <Label htmlFor='support-status'>Trạng thái</Label>
-                    <Select
-                      disabled={mutation.isPending}
-                      value={status || request.status}
-                      onValueChange={(value) =>
-                        setStatus(value as RequestStatus)
+                    <Label
+                      htmlFor='support-reply'
+                      required={
+                        !system ||
+                        !status ||
+                        status === request.status ||
+                        status === 'DECLINED' ||
+                        status === 'NEEDS_INFO'
                       }
                     >
-                      <SelectTrigger id='support-status'>
-                        <SelectValue />
-                      </SelectTrigger>
-                      <SelectContent>
-                        {Object.entries(statusLabels).map(([value, label]) => (
-                          <SelectItem key={value} value={value}>
-                            {label}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
+                      Phản hồi
+                    </Label>
+                    <Textarea
+                      id='support-reply'
+                      value={reply}
+                      onChange={(event) => setReply(event.target.value)}
+                      maxLength={10000}
+                      rows={4}
+                      disabled={mutation.isPending}
+                    />
                   </div>
-                )}
-                <div className='space-y-2'>
-                  <Label
-                    htmlFor='support-reply'
-                    required={
-                      !system ||
-                      !status ||
-                      status === request.status ||
-                      status === 'DECLINED' ||
-                      status === 'NEEDS_INFO'
-                    }
-                  >
-                    Phản hồi
-                  </Label>
-                  <Textarea
-                    id='support-reply'
-                    value={reply}
-                    onChange={(event) => setReply(event.target.value)}
-                    maxLength={10000}
-                    rows={4}
-                    disabled={mutation.isPending}
-                  />
-                </div>
-                <div className='flex justify-end'>
-                  <Button disabled={mutation.isPending} type='submit'>
-                    {mutation.isPending
-                      ? 'Đang gửi…'
-                      : system
-                        ? 'Cập nhật yêu cầu'
-                        : 'Gửi phản hồi'}
-                  </Button>
-                </div>
-              </form>
-            </>
-          )
-        )}
-      </DialogContent>
+                </form>
+              </>
+            )
+          )}
+        </DialogBody>
+        <DialogFooter>
+          <Button
+            type='button'
+            variant='outline'
+            disabled={mutation.isPending}
+            onClick={onClose}
+          >
+            Đóng
+          </Button>
+          {request && !query.isPending && !query.isError && (
+            <Button
+              disabled={mutation.isPending}
+              type='submit'
+              form='support-request-reply-form'
+            >
+              {mutation.isPending
+                ? 'Đang gửi…'
+                : system
+                  ? 'Cập nhật yêu cầu'
+                  : 'Gửi phản hồi'}
+            </Button>
+          )}
+        </DialogFooter>
+      </DialogFormContent>
     </Dialog>
   )
 }

@@ -79,6 +79,33 @@ function DialogContent({
   )
 }
 
+function DialogFormContent({
+  className,
+  ...props
+}: React.ComponentProps<typeof DialogContent>) {
+  return (
+    <DialogContent
+      className={cn(
+        'grid h-dvh max-h-dvh w-screen max-w-none grid-rows-[minmax(0,1fr)_auto] overflow-hidden rounded-none border-0 p-4 pb-[max(1rem,env(safe-area-inset-bottom))] sm:h-auto sm:max-h-[90dvh] sm:w-full sm:max-w-lg sm:rounded-lg sm:border sm:p-6 [&>[data-slot=dialog-footer]]:flex-row [&>[data-slot=dialog-footer]]:flex-wrap [&>[data-slot=dialog-footer]]:justify-end [&>[data-slot=dialog-footer]]:border-t [&>[data-slot=dialog-footer]]:pt-4',
+        className
+      )}
+      {...props}
+    />
+  )
+}
+
+function DialogBody({ className, ...props }: React.ComponentProps<'div'>) {
+  return (
+    <div
+      className={cn(
+        'relative -mx-1 min-h-0 min-w-0 space-y-4 overflow-x-hidden overflow-y-auto overscroll-contain px-1',
+        className
+      )}
+      {...props}
+    />
+  )
+}
+
 function DialogHeader({ className, ...props }: React.ComponentProps<'div'>) {
   return (
     <div
@@ -132,6 +159,8 @@ export {
   Dialog,
   DialogClose,
   DialogContent,
+  DialogFormContent,
+  DialogBody,
   DialogDescription,
   DialogFooter,
   DialogHeader,

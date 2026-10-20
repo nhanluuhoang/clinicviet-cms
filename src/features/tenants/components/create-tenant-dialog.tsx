@@ -10,7 +10,8 @@ import { showRequestError } from '@/lib/handle-server-error'
 import { Button } from '@/components/ui/button'
 import {
   Dialog,
-  DialogContent,
+  DialogBody,
+  DialogFormContent,
   DialogDescription,
   DialogFooter,
   DialogHeader,
@@ -102,22 +103,26 @@ export function CreateTenantDialog() {
     <>
       <Button onClick={() => setOpen(true)}>Tạo phòng khám</Button>
       <Dialog open={open} onOpenChange={setOpen}>
-        <DialogContent className='sm:max-w-xl'>
-          <DialogHeader className='text-start'>
-            <DialogTitle>Tạo phòng khám</DialogTitle>
-            <DialogDescription>
-              Tài khoản có thể được tạo sau tại mục Người dùng.
-            </DialogDescription>
-          </DialogHeader>
-          <Form {...form}>
-            <form
-              id='create-tenant-form'
-              onSubmit={form.handleSubmit((values) => mutation.mutate(values))}
-              className='space-y-4'
-            >
-              <Fields form={form} />
-            </form>
-          </Form>
+        <DialogFormContent className='sm:max-w-xl'>
+          <DialogBody>
+            <DialogHeader className='text-start'>
+              <DialogTitle>Tạo phòng khám</DialogTitle>
+              <DialogDescription>
+                Tài khoản có thể được tạo sau tại mục Người dùng.
+              </DialogDescription>
+            </DialogHeader>
+            <Form {...form}>
+              <form
+                id='create-tenant-form'
+                onSubmit={form.handleSubmit((values) =>
+                  mutation.mutate(values)
+                )}
+                className='space-y-4'
+              >
+                <Fields form={form} />
+              </form>
+            </Form>
+          </DialogBody>
           <DialogFooter>
             <Button variant='outline' onClick={() => setOpen(false)}>
               Hủy
@@ -130,7 +135,7 @@ export function CreateTenantDialog() {
               {mutation.isPending ? 'Đang tạo...' : 'Tạo phòng khám'}
             </Button>
           </DialogFooter>
-        </DialogContent>
+        </DialogFormContent>
       </Dialog>
     </>
   )

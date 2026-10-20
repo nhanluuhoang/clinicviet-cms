@@ -11,7 +11,8 @@ import { Button } from '@/components/ui/button'
 import {
   Dialog,
   DialogClose,
-  DialogContent,
+  DialogBody,
+  DialogFormContent,
   DialogDescription,
   DialogFooter,
   DialogHeader,
@@ -221,29 +222,29 @@ export function PatientsMutateDialog({
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       {/* Chỉ đóng bằng nút X hoặc Đóng, giống các form ở page Kho thuốc. */}
-      <DialogContent
-        className='grid max-h-[90dvh] grid-rows-[auto_minmax(0,1fr)_auto] overflow-hidden sm:max-w-2xl'
+      <DialogFormContent
+        className='sm:max-w-2xl'
         onInteractOutside={(e) => e.preventDefault()}
         onEscapeKeyDown={(e) => e.preventDefault()}
       >
-        <DialogHeader className='pe-8 text-start'>
-          <DialogTitle>
-            {isEdit ? 'Cập nhật bệnh nhân' : 'Thêm bệnh nhân'}
-          </DialogTitle>
-          <DialogDescription>
-            {isEdit
-              ? 'Để trống hai ô mật khẩu nếu không muốn đổi mật khẩu.'
-              : 'Họ tên và mật khẩu là bắt buộc. Tên đăng nhập do hệ thống tự sinh sau khi lưu.'}
-          </DialogDescription>
-        </DialogHeader>
-
-        <Form {...form}>
-          <form
-            id='patient-form'
-            onSubmit={form.handleSubmit(onSubmit)}
-            className='-mx-1 space-y-4 overflow-y-auto px-1'
-          >
-            {/*
+        <DialogBody>
+          <DialogHeader className='pe-8 text-start'>
+            <DialogTitle>
+              {isEdit ? 'Cập nhật bệnh nhân' : 'Thêm bệnh nhân'}
+            </DialogTitle>
+            <DialogDescription>
+              {isEdit
+                ? 'Để trống hai ô mật khẩu nếu không muốn đổi mật khẩu.'
+                : 'Họ tên và mật khẩu là bắt buộc. Tên đăng nhập do hệ thống tự sinh sau khi lưu.'}
+            </DialogDescription>
+          </DialogHeader>
+          <Form {...form}>
+            <form
+              id='patient-form'
+              onSubmit={form.handleSubmit(onSubmit)}
+              className='-mx-1 space-y-4 overflow-y-auto px-1'
+            >
+              {/*
               userName KHÔNG nằm trong form state vì không bao giờ được gửi lên:
               backend sinh khi tạo, và client không được đổi khi sửa. Lúc tạo thì
               ẩn hẳn, lúc sửa thì hiện disabled để tra cứu.
@@ -251,206 +252,206 @@ export function PatientsMutateDialog({
               Grid chỉ chia 2 cột khi thực sự có 2 field, nếu không thì lúc tạo
               ô Họ tên sẽ nằm lẻ một nửa hàng.
             */}
-            <div className={cn('grid gap-4', isEdit && 'sm:grid-cols-2')}>
-              {isEdit && (
-                <div className='space-y-2'>
-                  <div className='flex items-center gap-1'>
-                    <Label htmlFor='patient-username'>Tên đăng nhập</Label>
-                    <Tooltip>
-                      <TooltipTrigger asChild>
-                        <button
-                          type='button'
-                          aria-label='Thông tin tên đăng nhập'
-                          className='inline-flex size-5 items-center justify-center rounded-full text-muted-foreground hover:text-foreground focus-visible:ring-[3px] focus-visible:ring-ring/50 focus-visible:outline-none'
-                        >
-                          <Info className='size-3.5' />
-                        </button>
-                      </TooltipTrigger>
-                      <TooltipContent>
-                        Do hệ thống sinh, không sửa được.
-                      </TooltipContent>
-                    </Tooltip>
+              <div className={cn('grid gap-4', isEdit && 'sm:grid-cols-2')}>
+                {isEdit && (
+                  <div className='space-y-2'>
+                    <div className='flex items-center gap-1'>
+                      <Label htmlFor='patient-username'>Tên đăng nhập</Label>
+                      <Tooltip>
+                        <TooltipTrigger asChild>
+                          <button
+                            type='button'
+                            aria-label='Thông tin tên đăng nhập'
+                            className='inline-flex size-5 items-center justify-center rounded-full text-muted-foreground hover:text-foreground focus-visible:ring-[3px] focus-visible:ring-ring/50 focus-visible:outline-none'
+                          >
+                            <Info className='size-3.5' />
+                          </button>
+                        </TooltipTrigger>
+                        <TooltipContent>
+                          Do hệ thống sinh, không sửa được.
+                        </TooltipContent>
+                      </Tooltip>
+                    </div>
+                    <Input
+                      id='patient-username'
+                      value={currentRow?.userName ?? ''}
+                      disabled
+                    />
                   </div>
-                  <Input
-                    id='patient-username'
-                    value={currentRow?.userName ?? ''}
-                    disabled
-                  />
-                </div>
-              )}
-              <FormField
-                control={form.control}
-                name='fullName'
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel required>Họ tên</FormLabel>
-                    <FormControl>
-                      <Input {...field} placeholder='VD: Nguyễn Văn A' />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
                 )}
-              />
-            </div>
+                <FormField
+                  control={form.control}
+                  name='fullName'
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel required>Họ tên</FormLabel>
+                      <FormControl>
+                        <Input {...field} placeholder='VD: Nguyễn Văn A' />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              </div>
 
-            <div className='grid gap-4 sm:grid-cols-2'>
-              <FormField
-                control={form.control}
-                name='password'
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel required={!isEdit}>
-                      Mật khẩu{' '}
-                      {isEdit && (
-                        <span className='font-normal text-muted-foreground'>
-                          (để trống nếu không đổi)
-                        </span>
-                      )}
-                    </FormLabel>
-                    <FormControl>
-                      <PasswordInput
-                        {...field}
-                        autoComplete='new-password'
-                        placeholder='Tối thiểu 8 ký tự'
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              <FormField
-                control={form.control}
-                name='confirmPassword'
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel
-                      required={!isEdit || Boolean(form.watch('password'))}
-                    >
-                      Nhập lại mật khẩu
-                    </FormLabel>
-                    <FormControl>
-                      <PasswordInput
-                        {...field}
-                        autoComplete='new-password'
-                        placeholder='Nhập lại mật khẩu'
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-            </div>
+              <div className='grid gap-4 sm:grid-cols-2'>
+                <FormField
+                  control={form.control}
+                  name='password'
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel required={!isEdit}>
+                        Mật khẩu{' '}
+                        {isEdit && (
+                          <span className='font-normal text-muted-foreground'>
+                            (để trống nếu không đổi)
+                          </span>
+                        )}
+                      </FormLabel>
+                      <FormControl>
+                        <PasswordInput
+                          {...field}
+                          autoComplete='new-password'
+                          placeholder='Tối thiểu 8 ký tự'
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={form.control}
+                  name='confirmPassword'
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel
+                        required={!isEdit || Boolean(form.watch('password'))}
+                      >
+                        Nhập lại mật khẩu
+                      </FormLabel>
+                      <FormControl>
+                        <PasswordInput
+                          {...field}
+                          autoComplete='new-password'
+                          placeholder='Nhập lại mật khẩu'
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              </div>
 
-            <div className='grid gap-4 sm:grid-cols-2'>
+              <div className='grid gap-4 sm:grid-cols-2'>
+                <FormField
+                  control={form.control}
+                  name='email'
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Email</FormLabel>
+                      <FormControl>
+                        <Input
+                          {...field}
+                          type='email'
+                          placeholder='VD: a@example.com'
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={form.control}
+                  name='phone'
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Số điện thoại</FormLabel>
+                      <FormControl>
+                        <Input {...field} placeholder='VD: 0901234567' />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              </div>
+
+              <div className='grid gap-4 sm:grid-cols-2'>
+                <FormField
+                  control={form.control}
+                  name='gender'
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Giới tính</FormLabel>
+                      <SelectDropdown
+                        isControlled
+                        defaultValue={field.value}
+                        onValueChange={field.onChange}
+                        placeholder='Chọn giới tính'
+                        items={[
+                          { label: 'Không rõ', value: GENDER_UNSET },
+                          ...genders.map((g) => ({
+                            label: g.label,
+                            value: g.value,
+                          })),
+                        ]}
+                      />
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={form.control}
+                  name='dateOfBirth'
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Ngày sinh</FormLabel>
+                      <DatePickerInput
+                        value={field.value}
+                        onChange={field.onChange}
+                      />
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              </div>
+
               <FormField
                 control={form.control}
-                name='email'
+                name='address'
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Email</FormLabel>
+                    <FormLabel>Địa chỉ</FormLabel>
                     <FormControl>
                       <Input
                         {...field}
-                        type='email'
-                        placeholder='VD: a@example.com'
+                        placeholder='Số nhà, đường, phường, tỉnh'
                       />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
                 )}
               />
+
               <FormField
                 control={form.control}
-                name='phone'
+                name='note'
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Số điện thoại</FormLabel>
+                    <FormLabel>Ghi chú</FormLabel>
                     <FormControl>
-                      <Input {...field} placeholder='VD: 0901234567' />
+                      <Textarea
+                        {...field}
+                        rows={2}
+                        placeholder='Ghi chú thêm (không bắt buộc)'
+                      />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
                 )}
               />
-            </div>
-
-            <div className='grid gap-4 sm:grid-cols-2'>
-              <FormField
-                control={form.control}
-                name='gender'
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Giới tính</FormLabel>
-                    <SelectDropdown
-                      isControlled
-                      defaultValue={field.value}
-                      onValueChange={field.onChange}
-                      placeholder='Chọn giới tính'
-                      items={[
-                        { label: 'Không rõ', value: GENDER_UNSET },
-                        ...genders.map((g) => ({
-                          label: g.label,
-                          value: g.value,
-                        })),
-                      ]}
-                    />
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              <FormField
-                control={form.control}
-                name='dateOfBirth'
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Ngày sinh</FormLabel>
-                    <DatePickerInput
-                      value={field.value}
-                      onChange={field.onChange}
-                    />
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-            </div>
-
-            <FormField
-              control={form.control}
-              name='address'
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Địa chỉ</FormLabel>
-                  <FormControl>
-                    <Input
-                      {...field}
-                      placeholder='Số nhà, đường, phường, tỉnh'
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
-            <FormField
-              control={form.control}
-              name='note'
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Ghi chú</FormLabel>
-                  <FormControl>
-                    <Textarea
-                      {...field}
-                      rows={2}
-                      placeholder='Ghi chú thêm (không bắt buộc)'
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-          </form>
-        </Form>
-
+            </form>
+          </Form>
+        </DialogBody>
         <DialogFooter className='border-t pt-4'>
           <DialogClose asChild>
             <Button variant='outline'>Đóng</Button>
@@ -463,7 +464,7 @@ export function PatientsMutateDialog({
             {form.formState.isSubmitting ? 'Đang lưu...' : 'Lưu'}
           </Button>
         </DialogFooter>
-      </DialogContent>
+      </DialogFormContent>
     </Dialog>
   )
 }

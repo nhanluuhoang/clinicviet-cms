@@ -10,7 +10,8 @@ import { Button } from '@/components/ui/button'
 import {
   Dialog,
   DialogClose,
-  DialogContent,
+  DialogBody,
+  DialogFormContent,
   DialogDescription,
   DialogFooter,
   DialogHeader,
@@ -87,77 +88,79 @@ export function BatchUpdateDialog({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className='sm:max-w-lg'>
-        <DialogHeader>
-          <DialogTitle>Cập nhật lô hàng</DialogTitle>
-          <DialogDescription>
-            {batch.medicineName} · Tồn {batch.qtyRemaining} {batch.unit}
-          </DialogDescription>
-        </DialogHeader>
-        <Form {...form}>
-          <form
-            id='batch-update-form'
-            className='space-y-4'
-            onSubmit={form.handleSubmit(onSubmit)}
-          >
-            <FormField
-              control={form.control}
-              name='batchNo'
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel required>Số lô</FormLabel>
-                  <FormControl>
-                    <Input {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <div className='grid gap-4 sm:grid-cols-2'>
+      <DialogFormContent className='sm:max-w-lg'>
+        <DialogBody>
+          <DialogHeader>
+            <DialogTitle>Cập nhật lô hàng</DialogTitle>
+            <DialogDescription>
+              {batch.medicineName} · Tồn {batch.qtyRemaining} {batch.unit}
+            </DialogDescription>
+          </DialogHeader>
+          <Form {...form}>
+            <form
+              id='batch-update-form'
+              className='space-y-4'
+              onSubmit={form.handleSubmit(onSubmit)}
+            >
               <FormField
                 control={form.control}
-                name='mfgDate'
+                name='batchNo'
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Ngày sản xuất</FormLabel>
-                    <DatePickerInput
-                      value={field.value}
-                      onChange={field.onChange}
-                    />
+                    <FormLabel required>Số lô</FormLabel>
+                    <FormControl>
+                      <Input {...field} />
+                    </FormControl>
                     <FormMessage />
                   </FormItem>
                 )}
               />
+              <div className='grid gap-4 sm:grid-cols-2'>
+                <FormField
+                  control={form.control}
+                  name='mfgDate'
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Ngày sản xuất</FormLabel>
+                      <DatePickerInput
+                        value={field.value}
+                        onChange={field.onChange}
+                      />
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={form.control}
+                  name='expiryDate'
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel required>Hạn sử dụng</FormLabel>
+                      <DatePickerInput
+                        value={field.value}
+                        onChange={field.onChange}
+                      />
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              </div>
               <FormField
                 control={form.control}
-                name='expiryDate'
+                name='note'
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel required>Hạn sử dụng</FormLabel>
-                    <DatePickerInput
-                      value={field.value}
-                      onChange={field.onChange}
-                    />
+                    <FormLabel>Ghi chú</FormLabel>
+                    <FormControl>
+                      <Textarea {...field} rows={3} />
+                    </FormControl>
                     <FormMessage />
                   </FormItem>
                 )}
               />
-            </div>
-            <FormField
-              control={form.control}
-              name='note'
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Ghi chú</FormLabel>
-                  <FormControl>
-                    <Textarea {...field} rows={3} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-          </form>
-        </Form>
+            </form>
+          </Form>
+        </DialogBody>
         <DialogFooter>
           <DialogClose asChild>
             <Button variant='outline'>Đóng</Button>
@@ -170,7 +173,7 @@ export function BatchUpdateDialog({
             {form.formState.isSubmitting ? 'Đang lưu...' : 'Lưu thay đổi'}
           </Button>
         </DialogFooter>
-      </DialogContent>
+      </DialogFormContent>
     </Dialog>
   )
 }
