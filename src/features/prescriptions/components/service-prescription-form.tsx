@@ -10,10 +10,10 @@ export function ServicePrescriptionForm(props: ServicePrescriptionFormProps) {
   const state = useServicePrescriptionForm(props)
   const { formId, canEditPrescription, showVaccination, save, isValid } = state
   return (
-    <div className='grid gap-6'>
+    <div className='grid min-w-0 grid-cols-[minmax(0,1fr)] gap-6'>
       <form
         id={formId}
-        className='grid gap-6'
+        className='grid min-w-0 grid-cols-[minmax(0,1fr)] gap-6'
         onSubmit={(event) => {
           event.preventDefault()
           if (isValid) {
@@ -23,7 +23,7 @@ export function ServicePrescriptionForm(props: ServicePrescriptionFormProps) {
           }
         }}
       >
-        <div className='grid gap-6'>
+        <div className='grid min-w-0 grid-cols-[minmax(0,1fr)] gap-6'>
           <PatientInformationSection {...state} />
 
           {showVaccination && <VaccinationSection {...state} />}

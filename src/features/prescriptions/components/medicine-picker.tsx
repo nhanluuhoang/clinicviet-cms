@@ -43,9 +43,9 @@ export function MedicinePicker({
           variant='outline'
           role='combobox'
           aria-expanded={open}
-          className='w-full justify-between font-normal'
+          className='w-full min-w-0 justify-between font-normal'
         >
-          <span className='truncate'>
+          <span className='min-w-0 truncate'>
             {selected
               ? `${selected.name} · ${selected.strength} (${selected.unit}) · Tồn ${selected.totalQty}`
               : medicines.isLoading
@@ -87,7 +87,7 @@ export function MedicinePicker({
                   <span className='min-w-0 flex-1 truncate'>
                     {medicine.name} · {medicine.strength} ({medicine.unit})
                   </span>
-                  <span className='ms-auto text-xs text-muted-foreground'>
+                  <span className='ms-auto shrink-0 text-xs text-muted-foreground'>
                     {medicine.salePrice.toLocaleString('vi-VN')} ₫ · Tồn:{' '}
                     {medicine.totalQty}
                   </span>

@@ -60,15 +60,15 @@ export function ServiceFeesSection({
   | 'invoiceTotal'
 >) {
   return (
-    <Card>
-      <CardHeader className='border-b'>
+    <Card className='min-w-0'>
+      <CardHeader className='border-b px-4 sm:px-6'>
         <CardTitle>Chi phí dịch vụ</CardTitle>
         <CardDescription>
           Kiểm tra các khoản thu trước khi lưu phiếu dịch vụ.
         </CardDescription>
       </CardHeader>
-      <CardContent className='grid gap-6 pt-6'>
-        <div className='grid gap-3'>
+      <CardContent className='grid min-w-0 grid-cols-[minmax(0,1fr)] gap-4 px-3 pt-4 sm:gap-6 sm:px-6 sm:pt-6'>
+        <div className='grid min-w-0 grid-cols-[minmax(0,1fr)] gap-3'>
           <AutomaticFee
             label='Phí khám'
             value={consultationFee}
@@ -85,7 +85,7 @@ export function ServiceFeesSection({
           />
         </div>
 
-        <div className='grid gap-3'>
+        <div className='grid min-w-0 grid-cols-[minmax(0,1fr)] gap-3'>
           <div>
             <p className='text-sm font-medium'>Khoản thu bổ sung</p>
             <p className='text-xs text-muted-foreground'>

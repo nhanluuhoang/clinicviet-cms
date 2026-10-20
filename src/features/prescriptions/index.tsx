@@ -56,11 +56,12 @@ export function Prescriptions({
   }, [formId, serviceType, activeTab.saveLabel, onActiveFormChange])
 
   return (
-    <div className='grid gap-4'>
+    <div className='grid min-w-0 grid-cols-[minmax(0,1fr)] gap-4'>
       <h2 className='flex items-center gap-2 text-2xl font-bold tracking-tight'>
         <Stethoscope className='size-6' /> Lập phiếu dịch vụ
       </h2>
       <Tabs
+        className='min-w-0'
         value={serviceType}
         onValueChange={(value) => {
           if (
@@ -110,7 +111,7 @@ export function Prescriptions({
             key={tab.value}
             value={tab.value}
             forceMount
-            className='data-[state=inactive]:hidden'
+            className='min-w-0 data-[state=inactive]:hidden'
           >
             <ServicePrescriptionForm
               {...props}
