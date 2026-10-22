@@ -1202,6 +1202,7 @@
     "loadingText": "Loading...",
     "expiryAbbreviation": "· Exp.",
     "exampleInvoiceNumber": "e.g. HD12345",
+    "leaveBlankToGenerate": "Leave blank to generate automatically",
     "exampleBatchNumber": "e.g. L2408AB",
     "exampleMedicine": "e.g. Paracetamol 500mg",
     "exampleIngredient": "e.g. Paracetamol",

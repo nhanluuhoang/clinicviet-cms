@@ -61,7 +61,7 @@ export interface StockSummary {
 
 export interface GoodsReceiptLineInput {
   medicineId: string
-  batchNo: string
+  batchNo?: string
   mfgDate: string
   expiryDate: string
   qty: number
@@ -69,6 +69,7 @@ export interface GoodsReceiptLineInput {
 }
 
 export interface GoodsReceiptLine extends GoodsReceiptLineInput {
+  batchNo: string
   medicineCode: string
   medicineName: string
   unit: string
@@ -103,7 +104,7 @@ export interface GoodsReceiptSummary extends AuditFields {
 
 export interface GoodsReceiptInput {
   supplierName: string
-  invoiceNo: string
+  invoiceNo?: string
   receivedAt: string
   note: string
   lines: GoodsReceiptLineInput[]
