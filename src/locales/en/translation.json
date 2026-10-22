@@ -1240,7 +1240,8 @@
     "payer": "Payer",
     "collector": "Collected by",
     "signature": "(Signature and full name)",
-    "print": "Print invoice"
+    "print": "Print invoice",
+    "showMedicines": "Show medicines"
   },
   "medicineUnits": {
     "tablet": "tablet",

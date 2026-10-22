@@ -19,7 +19,13 @@ export type Invoice = AuditFields & {
   otherFee3: number | string
   otherFee3Label: string
   prescription: {
-    patient: { fullName: string; phone: string | null }
+    patient: { fullName: string; phone: string | null; address: string | null }
+    items: Array<{
+      medicineName: string
+      quantity: number | null
+      instruction: string
+      medicine: { unit: string; salePrice: number | string } | null
+    }>
     medicalHistory: { serviceType: string; doctorName: string }
   }
 }

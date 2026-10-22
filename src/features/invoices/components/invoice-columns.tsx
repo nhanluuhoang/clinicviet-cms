@@ -4,6 +4,7 @@ import { formatNumber } from '@/lib/utils'
 import { DataTableColumnHeader } from '@/components/data-table'
 import { withAuditColumns } from '@/components/data-table/audit-columns'
 import type { Invoice } from '../api'
+import { InvoiceActions } from './invoice-actions'
 import { InvoiceServiceFees } from './invoice-service-fees'
 
 export const invoiceMobileLabels = {
@@ -210,5 +211,11 @@ export const invoiceColumns: ColumnDef<Invoice>[] = withAuditColumns([
     ),
     meta: { thClassName: 'text-right', tdClassName: 'text-right' },
     enableSorting: false,
+  },
+  {
+    id: 'actions',
+    cell: ({ row }) => <InvoiceActions invoice={row.original} />,
+    enableHiding: false,
+    meta: { thClassName: 'text-right', tdClassName: 'text-right' },
   },
 ])
