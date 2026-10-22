@@ -5,6 +5,8 @@ import {
   useReactTable,
   type VisibilityState,
 } from '@tanstack/react-table'
+import i18n from '@/i18n'
+import { useTranslation } from 'react-i18next'
 import { cn } from '@/lib/utils'
 import { type NavigateFn, useTableUrlState } from '@/hooks/use-table-url-state'
 import {
@@ -40,6 +42,8 @@ export function PatientsTable({
   navigate,
   isLoading,
 }: PatientsTableProps) {
+  const { t } = useTranslation()
+
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>(
     defaultAuditVisibility
   )
@@ -108,13 +112,13 @@ export function PatientsTable({
       <DataTableToolbar
         table={table}
         searchKey='fullName'
-        searchPlaceholder='Tìm theo họ tên...'
+        searchPlaceholder={t('messages.searchByFullName')}
         filters={[
           {
             columnId: 'gender',
-            title: 'Giới tính',
+            title: t('messages.gender'),
             options: [
-              { label: 'Không rõ', value: '0' },
+              { label: t('messages.unknown'), value: '0' },
               ...genders.map((g) => ({
                 label: g.label,
                 value: String(g.value),
@@ -127,7 +131,7 @@ export function PatientsTable({
       <MobileDataCards
         table={table}
         isLoading={isLoading}
-        emptyMessage='Chưa có bệnh nhân nào.'
+        emptyMessage={t('messages.noPatientsYet')}
       />
       <div className='hidden overflow-x-auto rounded-md border sm:block'>
         <Table>
@@ -162,14 +166,16 @@ export function PatientsTable({
                   colSpan={table.getVisibleLeafColumns().length}
                   className='h-24 text-center text-muted-foreground'
                 >
-                  Đang tải...
+                  {t('messages.loading')}
                 </TableCell>
               </TableRow>
             ) : table.getRowModel().rows?.length ? (
               table.getRowModel().rows.map((row) => (
                 <TableRow
                   key={row.id}
-                  data-state={row.getIsSelected() && 'selected'}
+                  data-state={
+                    row.getIsSelected() && i18n.t('messages.selectedCount')
+                  }
                 >
                   {row.getVisibleCells().map((cell) => (
                     <TableCell
@@ -193,7 +199,7 @@ export function PatientsTable({
                   colSpan={table.getVisibleLeafColumns().length}
                   className='h-24 text-center text-muted-foreground'
                 >
-                  Chưa có bệnh nhân nào.
+                  {t('messages.noPatientsYet')}
                 </TableCell>
               </TableRow>
             )}

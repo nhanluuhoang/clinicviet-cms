@@ -1,9 +1,12 @@
 import { ClipboardCheck, PackageMinus, PackagePlus } from 'lucide-react'
+import { useTranslation } from 'react-i18next'
 import { Button } from '@/components/ui/button'
 import { type InventoryTab } from '../data/data'
 import { useInventory } from './inventory-provider'
 
 export function PrimaryButtons({ tab }: { tab: InventoryTab }) {
+  const { t } = useTranslation()
+
   const { setOpen } = useInventory()
 
   if (tab === 'stocktakes') {
@@ -12,7 +15,7 @@ export function PrimaryButtons({ tab }: { tab: InventoryTab }) {
         data-tour='create-stocktake'
         onClick={() => setOpen('stocktake-create')}
       >
-        Kiểm kê
+        {t('messages.stocktake')}
         <ClipboardCheck className='size-4' />
       </Button>
     )
@@ -22,7 +25,7 @@ export function PrimaryButtons({ tab }: { tab: InventoryTab }) {
     return (
       <Button data-tour='create-issue' onClick={() => setOpen('issue-create')}>
         <PackageMinus className='size-4' />
-        Xuất hàng
+        {t('messages.issues')}
       </Button>
     )
   }
@@ -35,7 +38,7 @@ export function PrimaryButtons({ tab }: { tab: InventoryTab }) {
           onClick={() => setOpen('receipt-create')}
         >
           <PackagePlus className='size-4' />
-          Nhập hàng
+          {t('messages.receipts')}
         </Button>
       </div>
     )

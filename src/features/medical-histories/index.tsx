@@ -1,5 +1,6 @@
 import { useQuery } from '@tanstack/react-query'
 import { getRouteApi } from '@tanstack/react-router'
+import { useTranslation } from 'react-i18next'
 import { getToday } from '@/lib/utils'
 // import { LanguageSwitcher } from '@/components/language-switcher'
 import { Header } from '@/components/layout/header'
@@ -12,6 +13,8 @@ import { MedicalHistoriesTable } from './components/medical-histories-table'
 const route = getRouteApi('/_authenticated/medical-histories/')
 
 export function MedicalHistories() {
+  const { t } = useTranslation()
+
   const search = route.useSearch()
   const navigate = route.useNavigate()
   const date = search.date ?? getToday()
@@ -39,16 +42,16 @@ export function MedicalHistories() {
       <Main className='flex min-w-0 flex-1 flex-col gap-4 sm:gap-6'>
         <div>
           <h2 className='text-2xl font-bold tracking-tight'>
-            Lịch sử khám bệnh
+            {t('messages.medicalHistory')}
           </h2>
           <p className='text-muted-foreground'>
-            Quản lý lịch sử của tất cả bệnh nhân khám bệnh.
+            {t('messages.manageMedicalHistoryForAllPatients')}
           </p>
         </div>
 
         {isError && (
           <p className='rounded-md border border-destructive/30 bg-destructive/10 p-3 text-sm text-destructive'>
-            Không thể tải lịch sử khám bệnh. Vui lòng thử lại.
+            {t('messages.couldNotLoadMedicalHistoryPleaseTryAgain')}
           </p>
         )}
 

@@ -1,4 +1,5 @@
 import { useQuery } from '@tanstack/react-query'
+import { useTranslation } from 'react-i18next'
 import { Header } from '@/components/layout/header'
 import { Main } from '@/components/layout/main'
 import { ProfileDropdown } from '@/components/profile-dropdown'
@@ -8,6 +9,8 @@ import { TrialRequestsTable } from './components/trial-requests-table'
 import { TRIAL_REQUEST_STATUS_OPTIONS } from './data'
 
 export function TrialRequests() {
+  const { t } = useTranslation()
+
   const query = useQuery({
     queryKey: ['trial-requests'],
     queryFn: findTrialRequests,
@@ -23,27 +26,27 @@ export function TrialRequests() {
       <Main className='flex flex-1 flex-col gap-4 sm:gap-6'>
         <div>
           <h2 className='text-2xl font-bold tracking-tight'>
-            Yêu cầu dùng thử
+            {t('messages.trialRequests')}
           </h2>
           <p className='text-muted-foreground'>
-            Tiếp nhận yêu cầu từ website và khách hàng giới thiệu bạn bè.
+            {t('messages.receiveRequestsFromTheWebsiteAndCustomerReferral')}
           </p>
         </div>
         <TrialRequestsTable
           data={query.data?.data ?? []}
           isLoading={query.isLoading}
-          searchPlaceholder='Tìm theo số điện thoại hoặc mã phòng khám...'
-          emptyMessage='Chưa có yêu cầu dùng thử.'
+          searchPlaceholder={t('messages.searchPhoneNumberOrClinicCode')}
+          emptyMessage={t('messages.noTrialRequestsYet')}
           mobileLabels={{
-            phone: 'Số điện thoại',
-            createdAt: 'Ngày đăng ký',
-            status: 'Trạng thái',
-            code: 'Mã phòng khám',
-            rejectionReason: 'Lý do từ chối',
-            actions: 'Thao tác',
-            source: 'Nguồn',
-            contactName: 'Người được giới thiệu',
-            referrerName: 'Người giới thiệu',
+            phone: t('messages.phoneNumber'),
+            createdAt: t('messages.registrationDate'),
+            status: t('messages.status'),
+            code: t('messages.clinicCode'),
+            rejectionReason: t('messages.rejectionReason'),
+            actions: t('messages.actions'),
+            source: t('messages.source'),
+            contactName: t('messages.referredPerson'),
+            referrerName: t('messages.referrer'),
           }}
           getSearchText={(request) =>
             [
@@ -59,16 +62,16 @@ export function TrialRequests() {
           filters={[
             {
               columnId: 'source',
-              title: 'Nguồn',
+              title: t('messages.source'),
               variant: 'radio',
               options: [
                 { label: 'Website', value: 'WEBSITE' },
-                { label: 'Bạn bè giới thiệu', value: 'REFERRAL' },
+                { label: t('messages.friendReferral'), value: 'REFERRAL' },
               ],
             },
             {
               columnId: 'status',
-              title: 'Trạng thái',
+              title: t('messages.status'),
               variant: 'radio',
               options: TRIAL_REQUEST_STATUS_OPTIONS,
             },

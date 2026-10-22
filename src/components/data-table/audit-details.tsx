@@ -1,4 +1,5 @@
 import type { VisibilityState } from '@tanstack/react-table'
+import { useTranslation } from 'react-i18next'
 import {
   auditLabels,
   formatAuditValue,
@@ -13,6 +14,8 @@ export function AuditDetails({
   record: AuditFields
   visibility: VisibilityState
 }) {
+  useTranslation()
+
   const keys = (Object.keys(auditLabels) as AuditColumnId[]).filter(
     (key) => visibility[key] !== false
   )

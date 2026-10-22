@@ -2,6 +2,8 @@ import { z } from 'zod'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useMutation } from '@tanstack/react-query'
+import i18n from '@/i18n'
+import { useTranslation } from 'react-i18next'
 import { toast } from 'sonner'
 import { showRequestError } from '@/lib/handle-server-error'
 import { Button } from '@/components/ui/button'
@@ -20,22 +22,33 @@ const schema = z
   .object({
     currentPassword: z
       .string()
-      .min(6, 'Mật khẩu phải có ít nhất 6 ký tự')
-      .max(20, 'Mật khẩu không được quá 20 ký tự'),
+      .min(6, {
+        error: () => i18n.t('messages.passwordMustContainAtLeast6Characters'),
+      })
+      .max(20, {
+        error: () => i18n.t('messages.passwordMustNotExceed20CharactersAlt3'),
+      }),
     password: z
       .string()
-      .min(8, 'Mật khẩu phải có ít nhất 8 ký tự')
-      .max(20, 'Mật khẩu không được quá 20 ký tự'),
+      .min(8, {
+        error: () =>
+          i18n.t('messages.passwordMustContainAtLeast8CharactersAlt2'),
+      })
+      .max(20, {
+        error: () => i18n.t('messages.passwordMustNotExceed20CharactersAlt3'),
+      }),
     passwordConfirmation: z.string(),
   })
   .refine((values) => values.password === values.passwordConfirmation, {
     path: ['passwordConfirmation'],
-    message: 'Mật khẩu xác nhận không khớp',
+    error: () => i18n.t('messages.passwordConfirmationDoesNotMatch'),
   })
 
 type FormValues = z.infer<typeof schema>
 
 export function ChangePasswordForm() {
+  const { t } = useTranslation()
+
   const form = useForm<FormValues>({
     resolver: zodResolver(schema),
     defaultValues: {
@@ -48,9 +61,10 @@ export function ChangePasswordForm() {
     mutationFn: ChangePassword,
     onSuccess: () => {
       form.reset()
-      toast.success('Đã đổi mật khẩu')
+      toast.success(t('messages.passwordChanged'))
     },
-    onError: (error) => showRequestError(error, 'Không thể đổi mật khẩu'),
+    onError: (error) =>
+      showRequestError(error, t('messages.couldNotChangePassword')),
   })
 
   return (
@@ -64,12 +78,12 @@ export function ChangePasswordForm() {
           name='currentPassword'
           render={({ field }) => (
             <FormItem>
-              <FormLabel required>Mật khẩu hiện tại</FormLabel>
+              <FormLabel required>{t('messages.currentPassword')}</FormLabel>
               <FormControl>
                 <PasswordInput
                   {...field}
                   autoComplete='current-password'
-                  placeholder='Nhập mật khẩu hiện tại'
+                  placeholder={t('messages.enterCurrentPassword')}
                 />
               </FormControl>
               <FormMessage />
@@ -81,12 +95,12 @@ export function ChangePasswordForm() {
           name='password'
           render={({ field }) => (
             <FormItem>
-              <FormLabel required>Mật khẩu mới</FormLabel>
+              <FormLabel required>{t('messages.newPassword')}</FormLabel>
               <FormControl>
                 <PasswordInput
                   {...field}
                   autoComplete='new-password'
-                  placeholder='Từ 8 đến 20 ký tự'
+                  placeholder={t('messages.8To20Characters')}
                 />
               </FormControl>
               <FormMessage />
@@ -98,12 +112,12 @@ export function ChangePasswordForm() {
           name='passwordConfirmation'
           render={({ field }) => (
             <FormItem>
-              <FormLabel required>Xác nhận mật khẩu mới</FormLabel>
+              <FormLabel required>{t('messages.confirmNewPassword')}</FormLabel>
               <FormControl>
                 <PasswordInput
                   {...field}
                   autoComplete='new-password'
-                  placeholder='Nhập lại mật khẩu mới'
+                  placeholder={t('messages.reEnterNewPassword')}
                 />
               </FormControl>
               <FormMessage />
@@ -111,7 +125,9 @@ export function ChangePasswordForm() {
           )}
         />
         <Button type='submit' disabled={mutation.isPending}>
-          {mutation.isPending ? 'Đang cập nhật...' : 'Đổi mật khẩu'}
+          {mutation.isPending
+            ? t('messages.updating')
+            : t('messages.changePassword')}
         </Button>
       </form>
     </Form>

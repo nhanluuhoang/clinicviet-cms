@@ -4,6 +4,8 @@ import {
   DoubleArrowLeftIcon,
   DoubleArrowRightIcon,
 } from '@radix-ui/react-icons'
+import i18n from '@/i18n'
+import { useTranslation } from 'react-i18next'
 import { getPageNumbers, formatTime } from '@/lib/utils'
 import { Button } from '@/components/ui/button'
 import {
@@ -29,7 +31,7 @@ export function QueueTable({
   limit,
   onPageChange,
   showActions = true,
-  emptyMessage = 'Chưa có lượt khám trong ngày.',
+  emptyMessage = i18n.t('messages.noExaminationsToday'),
 }: {
   data: QueueEntry[]
   isLoading: boolean
@@ -43,6 +45,8 @@ export function QueueTable({
   showActions?: boolean
   emptyMessage?: string
 }) {
+  const { t } = useTranslation()
+
   const totalPages = Math.max(1, Math.ceil(total / limit))
   const pageNumbers = getPageNumbers(page, totalPages)
 
@@ -50,7 +54,9 @@ export function QueueTable({
     <>
       <div className='grid gap-3 sm:hidden'>
         {isLoading ? (
-          <p className='rounded-md border p-4 text-center'>Đang tải...</p>
+          <p className='rounded-md border p-4 text-center'>
+            {t('messages.loading')}
+          </p>
         ) : data.length ? (
           data.map((item) => (
             <div
@@ -63,9 +69,9 @@ export function QueueTable({
                     {item.patient.fullName}
                   </p>
                   <p className='text-xs text-muted-foreground'>
-                    Số thứ tự: {item.queueNumber ?? '—'} ·{' '}
-                    {item.patient.phone || 'Không có SĐT'}
-                    {item.isLate ? ' · Đến muộn' : ''}
+                    {t('messages.queueNumber')} {item.queueNumber ?? '—'} ·{' '}
+                    {item.patient.phone || t('messages.noPhoneNumber')}
+                    {item.isLate ? t('messages.late') : ''}
                   </p>
                 </div>
                 <QueueStatusBadge status={item.status} />
@@ -73,11 +79,15 @@ export function QueueTable({
               <div className='space-y-1 text-sm'>
                 <p>
                   {item.appointmentAt
-                    ? `Hẹn ${formatTime(item.appointmentAt)}`
-                    : `Đến ${formatTime(item.checkInAt)}`}
+                    ? t('messages.appointment', {
+                        value0: formatTime(item.appointmentAt),
+                      })
+                    : t('messages.arrived', {
+                        value0: formatTime(item.checkInAt),
+                      })}
                 </p>
                 <p className='break-words text-muted-foreground'>
-                  {item.reason || 'Không có lý do khám'}
+                  {item.reason || t('messages.noReasonForVisit')}
                 </p>
               </div>
               {showActions && (
@@ -102,14 +112,16 @@ export function QueueTable({
           <TableHeader>
             <TableRow>
               <TableHead className='w-20 whitespace-nowrap'>
-                Số thứ tự
+                {t('messages.queueNumberAlt2')}
               </TableHead>
-              <TableHead>Bệnh nhân</TableHead>
-              <TableHead>Thời gian</TableHead>
-              <TableHead>Lý do khám</TableHead>
-              <TableHead>Trạng thái</TableHead>
+              <TableHead>{t('messages.patient')}</TableHead>
+              <TableHead>{t('messages.time')}</TableHead>
+              <TableHead>{t('messages.reasonForVisit')}</TableHead>
+              <TableHead>{t('messages.status')}</TableHead>
               {showActions && (
-                <TableHead className='text-right'>Thao tác</TableHead>
+                <TableHead className='text-right'>
+                  {t('messages.actions')}
+                </TableHead>
               )}
             </TableRow>
           </TableHeader>
@@ -120,7 +132,7 @@ export function QueueTable({
                   colSpan={showActions ? 6 : 5}
                   className='h-24 text-center'
                 >
-                  Đang tải...
+                  {t('messages.loading')}
                 </TableCell>
               </TableRow>
             ) : data.length ? (
@@ -132,14 +144,18 @@ export function QueueTable({
                   <TableCell>
                     <div className='font-medium'>{item.patient.fullName}</div>
                     <div className='text-xs text-muted-foreground'>
-                      {item.patient.phone || 'Không có SĐT'}
-                      {item.isLate ? ' · Đến muộn' : ''}
+                      {item.patient.phone || t('messages.noPhoneNumber')}
+                      {item.isLate ? t('messages.late') : ''}
                     </div>
                   </TableCell>
                   <TableCell>
                     {item.appointmentAt
-                      ? `Hẹn ${formatTime(item.appointmentAt)}`
-                      : `Đến ${formatTime(item.checkInAt)}`}
+                      ? t('messages.appointment', {
+                          value0: formatTime(item.appointmentAt),
+                        })
+                      : t('messages.arrived', {
+                          value0: formatTime(item.checkInAt),
+                        })}
                   </TableCell>
                   <TableCell className='max-w-56 truncate'>
                     {item.reason || '—'}
@@ -174,7 +190,9 @@ export function QueueTable({
       </div>
       {total > 0 && (
         <div className='flex items-center justify-between gap-2 px-2'>
-          <p className='text-sm text-muted-foreground'>{total} lượt khám</p>
+          <p className='text-sm text-muted-foreground'>
+            {total} {t('messages.examinationsAlt3')}
+          </p>
           <div className='flex items-center gap-2'>
             <Button
               variant='outline'
@@ -182,7 +200,7 @@ export function QueueTable({
               disabled={page <= 1}
               onClick={() => onPageChange(1)}
             >
-              <span className='sr-only'>Trang đầu</span>
+              <span className='sr-only'>{t('messages.firstPage')}</span>
               <DoubleArrowLeftIcon />
             </Button>
             <Button
@@ -191,7 +209,7 @@ export function QueueTable({
               disabled={page <= 1}
               onClick={() => onPageChange(page - 1)}
             >
-              <span className='sr-only'>Trang trước</span>
+              <span className='sr-only'>{t('messages.previousPage')}</span>
               <ChevronLeftIcon />
             </Button>
             <span className='text-sm whitespace-nowrap sm:hidden'>
@@ -222,7 +240,7 @@ export function QueueTable({
               disabled={page >= totalPages}
               onClick={() => onPageChange(page + 1)}
             >
-              <span className='sr-only'>Trang sau</span>
+              <span className='sr-only'>{i18n.t('messages.nextPage')}</span>
               <ChevronRightIcon />
             </Button>
             <Button
@@ -231,7 +249,7 @@ export function QueueTable({
               disabled={page >= totalPages}
               onClick={() => onPageChange(totalPages)}
             >
-              <span className='sr-only'>Trang cuối</span>
+              <span className='sr-only'>{t('messages.lastPage')}</span>
               <DoubleArrowRightIcon />
             </Button>
           </div>

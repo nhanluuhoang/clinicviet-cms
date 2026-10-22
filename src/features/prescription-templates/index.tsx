@@ -1,3 +1,4 @@
+import { useTranslation } from 'react-i18next'
 import { Header } from '@/components/layout/header'
 import { Main } from '@/components/layout/main'
 import { ProfileDropdown } from '@/components/profile-dropdown'
@@ -9,6 +10,8 @@ import { PrescriptionTemplatesTable } from './components/prescription-templates-
 import { usePrescriptionTemplates } from './hooks/use-prescription-templates'
 
 export function PrescriptionTemplates() {
+  const { t } = useTranslation()
+
   const state = usePrescriptionTemplates()
   return (
     <>
@@ -22,9 +25,11 @@ export function PrescriptionTemplates() {
       <Main className='flex flex-1 flex-col gap-4 sm:gap-6'>
         <div className='flex flex-wrap items-end justify-between gap-2'>
           <div>
-            <h2 className='text-2xl font-bold tracking-tight'>Mẫu đơn thuốc</h2>
+            <h2 className='text-2xl font-bold tracking-tight'>
+              {t('messages.prescriptionTemplates')}
+            </h2>
             <p className='text-muted-foreground'>
-              Tạo các đơn thường dùng để chọn nhanh khi kê toa.
+              {t('messages.createCommonlyUsedPrescriptionsForQuickSelection')}
             </p>
           </div>
           <PrescriptionTemplatesPrimaryButtons {...state} />

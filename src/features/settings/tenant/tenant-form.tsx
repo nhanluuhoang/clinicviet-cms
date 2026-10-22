@@ -3,6 +3,10 @@ import { z } from 'zod'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
+import { SERVICE_PLAN_LABELS } from '@/config/service-plans'
+import { SUBSCRIPTION_STATUS_SUMMARY_LABELS } from '@/config/subscription-statuses'
+import i18n, { getLocale } from '@/i18n'
+import { useTranslation } from 'react-i18next'
 import { toast } from 'sonner'
 import { showRequestError } from '@/lib/handle-server-error'
 import { Button } from '@/components/ui/button'
@@ -16,23 +20,31 @@ import {
   FormMessage,
 } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
-import { SERVICE_PLAN_LABELS } from '@/config/service-plans'
-import { SUBSCRIPTION_STATUS_SUMMARY_LABELS } from '@/config/subscription-statuses'
 import { ContentSection } from '../components/content-section'
 import { getOwnTenant, updateOwnTenant } from './api'
 import { StorageUsage } from './storage-usage'
 
 const schema = z.object({
-  name: z.string().trim().min(1, 'Vui lòng nhập tên phòng khám').max(255),
-  address: z.string().trim().min(1, 'Vui lòng nhập địa chỉ').max(255),
+  name: z
+    .string()
+    .trim()
+    .min(1, { error: () => i18n.t('messages.pleaseEnterAClinicName') })
+    .max(255),
+  address: z
+    .string()
+    .trim()
+    .min(1, { error: () => i18n.t('messages.pleaseEnterAnAddress') })
+    .max(255),
 })
 
 type FormValues = z.infer<typeof schema>
 
 const formatDate = (value?: string | null) =>
-  value ? new Date(value).toLocaleDateString('vi-VN') : '—'
+  value ? new Date(value).toLocaleDateString(getLocale()) : '—'
 
 export function TenantForm() {
+  const { t } = useTranslation()
+
   const queryClient = useQueryClient()
   const tenant = useQuery({ queryKey: ['tenant', 'me'], queryFn: getOwnTenant })
   const form = useForm<FormValues>({
@@ -55,22 +67,24 @@ export function TenantForm() {
         queryClient.invalidateQueries({ queryKey: ['tenant', 'me'] }),
         queryClient.invalidateQueries({ queryKey: ['auth', 'profile'] }),
       ])
-      toast.success('Đã cập nhật thông tin phòng khám')
+      toast.success(t('messages.clinicInformationUpdated'))
     },
     onError: (error) =>
-      showRequestError(error, 'Không thể cập nhật thông tin phòng khám'),
+      showRequestError(error, t('messages.couldNotUpdateClinicInformation')),
   })
 
   if (tenant.isLoading) {
     return (
-      <p className='text-sm text-muted-foreground'>Đang tải thông tin...</p>
+      <p className='text-sm text-muted-foreground'>
+        {t('messages.loadingInformation')}
+      </p>
     )
   }
 
   return (
     <ContentSection
-      title='Thông tin phòng khám'
-      desc='Quản lý thông tin nhận diện của phòng khám hiện tại.'
+      title={t('messages.clinicInformation')}
+      desc={t('messages.manageIdentificationDetailsForTheCurrentClinic')}
     >
       <Form {...form}>
         <form
@@ -79,16 +93,20 @@ export function TenantForm() {
         >
           <div className='grid gap-4 sm:grid-cols-2'>
             <FormItem>
-              <FormLabel>Mã phòng khám</FormLabel>
+              <FormLabel>{t('messages.clinicCode')}</FormLabel>
               <FormControl>
                 <Input value={tenant.data?.code ?? ''} disabled />
               </FormControl>
             </FormItem>
             <FormItem>
-              <FormLabel>Tên gói dịch vụ</FormLabel>
+              <FormLabel>{t('messages.servicePlan')}</FormLabel>
               <FormControl>
                 <Input
-                  value={tenant.data ? SERVICE_PLAN_LABELS[tenant.data.servicePlan] : ''}
+                  value={
+                    tenant.data
+                      ? SERVICE_PLAN_LABELS[tenant.data.servicePlan]
+                      : ''
+                  }
                   disabled
                 />
               </FormControl>
@@ -100,7 +118,7 @@ export function TenantForm() {
             name='name'
             render={({ field }) => (
               <FormItem>
-                <FormLabel required>Tên phòng khám</FormLabel>
+                <FormLabel required>{t('messages.clinicName')}</FormLabel>
                 <FormControl>
                   <Input {...field} />
                 </FormControl>
@@ -113,7 +131,7 @@ export function TenantForm() {
             name='address'
             render={({ field }) => (
               <FormItem>
-                <FormLabel required>Địa chỉ</FormLabel>
+                <FormLabel required>{t('messages.address')}</FormLabel>
                 <FormControl>
                   <Input {...field} />
                 </FormControl>
@@ -122,32 +140,34 @@ export function TenantForm() {
             )}
           />
           <FormItem>
-            <FormLabel>Tên miền phụ</FormLabel>
+            <FormLabel>{t('messages.subdomain')}</FormLabel>
             <FormControl>
               <Input value={tenant.data?.subdomain ?? ''} disabled />
             </FormControl>
             <FormDescription>
-              Liên hệ bộ phận hỗ trợ nếu cần thay đổi địa chỉ trang phòng khám.
+              {t('messages.contactSupportToChangeTheClinicWebsiteAddress')}
             </FormDescription>
           </FormItem>
 
           <div className='grid gap-4 rounded-lg border bg-muted/30 p-4 sm:grid-cols-2'>
             <div>
               <p className='text-sm text-muted-foreground'>
-                Trạng thái thuê bao
+                {t('messages.subscriptionStatus')}
               </p>
               <p className='font-medium'>
                 {tenant.data
-                  ? SUBSCRIPTION_STATUS_SUMMARY_LABELS[tenant.data.subscriptionStatus]
+                  ? SUBSCRIPTION_STATUS_SUMMARY_LABELS[
+                      tenant.data.subscriptionStatus
+                    ]
                   : '—'}
               </p>
             </div>
             <div>
-              <p className='text-sm text-muted-foreground'>Ngày hết hạn</p>
+              <p className='text-sm text-muted-foreground'>
+                {t('messages.expiryDateAlt3')}
+              </p>
               <p className='font-medium'>
-                {formatDate(
-                  tenant.data?.subscriptionEndsAt ?? tenant.data?.trialEndsAt
-                )}
+                {formatDate(tenant.data?.subscriptionEndsAt)}
               </p>
             </div>
           </div>
@@ -155,7 +175,9 @@ export function TenantForm() {
           {tenant.data && <StorageUsage tenant={tenant.data} />}
 
           <Button type='submit' disabled={update.isPending}>
-            {update.isPending ? 'Đang lưu...' : 'Lưu thay đổi'}
+            {update.isPending
+              ? t('messages.saving')
+              : t('messages.saveChanges')}
           </Button>
         </form>
       </Form>

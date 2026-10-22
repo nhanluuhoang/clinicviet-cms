@@ -1,6 +1,18 @@
+import i18n, { getLocale } from '@/i18n'
+
 export const genders = [
-  { label: 'Nam', value: '1' },
-  { label: 'Nữ', value: '2' },
+  {
+    get label() {
+      return i18n.t('messages.male')
+    },
+    value: '1',
+  },
+  {
+    get label() {
+      return i18n.t('messages.female')
+    },
+    value: '2',
+  },
 ] as const
 
 export const genderLabel = (value?: string | null) =>
@@ -21,4 +33,4 @@ export const MAX = {
 
 /** Hiển thị ngày theo định dạng Việt Nam; chuỗi rỗng/null thành dấu gạch. */
 export const formatDate = (value?: string | null) =>
-  value ? new Date(value).toLocaleDateString('vi-VN') : '—'
+  value ? new Date(value).toLocaleDateString(getLocale()) : '—'

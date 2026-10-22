@@ -1,7 +1,8 @@
+import { z } from 'zod'
 import i18n from 'i18next'
-import { initReactI18next } from 'react-i18next'
 import LanguageDetector from 'i18next-browser-languagedetector'
-
+import { initReactI18next } from 'react-i18next'
+import { en, vi } from 'zod/locales'
 import enTranslation from './locales/en/translation.json'
 import viTranslation from './locales/vi/translation.json'
 
@@ -30,4 +31,13 @@ i18n
     },
   })
 
+export default i18n
 
+export function getLocale(): string {
+  return i18n.resolvedLanguage?.startsWith('en') ? 'en-US' : 'vi-VN'
+}
+
+z.config(i18n.resolvedLanguage?.startsWith('en') ? en() : vi())
+i18n.on('languageChanged', (language) => {
+  z.config(language.startsWith('en') ? en() : vi())
+})

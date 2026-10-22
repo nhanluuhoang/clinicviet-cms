@@ -1,4 +1,5 @@
 import { useQuery } from '@tanstack/react-query'
+import { useTranslation } from 'react-i18next'
 import { useAuthStore } from '@/stores/auth-store'
 import { Header } from '@/components/layout/header'
 import { Main } from '@/components/layout/main'
@@ -9,6 +10,8 @@ import { DaysOffForm } from './components/days-off-form'
 import { DAYS_OFF_KEY } from './data/constants'
 
 export function ClinicDaysOff() {
+  const { t } = useTranslation()
+
   const tenantId = useAuthStore((state) => state.auth.user?.tenantId)
   const { data, isLoading } = useQuery({
     queryKey: ['master-data', tenantId],
@@ -31,14 +34,16 @@ export function ClinicDaysOff() {
       <Main className='mx-auto flex w-full max-w-3xl flex-1 flex-col gap-6'>
         <div>
           <h2 className='text-2xl font-bold tracking-tight'>
-            Ngày nghỉ phòng khám
+            {t('messages.clinicHolidays')}
           </h2>
           <p className='text-muted-foreground'>
-            Cấu hình các ngày phòng khám không tiếp nhận lịch khám.
+            {t('messages.configureDaysWhenTheClinicDoesNotAcceptAppointm')}
           </p>
         </div>
         {isLoading ? (
-          <p className='text-sm text-muted-foreground'>Đang tải ngày nghỉ...</p>
+          <p className='text-sm text-muted-foreground'>
+            {t('messages.loadingHolidays')}
+          </p>
         ) : (
           <DaysOffForm key={item?.value ?? 'empty'} item={item} />
         )}

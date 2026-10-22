@@ -1,4 +1,6 @@
+import i18n from '@/i18n'
 import { Loader } from 'lucide-react'
+import { useTranslation } from 'react-i18next'
 import { cn } from '@/lib/utils'
 import { FormControl } from '@/components/ui/form'
 import {
@@ -32,6 +34,8 @@ export function SelectDropdown({
   isControlled = false,
   standalone = false,
 }: SelectDropdownProps) {
+  useTranslation()
+
   const defaultState = isControlled
     ? { value: defaultValue, onValueChange }
     : { defaultValue, onValueChange }
@@ -50,7 +54,7 @@ export function SelectDropdown({
             <div className='flex items-center justify-center gap-2'>
               <Loader className='h-5 w-5 animate-spin' />
               {'  '}
-              Loading...
+              {i18n.t('messages.loadingText')}
             </div>
           </SelectItem>
         ) : (

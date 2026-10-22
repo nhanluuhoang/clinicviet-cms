@@ -1,5 +1,6 @@
 import { ChevronDownIcon, ChevronRightIcon } from '@radix-ui/react-icons'
 import { type ColumnDef } from '@tanstack/react-table'
+import i18n from '@/i18n'
 import { Button } from '@/components/ui/button'
 import { DataTableColumnHeader } from '@/components/data-table'
 import { DataTableRowActions } from '@/features/posts/components/data-table-row-actions'
@@ -28,7 +29,10 @@ export const columns: ColumnDef<Post>[] = [
   {
     accessorKey: 'thumbnailUrl',
     header: ({ column }) => (
-      <DataTableColumnHeader column={column} title='Ảnh đại diện' />
+      <DataTableColumnHeader
+        column={column}
+        title={i18n.t('messages.avatar')}
+      />
     ),
     cell: ({ row }) => {
       return (
@@ -40,7 +44,9 @@ export const columns: ColumnDef<Post>[] = [
               className='h-12 w-20 rounded-md object-cover shadow-sm'
             />
           ) : (
-            <span className='text-xs text-muted-foreground'>Không có ảnh</span>
+            <span className='text-xs text-muted-foreground'>
+              {i18n.t('messages.noImage')}
+            </span>
           )}
         </div>
       )
@@ -50,7 +56,7 @@ export const columns: ColumnDef<Post>[] = [
   {
     accessorKey: 'title',
     header: ({ column }) => (
-      <DataTableColumnHeader column={column} title='Tiêu đề' />
+      <DataTableColumnHeader column={column} title={i18n.t('messages.title')} />
     ),
     cell: ({ row }) => (
       <div className='max-w-[300px] truncate font-medium'>
@@ -61,7 +67,10 @@ export const columns: ColumnDef<Post>[] = [
   {
     accessorKey: 'excerpt',
     header: ({ column }) => (
-      <DataTableColumnHeader column={column} title='Mô tả' />
+      <DataTableColumnHeader
+        column={column}
+        title={i18n.t('messages.description')}
+      />
     ),
     cell: ({ row }) => {
       const content = row.getValue('excerpt') as string
@@ -75,7 +84,10 @@ export const columns: ColumnDef<Post>[] = [
   {
     accessorKey: 'isPublished',
     header: ({ column }) => (
-      <DataTableColumnHeader column={column} title='Trạng thái' />
+      <DataTableColumnHeader
+        column={column}
+        title={i18n.t('messages.status')}
+      />
     ),
     meta: { className: 'ps-1', tdClassName: 'ps-4' },
     cell: ({ row }) => {

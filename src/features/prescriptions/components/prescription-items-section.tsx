@@ -1,4 +1,6 @@
+import { getLocale } from '@/i18n'
 import { Plus, Trash2 } from 'lucide-react'
+import { useTranslation } from 'react-i18next'
 import { Button } from '@/components/ui/button'
 import {
   Card,
@@ -39,24 +41,26 @@ export function PrescriptionItemsSection({
   | 'addItem'
   | 'getQuantityError'
 >) {
+  const { t } = useTranslation()
+
   return (
     <Card className='min-w-0'>
       <CardHeader className='gap-3 px-4 sm:flex-row sm:items-end sm:justify-between sm:px-6'>
         <div className='min-w-0'>
           <CardTitle>
             {isVaccination
-              ? 'Vắc xin / thuốc'
+              ? t('messages.vaccinesMedicines')
               : isPharmacy
-                ? 'Thuốc / sản phẩm'
-                : 'Đơn thuốc'}
+                ? t('messages.medicinesProducts')
+                : t('messages.prescriptionAlt2')}
           </CardTitle>
           <CardDescription>
-            Tìm kiếm và chọn thuốc trong danh mục.
+            {t('messages.findAndSelectMedicinesFromTheCatalog')}
           </CardDescription>
         </div>
         <div className='grid min-w-0 gap-1.5 sm:min-w-56'>
           <Label htmlFor={formId + '-prescription-template'}>
-            Mẫu đơn thuốc
+            {t('messages.prescriptionTemplates')}
           </Label>
           <PrescriptionTemplatePicker onSelect={applyTemplate} />
         </div>
@@ -68,7 +72,9 @@ export function PrescriptionItemsSection({
             className='grid min-w-0 grid-cols-[minmax(0,1fr)] gap-4 rounded-lg border p-3 sm:p-4'
           >
             <div className='flex items-center justify-between'>
-              <p className='font-medium'>Thuốc {index + 1}</p>
+              <p className='font-medium'>
+                {t('messages.medicine')} {index + 1}
+              </p>
               <Button
                 type='button'
                 variant='ghost'
@@ -78,25 +84,27 @@ export function PrescriptionItemsSection({
                 }
               >
                 <Trash2 />
-                <span className='sr-only'>Xóa thuốc</span>
+                <span className='sr-only'>{t('messages.removeMedicine')}</span>
               </Button>
             </div>
             {item.selectedMedicine && (
               <p className='text-sm text-muted-foreground'>
-                Đơn giá:{' '}
+                {t('messages.unitPrice')}{' '}
                 {Number(item.selectedMedicine.salePrice).toLocaleString(
-                  'vi-VN'
+                  getLocale()
                 )}{' '}
-                đ{' · '}Thành tiền:{' '}
+                {t('messages.Alt3')}
+                {' · '}
+                {t('messages.amount')}{' '}
                 {(
                   Number(item.selectedMedicine.salePrice) * (item.quantity ?? 0)
-                ).toLocaleString('vi-VN')}{' '}
-                đ
+                ).toLocaleString(getLocale())}{' '}
+                {t('messages.Alt3')}
               </p>
             )}
             <div className='grid min-w-0 grid-cols-[minmax(0,1fr)] gap-4 md:grid-cols-2 lg:grid-cols-[minmax(0,2fr)_minmax(8rem,0.6fr)_minmax(0,1.4fr)]'>
               <div className='grid min-w-0 grid-rows-[auto_2.25rem_1rem] content-start gap-2 md:col-span-2 lg:col-span-1'>
-                <Label required>Thuốc</Label>
+                <Label required>{t('messages.medicine')}</Label>
                 <MedicinePicker
                   selected={item.selectedMedicine}
                   onChange={(medicine) =>
@@ -110,7 +118,7 @@ export function PrescriptionItemsSection({
                 <span aria-hidden='true' />
               </div>
               <Field
-                label='Số lượng *'
+                label={t('messages.quantityAlt3')}
                 className='grid-rows-[auto_2.25rem_1rem] content-start'
               >
                 <Input
@@ -137,7 +145,7 @@ export function PrescriptionItemsSection({
               </Field>
               <Field
                 className='content-start md:col-span-2 lg:col-span-1'
-                label='Hướng dẫn sử dụng'
+                label={t('messages.userGuide')}
               >
                 <MedicineInstructionInput
                   value={item.instruction ?? ''}
@@ -158,7 +166,10 @@ export function PrescriptionItemsSection({
           className='w-fit justify-self-center'
           onClick={addItem}
         >
-          <Plus /> {isVaccination ? 'Thêm vắc xin / thuốc' : 'Thêm thuốc'}
+          <Plus />{' '}
+          {isVaccination
+            ? t('messages.addVaccineMedicine')
+            : t('messages.addMedicine')}
         </Button>
       </CardContent>
     </Card>

@@ -1,6 +1,8 @@
 import { useQuery } from '@tanstack/react-query'
 import { type ColumnDef, type Row } from '@tanstack/react-table'
+import i18n from '@/i18n'
 import { ChevronDown, ChevronRight, TrendingDown } from 'lucide-react'
+import { useTranslation } from 'react-i18next'
 import { cn, formatMoney, formatNumber } from '@/lib/utils'
 import { useApiSearch } from '@/hooks/use-api-search'
 import { Badge } from '@/components/ui/badge'
@@ -16,13 +18,15 @@ import { expiryMeta, expiryStatuses } from '../data/data'
 import { ExpiryBadge } from './expiry-badge'
 
 function BatchBreakdown({ row }: { row: Row<StockSummary> }) {
+  const { t } = useTranslation()
+
   const { batches, unit } = row.original
 
   return (
     <div className='px-4 py-3'>
       <p className='mb-2 text-xs font-medium text-muted-foreground'>
-        {batches.length} đợt nhập đang còn tồn — sắp theo hạn dùng, lô hết hạn
-        sớm nhất lên đầu
+        {batches.length}{' '}
+        {t('messages.receiptBatchesWithRemainingStockOrderedByEarlies')}
       </p>
       <div className='grid gap-2 sm:hidden'>
         {batches.map((batch) => (
@@ -30,17 +34,28 @@ function BatchBreakdown({ row }: { row: Row<StockSummary> }) {
             key={batch.id}
             className='space-y-1 rounded-md border p-3 text-sm'
           >
-            <p className='font-medium'>Lô {batch.batchNo}</p>
-            <p>
-              Hạn dùng: <ExpiryBadge date={batch.expiryDate} />
+            <p className='font-medium'>
+              {t('messages.batchAlt2')} {batch.batchNo}
             </p>
             <p>
-              Tồn: {formatNumber(batch.qtyRemaining)} {unit}
+              {t('messages.expiry')} <ExpiryBadge date={batch.expiryDate} />
             </p>
-            <p>Đã nhập: {formatNumber(batch.qtyReceived)}</p>
-            <p>Giá nhập: {formatMoney(batch.unitCost)}</p>
-            <p>Phiếu nhập: {batch.receiptCode}</p>
-            <p>Nhà cung cấp: {batch.supplierName}</p>
+            <p>
+              {t('messages.inStockAlt2')} {formatNumber(batch.qtyRemaining)}{' '}
+              {unit}
+            </p>
+            <p>
+              {t('messages.receivedAlt2')} {formatNumber(batch.qtyReceived)}
+            </p>
+            <p>
+              {t('messages.purchasePriceAlt2')} {formatMoney(batch.unitCost)}
+            </p>
+            <p>
+              {t('messages.receipt')} {batch.receiptCode}
+            </p>
+            <p>
+              {t('messages.supplierAlt2')} {batch.supplierName}
+            </p>
           </div>
         ))}
       </div>
@@ -48,13 +63,27 @@ function BatchBreakdown({ row }: { row: Row<StockSummary> }) {
         <table className='w-full text-sm'>
           <thead className='text-xs text-muted-foreground'>
             <tr className='border-b'>
-              <th className='py-1.5 pe-4 text-start font-medium'>Số lô</th>
-              <th className='py-1.5 pe-4 text-start font-medium'>Hạn dùng</th>
-              <th className='py-1.5 pe-4 text-end font-medium'>Tồn</th>
-              <th className='py-1.5 pe-4 text-end font-medium'>Đã nhập</th>
-              <th className='py-1.5 pe-4 text-end font-medium'>Giá nhập</th>
-              <th className='py-1.5 pe-4 text-start font-medium'>Phiếu nhập</th>
-              <th className='py-1.5 text-start font-medium'>Nhà cung cấp</th>
+              <th className='py-1.5 pe-4 text-start font-medium'>
+                {t('messages.batchNumber')}
+              </th>
+              <th className='py-1.5 pe-4 text-start font-medium'>
+                {t('messages.expiryAlt2')}
+              </th>
+              <th className='py-1.5 pe-4 text-end font-medium'>
+                {t('messages.inStock')}
+              </th>
+              <th className='py-1.5 pe-4 text-end font-medium'>
+                {t('messages.received')}
+              </th>
+              <th className='py-1.5 pe-4 text-end font-medium'>
+                {t('messages.purchasePrice')}
+              </th>
+              <th className='py-1.5 pe-4 text-start font-medium'>
+                {t('messages.goodsReceipt')}
+              </th>
+              <th className='py-1.5 text-start font-medium'>
+                {t('messages.supplier')}
+              </th>
             </tr>
           </thead>
           <tbody>
@@ -100,7 +129,11 @@ const columns: ColumnDef<StockSummary>[] = [
         size='icon'
         className='size-7'
         onClick={row.getToggleExpandedHandler()}
-        aria-label={row.getIsExpanded() ? 'Thu gọn' : 'Xem các lô'}
+        aria-label={
+          row.getIsExpanded()
+            ? i18n.t('messages.collapse')
+            : i18n.t('messages.viewBatches')
+        }
       >
         {row.getIsExpanded() ? (
           <ChevronDown className='size-4' />
@@ -115,7 +148,10 @@ const columns: ColumnDef<StockSummary>[] = [
   {
     accessorKey: 'name',
     header: ({ column }) => (
-      <DataTableColumnHeader column={column} title='Thuốc' />
+      <DataTableColumnHeader
+        column={column}
+        title={i18n.t('messages.medicine')}
+      />
     ),
     cell: ({ row }) => (
       <div className='min-w-48'>
@@ -129,7 +165,7 @@ const columns: ColumnDef<StockSummary>[] = [
   {
     accessorKey: 'group',
     header: ({ column }) => (
-      <DataTableColumnHeader column={column} title='Nhóm' />
+      <DataTableColumnHeader column={column} title={i18n.t('messages.group')} />
     ),
     cell: ({ row }) => (
       <Badge variant='secondary' className='font-normal'>
@@ -142,7 +178,10 @@ const columns: ColumnDef<StockSummary>[] = [
   {
     accessorKey: 'totalQty',
     header: ({ column }) => (
-      <DataTableColumnHeader column={column} title='Tồn kho' />
+      <DataTableColumnHeader
+        column={column}
+        title={i18n.t('messages.inventory')}
+      />
     ),
     cell: ({ row }) => {
       const { totalQty, unit, minStock, belowMinStock } = row.original
@@ -155,10 +194,13 @@ const columns: ColumnDef<StockSummary>[] = [
             <Badge
               variant='outline'
               className='gap-1 border-amber-200 bg-amber-50 font-normal text-amber-700 dark:border-amber-900 dark:bg-amber-950 dark:text-amber-300'
-              title={`Định mức tối thiểu: ${formatNumber(minStock)} ${unit}`}
+              title={i18n.t('messages.minimumStockAlt4', {
+                value0: formatNumber(minStock),
+                value1: unit,
+              })}
             >
               <TrendingDown className='size-3' />
-              dưới định mức
+              {i18n.t('messages.belowMinimumStockAlt2')}
             </Badge>
           )}
         </div>
@@ -169,7 +211,10 @@ const columns: ColumnDef<StockSummary>[] = [
   {
     accessorKey: 'batchCount',
     header: ({ column }) => (
-      <DataTableColumnHeader column={column} title='Số lô' />
+      <DataTableColumnHeader
+        column={column}
+        title={i18n.t('messages.batchNumber')}
+      />
     ),
     cell: ({ row }) => (
       <span className='tabular-nums'>{row.original.batchCount}</span>
@@ -179,14 +224,20 @@ const columns: ColumnDef<StockSummary>[] = [
   {
     accessorKey: 'nearestExpiry',
     header: ({ column }) => (
-      <DataTableColumnHeader column={column} title='HSD gần nhất' />
+      <DataTableColumnHeader
+        column={column}
+        title={i18n.t('messages.nearestExpiry')}
+      />
     ),
     cell: ({ row }) => <ExpiryBadge date={row.original.nearestExpiry} />,
   },
   {
     accessorKey: 'expiryStatus',
     header: ({ column }) => (
-      <DataTableColumnHeader column={column} title='Cảnh báo' />
+      <DataTableColumnHeader
+        column={column}
+        title={i18n.t('messages.warning')}
+      />
     ),
     cell: ({ row }) => {
       const meta = expiryMeta(row.original.expiryStatus)
@@ -202,7 +253,10 @@ const columns: ColumnDef<StockSummary>[] = [
   {
     accessorKey: 'stockValue',
     header: ({ column }) => (
-      <DataTableColumnHeader column={column} title='Giá trị tồn' />
+      <DataTableColumnHeader
+        column={column}
+        title={i18n.t('messages.stockValue')}
+      />
     ),
     cell: ({ row }) => (
       <span className='tabular-nums'>
@@ -214,6 +268,8 @@ const columns: ColumnDef<StockSummary>[] = [
 ]
 
 export function StockTab() {
+  const { t } = useTranslation()
+
   const search = useApiSearch()
   const { data, isLoading } = useQuery({
     queryKey: ['inventory', 'stock', search],
@@ -225,15 +281,15 @@ export function StockTab() {
       columns={columns}
       data={data ?? []}
       isLoading={isLoading}
-      searchPlaceholder='Tìm theo tên thuốc, mã, nhà sản xuất...'
-      emptyMessage='Chưa có thuốc nào trong kho.'
+      searchPlaceholder={t('messages.searchMedicineNameCodeOrManufacturer')}
+      emptyMessage={t('messages.noMedicinesInInventoryYet')}
       mobileLabels={{ name: 'mobileTable.context.stockMedicine' }}
       getSearchText={(s) => `${s.name} ${s.code} ${s.manufacturer}`}
       renderSubRow={(row) => <BatchBreakdown row={row} />}
       filters={[
         {
           columnId: 'group',
-          title: 'Nhóm thuốc',
+          title: t('messages.medicineGroup'),
           options: medicineGroups.map((g) => ({
             label: g.label,
             value: g.value,
@@ -241,7 +297,7 @@ export function StockTab() {
         },
         {
           columnId: 'expiryStatus',
-          title: 'Hạn sử dụng',
+          title: t('messages.expiryDate'),
           options: expiryStatuses.map((s) => ({
             label: s.label,
             value: s.value,

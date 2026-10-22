@@ -1,6 +1,8 @@
 import { useQuery } from '@tanstack/react-query'
 import { type ColumnDef, type Row } from '@tanstack/react-table'
+import i18n from '@/i18n'
 import { ChevronDown, ChevronRight } from 'lucide-react'
+import { useTranslation } from 'react-i18next'
 import { formatDate, formatNumber } from '@/lib/utils'
 import { useApiSearch } from '@/hooks/use-api-search'
 import { Button } from '@/components/ui/button'
@@ -10,6 +12,8 @@ import { UrlDataTable } from '@/components/data-table/url-data-table'
 import { GetGoodsIssue, GetGoodsIssues, type GoodsIssueSummary } from '../api'
 
 function IssueLines({ row }: { row: Row<GoodsIssueSummary> }) {
+  const { t } = useTranslation()
+
   const {
     data: issue,
     isLoading,
@@ -20,13 +24,15 @@ function IssueLines({ row }: { row: Row<GoodsIssueSummary> }) {
   })
 
   if (isLoading) {
-    return <div className='px-4 py-6 text-sm'>Đang tải chi tiết...</div>
+    return (
+      <div className='px-4 py-6 text-sm'>{t('messages.loadingDetails')}</div>
+    )
   }
 
   if (isError || !issue) {
     return (
       <div className='px-4 py-6 text-sm text-destructive'>
-        Không thể tải chi tiết phiếu xuất.
+        {t('messages.couldNotLoadIssueDetails')}
       </div>
     )
   }
@@ -34,7 +40,8 @@ function IssueLines({ row }: { row: Row<GoodsIssueSummary> }) {
   return (
     <div className='px-4 py-3'>
       <p className='mb-2 text-xs font-medium text-muted-foreground'>
-        {issue.lines.length} dòng — tổng {formatNumber(issue.totalQty)}
+        {issue.lines.length} {t('messages.linesTotal')}{' '}
+        {formatNumber(issue.totalQty)}
       </p>
       <div className='grid gap-2 sm:hidden'>
         {issue.lines.map((line) => (
@@ -43,9 +50,12 @@ function IssueLines({ row }: { row: Row<GoodsIssueSummary> }) {
             className='space-y-1 rounded-md border p-3 text-sm'
           >
             <p className='font-medium'>{line.medicineName}</p>
-            <p>Số lô: {line.batchNo}</p>
             <p>
-              Số lượng xuất: {formatNumber(line.quantity)} {line.unit}
+              {t('messages.batchNumberAlt2')} {line.batchNo}
+            </p>
+            <p>
+              {t('messages.issueQuantity')} {formatNumber(line.quantity)}{' '}
+              {line.unit}
             </p>
           </div>
         ))}
@@ -54,9 +64,15 @@ function IssueLines({ row }: { row: Row<GoodsIssueSummary> }) {
         <table className='w-full text-sm'>
           <thead className='text-xs text-muted-foreground'>
             <tr className='border-b'>
-              <th className='py-1.5 pe-4 text-start font-medium'>Thuốc</th>
-              <th className='py-1.5 pe-4 text-start font-medium'>Số lô</th>
-              <th className='py-1.5 text-end font-medium'>Số lượng xuất</th>
+              <th className='py-1.5 pe-4 text-start font-medium'>
+                {t('messages.medicine')}
+              </th>
+              <th className='py-1.5 pe-4 text-start font-medium'>
+                {t('messages.batchNumber')}
+              </th>
+              <th className='py-1.5 text-end font-medium'>
+                {t('messages.issueQuantityAlt2')}
+              </th>
             </tr>
           </thead>
           <tbody>
@@ -92,7 +108,11 @@ const columns: ColumnDef<GoodsIssueSummary>[] = [
         size='icon'
         className='size-7'
         onClick={row.getToggleExpandedHandler()}
-        aria-label={row.getIsExpanded() ? 'Thu gọn' : 'Xem chi tiết'}
+        aria-label={
+          row.getIsExpanded()
+            ? i18n.t('messages.collapse')
+            : i18n.t('messages.viewDetails')
+        }
       >
         {row.getIsExpanded() ? <ChevronDown /> : <ChevronRight />}
       </Button>
@@ -103,27 +123,39 @@ const columns: ColumnDef<GoodsIssueSummary>[] = [
   {
     accessorKey: 'code',
     header: ({ column }) => (
-      <DataTableColumnHeader column={column} title='Mã phiếu' />
+      <DataTableColumnHeader
+        column={column}
+        title={i18n.t('messages.documentCode')}
+      />
     ),
     cell: ({ row }) => <span className='font-mono'>{row.original.code}</span>,
   },
   {
     accessorKey: 'issuedAt',
     header: ({ column }) => (
-      <DataTableColumnHeader column={column} title='Ngày xuất' />
+      <DataTableColumnHeader
+        column={column}
+        title={i18n.t('messages.issueDate')}
+      />
     ),
     cell: ({ row }) => formatDate(row.original.issuedAt),
   },
   {
     accessorKey: 'recipientName',
     header: ({ column }) => (
-      <DataTableColumnHeader column={column} title='Người nhận' />
+      <DataTableColumnHeader
+        column={column}
+        title={i18n.t('messages.recipient')}
+      />
     ),
   },
   {
     accessorKey: 'lineCount',
     header: ({ column }) => (
-      <DataTableColumnHeader column={column} title='Số dòng' />
+      <DataTableColumnHeader
+        column={column}
+        title={i18n.t('messages.lineCount')}
+      />
     ),
     cell: ({ row }) => formatNumber(row.original.lineCount),
     meta: { className: 'text-end', tdClassName: 'text-end' },
@@ -131,6 +163,8 @@ const columns: ColumnDef<GoodsIssueSummary>[] = [
 ]
 
 export function IssuesTab() {
+  const { t } = useTranslation()
+
   const search = useApiSearch()
   const { data, isLoading, isError } = useQuery({
     queryKey: ['inventory', 'issues', search],
@@ -142,16 +176,15 @@ export function IssuesTab() {
     <>
       {isError && (
         <p className='rounded-md border border-red-300 bg-red-50 p-3 text-sm text-red-800 dark:border-red-900 dark:bg-red-950 dark:text-red-200'>
-          Không tải được danh sách phiếu xuất. Vui lòng kiểm tra kết nối backend
-          và thử lại.
+          {t('messages.couldNotLoadIssuesCheckTheBackendConnectionAnd')}
         </p>
       )}
       <UrlDataTable
         columns={withAuditColumns(columns)}
         data={data ?? []}
         isLoading={isLoading}
-        searchPlaceholder='Tìm mã phiếu hoặc người nhận...'
-        emptyMessage='Chưa có phiếu xuất nào.'
+        searchPlaceholder={t('messages.searchDocumentCodeOrRecipient')}
+        emptyMessage={t('messages.noIssuesYet')}
         getSearchText={(issue) => `${issue.code} ${issue.recipientName}`}
         initialSorting={[{ id: 'issuedAt', desc: true }]}
         renderSubRow={(row) => <IssueLines row={row} />}

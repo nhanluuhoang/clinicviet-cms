@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { useQuery, useQueryClient } from '@tanstack/react-query'
+import i18n from '@/i18n'
 import { toast } from 'sonner'
 import { useAuthStore } from '@/stores/auth-store'
 import { showRequestError } from '@/lib/handle-server-error'
@@ -71,14 +72,16 @@ export function usePrescriptionTemplates() {
       (item) => item.medicineId && item.quantity > 0
     )
     if (!name.trim() || validItems.length !== items.length) {
-      toast.error('Nhập tên mẫu và đầy đủ thông tin thuốc')
+      toast.error(
+        i18n.t('messages.enterATemplateNameAndCompleteMedicineDetails')
+      )
       return
     }
     if (
       new Set(validItems.map((item) => item.medicineId)).size !==
       validItems.length
     ) {
-      toast.error('Mỗi thuốc chỉ được chọn một lần')
+      toast.error(i18n.t('messages.eachMedicineCanOnlyBeSelectedOnce'))
       return
     }
     try {
@@ -88,10 +91,14 @@ export function usePrescriptionTemplates() {
       await queryClient.invalidateQueries({
         queryKey: ['prescription-templates'],
       })
-      toast.success(current ? 'Đã cập nhật mẫu đơn' : 'Đã tạo mẫu đơn')
+      toast.success(
+        current
+          ? i18n.t('messages.templateUpdated')
+          : i18n.t('messages.templateCreated')
+      )
       close()
     } catch (error) {
-      showRequestError(error, 'Không lưu được mẫu đơn')
+      showRequestError(error, i18n.t('messages.couldNotSaveTemplate'))
     }
   }
 
@@ -102,10 +109,10 @@ export function usePrescriptionTemplates() {
       await queryClient.invalidateQueries({
         queryKey: ['prescription-templates'],
       })
-      toast.success('Đã xóa mẫu đơn')
+      toast.success(i18n.t('messages.templateDeleted'))
       close()
     } catch (error) {
-      showRequestError(error, 'Không xóa được mẫu đơn')
+      showRequestError(error, i18n.t('messages.couldNotDeleteTemplate'))
     }
   }
   return {

@@ -3,6 +3,8 @@ import { z } from 'zod'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useQueryClient } from '@tanstack/react-query'
+import i18n from '@/i18n'
+import { useTranslation } from 'react-i18next'
 import { toast } from 'sonner'
 import { showRequestError } from '@/lib/handle-server-error'
 import { Button } from '@/components/ui/button'
@@ -28,14 +30,20 @@ import {
 import { Input } from '@/components/ui/input'
 import { SelectDropdown } from '@/components/select-dropdown'
 import { CreateMedicine, UpdateMedicine, type Medicine } from '../api'
-import { medicineGroups, medicineUnits } from '../data/data'
+import { medicineGroups, medicineUnits, medicineUnitLabel } from '../data/data'
 import { InfoHint } from './info-hint'
 
 const formSchema = z.object({
-  name: z.string().min(1, 'Nhập tên thuốc'),
-  activeIngredient: z.string().min(1, 'Nhập hoạt chất'),
-  strength: z.string().min(1, 'Nhập hàm lượng'),
-  unit: z.string().min(1, 'Chọn đơn vị'),
+  name: z
+    .string()
+    .min(1, { error: () => i18n.t('messages.enterMedicineName') }),
+  activeIngredient: z
+    .string()
+    .min(1, { error: () => i18n.t('messages.enterActiveIngredient') }),
+  strength: z
+    .string()
+    .min(1, { error: () => i18n.t('messages.enterStrength') }),
+  unit: z.string().min(1, { error: () => i18n.t('messages.selectUnit') }),
   group: z.enum([
     'antibiotic',
     'analgesic',
@@ -53,9 +61,15 @@ const formSchema = z.object({
     'vaccine',
     'other',
   ]),
-  manufacturer: z.string().min(1, 'Nhập nhà sản xuất'),
-  minStock: z.number().min(0, 'Định mức không hợp lệ'),
-  salePrice: z.number().min(0, 'Giá bán không hợp lệ'),
+  manufacturer: z
+    .string()
+    .min(1, { error: () => i18n.t('messages.enterManufacturer') }),
+  minStock: z
+    .number()
+    .min(0, { error: () => i18n.t('messages.invalidMinimumStock') }),
+  salePrice: z
+    .number()
+    .min(0, { error: () => i18n.t('messages.invalidSellingPrice') }),
   isActive: z.boolean(),
 })
 
@@ -82,6 +96,8 @@ export function MedicineMutateDialog({
   onOpenChange: (open: boolean) => void
   currentRow?: Medicine
 }) {
+  const { t } = useTranslation()
+
   const isUpdate = !!currentRow
   const queryClient = useQueryClient()
 
@@ -113,16 +129,16 @@ export function MedicineMutateDialog({
     try {
       if (isUpdate && currentRow) {
         await UpdateMedicine(currentRow.id, data)
-        toast.success('Đã cập nhật thuốc')
+        toast.success(t('messages.medicineUpdated'))
       } else {
         await CreateMedicine(data)
-        toast.success('Đã thêm thuốc vào danh mục')
+        toast.success(t('messages.medicineAddedToCatalog'))
       }
       queryClient.invalidateQueries({ queryKey: ['medicines'] })
       queryClient.invalidateQueries({ queryKey: ['inventory'] })
       onOpenChange(false)
     } catch (error) {
-      showRequestError(error, 'Không lưu được thuốc')
+      showRequestError(error, t('messages.couldNotSaveMedicine'))
     }
   }
 
@@ -135,11 +151,12 @@ export function MedicineMutateDialog({
         <DialogBody>
           <DialogHeader className='pe-8 text-start'>
             <DialogTitle>
-              {isUpdate ? 'Cập nhật thuốc' : 'Thêm thuốc vào danh mục'}
+              {isUpdate
+                ? t('messages.updateMedicine')
+                : t('messages.addMedicineToCatalog')}
             </DialogTitle>
             <DialogDescription>
-              Danh mục chỉ khai báo thông tin thuốc. Số lượng và hạn sử dụng đến
-              từ các phiếu nhập.
+              {t('messages.theCatalogStoresMedicineInformationOnlyQuantities')}
             </DialogDescription>
           </DialogHeader>
           <Form {...form}>
@@ -153,9 +170,12 @@ export function MedicineMutateDialog({
                 name='name'
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel required>Tên thuốc</FormLabel>
+                    <FormLabel required>{t('messages.medicineName')}</FormLabel>
                     <FormControl>
-                      <Input {...field} placeholder='VD: Paracetamol 500mg' />
+                      <Input
+                        {...field}
+                        placeholder={i18n.t('messages.exampleMedicine')}
+                      />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -166,9 +186,14 @@ export function MedicineMutateDialog({
                 name='activeIngredient'
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel required>Hoạt chất</FormLabel>
+                    <FormLabel required>
+                      {t('messages.activeIngredient')}
+                    </FormLabel>
                     <FormControl>
-                      <Input {...field} placeholder='VD: Paracetamol' />
+                      <Input
+                        {...field}
+                        placeholder={i18n.t('messages.exampleIngredient')}
+                      />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -180,9 +205,12 @@ export function MedicineMutateDialog({
                   name='strength'
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel required>Hàm lượng</FormLabel>
+                      <FormLabel required>{t('messages.strength')}</FormLabel>
                       <FormControl>
-                        <Input {...field} placeholder='VD: 500mg' />
+                        <Input
+                          {...field}
+                          placeholder={i18n.t('messages.exampleStrength')}
+                        />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -193,14 +221,14 @@ export function MedicineMutateDialog({
                   name='unit'
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel required>Đơn vị</FormLabel>
+                      <FormLabel required>{t('messages.unit')}</FormLabel>
                       <SelectDropdown
                         isControlled
                         defaultValue={field.value}
                         onValueChange={field.onChange}
-                        placeholder='Chọn đơn vị'
+                        placeholder={t('messages.selectUnit')}
                         items={medicineUnits.map((u) => ({
-                          label: u,
+                          label: medicineUnitLabel(u),
                           value: u,
                         }))}
                       />
@@ -214,12 +242,14 @@ export function MedicineMutateDialog({
                 name='group'
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel required>Nhóm thuốc</FormLabel>
+                    <FormLabel required>
+                      {t('messages.medicineGroup')}
+                    </FormLabel>
                     <SelectDropdown
                       isControlled
                       defaultValue={field.value}
                       onValueChange={field.onChange}
-                      placeholder='Chọn nhóm'
+                      placeholder={t('messages.selectGroup')}
                       items={medicineGroups.map((g) => ({
                         label: g.label,
                         value: g.value,
@@ -234,9 +264,12 @@ export function MedicineMutateDialog({
                 name='manufacturer'
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel required>Nhà sản xuất</FormLabel>
+                    <FormLabel required>{t('messages.manufacturer')}</FormLabel>
                     <FormControl>
-                      <Input {...field} placeholder='VD: Traphaco' />
+                      <Input
+                        {...field}
+                        placeholder={i18n.t('messages.exampleManufacturer')}
+                      />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -247,7 +280,7 @@ export function MedicineMutateDialog({
                 name='salePrice'
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel required>Giá bán</FormLabel>
+                    <FormLabel required>{t('messages.sellingPrice')}</FormLabel>
                     <FormControl>
                       <Input
                         {...field}
@@ -268,13 +301,13 @@ export function MedicineMutateDialog({
                 render={({ field }) => (
                   <FormItem>
                     <div className='flex items-center gap-1'>
-                      <FormLabel required>Định mức tồn tối thiểu</FormLabel>
-                      <InfoHint label='Giải thích định mức tồn tối thiểu'>
-                        Ngưỡng tồn thấp nhất cần duy trì cho thuốc này. Hệ thống
-                        so ngưỡng với tổng tồn của tất cả các lô; khi tồn xuống
-                        thấp hơn, thuốc hiện cảnh báo &quot;dưới định mức&quot;
-                        ở tab Tồn kho để nhắc nhập thêm. Để 0 nếu không cần theo
-                        dõi.
+                      <FormLabel required>
+                        {t('messages.minimumStockLevel')}
+                      </FormLabel>
+                      <InfoHint label={t('messages.aboutMinimumStockLevels')}>
+                        {t(
+                          'messages.theLowestStockLevelToMaintainForThisMedicineTh'
+                        )}
                       </InfoHint>
                     </div>
                     <FormControl>
@@ -298,7 +331,7 @@ export function MedicineMutateDialog({
                 name='isActive'
                 render={({ field }) => (
                   <FormItem className='flex items-center justify-between rounded-md border p-3'>
-                    <FormLabel>Kích hoạt thuốc</FormLabel>
+                    <FormLabel>{t('messages.activateMedicine')}</FormLabel>
                     <FormControl>
                       <Checkbox
                         checked={field.value}
@@ -318,14 +351,16 @@ export function MedicineMutateDialog({
         </DialogBody>
         <DialogFooter>
           <DialogClose asChild>
-            <Button variant='outline'>Đóng</Button>
+            <Button variant='outline'>{t('messages.close')}</Button>
           </DialogClose>
           <Button
             form='medicine-form'
             type='submit'
             disabled={form.formState.isSubmitting}
           >
-            {form.formState.isSubmitting ? 'Đang lưu...' : 'Lưu'}
+            {form.formState.isSubmitting
+              ? t('messages.saving')
+              : t('messages.save')}
           </Button>
         </DialogFooter>
       </DialogFormContent>

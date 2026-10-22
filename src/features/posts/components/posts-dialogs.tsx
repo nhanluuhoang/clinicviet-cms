@@ -1,4 +1,5 @@
 import { useQueryClient } from '@tanstack/react-query'
+import { useTranslation } from 'react-i18next'
 import { toast } from 'sonner'
 import { showRequestError } from '@/lib/handle-server-error'
 import { ConfirmDialog } from '@/components/confirm-dialog'
@@ -7,6 +8,8 @@ import { PostsMutateDialog } from '@/features/posts/components/posts-mutate-dial
 import { usePosts } from '@/features/posts/components/posts-provider'
 
 export function PostsDialogs() {
+  const { t } = useTranslation()
+
   const { open, setOpen, currentRow, setCurrentRow } = usePosts()
   const queryClient = useQueryClient()
 
@@ -14,12 +17,12 @@ export function PostsDialogs() {
     if (!currentRow) return
     try {
       await DeletePost(currentRow.id)
-      toast.success('Đã xóa bài viết')
+      toast.success(t('messages.postDeleted'))
       queryClient.invalidateQueries({ queryKey: ['posts'] })
       setOpen(null)
       setTimeout(() => setCurrentRow(undefined), 500)
     } catch (error) {
-      showRequestError(error, 'Không thể xóa bài viết')
+      showRequestError(error, t('messages.couldNotDeletePost'))
     }
   }
 
@@ -58,18 +61,18 @@ export function PostsDialogs() {
               }
             }}
             className='max-w-md'
-            title={`Xóa bài viết: ${currentRow.title}?`}
+            title={t('messages.deletePost', { value0: currentRow.title })}
             desc={
               <>
-                Bạn sắp xóa bài viết <strong>{currentRow.title}</strong>.
+                {t('messages.youAreAboutToDeleteThePost')}{' '}
+                <strong>{currentRow.title}</strong>.
                 <br />
-                Nếu bài viết đang được chọn làm bài nổi bật, hãy bỏ chọn trong
-                Cấu hình landing trước.
+                {t('messages.ifThisPostIsFeaturedDeselectItInTheWebsiteCon')}
                 <br />
-                Thao tác này không thể hoàn tác.
+                {t('messages.thisCannotBeUndone')}
               </>
             }
-            confirmText='Xóa'
+            confirmText={t('messages.delete')}
             handleConfirm={handleDelete}
           />
         </>

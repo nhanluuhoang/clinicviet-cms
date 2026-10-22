@@ -8,7 +8,9 @@ import {
   MANAGED_USER_ROLE_OPTIONS,
   USER_ROLE_LABELS,
 } from '@/config/user-role-labels'
+import i18n from '@/i18n'
 import { KeyRound, Pencil } from 'lucide-react'
+import { useTranslation } from 'react-i18next'
 import { toast } from 'sonner'
 import { showRequestError } from '@/lib/handle-server-error'
 import { Button } from '@/components/ui/button'
@@ -43,9 +45,18 @@ import { updateSystemUser, type ManagedRole, type SystemUser } from '../api'
 import { UpdateSystemUserPasswordDialog } from './update-system-user-password-dialog'
 
 const schema = z.object({
-  fullName: z.string().trim().min(1, 'Vui lòng nhập họ tên.'),
-  email: z.union([z.literal(''), z.email('Email không hợp lệ.')]),
-  phone: z.string().trim().max(20, 'Tối đa 20 ký tự.'),
+  fullName: z
+    .string()
+    .trim()
+    .min(1, { error: () => i18n.t('messages.pleaseEnterAFullName') }),
+  email: z.union([
+    z.literal(''),
+    z.email({ error: () => i18n.t('messages.invalidEmailAddress') }),
+  ]),
+  phone: z
+    .string()
+    .trim()
+    .max(20, { error: () => i18n.t('messages.maximum20Characters') }),
   role: z.enum(['TENANT_ADMIN', 'DOCTOR', 'ASSISTANT', 'PATIENT', 'USER']),
   isActive: z.boolean(),
 })
@@ -53,6 +64,8 @@ const schema = z.object({
 type Values = z.infer<typeof schema>
 
 export function UpdateSystemUserDialog({ user }: { user: SystemUser }) {
+  const { t } = useTranslation()
+
   const [open, setOpen] = useState(false)
   const [passwordOpen, setPasswordOpen] = useState(false)
   const queryClient = useQueryClient()
@@ -99,11 +112,11 @@ export function UpdateSystemUserDialog({ user }: { user: SystemUser }) {
       }),
     onSuccess: async () => {
       await queryClient.invalidateQueries({ queryKey: ['system-users'] })
-      toast.success('Đã cập nhật người dùng')
+      toast.success(t('messages.userUpdated'))
       setOpen(false)
     },
     onError: (error) =>
-      showRequestError(error, 'Không thể cập nhật người dùng'),
+      showRequestError(error, t('messages.couldNotUpdateUser')),
   })
 
   return (
@@ -112,18 +125,18 @@ export function UpdateSystemUserDialog({ user }: { user: SystemUser }) {
         <DropdownMenuTrigger asChild>
           <Button variant='ghost' className='flex h-8 w-8 p-0'>
             <DotsHorizontalIcon className='h-4 w-4' />
-            <span className='sr-only'>Mở menu</span>
+            <span className='sr-only'>{t('messages.openMenu')}</span>
           </Button>
         </DropdownMenuTrigger>
         <DropdownMenuContent align='end' className='w-[160px]'>
           <DropdownMenuItem onClick={() => setOpen(true)}>
-            Cập nhật
+            {t('messages.update')}
             <DropdownMenuShortcut>
               <Pencil size={16} />
             </DropdownMenuShortcut>
           </DropdownMenuItem>
           <DropdownMenuItem onClick={() => setPasswordOpen(true)}>
-            Đặt lại mật khẩu
+            {t('messages.resetPassword')}
             <DropdownMenuShortcut>
               <KeyRound size={16} />
             </DropdownMenuShortcut>
@@ -134,7 +147,7 @@ export function UpdateSystemUserDialog({ user }: { user: SystemUser }) {
         <DialogFormContent className='sm:max-w-lg'>
           <DialogBody>
             <DialogHeader>
-              <DialogTitle>Cập nhật người dùng</DialogTitle>
+              <DialogTitle>{t('messages.updateUser')}</DialogTitle>
               <DialogDescription>
                 {user.userName} · {user.tenant.code} - {user.tenant.name}
               </DialogDescription>
@@ -150,7 +163,7 @@ export function UpdateSystemUserDialog({ user }: { user: SystemUser }) {
                   name='fullName'
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel required>Họ tên</FormLabel>
+                      <FormLabel required>{t('messages.fullName')}</FormLabel>
                       <FormControl>
                         <Input {...field} />
                       </FormControl>
@@ -176,7 +189,7 @@ export function UpdateSystemUserDialog({ user }: { user: SystemUser }) {
                   name='phone'
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Số điện thoại</FormLabel>
+                      <FormLabel>{t('messages.phoneNumber')}</FormLabel>
                       <FormControl>
                         <Input {...field} />
                       </FormControl>
@@ -189,7 +202,7 @@ export function UpdateSystemUserDialog({ user }: { user: SystemUser }) {
                   name='role'
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel required>Vai trò</FormLabel>
+                      <FormLabel required>{t('messages.role')}</FormLabel>
                       {user.role === 'PATIENT' || user.role === 'USER' ? (
                         <Input value={USER_ROLE_LABELS[user.role]} readOnly />
                       ) : (
@@ -209,7 +222,7 @@ export function UpdateSystemUserDialog({ user }: { user: SystemUser }) {
                   name='isActive'
                   render={({ field }) => (
                     <FormItem className='flex items-center justify-between rounded-md border p-3'>
-                      <FormLabel>Kích hoạt tài khoản</FormLabel>
+                      <FormLabel>{t('messages.activateAccount')}</FormLabel>
                       <FormControl>
                         <Checkbox
                           checked={field.value}
@@ -226,14 +239,16 @@ export function UpdateSystemUserDialog({ user }: { user: SystemUser }) {
           </DialogBody>
           <DialogFooter>
             <Button variant='outline' onClick={() => setOpen(false)}>
-              Hủy
+              {t('messages.cancel')}
             </Button>
             <Button
               type='submit'
               form={`system-user-update-${user.id}`}
               disabled={save.isPending}
             >
-              {save.isPending ? 'Đang lưu...' : 'Lưu thay đổi'}
+              {save.isPending
+                ? t('messages.saving')
+                : t('messages.saveChanges')}
             </Button>
           </DialogFooter>
         </DialogFormContent>

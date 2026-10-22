@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { keepPreviousData, useQuery } from '@tanstack/react-query'
 import { useSearch } from '@tanstack/react-router'
+import { useTranslation } from 'react-i18next'
 import { useAuthStore } from '@/stores/auth-store'
 import { Button } from '@/components/ui/button'
 import { Header } from '@/components/layout/header'
@@ -14,6 +15,8 @@ import { RequestsTable } from './components/requests-table'
 import { supportSearchSchema } from './data'
 
 export function SupportRequests() {
+  const { t } = useTranslation()
+
   const system = useAuthStore(
     (state) => state.auth.user?.role === 'SUPER_ADMIN'
   )
@@ -50,21 +53,23 @@ export function SupportRequests() {
         <div className='flex flex-wrap items-end justify-between gap-2'>
           <div>
             <h2 className='text-2xl font-bold tracking-tight'>
-              {system ? 'Yêu cầu hỗ trợ' : 'Hỗ trợ & góp ý'}
+              {system
+                ? t('messages.supportRequests')
+                : t('messages.supportFeedback')}
             </h2>
             <p className='text-muted-foreground'>
               {system
-                ? 'Tiếp nhận, phản hồi và xử lý yêu cầu từ phòng khám và khách trên website.'
-                : 'Gửi báo lỗi, đề xuất tính năng và theo dõi phản hồi.'}
+                ? t('messages.receiveReplyToAndManageRequestsFromClinicsAndW')
+                : t('messages.submitBugReportsAndFeatureRequestsAndTrackRepli')}
             </p>
           </div>
           {!system && <CreateRequestDialog onCreated={setSelected} />}
         </div>
         {query.isError ? (
           <div role='alert' className='space-y-2'>
-            <p>Không thể tải danh sách yêu cầu.</p>
+            <p>{t('messages.couldNotLoadRequests')}</p>
             <Button variant='outline' onClick={() => void query.refetch()}>
-              Thử lại
+              {t('messages.tryAgain')}
             </Button>
           </div>
         ) : (

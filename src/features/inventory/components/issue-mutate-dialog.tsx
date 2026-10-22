@@ -3,7 +3,9 @@ import { z } from 'zod'
 import { useFieldArray, useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useQuery, useQueryClient } from '@tanstack/react-query'
+import i18n from '@/i18n'
 import { Check, ChevronsUpDown, Plus, Trash2 } from 'lucide-react'
+import { useTranslation } from 'react-i18next'
 import { toast } from 'sonner'
 import { showRequestError } from '@/lib/handle-server-error'
 import { cn, formatDate, formatNumber, toDateInput } from '@/lib/utils'
@@ -46,16 +48,24 @@ import { DatePickerInput } from '@/components/date-picker-input'
 import { CreateGoodsIssue, SearchBatches, type StockBatch } from '../api'
 
 const lineSchema = z.object({
-  batchId: z.string().min(1, 'Chọn lô thuốc'),
+  batchId: z
+    .string()
+    .min(1, { error: () => i18n.t('messages.selectAMedicineBatch') }),
   quantity: z
     .number()
-    .int('Số lượng phải là số nguyên')
-    .positive('Số lượng phải lớn hơn 0'),
+    .int({ error: () => i18n.t('messages.quantityMustBeAnInteger') })
+    .positive({
+      error: () => i18n.t('messages.quantityMustBeGreaterThanZero'),
+    }),
 })
 
 const formSchema = z.object({
-  recipientName: z.string().min(1, 'Nhập người nhận'),
-  issuedAt: z.string().min(1, 'Chọn ngày xuất'),
+  recipientName: z
+    .string()
+    .min(1, { error: () => i18n.t('messages.enterARecipient') }),
+  issuedAt: z
+    .string()
+    .min(1, { error: () => i18n.t('messages.selectIssueDate') }),
   note: z.string(),
   lines: z.array(lineSchema).min(1),
 })
@@ -76,6 +86,8 @@ function BatchPicker({
   selected?: StockBatch
   onChange: (batch: StockBatch) => void
 }) {
+  const { t } = useTranslation()
+
   const [open, setOpen] = useState(false)
   const [search, setSearch] = useState('')
   const debouncedSearch = useDebounce(search, 300)
@@ -100,10 +112,13 @@ function BatchPicker({
         >
           <span className='truncate'>
             {selected
-              ? `${selected.medicineName} · lô ${selected.batchNo}`
+              ? t('messages.batchAlt4', {
+                  value0: selected.medicineName,
+                  value1: selected.batchNo,
+                })
               : isLoading
-                ? 'Đang tải lô thuốc...'
-                : 'Tìm thuốc hoặc số lô'}
+                ? t('messages.loadingMedicineBatches')
+                : t('messages.searchMedicineOrBatchNumber')}
           </span>
           <ChevronsUpDown className='ms-2 size-4 shrink-0 opacity-50' />
         </Button>
@@ -116,11 +131,13 @@ function BatchPicker({
           <CommandInput
             value={search}
             onValueChange={setSearch}
-            placeholder='Tìm tên, mã thuốc hoặc số lô...'
+            placeholder={t('messages.searchNameMedicineCodeOrBatchNumber')}
           />
           <CommandList>
             <CommandEmpty>
-              {isLoading ? 'Đang tìm...' : 'Không tìm thấy lô thuốc còn tồn.'}
+              {isLoading
+                ? t('messages.searching')
+                : t('messages.noBatchesWithAvailableStockFound')}
             </CommandEmpty>
             <CommandGroup>
               {availableBatches.map((batch) => (
@@ -141,11 +158,13 @@ function BatchPicker({
                   />
                   <div className='min-w-0'>
                     <p className='truncate font-medium'>
-                      {batch.medicineName} · lô {batch.batchNo}
+                      {batch.medicineName} {t('messages.batchAlt5')}{' '}
+                      {batch.batchNo}
                     </p>
                     <p className='truncate text-xs text-muted-foreground'>
-                      {batch.medicineCode} · còn{' '}
-                      {formatNumber(batch.qtyRemaining)} {batch.unit} · HSD{' '}
+                      {batch.medicineCode} {t('messages.remaining')}{' '}
+                      {formatNumber(batch.qtyRemaining)} {batch.unit}{' '}
+                      {i18n.t('messages.expiryAbbreviation')}{' '}
                       {formatDate(batch.expiryDate)}
                     </p>
                   </div>
@@ -166,6 +185,8 @@ export function IssueMutateDialog({
   open: boolean
   onOpenChange: (open: boolean) => void
 }) {
+  const { t } = useTranslation()
+
   const queryClient = useQueryClient()
   const [selectedBatches, setSelectedBatches] = useState<
     Record<string, StockBatch>
@@ -189,7 +210,7 @@ export function IssueMutateDialog({
   const onSubmit = async (data: IssueForm) => {
     const selectedIds = data.lines.map((line) => line.batchId)
     if (new Set(selectedIds).size !== selectedIds.length) {
-      toast.error('Mỗi lô chỉ được chọn một lần')
+      toast.error(t('messages.eachBatchCanOnlyBeSelectedOnce'))
       return
     }
     const invalidLine = data.lines.find((line) => {
@@ -197,17 +218,17 @@ export function IssueMutateDialog({
       return !batch || line.quantity > batch.qtyRemaining
     })
     if (invalidLine) {
-      toast.error('Số lượng xuất vượt quá tồn của lô')
+      toast.error(t('messages.issueQuantityExceedsAvailableBatchStock'))
       return
     }
 
     try {
       await CreateGoodsIssue(data)
       queryClient.invalidateQueries({ queryKey: ['inventory'] })
-      toast.success('Đã xuất hàng')
+      toast.success(t('messages.goodsIssued'))
       onOpenChange(false)
     } catch (error) {
-      showRequestError(error, 'Không xuất được hàng')
+      showRequestError(error, t('messages.couldNotIssueGoods'))
     }
   }
 
@@ -216,10 +237,9 @@ export function IssueMutateDialog({
       <DialogFormContent className='sm:max-w-3xl'>
         <DialogBody>
           <DialogHeader>
-            <DialogTitle>Xuất hàng</DialogTitle>
+            <DialogTitle>{t('messages.issues')}</DialogTitle>
             <DialogDescription>
-              Chọn từng lô thuốc và số lượng cần xuất. Không thể xuất vượt số
-              tồn hiện tại của lô.
+              {t('messages.selectBatchesAndQuantitiesToIssueQuantitiesCanno')}
             </DialogDescription>
           </DialogHeader>
           <Form {...form}>
@@ -234,11 +254,11 @@ export function IssueMutateDialog({
                   name='recipientName'
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel required>Người nhận</FormLabel>
+                      <FormLabel required>{t('messages.recipient')}</FormLabel>
                       <FormControl>
                         <Input
                           {...field}
-                          placeholder='Tên người hoặc bộ phận'
+                          placeholder={t('messages.personOrDepartmentName')}
                         />
                       </FormControl>
                       <FormMessage />
@@ -250,7 +270,7 @@ export function IssueMutateDialog({
                   name='issuedAt'
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel required>Ngày xuất</FormLabel>
+                      <FormLabel required>{t('messages.issueDate')}</FormLabel>
                       <DatePickerInput
                         value={field.value}
                         onChange={field.onChange}
@@ -263,14 +283,14 @@ export function IssueMutateDialog({
 
               <div className='space-y-3'>
                 <div className='flex items-center justify-between'>
-                  <FormLabel>Chi tiết xuất kho</FormLabel>
+                  <FormLabel>{t('messages.issueDetails')}</FormLabel>
                   <Button
                     type='button'
                     variant='outline'
                     size='sm'
                     onClick={() => append({ ...emptyLine })}
                   >
-                    <Plus className='size-4' /> Thêm dòng
+                    <Plus className='size-4' /> {t('messages.addLine')}
                   </Button>
                 </div>
                 {fields.map((item, index) => {
@@ -287,7 +307,7 @@ export function IssueMutateDialog({
                         render={({ field }) => (
                           <FormItem>
                             <FormLabel required className='text-xs'>
-                              Thuốc / lô
+                              {t('messages.medicineBatch')}
                             </FormLabel>
                             <BatchPicker
                               selected={selected}
@@ -309,7 +329,7 @@ export function IssueMutateDialog({
                         render={({ field }) => (
                           <FormItem>
                             <FormLabel required className='text-xs'>
-                              Số lượng
+                              {t('messages.quantityAlt2')}
                             </FormLabel>
                             <FormControl>
                               <Input
@@ -334,7 +354,9 @@ export function IssueMutateDialog({
                         className='mt-6 text-red-600'
                         disabled={fields.length === 1}
                         onClick={() => remove(index)}
-                        aria-label={`Xoá dòng ${index + 1}`}
+                        aria-label={t('messages.removeLine', {
+                          value0: index + 1,
+                        })}
                       >
                         <Trash2 className='size-4' />
                       </Button>
@@ -348,9 +370,12 @@ export function IssueMutateDialog({
                 name='note'
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Ghi chú</FormLabel>
+                    <FormLabel>{t('messages.notes')}</FormLabel>
                     <FormControl>
-                      <Textarea {...field} placeholder='Lý do xuất kho...' />
+                      <Textarea
+                        {...field}
+                        placeholder={t('messages.reasonForIssue')}
+                      />
                     </FormControl>
                   </FormItem>
                 )}
@@ -360,14 +385,16 @@ export function IssueMutateDialog({
         </DialogBody>
         <DialogFooter>
           <DialogClose asChild>
-            <Button variant='outline'>Đóng</Button>
+            <Button variant='outline'>{t('messages.close')}</Button>
           </DialogClose>
           <Button
             form='issue-form'
             type='submit'
             disabled={form.formState.isSubmitting}
           >
-            {form.formState.isSubmitting ? 'Đang lưu...' : 'Xuất hàng'}
+            {form.formState.isSubmitting
+              ? t('messages.saving')
+              : t('messages.issues')}
           </Button>
         </DialogFooter>
       </DialogFormContent>

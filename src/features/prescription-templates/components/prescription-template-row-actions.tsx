@@ -1,5 +1,6 @@
 import { DotsHorizontalIcon } from '@radix-ui/react-icons'
 import { Edit, Trash2 } from 'lucide-react'
+import { useTranslation } from 'react-i18next'
 import { Button } from '@/components/ui/button'
 import {
   DropdownMenu,
@@ -22,6 +23,8 @@ export function PrescriptionTemplateRowActions({
   PrescriptionTemplatesState,
   'setOpen' | 'setCurrent' | 'setName' | 'setItems'
 > & { template: PrescriptionTemplate }) {
+  const { t } = useTranslation()
+
   return (
     <DropdownMenu modal={false}>
       <DropdownMenuTrigger asChild>
@@ -30,7 +33,7 @@ export function PrescriptionTemplateRowActions({
           className='flex h-8 w-8 p-0 data-[state=open]:bg-muted'
         >
           <DotsHorizontalIcon />
-          <span className='sr-only'>Mở menu</span>
+          <span className='sr-only'>{t('messages.openMenu')}</span>
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align='end' className='w-40'>
@@ -42,7 +45,7 @@ export function PrescriptionTemplateRowActions({
             setOpen('update')
           }}
         >
-          Cập nhật
+          {t('messages.update')}
           <DropdownMenuShortcut>
             <Edit size={16} />
           </DropdownMenuShortcut>
@@ -55,7 +58,7 @@ export function PrescriptionTemplateRowActions({
             setOpen('delete')
           }}
         >
-          Xóa
+          {t('messages.delete')}
           <DropdownMenuShortcut>
             <Trash2 size={16} />
           </DropdownMenuShortcut>

@@ -1,5 +1,6 @@
 import { createContext, useEffect, useState } from 'react'
 import { fonts } from '@/config/fonts'
+import { useTranslation } from 'react-i18next'
 import { getCookie, setCookie, removeCookie } from '@/lib/cookies'
 
 type Font = (typeof fonts)[number]
@@ -22,6 +23,8 @@ type FontContextType = {
 const FontContext = createContext<FontContextType | null>(null)
 
 export function FontProvider({ children }: { children: React.ReactNode }) {
+  useTranslation()
+
   const [font, _setFont] = useState<Font>(() => {
     const savedFont = getCookie(FONT_COOKIE_NAME)
     return fonts.includes(savedFont as Font) ? (savedFont as Font) : fonts[0]
@@ -53,4 +56,3 @@ export function FontProvider({ children }: { children: React.ReactNode }) {
     <FontContext value={{ font, setFont, resetFont }}>{children}</FontContext>
   )
 }
-

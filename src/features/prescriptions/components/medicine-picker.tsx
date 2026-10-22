@@ -1,6 +1,8 @@
 import { useState } from 'react'
 import { useQuery } from '@tanstack/react-query'
+import { getLocale } from '@/i18n'
 import { Check, ChevronsUpDown } from 'lucide-react'
+import { useTranslation } from 'react-i18next'
 import { cn } from '@/lib/utils'
 import { useDebounce } from '@/hooks/use-debounce'
 import { Button } from '@/components/ui/button'
@@ -26,6 +28,8 @@ export function MedicinePicker({
   selected?: Medicine
   onChange: (medicine: Medicine) => void
 }) {
+  const { t } = useTranslation()
+
   const [open, setOpen] = useState(false)
   const [search, setSearch] = useState('')
   const debouncedSearch = useDebounce(search, 300)
@@ -47,10 +51,15 @@ export function MedicinePicker({
         >
           <span className='min-w-0 truncate'>
             {selected
-              ? `${selected.name} · ${selected.strength} (${selected.unit}) · Tồn ${selected.totalQty}`
+              ? t('messages.stockAlt2', {
+                  value0: selected.name,
+                  value1: selected.strength,
+                  value2: selected.unit,
+                  value3: selected.totalQty,
+                })
               : medicines.isLoading
-                ? 'Đang tải...'
-                : 'Chọn thuốc'}
+                ? t('messages.loading')
+                : t('messages.selectMedicine')}
           </span>
           <ChevronsUpDown className='ms-2 size-4 shrink-0 opacity-50' />
         </Button>
@@ -63,10 +72,10 @@ export function MedicinePicker({
           <CommandInput
             value={search}
             onValueChange={setSearch}
-            placeholder='Tìm tên thuốc...'
+            placeholder={t('messages.searchMedicineName')}
           />
           <CommandList>
-            <CommandEmpty>Không tìm thấy thuốc.</CommandEmpty>
+            <CommandEmpty>{t('messages.noMedicinesFound')}</CommandEmpty>
             <CommandGroup>
               {(medicines.data ?? []).map((medicine) => (
                 <CommandItem
@@ -88,8 +97,8 @@ export function MedicinePicker({
                     {medicine.name} · {medicine.strength} ({medicine.unit})
                   </span>
                   <span className='ms-auto shrink-0 text-xs text-muted-foreground'>
-                    {medicine.salePrice.toLocaleString('vi-VN')} ₫ · Tồn:{' '}
-                    {medicine.totalQty}
+                    {medicine.salePrice.toLocaleString(getLocale())}{' '}
+                    {t('messages.stockAlt3')} {medicine.totalQty}
                   </span>
                 </CommandItem>
               ))}

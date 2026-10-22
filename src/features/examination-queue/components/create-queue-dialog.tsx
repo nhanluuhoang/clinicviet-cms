@@ -1,6 +1,8 @@
 import { useState } from 'react'
 import { useMutation, useQuery } from '@tanstack/react-query'
+import { getLocale } from '@/i18n'
 import { Check, ChevronsUpDown } from 'lucide-react'
+import { useTranslation } from 'react-i18next'
 import { toast } from 'sonner'
 import { cn, showQueueError } from '@/lib/utils'
 import { useDebounce } from '@/hooks/use-debounce'
@@ -44,6 +46,8 @@ export function CreateQueueDialog({
   queueDate: string
   onCreated: () => void
 }) {
+  const { t } = useTranslation()
+
   const [patientId, setPatientId] = useState('')
   const [priority, setPriority] = useState(0)
   const [reason, setReason] = useState('')
@@ -68,7 +72,7 @@ export function CreateQueueDialog({
         note: note.trim() || undefined,
       }),
     onSuccess: () => {
-      toast.success('Đã tiếp nhận bệnh nhân')
+      toast.success(t('messages.patientAdmitted'))
       setPatientId('')
       setSelectedPatient(null)
       setPatientSearch('')
@@ -86,14 +90,14 @@ export function CreateQueueDialog({
       <DialogFormContent>
         <DialogBody>
           <DialogHeader>
-            <DialogTitle>Tiếp nhận bệnh nhân</DialogTitle>
+            <DialogTitle>{t('messages.admitPatient')}</DialogTitle>
             <DialogDescription>
-              Thêm bệnh nhân vào thứ tự khám ngày {queueDate}.
+              {t('messages.addAPatientToTheExaminationQueueFor')} {queueDate}.
             </DialogDescription>
           </DialogHeader>
           <div className='grid gap-4'>
             <div className='grid gap-2'>
-              <Label required>Bệnh nhân</Label>
+              <Label required>{t('messages.patient')}</Label>
               <Popover open={comboboxOpen} onOpenChange={setComboboxOpen}>
                 <PopoverTrigger asChild>
                   <Button
@@ -111,7 +115,7 @@ export function CreateQueueDialog({
                       </span>
                     ) : (
                       <span className='text-muted-foreground'>
-                        Tìm tên, SĐT bệnh nhân...
+                        {t('messages.searchPatientNameOrPhone')}
                       </span>
                     )}
                     <ChevronsUpDown className='ms-2 size-4 shrink-0 opacity-50' />
@@ -125,13 +129,13 @@ export function CreateQueueDialog({
                     <CommandInput
                       value={patientSearch}
                       onValueChange={setPatientSearch}
-                      placeholder='Tìm theo tên, số điện thoại...'
+                      placeholder={t('messages.searchByNameOrPhoneNumber')}
                     />
                     <CommandList>
                       <CommandEmpty>
                         {patients.isLoading
-                          ? 'Đang tìm...'
-                          : 'Không tìm thấy bệnh nhân nào.'}
+                          ? t('messages.searching')
+                          : t('messages.noPatientsFound')}
                       </CommandEmpty>
                       <CommandGroup>
                         {(patients.data ?? []).map((patient) => (
@@ -162,13 +166,13 @@ export function CreateQueueDialog({
                                     (
                                     {new Date(
                                       patient.dateOfBirth
-                                    ).toLocaleDateString('vi-VN')}
+                                    ).toLocaleDateString(getLocale())}
                                     )
                                   </span>
                                 )}
                                 {patient.phone && (
                                   <span className='text-xs text-muted-foreground'>
-                                    SĐT: {patient.phone}
+                                    {t('messages.phoneAlt2')} {patient.phone}
                                   </span>
                                 )}
                               </div>
@@ -187,7 +191,9 @@ export function CreateQueueDialog({
               </Popover>
             </div>
             <div className='grid gap-2'>
-              <Label htmlFor='queue-priority'>Mức ưu tiên (0–100)</Label>
+              <Label htmlFor='queue-priority'>
+                {t('messages.priority0100')}
+              </Label>
               <Input
                 id='queue-priority'
                 type='number'
@@ -198,7 +204,9 @@ export function CreateQueueDialog({
               />
             </div>
             <div className='grid gap-2'>
-              <Label htmlFor='queue-reason'>Lý do khám</Label>
+              <Label htmlFor='queue-reason'>
+                {t('messages.reasonForVisit')}
+              </Label>
               <Input
                 id='queue-reason'
                 maxLength={500}
@@ -207,7 +215,7 @@ export function CreateQueueDialog({
               />
             </div>
             <div className='grid gap-2'>
-              <Label htmlFor='queue-note'>Ghi chú</Label>
+              <Label htmlFor='queue-note'>{t('messages.notes')}</Label>
               <Textarea
                 id='queue-note'
                 value={note}
@@ -218,13 +226,13 @@ export function CreateQueueDialog({
         </DialogBody>
         <DialogFooter>
           <DialogClose asChild>
-            <Button variant='outline'>Đóng</Button>
+            <Button variant='outline'>{t('messages.close')}</Button>
           </DialogClose>
           <Button
             disabled={!patientId || create.isPending}
             onClick={() => create.mutate()}
           >
-            {create.isPending ? 'Đang lưu...' : 'Tiếp nhận'}
+            {create.isPending ? t('messages.saving') : t('messages.admit')}
           </Button>
         </DialogFooter>
       </DialogFormContent>

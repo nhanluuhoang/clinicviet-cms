@@ -1,6 +1,8 @@
 import { useQuery } from '@tanstack/react-query'
 import { type ColumnDef, type Row } from '@tanstack/react-table'
+import i18n from '@/i18n'
 import { ChevronDown, ChevronRight } from 'lucide-react'
+import { useTranslation } from 'react-i18next'
 import { formatDate, formatMoney, formatNumber } from '@/lib/utils'
 import { useApiSearch } from '@/hooks/use-api-search'
 import { Button } from '@/components/ui/button'
@@ -11,6 +13,8 @@ import { GetReceipt, GetReceipts, type GoodsReceiptSummary } from '../api'
 import { ExpiryBadge } from './expiry-badge'
 
 function ReceiptLines({ row }: { row: Row<GoodsReceiptSummary> }) {
+  const { t } = useTranslation()
+
   const {
     data: receipt,
     isLoading,
@@ -21,13 +25,15 @@ function ReceiptLines({ row }: { row: Row<GoodsReceiptSummary> }) {
   })
 
   if (isLoading) {
-    return <div className='px-4 py-6 text-sm'>Đang tải chi tiết...</div>
+    return (
+      <div className='px-4 py-6 text-sm'>{t('messages.loadingDetails')}</div>
+    )
   }
 
   if (isError || !receipt) {
     return (
       <div className='px-4 py-6 text-sm text-destructive'>
-        Không thể tải chi tiết phiếu nhập.
+        {t('messages.couldNotLoadReceiptDetails')}
       </div>
     )
   }
@@ -35,8 +41,8 @@ function ReceiptLines({ row }: { row: Row<GoodsReceiptSummary> }) {
   return (
     <div className='px-4 py-3'>
       <p className='mb-2 text-xs font-medium text-muted-foreground'>
-        {receipt.lines.length} dòng — tổng {formatNumber(receipt.totalQty)} ·{' '}
-        {formatMoney(receipt.totalAmount)}
+        {receipt.lines.length} {t('messages.linesTotal')}{' '}
+        {formatNumber(receipt.totalQty)} · {formatMoney(receipt.totalAmount)}
       </p>
       <div className='grid gap-2 sm:hidden'>
         {receipt.lines.map((line) => (
@@ -45,15 +51,21 @@ function ReceiptLines({ row }: { row: Row<GoodsReceiptSummary> }) {
             className='space-y-1 rounded-md border p-3 text-sm'
           >
             <p className='font-medium'>{line.medicineName}</p>
-            <p>Số lô: {line.batchNo}</p>
             <p>
-              Hạn dùng: <ExpiryBadge date={line.expiryDate} />
+              {t('messages.batchNumberAlt2')} {line.batchNo}
             </p>
             <p>
-              Số lượng: {formatNumber(line.qty)} {line.unit}
+              {t('messages.expiry')} <ExpiryBadge date={line.expiryDate} />
             </p>
-            <p>Đơn giá: {formatMoney(line.unitCost)}</p>
-            <p>Thành tiền: {formatMoney(line.amount)}</p>
+            <p>
+              {t('messages.quantity')} {formatNumber(line.qty)} {line.unit}
+            </p>
+            <p>
+              {t('messages.unitPrice')} {formatMoney(line.unitCost)}
+            </p>
+            <p>
+              {t('messages.amount')} {formatMoney(line.amount)}
+            </p>
           </div>
         ))}
       </div>
@@ -61,12 +73,24 @@ function ReceiptLines({ row }: { row: Row<GoodsReceiptSummary> }) {
         <table className='w-full text-sm'>
           <thead className='text-xs text-muted-foreground'>
             <tr className='border-b'>
-              <th className='py-1.5 pe-4 text-start font-medium'>Thuốc</th>
-              <th className='py-1.5 pe-4 text-start font-medium'>Số lô</th>
-              <th className='py-1.5 pe-4 text-start font-medium'>Hạn dùng</th>
-              <th className='py-1.5 pe-4 text-end font-medium'>Số lượng</th>
-              <th className='py-1.5 pe-4 text-end font-medium'>Đơn giá</th>
-              <th className='py-1.5 text-end font-medium'>Thành tiền</th>
+              <th className='py-1.5 pe-4 text-start font-medium'>
+                {t('messages.medicine')}
+              </th>
+              <th className='py-1.5 pe-4 text-start font-medium'>
+                {t('messages.batchNumber')}
+              </th>
+              <th className='py-1.5 pe-4 text-start font-medium'>
+                {t('messages.expiryAlt2')}
+              </th>
+              <th className='py-1.5 pe-4 text-end font-medium'>
+                {t('messages.quantityAlt2')}
+              </th>
+              <th className='py-1.5 pe-4 text-end font-medium'>
+                {t('messages.unitPriceAlt2')}
+              </th>
+              <th className='py-1.5 text-end font-medium'>
+                {t('messages.amountAlt2')}
+              </th>
             </tr>
           </thead>
           <tbody>
@@ -112,7 +136,11 @@ const columns: ColumnDef<GoodsReceiptSummary>[] = [
         size='icon'
         className='size-7'
         onClick={row.getToggleExpandedHandler()}
-        aria-label={row.getIsExpanded() ? 'Thu gọn' : 'Xem các dòng'}
+        aria-label={
+          row.getIsExpanded()
+            ? i18n.t('messages.collapse')
+            : i18n.t('messages.viewLines')
+        }
       >
         {row.getIsExpanded() ? (
           <ChevronDown className='size-4' />
@@ -127,7 +155,10 @@ const columns: ColumnDef<GoodsReceiptSummary>[] = [
   {
     accessorKey: 'code',
     header: ({ column }) => (
-      <DataTableColumnHeader column={column} title='Mã phiếu' />
+      <DataTableColumnHeader
+        column={column}
+        title={i18n.t('messages.documentCode')}
+      />
     ),
     cell: ({ row }) => (
       <span className='font-mono text-xs font-medium'>{row.original.code}</span>
@@ -136,7 +167,10 @@ const columns: ColumnDef<GoodsReceiptSummary>[] = [
   {
     accessorKey: 'receivedAt',
     header: ({ column }) => (
-      <DataTableColumnHeader column={column} title='Ngày nhập' />
+      <DataTableColumnHeader
+        column={column}
+        title={i18n.t('messages.receivedOn')}
+      />
     ),
     cell: ({ row }) => (
       <span className='tabular-nums'>
@@ -147,13 +181,16 @@ const columns: ColumnDef<GoodsReceiptSummary>[] = [
   {
     accessorKey: 'supplierName',
     header: ({ column }) => (
-      <DataTableColumnHeader column={column} title='Nhà cung cấp' />
+      <DataTableColumnHeader
+        column={column}
+        title={i18n.t('messages.supplier')}
+      />
     ),
     cell: ({ row }) => (
       <div className='min-w-44'>
         <div>{row.original.supplierName}</div>
         <div className='text-xs text-muted-foreground'>
-          HĐ {row.original.invoiceNo}
+          {i18n.t('messages.invoice')} {row.original.invoiceNo}
         </div>
       </div>
     ),
@@ -163,7 +200,10 @@ const columns: ColumnDef<GoodsReceiptSummary>[] = [
     id: 'lineCount',
     accessorKey: 'lineCount',
     header: ({ column }) => (
-      <DataTableColumnHeader column={column} title='Số lô' />
+      <DataTableColumnHeader
+        column={column}
+        title={i18n.t('messages.batchNumber')}
+      />
     ),
     cell: ({ row }) => (
       <span className='tabular-nums'>{row.original.lineCount}</span>
@@ -173,6 +213,8 @@ const columns: ColumnDef<GoodsReceiptSummary>[] = [
 ]
 
 export function ReceiptsTab() {
+  const { t } = useTranslation()
+
   const search = useApiSearch()
   const { data, isLoading } = useQuery({
     queryKey: ['inventory', 'receipts', search],
@@ -184,8 +226,10 @@ export function ReceiptsTab() {
       columns={withAuditColumns(columns)}
       data={data ?? []}
       isLoading={isLoading}
-      searchPlaceholder='Tìm theo mã phiếu, nhà cung cấp, số hoá đơn...'
-      emptyMessage='Chưa có phiếu nhập nào.'
+      searchPlaceholder={t(
+        'messages.searchDocumentCodeSupplierOrInvoiceNumber'
+      )}
+      emptyMessage={t('messages.noReceiptsYet')}
       getSearchText={(r) => `${r.code} ${r.supplierName} ${r.invoiceNo}`}
       initialSorting={[{ id: 'receivedAt', desc: true }]}
       renderSubRow={(row) => <ReceiptLines row={row} />}

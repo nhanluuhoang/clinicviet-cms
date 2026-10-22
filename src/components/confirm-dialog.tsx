@@ -1,3 +1,4 @@
+import { useTranslation } from 'react-i18next'
 import { cn } from '@/lib/utils'
 import {
   AlertDialog,
@@ -26,6 +27,8 @@ type ConfirmDialogProps = {
 }
 
 export function ConfirmDialog(props: ConfirmDialogProps) {
+  const { t } = useTranslation()
+
   const {
     title,
     desc,
@@ -51,14 +54,14 @@ export function ConfirmDialog(props: ConfirmDialogProps) {
         {children}
         <AlertDialogFooter>
           <AlertDialogCancel disabled={isLoading}>
-            {cancelBtnText ?? 'Hủy'}
+            {cancelBtnText ?? t('messages.cancel')}
           </AlertDialogCancel>
           <Button
             variant={destructive ? 'destructive' : 'default'}
             onClick={handleConfirm}
             disabled={disabled || isLoading}
           >
-            {confirmText ?? 'Tiếp tục'}
+            {confirmText ?? t('messages.continue')}
           </Button>
         </AlertDialogFooter>
       </AlertDialogContent>

@@ -1,4 +1,5 @@
 import { ChevronDown } from 'lucide-react'
+import { useTranslation } from 'react-i18next'
 import { formatNumber } from '@/lib/utils'
 import { Button } from '@/components/ui/button'
 import {
@@ -14,6 +15,8 @@ export function InvoiceServiceFees({
 }: {
   fees: Array<{ amount: number; label: string; fallback: string }>
 }) {
+  const { t } = useTranslation()
+
   const total = fees.reduce((sum, fee) => sum + fee.amount, 0)
 
   if (fees.length === 0) return <span className='text-muted-foreground'>—</span>
@@ -46,14 +49,16 @@ export function InvoiceServiceFees({
               type='button'
               variant='ghost'
               className='h-auto gap-2 px-2 py-1.5 text-right font-normal'
-              aria-label={`Xem chi tiết ${fees.length} khoản phí dịch vụ`}
+              aria-label={t('messages.viewServiceFeeItems', {
+                value0: fees.length,
+              })}
             >
               <span className='flex flex-col items-end gap-0.5'>
                 <span className='whitespace-nowrap tabular-nums'>
                   {currency(total)}
                 </span>
                 <span className='text-xs text-muted-foreground'>
-                  {fees.length} khoản phí
+                  {fees.length} {t('messages.feeItems')}
                 </span>
               </span>
               <ChevronDown className='size-3.5 text-muted-foreground' />
@@ -63,10 +68,12 @@ export function InvoiceServiceFees({
             align='end'
             className='w-80 max-w-[calc(100vw-2rem)] text-sm'
           >
-            <p className='mb-3 font-medium'>Chi tiết phí dịch vụ</p>
+            <p className='mb-3 font-medium'>
+              {t('messages.serviceFeeDetails')}
+            </p>
             {breakdown}
             <div className='mt-3 flex items-baseline justify-between gap-4 border-t pt-3 font-medium'>
-              <span>Tổng phí dịch vụ</span>
+              <span>{t('messages.totalServiceFees')}</span>
               <span className='whitespace-nowrap tabular-nums'>
                 {currency(total)}
               </span>

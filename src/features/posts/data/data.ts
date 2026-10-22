@@ -1,13 +1,18 @@
+import i18n from '@/i18n'
 import { CircleCheck, CircleX } from 'lucide-react'
 
 export const postStatuses = [
   {
-    label: 'Công khai',
+    get label() {
+      return i18n.t('messages.published')
+    },
     value: true,
     icon: CircleCheck,
   },
   {
-    label: 'Bản nháp',
+    get label() {
+      return i18n.t('messages.draft')
+    },
     value: false,
     icon: CircleX,
   },

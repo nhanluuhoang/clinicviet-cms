@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { useQueryClient } from '@tanstack/react-query'
+import { useTranslation } from 'react-i18next'
 import { toast } from 'sonner'
 import { showRequestError } from '@/lib/handle-server-error'
 import { ConfirmDialog } from '@/components/confirm-dialog'
@@ -8,6 +9,8 @@ import { MedicineMutateDialog } from './medicine-mutate-dialog'
 import { useMedicines } from './medicines-provider'
 
 export function MedicinesDialogs() {
+  const { t } = useTranslation()
+
   const { open, setOpen, currentMedicine, setCurrentMedicine } = useMedicines()
   const queryClient = useQueryClient()
   const [isDeleting, setIsDeleting] = useState(false)
@@ -24,10 +27,10 @@ export function MedicinesDialogs() {
       await DeleteMedicine(currentMedicine.id)
       queryClient.invalidateQueries({ queryKey: ['medicines'] })
       queryClient.invalidateQueries({ queryKey: ['inventory'] })
-      toast.success('Đã xoá thuốc khỏi danh mục')
+      toast.success(t('messages.medicineRemovedFromCatalog'))
       closeAndClear()
     } catch (error) {
-      showRequestError(error, 'Không xoá được thuốc')
+      showRequestError(error, t('messages.couldNotDeleteMedicine'))
     } finally {
       setIsDeleting(false)
     }
@@ -62,18 +65,18 @@ export function MedicinesDialogs() {
             handleConfirm={handleDelete}
             isLoading={isDeleting}
             className='max-w-md'
-            title={`Xoá thuốc "${currentMedicine.name}"?`}
+            title={t('messages.deleteMedicine', {
+              value0: currentMedicine.name,
+            })}
             desc={
               <>
-                Thuốc <strong>{currentMedicine.name}</strong> sẽ bị xoá khỏi
-                danh mục. <br />
-                Chỉ có thể xoá thuốc chưa có lô kho, đơn thuốc hoặc mẫu đơn.
-                Thuốc đã được sử dụng có thể chuyển sang trạng thái ngừng sử
-                dụng trong phần Cập nhật.
+                {t('messages.medicine')} <strong>{currentMedicine.name}</strong>{' '}
+                {t('messages.willBeRemovedFromTheCatalog')} <br />
+                {t('messages.onlyMedicinesWithoutStockBatchesPrescriptionsOrT')}
               </>
             }
-            confirmText='Xoá'
-            cancelBtnText='Huỷ bỏ'
+            confirmText={t('messages.deleteAlt2')}
+            cancelBtnText={t('messages.discard')}
           />
         </>
       )}

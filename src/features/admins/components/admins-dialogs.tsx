@@ -24,7 +24,6 @@ export function AdminsDialogs() {
             }}
             currentRow={currentRow}
           />
-
         </>
       )}
     </>

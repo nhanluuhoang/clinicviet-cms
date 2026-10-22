@@ -1,4 +1,6 @@
 import { getRouteApi } from '@tanstack/react-router'
+import i18n from '@/i18n'
+import { useTranslation } from 'react-i18next'
 import { DataTableToolbar } from '@/components/data-table'
 import { UrlDataTable } from '@/components/data-table/url-data-table'
 import { DatePickerInput } from '@/components/date-picker-input'
@@ -13,7 +15,9 @@ const route = getRouteApi('/_authenticated/invoices/')
 const filters = [
   {
     columnId: 'serviceType',
-    title: 'Loại dịch vụ',
+    get title() {
+      return i18n.t('messages.serviceType')
+    },
     options: invoiceServiceTypes,
     variant: 'radio' as const,
   },
@@ -30,6 +34,8 @@ export function InvoicesTable({
   isLoading: boolean
   date: string
 }) {
+  const { t } = useTranslation()
+
   const navigate = route.useNavigate()
   return (
     <UrlDataTable
@@ -39,11 +45,11 @@ export function InvoicesTable({
       total={total}
       isLoading={isLoading}
       filters={filters}
-      emptyMessage='Không có hóa đơn phù hợp.'
+      emptyMessage={t('messages.noMatchingInvoices')}
       renderToolbar={(table) => (
         <DataTableToolbar
           table={table}
-          searchPlaceholder='Mã HĐ, tên hoặc SĐT bệnh nhân...'
+          searchPlaceholder={t('messages.invoiceCodePatientNameOrPhone')}
           filters={filters}
           hasExtraFilters={Boolean(date)}
           onReset={() =>
@@ -56,11 +62,11 @@ export function InvoicesTable({
           }
         >
           <label htmlFor='invoice-date' className='sr-only'>
-            Ngày lập hóa đơn
+            {t('messages.invoiceDate')}
           </label>
           <DatePickerInput
             id='invoice-date'
-            placeholder='Chọn ngày lập'
+            placeholder={t('messages.selectInvoiceDate')}
             value={date}
             onChange={(value) =>
               navigate({

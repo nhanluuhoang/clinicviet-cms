@@ -1,3 +1,4 @@
+import { getLocale } from '@/i18n'
 import {
   AlarmClock,
   CalendarX,
@@ -8,6 +9,7 @@ import {
   UserPlus,
   Users,
 } from 'lucide-react'
+import { useTranslation } from 'react-i18next'
 import { formatNumber } from '@/lib/utils'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import {
@@ -25,56 +27,64 @@ export function OperationalStatistics({
 }: {
   data?: DashboardStatistics
 }) {
+  const { t } = useTranslation()
+
   const queue = data?.queueMetrics
   const patients = data?.patientMetrics
   const inventory = data?.inventoryAlerts
   const cards = [
     {
-      label: 'Lượt khám',
+      label: t('messages.examinationsAlt2'),
       value: queue?.totalVisits ?? 0,
-      detail: `${queue?.completionRate ?? 0}% hoàn thành`,
+      detail: t('messages.completed', { value0: queue?.completionRate ?? 0 }),
       icon: Users,
     },
     {
-      label: 'Đã hủy / Không đến',
+      label: t('messages.cancelledNoShow'),
       value: `${queue?.cancelled ?? 0} / ${queue?.noShow ?? 0}`,
       detail: `${queue?.cancellationRate ?? 0}% / ${queue?.noShowRate ?? 0}%`,
       icon: CalendarX,
     },
     {
-      label: 'Thời gian chờ TB',
-      value: `${queue?.averageWaitMinutes ?? 0} phút`,
-      detail: 'Từ check-in đến bắt đầu khám',
+      label: t('messages.averageWaitingTime'),
+      value: t('messages.minutes', { value0: queue?.averageWaitMinutes ?? 0 }),
+      detail: t('messages.fromCheckInToExaminationStart'),
       icon: AlarmClock,
     },
     {
-      label: 'Thời gian khám TB',
-      value: `${queue?.averageExaminationMinutes ?? 0} phút`,
-      detail: 'Từ bắt đầu đến hoàn thành',
+      label: t('messages.averageExaminationTime'),
+      value: t('messages.minutes', {
+        value0: queue?.averageExaminationMinutes ?? 0,
+      }),
+      detail: t('messages.fromExaminationStartToCompletion'),
       icon: Clock3,
     },
     {
-      label: 'Bệnh nhân mới',
+      label: t('messages.newPatients'),
       value: patients?.newPatients ?? 0,
-      detail: `${patients?.uniquePatients ?? 0} bệnh nhân duy nhất`,
+      detail: t('messages.uniquePatients', {
+        value0: patients?.uniquePatients ?? 0,
+      }),
       icon: UserPlus,
     },
     {
-      label: 'Bệnh nhân quay lại',
+      label: t('messages.returningPatients'),
       value: patients?.returningPatients ?? 0,
-      detail: `Tỷ lệ ${patients?.returningRate ?? 0}%`,
+      detail: t('messages.rate', { value0: patients?.returningRate ?? 0 }),
       icon: RotateCcw,
     },
     {
-      label: 'Thuốc hết / sắp hết',
+      label: t('messages.outOfStockLowStock'),
       value: `${inventory?.outOfStockCount ?? 0} / ${inventory?.lowStockCount ?? 0}`,
-      detail: 'Theo mức tồn tối thiểu',
+      detail: t('messages.basedOnMinimumStockLevels'),
       icon: PackageX,
     },
     {
-      label: 'Lô sắp hết hạn',
+      label: t('messages.expiringBatches'),
       value: inventory?.expiringBatchCount ?? 0,
-      detail: `${formatNumber(inventory?.expiringStockValue ?? 0)} VNĐ`,
+      detail: t('messages.vndAlt2', {
+        value0: formatNumber(inventory?.expiringStockValue ?? 0),
+      }),
       icon: Stethoscope,
     },
   ]
@@ -102,7 +112,7 @@ export function OperationalStatistics({
 
       <Card>
         <CardHeader>
-          <CardTitle>Cảnh báo lô thuốc hết hạn trong 90 ngày</CardTitle>
+          <CardTitle>{t('messages.batchesExpiringWithin90Days')}</CardTitle>
         </CardHeader>
         <CardContent className='max-h-[360px] overflow-auto'>
           <div className='grid gap-2 sm:hidden'>
@@ -113,22 +123,27 @@ export function OperationalStatistics({
                   className='space-y-1 rounded-md border p-3 text-sm'
                 >
                   <p className='font-medium'>{batch.medicineName}</p>
-                  <p>Lô: {batch.batchNo}</p>
                   <p>
-                    Hạn dùng:{' '}
+                    {t('messages.batch')} {batch.batchNo}
+                  </p>
+                  <p>
+                    {t('messages.expiry')}{' '}
                     {new Date(
                       `${batch.expiryDate}T00:00:00`
-                    ).toLocaleDateString('vi-VN')}
+                    ).toLocaleDateString(getLocale())}
                   </p>
                   <p>
-                    Số lượng: {batch.quantity} {batch.unit}
+                    {t('messages.quantity')} {batch.quantity} {batch.unit}
                   </p>
-                  <p>Giá trị tồn: {formatNumber(batch.stockValue)} VNĐ</p>
+                  <p>
+                    {t('messages.stockValueAlt2')}{' '}
+                    {formatNumber(batch.stockValue)} {t('messages.vnd')}
+                  </p>
                 </div>
               ))
             ) : (
               <p className='rounded-md border p-4 text-center text-sm text-muted-foreground'>
-                Không có lô thuốc sắp hết hạn.
+                {t('messages.noBatchesNearingExpiry')}
               </p>
             )}
           </div>
@@ -136,11 +151,15 @@ export function OperationalStatistics({
             <Table>
               <TableHeader className='sticky top-0 bg-card'>
                 <TableRow>
-                  <TableHead>Thuốc</TableHead>
-                  <TableHead>Lô</TableHead>
-                  <TableHead>Hạn dùng</TableHead>
-                  <TableHead className='text-right'>Số lượng</TableHead>
-                  <TableHead className='text-right'>Giá trị tồn</TableHead>
+                  <TableHead>{t('messages.medicine')}</TableHead>
+                  <TableHead>{t('messages.batchAlt2')}</TableHead>
+                  <TableHead>{t('messages.expiryAlt2')}</TableHead>
+                  <TableHead className='text-right'>
+                    {t('messages.quantityAlt2')}
+                  </TableHead>
+                  <TableHead className='text-right'>
+                    {t('messages.stockValue')}
+                  </TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -154,13 +173,13 @@ export function OperationalStatistics({
                       <TableCell>
                         {new Date(
                           `${batch.expiryDate}T00:00:00`
-                        ).toLocaleDateString('vi-VN')}
+                        ).toLocaleDateString(getLocale())}
                       </TableCell>
                       <TableCell className='text-right'>
                         {batch.quantity} {batch.unit}
                       </TableCell>
                       <TableCell className='text-right'>
-                        {formatNumber(batch.stockValue)} VNĐ
+                        {formatNumber(batch.stockValue)} {t('messages.vnd')}
                       </TableCell>
                     </TableRow>
                   ))
@@ -170,7 +189,7 @@ export function OperationalStatistics({
                       colSpan={5}
                       className='h-24 text-center text-muted-foreground'
                     >
-                      Không có lô thuốc sắp hết hạn.
+                      {t('messages.noBatchesNearingExpiry')}
                     </TableCell>
                   </TableRow>
                 )}
@@ -182,28 +201,28 @@ export function OperationalStatistics({
 
       <Card>
         <CardHeader>
-          <CardTitle>Thuốc hết hàng và sắp hết hàng</CardTitle>
+          <CardTitle>{t('messages.outOfStockAndLowStockMedicines')}</CardTitle>
         </CardHeader>
         <CardContent className='max-h-[360px] overflow-auto'>
           <div className='grid gap-2 sm:hidden'>
             {[
               ...(inventory?.outOfStock ?? []).map((item) => ({
                 ...item,
-                label: 'Hết hàng',
+                label: t('messages.outOfStock'),
               })),
               ...(inventory?.lowStock ?? []).map((item) => ({
                 ...item,
-                label: 'Sắp hết',
+                label: t('messages.lowStock'),
               })),
             ].length ? (
               [
                 ...(inventory?.outOfStock ?? []).map((item) => ({
                   ...item,
-                  label: 'Hết hàng',
+                  label: t('messages.outOfStock'),
                 })),
                 ...(inventory?.lowStock ?? []).map((item) => ({
                   ...item,
-                  label: 'Sắp hết',
+                  label: t('messages.lowStock'),
                 })),
               ].map((item) => (
                 <div
@@ -211,18 +230,20 @@ export function OperationalStatistics({
                   className='space-y-1 rounded-md border p-3 text-sm'
                 >
                   <p className='font-medium'>{item.medicineName}</p>
-                  <p>Trạng thái: {item.label}</p>
                   <p>
-                    Tồn hiện tại: {item.quantity} {item.unit}
+                    {t('messages.statusAlt2')} {item.label}
                   </p>
                   <p>
-                    Tồn tối thiểu: {item.minStock} {item.unit}
+                    {t('messages.currentStock')} {item.quantity} {item.unit}
+                  </p>
+                  <p>
+                    {t('messages.minimumStockAlt2')} {item.minStock} {item.unit}
                   </p>
                 </div>
               ))
             ) : (
               <p className='rounded-md border p-4 text-center text-sm text-muted-foreground'>
-                Không có thuốc hết hàng hoặc dưới mức tồn tối thiểu.
+                {t('messages.noMedicinesOutOfStockOrBelowTheMinimumLevel')}
               </p>
             )}
           </div>
@@ -230,10 +251,14 @@ export function OperationalStatistics({
             <Table>
               <TableHeader className='sticky top-0 bg-card'>
                 <TableRow>
-                  <TableHead>Thuốc</TableHead>
-                  <TableHead>Trạng thái</TableHead>
-                  <TableHead className='text-right'>Tồn hiện tại</TableHead>
-                  <TableHead className='text-right'>Tồn tối thiểu</TableHead>
+                  <TableHead>{t('messages.medicine')}</TableHead>
+                  <TableHead>{t('messages.status')}</TableHead>
+                  <TableHead className='text-right'>
+                    {t('messages.currentStockAlt2')}
+                  </TableHead>
+                  <TableHead className='text-right'>
+                    {t('messages.minimumStockAlt3')}
+                  </TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -244,11 +269,11 @@ export function OperationalStatistics({
                   [
                     ...(inventory?.outOfStock ?? []).map((item) => ({
                       ...item,
-                      label: 'Hết hàng',
+                      label: t('messages.outOfStock'),
                     })),
                     ...(inventory?.lowStock ?? []).map((item) => ({
                       ...item,
-                      label: 'Sắp hết',
+                      label: t('messages.lowStock'),
                     })),
                   ].map((item) => (
                     <TableRow key={item.medicineId}>
@@ -270,7 +295,9 @@ export function OperationalStatistics({
                       colSpan={4}
                       className='h-24 text-center text-muted-foreground'
                     >
-                      Không có thuốc hết hàng hoặc dưới mức tồn tối thiểu.
+                      {t(
+                        'messages.noMedicinesOutOfStockOrBelowTheMinimumLevel'
+                      )}
                     </TableCell>
                   </TableRow>
                 )}

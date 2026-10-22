@@ -5,6 +5,9 @@ import {
   getCoreRowModel,
   useReactTable,
 } from '@tanstack/react-table'
+import { MANAGED_USER_ROLE_OPTIONS } from '@/config/user-role-labels'
+import i18n from '@/i18n'
+import { useTranslation } from 'react-i18next'
 import { cn } from '@/lib/utils'
 import { type NavigateFn, useTableUrlState } from '@/hooks/use-table-url-state'
 import {
@@ -21,7 +24,6 @@ import {
   MobileDataCards,
 } from '@/components/data-table'
 import { defaultAuditVisibility } from '@/components/data-table/audit-columns'
-import { MANAGED_USER_ROLE_OPTIONS } from '@/config/user-role-labels'
 import { type Admin } from '../api'
 import { adminsColumns as columns } from './admins-columns'
 
@@ -40,6 +42,8 @@ export function AdminsTable({
   navigate,
   isLoading,
 }: DataTableProps) {
+  const { t } = useTranslation()
+
   // Local UI-only states
   const [rowSelection, setRowSelection] = useState({})
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>(
@@ -98,22 +102,22 @@ export function AdminsTable({
     >
       <DataTableToolbar
         table={table}
-        searchPlaceholder='Tìm kiếm tên...'
+        searchPlaceholder={t('messages.searchByName')}
         searchKey='fullName'
         filters={[
           {
             columnId: 'role',
-            title: 'Vai trò',
+            title: t('messages.role'),
             variant: 'radio',
             options: MANAGED_USER_ROLE_OPTIONS,
           },
           {
             columnId: 'isActive',
-            title: 'Trạng thái',
+            title: t('messages.status'),
             variant: 'radio',
             options: [
-              { label: 'Đang hoạt động', value: 'true' },
-              { label: 'Đã khóa', value: 'false' },
+              { label: t('subscriptionStatuses.ACTIVE'), value: 'true' },
+              { label: t('messages.locked'), value: 'false' },
             ],
           },
         ]}
@@ -121,7 +125,7 @@ export function AdminsTable({
       <MobileDataCards
         table={table}
         isLoading={isLoading}
-        emptyMessage='Không có kết quả.'
+        emptyMessage={t('messages.noResults')}
       />
       <div className='hidden overflow-x-auto rounded-md border text-nowrap sm:block'>
         <Table>
@@ -156,14 +160,16 @@ export function AdminsTable({
                   colSpan={table.getVisibleLeafColumns().length}
                   className='h-24 text-center'
                 >
-                  Đang tải...
+                  {t('messages.loading')}
                 </TableCell>
               </TableRow>
             ) : table.getRowModel().rows?.length ? (
               table.getRowModel().rows.map((row) => (
                 <TableRow
                   key={row.id}
-                  data-state={row.getIsSelected() && 'selected'}
+                  data-state={
+                    row.getIsSelected() && i18n.t('messages.selectedCount')
+                  }
                   className='group/row'
                 >
                   {row.getVisibleCells().map((cell) => (
@@ -189,7 +195,7 @@ export function AdminsTable({
                   colSpan={table.getVisibleLeafColumns().length}
                   className='h-24 text-center'
                 >
-                  Không có kết quả.
+                  {t('messages.noResults')}
                 </TableCell>
               </TableRow>
             )}

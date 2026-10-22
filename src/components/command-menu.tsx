@@ -1,5 +1,6 @@
 import { useNavigate } from '@tanstack/react-router'
 import { ArrowRight } from 'lucide-react'
+import { useTranslation } from 'react-i18next'
 import { useSearch } from '@/context/search-provider'
 import {
   CommandDialog,
@@ -20,6 +21,8 @@ const normalize = (text: string) =>
     .toLowerCase()
 
 export function CommandMenu() {
+  const { t } = useTranslation()
+
   const navigate = useNavigate()
   const { open, setOpen } = useSearch()
   const groups = useNavigationGroups()
@@ -28,8 +31,8 @@ export function CommandMenu() {
     <CommandDialog
       open={open}
       onOpenChange={setOpen}
-      title='Tìm chức năng'
-      description='Tìm và mở trang chức năng bạn có quyền truy cập.'
+      title={t('messages.findAFeature')}
+      description={t('messages.findAndOpenAPageYouHaveAccessTo')}
       filter={(value, search, keywords) => {
         const text = normalize([value, ...(keywords ?? [])].join(' '))
         return normalize(search)
@@ -40,13 +43,13 @@ export function CommandMenu() {
           : 0
       }}
     >
-      <CommandInput placeholder='Tìm chức năng…' />
+      <CommandInput placeholder={t('messages.findAFeatureAlt2')} />
       <CommandList
         // Keep Safari's native list scrolling out of the modal's document touch lock.
         onTouchMove={(event) => event.stopPropagation()}
         style={{ WebkitOverflowScrolling: 'touch' }}
       >
-        <CommandEmpty>Không tìm thấy chức năng phù hợp.</CommandEmpty>
+        <CommandEmpty>{t('messages.noMatchingFeaturesFound')}</CommandEmpty>
         {groups.map((group, index) => (
           <CommandGroup key={index} heading={group.title}>
             {group.items.flatMap((item) => {
@@ -61,7 +64,9 @@ export function CommandMenu() {
                     keywords={[
                       link.title,
                       context ?? '',
-                      context?.startsWith('Thống kê') ? 'báo cáo' : '',
+                      context?.startsWith(t('messages.statistics'))
+                        ? 'báo cáo'
+                        : '',
                       link.url === '/master-data' ? 'cài đặt cấu hình' : '',
                     ]}
                     onSelect={() => {

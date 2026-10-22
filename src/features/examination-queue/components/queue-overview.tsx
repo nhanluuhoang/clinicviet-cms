@@ -1,4 +1,5 @@
 import { CalendarClock, CheckCircle2, Clock3, Stethoscope } from 'lucide-react'
+import { useTranslation } from 'react-i18next'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { type QueueOverview as QueueOverviewData } from '../api'
 import { QueueHighlight } from './queue-highlight'
@@ -8,16 +9,26 @@ export function QueueOverview({
 }: {
   dashboard?: QueueOverviewData
 }) {
+  const { t } = useTranslation()
+
   const counts = dashboard?.counts ?? {}
   const stats = [
-    { label: 'Đã đặt lịch', value: counts.BOOKED ?? 0, icon: CalendarClock },
-    { label: 'Đang chờ', value: counts.WAITING ?? 0, icon: Clock3 },
     {
-      label: 'Đang phục vụ',
+      label: t('messages.scheduled'),
+      value: counts.BOOKED ?? 0,
+      icon: CalendarClock,
+    },
+    { label: t('messages.waiting'), value: counts.WAITING ?? 0, icon: Clock3 },
+    {
+      label: t('messages.beingServed'),
       value: (counts.CALLED ?? 0) + (counts.IN_EXAMINATION ?? 0),
       icon: Stethoscope,
     },
-    { label: 'Hoàn tất', value: counts.COMPLETED ?? 0, icon: CheckCircle2 },
+    {
+      label: t('messages.finish'),
+      value: counts.COMPLETED ?? 0,
+      icon: CheckCircle2,
+    },
   ]
 
   return (
@@ -38,7 +49,9 @@ export function QueueOverview({
       <div className='grid gap-4 lg:grid-cols-2'>
         <Card className='py-4'>
           <CardHeader className='px-4'>
-            <CardTitle className='text-base'>Đang phục vụ</CardTitle>
+            <CardTitle className='text-base'>
+              {t('messages.beingServed')}
+            </CardTitle>
           </CardHeader>
           <CardContent className='grid gap-2 px-4'>
             {(dashboard?.serving ?? []).length ? (
@@ -47,21 +60,23 @@ export function QueueOverview({
               ))
             ) : (
               <p className='text-sm text-muted-foreground'>
-                Chưa có bệnh nhân đang được gọi hoặc khám.
+                {t('messages.noPatientIsCurrentlyBeingCalledOrExamined')}
               </p>
             )}
           </CardContent>
         </Card>
         <Card className='py-4'>
           <CardHeader className='px-4'>
-            <CardTitle className='text-base'>Lượt kế tiếp dự kiến</CardTitle>
+            <CardTitle className='text-base'>
+              {t('messages.estimatedNextTurn')}
+            </CardTitle>
           </CardHeader>
           <CardContent className='px-4'>
             {dashboard?.next ? (
               <QueueHighlight item={dashboard.next} />
             ) : (
               <p className='text-sm text-muted-foreground'>
-                Không còn bệnh nhân đang chờ.
+                {t('messages.noPatientsWaiting')}
               </p>
             )}
           </CardContent>

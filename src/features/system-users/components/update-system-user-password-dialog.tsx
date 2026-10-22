@@ -2,6 +2,8 @@ import { z } from 'zod'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useMutation } from '@tanstack/react-query'
+import i18n from '@/i18n'
+import { useTranslation } from 'react-i18next'
 import { toast } from 'sonner'
 import { showRequestError } from '@/lib/handle-server-error'
 import { Button } from '@/components/ui/button'
@@ -29,13 +31,18 @@ const schema = z
   .object({
     password: z
       .string()
-      .min(8, 'Mật khẩu tối thiểu 8 ký tự.')
-      .max(20, 'Mật khẩu tối đa 20 ký tự.'),
+      .min(8, {
+        error: () =>
+          i18n.t('messages.passwordMustContainAtLeast8CharactersAlt4'),
+      })
+      .max(20, {
+        error: () => i18n.t('messages.passwordMustNotExceed20Characters'),
+      }),
     passwordConfirmation: z.string(),
   })
   .refine((value) => value.password === value.passwordConfirmation, {
     path: ['passwordConfirmation'],
-    message: 'Mật khẩu nhập lại không khớp.',
+    error: () => i18n.t('messages.passwordsDoNotMatch'),
   })
 
 type Values = z.infer<typeof schema>
@@ -50,6 +57,8 @@ export function UpdateSystemUserPasswordDialog({
   open: boolean
   onOpenChange: (open: boolean) => void
 }) {
+  const { t } = useTranslation()
+
   const form = useForm<Values>({
     resolver: zodResolver(schema),
     defaultValues: emptyValues,
@@ -61,10 +70,11 @@ export function UpdateSystemUserPasswordDialog({
   const save = useMutation({
     mutationFn: (values: Values) => updateSystemUserPassword(user.id, values),
     onSuccess: () => {
-      toast.success('Đã cập nhật mật khẩu và đăng xuất các phiên hiện tại')
+      toast.success(t('messages.passwordUpdatedAndExistingSessionsSignedOut'))
       handleOpenChange(false)
     },
-    onError: (error) => showRequestError(error, 'Không thể cập nhật mật khẩu'),
+    onError: (error) =>
+      showRequestError(error, t('messages.couldNotUpdatePassword')),
   })
 
   return (
@@ -72,10 +82,10 @@ export function UpdateSystemUserPasswordDialog({
       <DialogFormContent className='sm:max-w-md'>
         <DialogBody>
           <DialogHeader>
-            <DialogTitle>Đặt lại mật khẩu</DialogTitle>
+            <DialogTitle>{t('messages.resetPassword')}</DialogTitle>
             <DialogDescription>
-              {user.userName} · {user.tenant.code} - {user.tenant.name}. Các
-              phiên đăng nhập hiện tại sẽ bị đăng xuất.
+              {user.userName} · {user.tenant.code} - {user.tenant.name}
+              {t('messages.existingSessionsWillBeSignedOut')}
             </DialogDescription>
           </DialogHeader>
           <Form {...form}>
@@ -89,7 +99,7 @@ export function UpdateSystemUserPasswordDialog({
                 name='password'
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel required>Mật khẩu mới</FormLabel>
+                    <FormLabel required>{t('messages.newPassword')}</FormLabel>
                     <FormControl>
                       <PasswordInput autoComplete='new-password' {...field} />
                     </FormControl>
@@ -102,7 +112,9 @@ export function UpdateSystemUserPasswordDialog({
                 name='passwordConfirmation'
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel required>Nhập lại mật khẩu</FormLabel>
+                    <FormLabel required>
+                      {t('messages.confirmPassword')}
+                    </FormLabel>
                     <FormControl>
                       <PasswordInput autoComplete='new-password' {...field} />
                     </FormControl>
@@ -115,14 +127,16 @@ export function UpdateSystemUserPasswordDialog({
         </DialogBody>
         <DialogFooter>
           <Button variant='outline' onClick={() => handleOpenChange(false)}>
-            Hủy
+            {t('messages.cancel')}
           </Button>
           <Button
             type='submit'
             form={`system-user-password-${user.id}`}
             disabled={save.isPending}
           >
-            {save.isPending ? 'Đang lưu...' : 'Cập nhật mật khẩu'}
+            {save.isPending
+              ? t('messages.saving')
+              : t('messages.updatePassword')}
           </Button>
         </DialogFooter>
       </DialogFormContent>

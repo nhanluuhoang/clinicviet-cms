@@ -6,6 +6,8 @@ import {
   getCoreRowModel,
   useReactTable,
 } from '@tanstack/react-table'
+import i18n from '@/i18n'
+import { useTranslation } from 'react-i18next'
 import { useTableUrlState } from '@/hooks/use-table-url-state'
 import {
   Table,
@@ -36,6 +38,8 @@ export function MasterDataTable({
   total,
   isLoading,
 }: MasterDataTableProps) {
+  const { t } = useTranslation()
+
   const [rowSelection, setRowSelection] = useState({})
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({})
 
@@ -93,12 +97,12 @@ export function MasterDataTable({
       <DataTableToolbar
         table={table}
         showSearch={true}
-        searchPlaceholder='Tìm theo khóa...'
+        searchPlaceholder={t('messages.searchByKey')}
       />
       <MobileDataCards
         table={table}
         isLoading={isLoading}
-        emptyMessage='Không có kết quả.'
+        emptyMessage={t('messages.noResults')}
       />
       <div className='hidden overflow-hidden rounded-md border text-nowrap sm:block'>
         <Table className='min-w-xl'>
@@ -127,14 +131,16 @@ export function MasterDataTable({
                   colSpan={columns.length}
                   className='h-24 text-center'
                 >
-                  Đang tải...
+                  {t('messages.loading')}
                 </TableCell>
               </TableRow>
             ) : table.getRowModel().rows?.length ? (
               table.getRowModel().rows.map((row) => (
                 <TableRow
                   key={row.id}
-                  data-state={row.getIsSelected() && 'selected'}
+                  data-state={
+                    row.getIsSelected() && i18n.t('messages.selectedCount')
+                  }
                 >
                   {row.getVisibleCells().map((cell) => (
                     <TableCell key={cell.id}>
@@ -152,7 +158,7 @@ export function MasterDataTable({
                   colSpan={columns.length}
                   className='h-24 text-center'
                 >
-                  Không có kết quả.
+                  {t('messages.noResults')}
                 </TableCell>
               </TableRow>
             )}

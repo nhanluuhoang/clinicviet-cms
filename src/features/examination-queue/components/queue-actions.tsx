@@ -1,6 +1,8 @@
 import { useState } from 'react'
 import { hasAnyRole, PRESCRIBER_ROLES } from '@/config/access-control'
+import i18n, { getLocale } from '@/i18n'
 import { ClipboardList, Printer, UserRoundCheck } from 'lucide-react'
+import { useTranslation } from 'react-i18next'
 import { useAuthStore } from '@/stores/auth-store'
 import { Button } from '@/components/ui/button'
 import {
@@ -26,6 +28,8 @@ export function QueueActions({
   onCheckIn: () => void
   align?: 'start' | 'end'
 }) {
+  const { t } = useTranslation()
+
   const [prescriptionOpen, setPrescriptionOpen] = useState(false)
   const role = useAuthStore((state) => state.auth.user?.role)
   const canPrescribe = hasAnyRole(role, PRESCRIBER_ROLES)
@@ -40,21 +44,21 @@ export function QueueActions({
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Button size='sm' variant='outline' data-tour='print-invoice'>
-                <Printer /> In hóa đơn
+                <Printer /> {t('messages.printInvoice')}
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align='end'>
               <DropdownMenuItem onClick={() => printInvoice(item, 'A4')}>
-                Khổ A4
+                {t('messages.a4Paper')}
               </DropdownMenuItem>
               <DropdownMenuItem onClick={() => printInvoice(item, 'A5')}>
-                Khổ A5
+                {t('messages.a5Paper')}
               </DropdownMenuItem>
               <DropdownMenuItem onClick={() => printInvoice(item, '80mm')}>
-                Máy in nhiệt 80 mm
+                {t('messages.80MmThermalPrinter')}
               </DropdownMenuItem>
               <DropdownMenuItem onClick={() => printInvoice(item, '58mm')}>
-                Máy in nhiệt 58 mm
+                {t('messages.58MmThermalPrinter')}
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
@@ -66,7 +70,7 @@ export function QueueActions({
             disabled={pending}
             onClick={onCheckIn}
           >
-            <UserRoundCheck /> Tiếp nhận
+            <UserRoundCheck /> {t('messages.admit')}
           </Button>
         )}
         {item.status === 'IN_EXAMINATION' && canPrescribe && (
@@ -77,7 +81,7 @@ export function QueueActions({
               data-tour='create-prescription'
               onClick={() => setPrescriptionOpen(true)}
             >
-              <ClipboardList /> Lập phiếu
+              <ClipboardList /> {t('messages.createRecord')}
             </Button>
           </>
         )}
@@ -177,15 +181,29 @@ function printInvoice(item: QueueEntry, paperSize: InvoicePaperSize) {
         })[character]!
     )
   const money = (value: number | string) =>
-    `${Number(value).toLocaleString('vi-VN')} VNĐ`
+    i18n.t('messages.vndAlt2', {
+      value0: Number(value).toLocaleString(getLocale()),
+    })
   const issuedAt = new Date(invoice.issuedAt)
   const invoiceCode = invoice.invoiceCode
   const paper = invoicePaperConfig[paperSize]
   const extraFees = [
-    [invoice.serviceFeeLabel?.trim() || 'Phí dịch vụ', invoice.serviceFee],
-    [invoice.otherFee1Label?.trim() || 'Phí khác 1', invoice.otherFee1],
-    [invoice.otherFee2Label?.trim() || 'Phí khác 2', invoice.otherFee2],
-    [invoice.otherFee3Label?.trim() || 'Phí khác 3', invoice.otherFee3],
+    [
+      invoice.serviceFeeLabel?.trim() || i18n.t('messages.serviceFee'),
+      invoice.serviceFee,
+    ],
+    [
+      invoice.otherFee1Label?.trim() || i18n.t('messages.additionalFee1'),
+      invoice.otherFee1,
+    ],
+    [
+      invoice.otherFee2Label?.trim() || i18n.t('messages.additionalFee2'),
+      invoice.otherFee2,
+    ],
+    [
+      invoice.otherFee3Label?.trim() || i18n.t('messages.additionalFee3'),
+      invoice.otherFee3,
+    ],
   ].filter(([, value]) => Number(value) > 0)
   const medicineRows = prescription.items
     .map((line, index) => {
@@ -199,7 +217,7 @@ function printInvoice(item: QueueEntry, paperSize: InvoicePaperSize) {
             ${line.instruction ? `<div class="muted">${escapeHtml(line.instruction)}</div>` : ''}
           </td>
           <td class="center optional-column">${escapeHtml(line.medicine?.unit || '-')}</td>
-          <td class="number">${quantity.toLocaleString('vi-VN')}</td>
+          <td class="number">${quantity.toLocaleString(getLocale())}</td>
           <td class="number optional-column">${money(unitPrice)}</td>
           <td class="number">${money(unitPrice * quantity)}</td>
         </tr>
@@ -226,11 +244,11 @@ function printInvoice(item: QueueEntry, paperSize: InvoicePaperSize) {
   popup.opener = null
   popup.document.write(`
     <!doctype html>
-    <html lang="vi">
+    <html lang="${getLocale().startsWith('en') ? 'en' : 'vi'}">
       <head>
         <meta charset="utf-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
-        <title>Hóa đơn ${escapeHtml(invoiceCode)}</title>
+        <title>${escapeHtml(i18n.t('print.invoice'))} ${escapeHtml(invoiceCode)}</title>
         <style>
           * { box-sizing: border-box; }
           body {
@@ -339,46 +357,46 @@ function printInvoice(item: QueueEntry, paperSize: InvoicePaperSize) {
         <main class="page">
           <header class="header">
             <div>
-              <div class="clinic">PHÒNG KHÁM</div>
-              <div class="muted">Phiếu thu dịch vụ khám bệnh</div>
+              <div class="clinic">${escapeHtml(i18n.t('print.clinic'))}</div>
+              <div class="muted">${escapeHtml(i18n.t('print.receipt'))}</div>
             </div>
             <div class="invoice-meta">
-              <h1>HÓA ĐƠN</h1>
-              <div>Mã: <strong>${escapeHtml(invoiceCode)}</strong></div>
-              <div class="muted">${issuedAt.toLocaleString('vi-VN')}</div>
+              <h1>${escapeHtml(i18n.t('print.invoice'))}</h1>
+              <div>${escapeHtml(i18n.t('print.code'))} <strong>${escapeHtml(invoiceCode)}</strong></div>
+              <div class="muted">${issuedAt.toLocaleString(getLocale())}</div>
             </div>
           </header>
 
           <section class="patient">
-            <p class="full">Bệnh nhân: <strong>${escapeHtml(item.patient.fullName)}</strong></p>
-            <p>Số điện thoại: ${escapeHtml(item.patient.phone || '-')}</p>
-            <p>Địa chỉ: ${escapeHtml(item.patient.address || '-')}</p>
-            <p class="full">Bác sĩ: ${escapeHtml(item.medicalHistory?.doctorName || '-')}</p>
+            <p class="full">${escapeHtml(i18n.t('print.patient'))} <strong>${escapeHtml(item.patient.fullName)}</strong></p>
+            <p>${escapeHtml(i18n.t('print.phone'))} ${escapeHtml(item.patient.phone || '-')}</p>
+            <p>${escapeHtml(i18n.t('print.address'))} ${escapeHtml(item.patient.address || '-')}</p>
+            <p class="full">${escapeHtml(i18n.t('print.doctor'))} ${escapeHtml(item.medicalHistory?.doctorName || '-')}</p>
           </section>
 
           <table>
             <thead>
               <tr>
-                <th class="center">STT</th>
-                <th>Thuốc</th>
-                <th class="center optional-column">Đơn vị</th>
-                <th class="number">SL</th>
-                <th class="number optional-column">Đơn giá</th>
-                <th class="number">Thành tiền</th>
+                <th class="center">${escapeHtml(i18n.t('print.number'))}</th>
+                <th>${escapeHtml(i18n.t('print.medicine'))}</th>
+                <th class="center optional-column">${escapeHtml(i18n.t('print.unit'))}</th>
+                <th class="number">${escapeHtml(i18n.t('print.quantity'))}</th>
+                <th class="number optional-column">${escapeHtml(i18n.t('print.unitPrice'))}</th>
+                <th class="number">${escapeHtml(i18n.t('print.amount'))}</th>
               </tr>
             </thead>
             <tbody>
-              ${medicineRows || `<tr><td colspan="${paper.thermal ? 4 : 6}" class="center muted">Không có thuốc</td></tr>`}
+              ${medicineRows || `<tr><td colspan="${paper.thermal ? 4 : 6}" class="center muted">${escapeHtml(i18n.t('print.noMedicines'))}</td></tr>`}
             </tbody>
           </table>
 
           <table class="summary">
             <tbody>
-              <tr><td>Phí khám</td><td class="number">${money(invoice.consultationFee)}</td></tr>
-              <tr><td>Tiền thuốc</td><td class="number">${money(invoice.medicineRevenue)}</td></tr>
+              <tr><td>${escapeHtml(i18n.t('print.consultationFee'))}</td><td class="number">${money(invoice.consultationFee)}</td></tr>
+              <tr><td>${escapeHtml(i18n.t('print.medicineRevenue'))}</td><td class="number">${money(invoice.medicineRevenue)}</td></tr>
               ${feeRows}
               <tr class="total">
-                <td>Tổng thanh toán</td>
+                <td>${escapeHtml(i18n.t('print.total'))}</td>
                 <td class="number">${money(invoice.totalAmount)}</td>
               </tr>
             </tbody>
@@ -386,18 +404,18 @@ function printInvoice(item: QueueEntry, paperSize: InvoicePaperSize) {
 
           <section class="signatures">
             <div>
-              <strong>Người nộp tiền</strong>
-              <div class="muted">(Ký và ghi rõ họ tên)</div>
+              <strong>${escapeHtml(i18n.t('print.payer'))}</strong>
+              <div class="muted">${escapeHtml(i18n.t('print.signature'))}</div>
               <div class="signature-space"></div>
             </div>
             <div>
-              <strong>Người thu tiền</strong>
-              <div class="muted">(Ký và ghi rõ họ tên)</div>
+              <strong>${escapeHtml(i18n.t('print.collector'))}</strong>
+              <div class="muted">${escapeHtml(i18n.t('print.signature'))}</div>
               <div class="signature-space"></div>
             </div>
           </section>
         </main>
-        <div class="actions"><button onclick="window.print()">In hóa đơn</button></div>
+        <div class="actions"><button onclick="window.print()">${escapeHtml(i18n.t('print.print'))}</button></div>
       </body>
     </html>
   `)

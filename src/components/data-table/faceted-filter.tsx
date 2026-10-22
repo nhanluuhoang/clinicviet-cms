@@ -2,6 +2,7 @@ import * as React from 'react'
 import { CheckIcon } from '@radix-ui/react-icons'
 import { type Column } from '@tanstack/react-table'
 import { CircleDot, ListChecks } from 'lucide-react'
+import { useTranslation } from 'react-i18next'
 import { cn } from '@/lib/utils'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
@@ -38,6 +39,8 @@ export function DataTableFacetedFilter<TData, TValue>({
   options,
   variant = 'checkbox',
 }: DataTableFacetedFilterProps<TData, TValue>) {
+  const { t } = useTranslation()
+
   const [open, setOpen] = React.useState(false)
   const facets = column?.getFacetedUniqueValues()
   const filterValue = column?.getFilterValue()
@@ -52,7 +55,13 @@ export function DataTableFacetedFilter<TData, TValue>({
           variant='outline'
           size='sm'
           className='h-8 border-dashed'
-          aria-label={`${title} (${variant === 'radio' ? 'chọn một' : 'chọn nhiều'})`}
+          aria-label={t('messages.filterSelectionTitle', {
+            value0: title,
+            value1:
+              variant === 'radio'
+                ? t('messages.selectOne')
+                : t('messages.selectMultiple'),
+          })}
         >
           {variant === 'radio' ? (
             <CircleDot className='size-4' />
@@ -75,7 +84,7 @@ export function DataTableFacetedFilter<TData, TValue>({
                     variant='secondary'
                     className='rounded-sm px-1 font-normal'
                   >
-                    Đã chọn {selectedValues.size}
+                    {t('messages.selected')} {selectedValues.size}
                   </Badge>
                 ) : (
                   options
@@ -99,7 +108,7 @@ export function DataTableFacetedFilter<TData, TValue>({
         <Command>
           <CommandInput placeholder={title} />
           <CommandList>
-            <CommandEmpty>Không tìm thấy kết quả.</CommandEmpty>
+            <CommandEmpty>{t('messages.noResultsFound')}</CommandEmpty>
             <CommandGroup>
               {options.map((option) => {
                 const isSelected = selectedValues.has(option.value)
@@ -162,7 +171,7 @@ export function DataTableFacetedFilter<TData, TValue>({
                     }}
                     className='justify-center text-center'
                   >
-                    Xóa bộ lọc
+                    {t('messages.clearFilters')}
                   </CommandItem>
                 </CommandGroup>
               </>

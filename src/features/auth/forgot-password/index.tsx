@@ -1,3 +1,4 @@
+import { useTranslation } from 'react-i18next'
 import {
   Card,
   CardContent,
@@ -9,16 +10,18 @@ import { AuthLayout } from '../auth-layout'
 import { ForgotPasswordForm } from './components/forgot-password-form'
 
 export function ForgotPassword() {
+  const { t } = useTranslation()
+
   return (
     <AuthLayout>
       <Card className='gap-4'>
         <CardHeader>
           <CardTitle className='text-lg tracking-tight'>
-            Quên mật khẩu
+            {t('messages.forgotPassword')}
           </CardTitle>
           <CardDescription>
-            Nhập email đã đăng ký, chúng tôi sẽ gửi cho bạn <br /> liên kết đặt
-            lại mật khẩu.
+            {t('messages.enterYourRegisteredEmailAddressAndWeWillSendYo')}{' '}
+            <br /> {t('messages.passwordResetLink')}
           </CardDescription>
         </CardHeader>
         <CardContent>

@@ -1,4 +1,6 @@
+import { getLocale } from '@/i18n'
 import { ImagePlus } from 'lucide-react'
+import { useTranslation } from 'react-i18next'
 import { IMAGE_UPLOAD_ACCEPT } from '@/lib/image-upload'
 import { VIDEO_UPLOAD_ACCEPT } from '@/lib/video-upload'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
@@ -58,44 +60,50 @@ export function PatientInformationSection({
   | 'addMedia'
   | 'removeMedia'
 >) {
+  const { t } = useTranslation()
+
   return (
     <Card className='relative min-w-0'>
       <CardHeader className='px-4 sm:px-6'>
         <CardTitle>
           {isPharmacy
-            ? 'Thông tin bán thuốc'
+            ? t('messages.pharmacySaleInformation')
             : isVaccination
-              ? 'Thông tin người được tiêm'
-              : 'Thông tin lượt khám'}
+              ? t('messages.vaccinationRecipientInformation')
+              : t('messages.examinationInformation')}
         </CardTitle>
       </CardHeader>
       <CardContent className='grid min-w-0 grid-cols-[minmax(0,1fr)] gap-5 px-4 sm:px-6 md:grid-cols-2'>
         <Field
           label={
             isPharmacy
-              ? 'Khách hàng *'
+              ? t('messages.customer')
               : isVaccination
-                ? 'Người được tiêm *'
-                : 'Bệnh nhân *'
+                ? t('messages.vaccinationRecipient')
+                : t('messages.patientAlt2')
           }
         >
           <Input
             value={`${patient.fullName}${
               patient.dateOfBirth
-                ? ` · ${new Date(patient.dateOfBirth).toLocaleDateString('vi-VN')}`
+                ? ` · ${new Date(patient.dateOfBirth).toLocaleDateString(getLocale())}`
                 : ''
             }`}
             disabled
           />
         </Field>
         <Field
-          label={isExamination ? 'Bác sĩ khám *' : 'Người lập phiếu *'}
+          label={
+            isExamination
+              ? t('messages.examiningDoctor')
+              : t('messages.createdByAlt2')
+          }
           htmlFor={formId + '-doctorName'}
         >
           <Input
             id={formId + '-doctorName'}
             value={doctorName}
-            placeholder='Họ và tên bác sĩ'
+            placeholder={t('messages.doctorSFullName')}
             maxLength={255}
             disabled
             required
@@ -105,7 +113,7 @@ export function PatientInformationSection({
           <>
             <Field
               className='md:col-span-2'
-              label='Triệu chứng'
+              label={t('messages.symptomsAlt2')}
               htmlFor={formId + '-symptoms'}
             >
               <Textarea
@@ -116,18 +124,21 @@ export function PatientInformationSection({
             </Field>
             <Field
               className='md:col-span-2'
-              label='Chẩn đoán *'
+              label={t('messages.diagnosisAlt3')}
               htmlFor={formId + '-diagnosis'}
             >
               <Textarea
                 id={formId + '-diagnosis'}
                 value={diagnosis}
                 onChange={(e) => setDiagnosis(e.target.value)}
-                placeholder='Nhập kết luận chẩn đoán của bác sĩ'
+                placeholder={t('messages.enterTheDoctorSDiagnosis')}
                 required
               />
             </Field>
-            <Field label='Hướng điều trị' htmlFor={formId + '-treatment'}>
+            <Field
+              label={t('messages.treatmentPlan')}
+              htmlFor={formId + '-treatment'}
+            >
               <Textarea
                 id={formId + '-treatment'}
                 value={treatment}
@@ -138,7 +149,7 @@ export function PatientInformationSection({
         )}
         <Field
           className='md:col-span-2'
-          label='Ghi chú hồ sơ'
+          label={t('messages.recordNotes')}
           htmlFor={formId + '-note'}
         >
           <Textarea
@@ -149,26 +160,30 @@ export function PatientInformationSection({
         </Field>
         <Field
           className='md:col-span-2'
-          label={isExamination ? 'Lời dặn của bác sĩ' : 'Hướng dẫn và lịch hẹn'}
+          label={
+            isExamination
+              ? t('messages.doctorSAdvice')
+              : t('messages.instructionsAndFollowUp')
+          }
           htmlFor={formId + '-advice'}
         >
           <Textarea
             id={formId + '-advice'}
             value={advice}
             onChange={(e) => setAdvice(e.target.value)}
-            placeholder='Chế độ ăn uống, sinh hoạt và lịch tái khám...'
+            placeholder={t('messages.dietLifestyleAndFollowUpAppointment')}
           />
         </Field>
         {canUseDiagnosisMedia ? (
           <div className='grid gap-3 md:col-span-2'>
             <div>
               <Label htmlFor={formId + '-diagnosis-media'}>
-                {isPharmacy ? 'Đơn thuốc đính kèm' : 'Tệp hồ sơ'}
+                {isPharmacy
+                  ? t('messages.attachedPrescription')
+                  : t('messages.recordFiles')}
               </Label>
               <p className='mt-1 text-xs text-muted-foreground'>
-                Tối đa 5 ảnh, 5 PDF và 1 video. Ảnh không quá 5 MB; PDF không
-                quá 3 MB; video MP4, MOV, M4V, WebM, 3GP hoặc 3G2 không quá 100
-                MB và 10 phút.
+                {t('messages.upTo5Images5PdfsAnd1VideoImagesUpTo5MbPdf')}
               </p>
             </div>
             <label
@@ -177,12 +192,15 @@ export function PatientInformationSection({
             >
               <ImagePlus className='size-7 text-muted-foreground' />
               <span className='text-sm font-medium'>
-                Chọn ảnh, PDF hoặc video
+                {t('messages.chooseImagesPdfsOrAVideo')}
               </span>
               <span className='text-xs text-muted-foreground'>
                 {isUploadingMedia
-                  ? 'Đang tải tệp...'
-                  : `Đã tải ${media.length}/${MAX_MEDIA_FILES} tệp`}
+                  ? t('messages.uploadingFilesAlt2')
+                  : t('messages.filesUploaded', {
+                      value0: media.length,
+                      value1: MAX_MEDIA_FILES,
+                    })}
               </span>
             </label>
             <Input
@@ -213,7 +231,7 @@ export function PatientInformationSection({
           </div>
         ) : (
           <div className='rounded-lg border border-dashed p-4 text-sm text-muted-foreground md:col-span-2'>
-            Đính kèm hình ảnh, PDF và video thuộc gói Plus hoặc Pro.
+            {t('messages.imagePdfAndVideoAttachmentsRequireTheProfessiona')}
           </div>
         )}
       </CardContent>

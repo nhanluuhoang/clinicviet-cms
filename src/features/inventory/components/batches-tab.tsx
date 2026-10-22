@@ -1,7 +1,9 @@
 import { DotsHorizontalIcon } from '@radix-ui/react-icons'
 import { useQuery } from '@tanstack/react-query'
 import { type ColumnDef } from '@tanstack/react-table'
+import i18n from '@/i18n'
 import { Edit, Trash2 } from 'lucide-react'
+import { useTranslation } from 'react-i18next'
 import {
   formatDate,
   formatMoney,
@@ -26,6 +28,8 @@ import { ExpiryBadge } from './expiry-badge'
 import { useInventory } from './inventory-provider'
 
 function BatchActions({ batch }: { batch: StockBatch }) {
+  const { t } = useTranslation()
+
   const { setOpen, setCurrentBatch } = useInventory()
 
   return (
@@ -36,7 +40,7 @@ function BatchActions({ batch }: { batch: StockBatch }) {
           className='flex h-8 w-8 p-0 data-[state=open]:bg-muted'
         >
           <DotsHorizontalIcon className='h-4 w-4' />
-          <span className='sr-only'>Mở menu</span>
+          <span className='sr-only'>{t('messages.openMenu')}</span>
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align='end' className='w-[160px]'>
@@ -46,7 +50,7 @@ function BatchActions({ batch }: { batch: StockBatch }) {
             setOpen('batch-update')
           }}
         >
-          Cập nhật
+          {t('messages.update')}
           <DropdownMenuShortcut>
             <Edit size={16} />
           </DropdownMenuShortcut>
@@ -59,7 +63,7 @@ function BatchActions({ batch }: { batch: StockBatch }) {
             setOpen('batch-dispose')
           }}
         >
-          Hủy lô
+          {t('messages.discardBatch')}
           <DropdownMenuShortcut>
             <Trash2 size={16} />
           </DropdownMenuShortcut>
@@ -73,7 +77,10 @@ const columns: ColumnDef<StockBatch>[] = [
   {
     accessorKey: 'batchNo',
     header: ({ column }) => (
-      <DataTableColumnHeader column={column} title='Số lô' />
+      <DataTableColumnHeader
+        column={column}
+        title={i18n.t('messages.batchNumber')}
+      />
     ),
     cell: ({ row }) => (
       <span className='font-mono text-xs font-medium'>
@@ -84,7 +91,10 @@ const columns: ColumnDef<StockBatch>[] = [
   {
     accessorKey: 'medicineName',
     header: ({ column }) => (
-      <DataTableColumnHeader column={column} title='Thuốc' />
+      <DataTableColumnHeader
+        column={column}
+        title={i18n.t('messages.medicine')}
+      />
     ),
     cell: ({ row }) => (
       <div className='min-w-44'>
@@ -98,7 +108,10 @@ const columns: ColumnDef<StockBatch>[] = [
   {
     accessorKey: 'expiryDate',
     header: ({ column }) => (
-      <DataTableColumnHeader column={column} title='Hạn sử dụng' />
+      <DataTableColumnHeader
+        column={column}
+        title={i18n.t('messages.expiryDate')}
+      />
     ),
     cell: ({ row }) => <ExpiryBadge date={row.original.expiryDate} />,
     // Lọc theo mức cảnh báo suy ra từ chính ngày HSD, khỏi cần cột phụ.
@@ -108,7 +121,10 @@ const columns: ColumnDef<StockBatch>[] = [
   {
     accessorKey: 'qtyRemaining',
     header: ({ column }) => (
-      <DataTableColumnHeader column={column} title='Tồn' />
+      <DataTableColumnHeader
+        column={column}
+        title={i18n.t('messages.inStock')}
+      />
     ),
     cell: ({ row }) => (
       <span className='font-medium tabular-nums'>
@@ -120,7 +136,10 @@ const columns: ColumnDef<StockBatch>[] = [
   {
     accessorKey: 'qtyReceived',
     header: ({ column }) => (
-      <DataTableColumnHeader column={column} title='Đã nhập' />
+      <DataTableColumnHeader
+        column={column}
+        title={i18n.t('messages.received')}
+      />
     ),
     cell: ({ row }) => (
       <span className='text-muted-foreground tabular-nums'>
@@ -132,7 +151,10 @@ const columns: ColumnDef<StockBatch>[] = [
   {
     accessorKey: 'unitCost',
     header: ({ column }) => (
-      <DataTableColumnHeader column={column} title='Giá nhập' />
+      <DataTableColumnHeader
+        column={column}
+        title={i18n.t('messages.purchasePrice')}
+      />
     ),
     cell: ({ row }) => (
       <span className='tabular-nums'>{formatMoney(row.original.unitCost)}</span>
@@ -142,7 +164,10 @@ const columns: ColumnDef<StockBatch>[] = [
   {
     accessorKey: 'receiptCode',
     header: ({ column }) => (
-      <DataTableColumnHeader column={column} title='Phiếu nhập' />
+      <DataTableColumnHeader
+        column={column}
+        title={i18n.t('messages.goodsReceipt')}
+      />
     ),
     cell: ({ row }) => (
       <div>
@@ -156,7 +181,10 @@ const columns: ColumnDef<StockBatch>[] = [
   {
     accessorKey: 'supplierName',
     header: ({ column }) => (
-      <DataTableColumnHeader column={column} title='Nhà cung cấp' />
+      <DataTableColumnHeader
+        column={column}
+        title={i18n.t('messages.supplier')}
+      />
     ),
     cell: ({ row }) => (
       <span className='text-muted-foreground'>{row.original.supplierName}</span>
@@ -169,6 +197,8 @@ const columns: ColumnDef<StockBatch>[] = [
 ]
 
 export function BatchesTab() {
+  const { t } = useTranslation()
+
   const search = useApiSearch()
   const { data, isLoading } = useQuery({
     queryKey: ['inventory', 'batches', search],
@@ -183,8 +213,8 @@ export function BatchesTab() {
       columns={columns}
       data={batches}
       isLoading={isLoading}
-      searchPlaceholder='Tìm theo số lô, thuốc, nhà cung cấp...'
-      emptyMessage='Chưa có lô hàng nào.'
+      searchPlaceholder={t('messages.searchBatchNumberMedicineOrSupplier')}
+      emptyMessage={t('messages.noBatchesYet')}
       getSearchText={(b) =>
         `${b.batchNo} ${b.medicineName} ${b.medicineCode} ${b.supplierName} ${b.receiptCode}`
       }
@@ -203,7 +233,7 @@ export function BatchesTab() {
           // DataTableToolbar gặp `!column` và filter này âm thầm không hiện.
           columnId: 'expiryDate',
           searchKey: 'expiryStatus',
-          title: 'Hạn sử dụng',
+          title: t('messages.expiryDate'),
           options: expiryStatuses.map((s) => ({
             label: s.label,
             value: s.value,

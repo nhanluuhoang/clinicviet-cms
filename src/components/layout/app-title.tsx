@@ -54,6 +54,8 @@ function ToggleSidebar({
   onClick,
   ...props
 }: React.ComponentProps<typeof Button>) {
+  const { t } = useTranslation()
+
   const { toggleSidebar, state } = useSidebar()
 
   return (
@@ -75,7 +77,7 @@ function ToggleSidebar({
     >
       <X className='md:hidden' />
       <Menu className={cn('max-md:hidden', state === 'expanded' && 'hidden')} />
-      <span className='sr-only'>Thu gọn hoặc mở thanh bên</span>
+      <span className='sr-only'>{t('messages.toggleSidebar')}</span>
     </Button>
   )
 }

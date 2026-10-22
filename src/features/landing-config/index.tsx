@@ -1,3 +1,4 @@
+import { useTranslation } from 'react-i18next'
 import { Header } from '@/components/layout/header'
 import { Main } from '@/components/layout/main'
 import { ProfileDropdown } from '@/components/profile-dropdown'
@@ -6,12 +7,16 @@ import { LandingConfigForm } from './components/landing-config-form'
 import { useLandingConfigForm } from './hooks/use-landing-config-form'
 
 export function LandingConfigPage() {
+  const { t } = useTranslation()
+
   const state = useLandingConfigForm()
   const { isLoading } = state
   if (isLoading) {
     return (
       <Main className='mx-auto w-full max-w-4xl'>
-        <p className='text-sm text-muted-foreground'>Đang tải cấu hình...</p>
+        <p className='text-sm text-muted-foreground'>
+          {t('messages.loadingConfiguration')}
+        </p>
       </Main>
     )
   }
@@ -27,10 +32,10 @@ export function LandingConfigPage() {
       <Main className='mx-auto w-full max-w-4xl space-y-6'>
         <div>
           <h2 className='text-2xl font-bold tracking-tight'>
-            Trang giới thiệu phòng khám
+            {t('messages.clinicWebsiteAlt2')}
           </h2>
           <p className='text-muted-foreground'>
-            Tùy chỉnh nội dung và giao diện hiển thị cho tenant hiện tại.
+            {t('messages.customizeContentAndAppearanceForTheCurrentClinic')}
           </p>
         </div>
 
