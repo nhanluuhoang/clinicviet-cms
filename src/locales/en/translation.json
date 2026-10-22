@@ -85,8 +85,6 @@
       "subdomain": "Subdomain",
       "subscriptionStatus": "Subscription status",
       "tenantId": "Clinic",
-      "trialEndsAt": "Trial ends",
-      "trialStartedAt": "Trial starts",
       "type": "Type",
       "updatedAt": "Updated at",
       "userName": "Username",

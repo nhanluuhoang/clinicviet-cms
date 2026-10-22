@@ -27,9 +27,7 @@ export interface ProfileData {
   role?: string
   tenant?: {
     servicePlan: 'BASIC' | 'PLUS' | 'PRO'
-    subscriptionStatus: 'TRIAL' | 'ACTIVE' | 'EXPIRED' | 'SUSPENDED'
-    trialStartedAt?: string | null
-    trialEndsAt?: string | null
+    subscriptionStatus: 'ACTIVE' | 'EXPIRED' | 'SUSPENDED'
     subscriptionEndsAt?: string | null
   } | null
 }

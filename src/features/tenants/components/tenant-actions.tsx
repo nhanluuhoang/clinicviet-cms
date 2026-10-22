@@ -48,8 +48,7 @@ export function TenantActions({ tenant }: { tenant: Tenant }) {
   const [subscriptionStatus, setSubscriptionStatus] = useState(
     tenant.subscriptionStatus
   )
-  const isTrial = subscriptionStatus === 'TRIAL'
-  const expiryDate = isTrial ? tenant.trialEndsAt : tenant.subscriptionEndsAt
+  const expiryDate = tenant.subscriptionEndsAt
   const [endsOn, setEndsOn] = useState(
     expiryDate ? toDateInput(expiryDate) : ''
   )
@@ -75,11 +74,7 @@ export function TenantActions({ tenant }: { tenant: Tenant }) {
             : values.servicePlan === 'PLUS' && tenant.servicePlan !== 'PLUS'
               ? null
               : undefined,
-        ...(isTrial
-          ? { trialEndsAt: new Date(`${endsOn}T23:59:59`).toISOString() }
-          : {
-              subscriptionEndsAt: new Date(`${endsOn}T23:59:59`).toISOString(),
-            }),
+        subscriptionEndsAt: new Date(`${endsOn}T23:59:59`).toISOString(),
       }),
     onSuccess: async () => {
       await refresh()
@@ -116,10 +111,7 @@ export function TenantActions({ tenant }: { tenant: Tenant }) {
           <DropdownMenuItem
             onClick={() => {
               setSubscriptionStatus(tenant.subscriptionStatus)
-              const storedExpiry =
-                tenant.subscriptionStatus === 'TRIAL'
-                  ? tenant.trialEndsAt
-                  : tenant.subscriptionEndsAt
+              const storedExpiry = tenant.subscriptionEndsAt
               setEndsOn(storedExpiry ? toDateInput(storedExpiry) : '')
               setValues({
                 code: tenant.code,
@@ -228,7 +220,7 @@ export function TenantActions({ tenant }: { tenant: Tenant }) {
                 />
               </div>
               <div className='space-y-2 sm:col-span-2'>
-                <Label required>Hình thức đăng ký</Label>
+                <Label required>Trạng thái sử dụng</Label>
                 <SelectDropdown
                   standalone
                   isControlled
@@ -236,10 +228,7 @@ export function TenantActions({ tenant }: { tenant: Tenant }) {
                   onValueChange={(value) => {
                     const status = value as Tenant['subscriptionStatus']
                     setSubscriptionStatus(status)
-                    const date =
-                      status === 'TRIAL'
-                        ? tenant.trialEndsAt
-                        : tenant.subscriptionEndsAt
+                    const date = tenant.subscriptionEndsAt
                     setEndsOn(date ? toDateInput(date) : '')
                   }}
                   items={SUBSCRIPTION_STATUS_OPTIONS}
@@ -247,7 +236,7 @@ export function TenantActions({ tenant }: { tenant: Tenant }) {
               </div>
               <div className='space-y-2 sm:col-span-2'>
                 <Label required htmlFor={`tenant-expiry-${tenant.id}`}>
-                  {isTrial ? 'Ngày kết thúc dùng thử' : 'Ngày hết hạn gói'}
+                  Ngày hết hạn sử dụng
                 </Label>
                 <DatePickerInput
                   id={`tenant-expiry-${tenant.id}`}

@@ -26,30 +26,20 @@ export const columns: ColumnDef<Tenant>[] = [
   },
   {
     accessorKey: 'subscriptionStatus',
-    header: 'Trạng thái đăng ký',
+    header: 'Trạng thái sử dụng',
     cell: ({ row }) =>
       SUBSCRIPTION_STATUS_LABELS[row.original.subscriptionStatus],
     filterFn: (row, id, value: string[]) => value.includes(row.getValue(id)),
   },
   {
-    accessorKey: 'trialStartedAt',
-    header: 'Bắt đầu dùng thử',
+    accessorKey: 'subscriptionEndsAt',
+    header: 'Hạn sử dụng',
     cell: ({ row }) =>
-      row.original.trialStartedAt
+      row.original.subscriptionEndsAt
         ? new Intl.DateTimeFormat('vi-VN', { dateStyle: 'short' }).format(
-            new Date(row.original.trialStartedAt)
+            new Date(row.original.subscriptionEndsAt)
           )
-        : '—',
-  },
-  {
-    accessorKey: 'trialEndsAt',
-    header: 'Hạn dùng thử',
-    cell: ({ row }) =>
-      row.original.trialEndsAt
-        ? new Intl.DateTimeFormat('vi-VN', { dateStyle: 'short' }).format(
-            new Date(row.original.trialEndsAt)
-          )
-        : '—',
+        : '-',
   },
   {
     id: 'users',

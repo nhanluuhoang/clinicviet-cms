@@ -28,7 +28,7 @@ export function Tenants() {
           <div>
             <h2 className='text-2xl font-bold tracking-tight'>Phòng khám</h2>
             <p className='text-muted-foreground'>
-              Quản lý phòng khám, gói dùng thử và tài khoản.
+              Quản lý phòng khám, gói dịch vụ và tài khoản.
             </p>
           </div>
           <CreateTenantDialog />
@@ -45,9 +45,8 @@ export function Tenants() {
             note: 'Ghi chú',
             servicePlan: 'Gói',
             storageLimitGb: 'Dung lượng',
-            subscriptionStatus: 'Trạng thái đăng ký',
-            trialStartedAt: 'Bắt đầu dùng thử',
-            trialEndsAt: 'Hạn dùng thử',
+            subscriptionEndsAt: 'Hạn sử dụng',
+            subscriptionStatus: 'Trạng thái sử dụng',
             users: 'Tài khoản',
             lastActiveAt: 'Hoạt động gần nhất',
             actions: 'Thao tác',
@@ -64,7 +63,7 @@ export function Tenants() {
             },
             {
               columnId: 'subscriptionStatus',
-              title: 'Trạng thái đăng ký',
+              title: 'Trạng thái sử dụng',
               variant: 'radio',
               options: SUBSCRIPTION_STATUS_OPTIONS,
             },

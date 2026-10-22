@@ -4,7 +4,6 @@ import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { SERVICE_PLAN_OPTIONS } from '@/config/service-plans'
-import { NEW_SUBSCRIPTION_STATUS_OPTIONS } from '@/config/subscription-statuses'
 import { toast } from 'sonner'
 import { showRequestError } from '@/lib/handle-server-error'
 import { Button } from '@/components/ui/button'
@@ -36,7 +35,6 @@ const schema = z
     subdomain: z.string().trim(),
     address: z.string().trim().min(1, 'Vui lòng nhập địa chỉ.').max(255),
     servicePlan: z.enum(['BASIC', 'PLUS', 'PRO']),
-    subscriptionStatus: z.enum(['TRIAL', 'ACTIVE']),
     endsOn: z.string().min(1, 'Vui lòng chọn ngày kết thúc.'),
   })
   .refine(
@@ -61,7 +59,6 @@ const defaultValues: FormValues = {
   subdomain: '',
   address: '',
   servicePlan: 'BASIC',
-  subscriptionStatus: 'TRIAL',
   endsOn: '',
 }
 
@@ -73,22 +70,13 @@ export function CreateTenantDialog() {
     defaultValues,
   })
   const mutation = useMutation({
-    mutationFn: ({
-      endsOn,
-      subscriptionStatus,
-      subdomain,
-      ...values
-    }: FormValues) =>
+    mutationFn: ({ endsOn, subdomain, ...values }: FormValues) =>
       createTenant({
         ...values,
         ...(values.servicePlan === 'PRO' && { subdomain }),
         isActive: true,
-        subscriptionStatus,
-        ...(subscriptionStatus === 'TRIAL'
-          ? { trialEndsAt: new Date(`${endsOn}T23:59:59`).toISOString() }
-          : {
-              subscriptionEndsAt: new Date(`${endsOn}T23:59:59`).toISOString(),
-            }),
+        subscriptionStatus: 'ACTIVE',
+        subscriptionEndsAt: new Date(`${endsOn}T23:59:59`).toISOString(),
       }),
     onSuccess: async () => {
       await queryClient.invalidateQueries({ queryKey: ['tenants'] })
@@ -179,30 +167,10 @@ function Fields({ form }: { form: ReturnType<typeof useForm<FormValues>> }) {
       />
       <FormField
         control={form.control}
-        name='subscriptionStatus'
-        render={({ field }) => (
-          <FormItem>
-            <FormLabel required>Hình thức đăng ký</FormLabel>
-            <SelectDropdown
-              defaultValue={field.value}
-              isControlled
-              onValueChange={field.onChange}
-              items={NEW_SUBSCRIPTION_STATUS_OPTIONS}
-            />
-            <FormMessage />
-          </FormItem>
-        )}
-      />
-      <FormField
-        control={form.control}
         name='endsOn'
         render={({ field }) => (
           <FormItem>
-            <FormLabel required>
-              {form.watch('subscriptionStatus') === 'TRIAL'
-                ? 'Ngày kết thúc dùng thử'
-                : 'Ngày hết hạn gói'}
-            </FormLabel>
+            <FormLabel required>Ngày hết hạn sử dụng</FormLabel>
             <DatePickerInput value={field.value} onChange={field.onChange} />
             <FormMessage />
           </FormItem>

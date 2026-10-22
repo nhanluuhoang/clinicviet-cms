@@ -146,7 +146,7 @@ export function TenantForm() {
               <p className='text-sm text-muted-foreground'>Ngày hết hạn</p>
               <p className='font-medium'>
                 {formatDate(
-                  tenant.data?.subscriptionEndsAt ?? tenant.data?.trialEndsAt
+                  tenant.data?.subscriptionEndsAt
                 )}
               </p>
             </div>
