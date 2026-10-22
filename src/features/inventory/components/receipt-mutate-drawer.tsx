@@ -55,9 +55,7 @@ const lineSchema = z
     medicineId: z
       .string()
       .min(1, { error: () => i18n.t('messages.selectMedicine') }),
-    batchNo: z
-      .string()
-      .min(1, { error: () => i18n.t('messages.enterBatchNumber') }),
+    batchNo: z.string().trim(),
     mfgDate: z.string(),
     expiryDate: z
       .string()
@@ -78,9 +76,7 @@ const formSchema = z.object({
   supplierName: z
     .string()
     .min(1, { error: () => i18n.t('messages.enterSupplier') }),
-  invoiceNo: z
-    .string()
-    .min(1, { error: () => i18n.t('messages.enterInvoiceNumber') }),
+  invoiceNo: z.string().trim(),
   receivedAt: z
     .string()
     .min(1, { error: () => i18n.t('messages.selectReceiptDate') }),
@@ -317,13 +313,11 @@ export function ReceiptMutateDrawer({
                   name='invoiceNo'
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel required>
-                        {t('messages.invoiceNumber')}
-                      </FormLabel>
+                      <FormLabel>{t('messages.invoiceNumber')}</FormLabel>
                       <FormControl>
                         <Input
                           {...field}
-                          placeholder={i18n.t('messages.exampleInvoiceNumber')}
+                          placeholder={t('messages.leaveBlankToGenerate')}
                         />
                       </FormControl>
                       <FormMessage />
@@ -421,14 +415,14 @@ export function ReceiptMutateDrawer({
                           name={`lines.${index}.batchNo`}
                           render={({ field }) => (
                             <FormItem className='lg:col-span-6'>
-                              <FormLabel required className='text-xs'>
+                              <FormLabel className='text-xs'>
                                 {t('messages.batchNumber')}
                               </FormLabel>
                               <FormControl>
                                 <Input
                                   {...field}
-                                  placeholder={i18n.t(
-                                    'messages.exampleBatchNumber'
+                                  placeholder={t(
+                                    'messages.leaveBlankToGenerate'
                                   )}
                                   className='font-mono'
                                 />

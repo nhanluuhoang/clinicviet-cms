@@ -1202,6 +1202,7 @@
     "loadingText": "Đang tải...",
     "expiryAbbreviation": "· HSD",
     "exampleInvoiceNumber": "VD: HD12345",
+    "leaveBlankToGenerate": "Để trống để tự tạo",
     "exampleBatchNumber": "VD: L2408AB",
     "exampleMedicine": "VD: Paracetamol 500mg",
     "exampleIngredient": "VD: Paracetamol",
