@@ -1240,7 +1240,8 @@
     "payer": "Người nộp tiền",
     "collector": "Người thu tiền",
     "signature": "(Ký và ghi rõ họ tên)",
-    "print": "In hóa đơn"
+    "print": "In hóa đơn",
+    "showMedicines": "Hi?n th? thu?c"
   },
   "medicineUnits": {
     "tablet": "viên",

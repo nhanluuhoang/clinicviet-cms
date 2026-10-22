@@ -2,7 +2,6 @@ import { useEffect, useState } from 'react'
 import { cn } from '@/lib/utils'
 import { SidebarTrigger } from '@/components/ui/sidebar'
 import { FunctionSearch } from '@/components/function-search'
-import { LanguageSwitcher } from '@/components/language-switcher'
 
 type HeaderProps = React.HTMLAttributes<HTMLElement> & {
   fixed?: boolean
@@ -45,7 +44,6 @@ export function Header({ className, fixed, children, ...props }: HeaderProps) {
         <SidebarTrigger variant='outline' className='max-md:scale-125' />
         <FunctionSearch />
         {children}
-        <LanguageSwitcher />
       </div>
     </header>
   )
