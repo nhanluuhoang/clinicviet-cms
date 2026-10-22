@@ -1,3 +1,4 @@
+import i18n from '@/i18n'
 import { type QueueStatus } from '../api'
 
 export const activeQueueStatuses: QueueStatus[] = [
@@ -19,35 +20,51 @@ export const statusMeta: Record<
   { label: string; className: string }
 > = {
   BOOKED: {
-    label: 'Đã đặt lịch',
+    get label() {
+      return i18n.t('messages.scheduled')
+    },
     className: 'border-blue-200 bg-blue-50 text-blue-700',
   },
   WAITING: {
-    label: 'Đang chờ',
+    get label() {
+      return i18n.t('messages.waiting')
+    },
     className: 'border-amber-200 bg-amber-50 text-amber-700',
   },
   CALLED: {
-    label: 'Đã gọi',
+    get label() {
+      return i18n.t('messages.called')
+    },
     className: 'border-violet-200 bg-violet-50 text-violet-700',
   },
   IN_EXAMINATION: {
-    label: 'Đang khám',
+    get label() {
+      return i18n.t('messages.inExamination')
+    },
     className: 'border-cyan-200 bg-cyan-50 text-cyan-700',
   },
   COMPLETED: {
-    label: 'Hoàn tất',
+    get label() {
+      return i18n.t('messages.finish')
+    },
     className: 'border-emerald-200 bg-emerald-50 text-emerald-700',
   },
   CANCELLED: {
-    label: 'Đã hủy',
+    get label() {
+      return i18n.t('messages.cancelled')
+    },
     className: 'border-red-200 bg-red-50 text-red-700',
   },
   SKIPPED: {
-    label: 'Đã bỏ qua',
+    get label() {
+      return i18n.t('messages.skipped')
+    },
     className: 'border-slate-200 bg-slate-50 text-slate-700',
   },
   NO_SHOW: {
-    label: 'Không đến',
+    get label() {
+      return i18n.t('messages.noShow')
+    },
     className: 'border-red-200 bg-red-50 text-red-700',
   },
 }
@@ -56,23 +73,85 @@ export const transitions: Partial<
   Record<QueueStatus, Array<{ label: string; status: QueueStatus }>>
 > = {
   WAITING: [
-    { label: 'Gọi khám', status: 'IN_EXAMINATION' },
-    { label: 'Bỏ qua', status: 'SKIPPED' },
-    { label: 'Hủy', status: 'CANCELLED' },
+    {
+      get label() {
+        return i18n.t('messages.callPatient')
+      },
+      status: 'IN_EXAMINATION',
+    },
+    {
+      get label() {
+        return i18n.t('messages.skip')
+      },
+      status: 'SKIPPED',
+    },
+    {
+      get label() {
+        return i18n.t('messages.cancel')
+      },
+      status: 'CANCELLED',
+    },
   ],
   CALLED: [
-    { label: 'Tiếp tục khám', status: 'IN_EXAMINATION' },
-    { label: 'Bỏ qua', status: 'SKIPPED' },
-    { label: 'Trở lại chờ', status: 'WAITING' },
+    {
+      get label() {
+        return i18n.t('messages.resumeExamination')
+      },
+      status: 'IN_EXAMINATION',
+    },
+    {
+      get label() {
+        return i18n.t('messages.skip')
+      },
+      status: 'SKIPPED',
+    },
+    {
+      get label() {
+        return i18n.t('messages.returnToWaiting')
+      },
+      status: 'WAITING',
+    },
   ],
   IN_EXAMINATION: [
-    { label: 'Hoàn tất', status: 'COMPLETED' },
-    { label: 'Quay lại', status: 'WAITING' },
-    { label: 'Hủy', status: 'CANCELLED' },
+    {
+      get label() {
+        return i18n.t('messages.finish')
+      },
+      status: 'COMPLETED',
+    },
+    {
+      get label() {
+        return i18n.t('messages.back')
+      },
+      status: 'WAITING',
+    },
+    {
+      get label() {
+        return i18n.t('messages.cancel')
+      },
+      status: 'CANCELLED',
+    },
   ],
-  SKIPPED: [{ label: 'Trở lại chờ', status: 'WAITING' }],
+  SKIPPED: [
+    {
+      get label() {
+        return i18n.t('messages.returnToWaiting')
+      },
+      status: 'WAITING',
+    },
+  ],
   BOOKED: [
-    { label: 'Hủy', status: 'CANCELLED' },
-    { label: 'Không đến', status: 'NO_SHOW' },
+    {
+      get label() {
+        return i18n.t('messages.cancel')
+      },
+      status: 'CANCELLED',
+    },
+    {
+      get label() {
+        return i18n.t('messages.noShow')
+      },
+      status: 'NO_SHOW',
+    },
   ],
 }

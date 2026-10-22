@@ -1,4 +1,5 @@
 import { type ColumnDef } from '@tanstack/react-table'
+import i18n, { getLocale } from '@/i18n'
 import { ChevronRight } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { Button } from '@/components/ui/button'
@@ -20,7 +21,11 @@ export const medicalHistoryColumns: ColumnDef<MedicalHistoryListItem>[] =
           size='icon'
           className='size-8'
           onClick={row.getToggleExpandedHandler()}
-          aria-label={row.getIsExpanded() ? 'Thu gọn chi tiết' : 'Mở chi tiết'}
+          aria-label={
+            row.getIsExpanded()
+              ? i18n.t('messages.collapseDetails')
+              : i18n.t('messages.expandDetails')
+          }
         >
           <ChevronRight
             className={cn(
@@ -38,7 +43,10 @@ export const medicalHistoryColumns: ColumnDef<MedicalHistoryListItem>[] =
       id: 'patientName',
       accessorFn: (row) => row.user.fullName,
       header: ({ column }) => (
-        <DataTableColumnHeader column={column} title='Bệnh nhân' />
+        <DataTableColumnHeader
+          column={column}
+          title={i18n.t('messages.patient')}
+        />
       ),
       cell: ({ row }) => (
         <div>
@@ -46,7 +54,7 @@ export const medicalHistoryColumns: ColumnDef<MedicalHistoryListItem>[] =
             {row.original.user.fullName}
           </LongText>
           <p className='text-xs text-muted-foreground'>
-            {row.original.user.phone || 'Chưa có số điện thoại'}
+            {row.original.user.phone || i18n.t('messages.noPhoneNumberYet')}
           </p>
         </div>
       ),
@@ -55,11 +63,14 @@ export const medicalHistoryColumns: ColumnDef<MedicalHistoryListItem>[] =
     {
       accessorKey: 'createdAt',
       header: ({ column }) => (
-        <DataTableColumnHeader column={column} title='Thời gian khám' />
+        <DataTableColumnHeader
+          column={column}
+          title={i18n.t('messages.examinationTime')}
+        />
       ),
       cell: ({ row }) => (
         <span className='whitespace-nowrap tabular-nums'>
-          {new Date(row.original.createdAt).toLocaleString('vi-VN')}
+          {new Date(row.original.createdAt).toLocaleString(getLocale())}
         </span>
       ),
       enableSorting: false,
@@ -67,7 +78,10 @@ export const medicalHistoryColumns: ColumnDef<MedicalHistoryListItem>[] =
     {
       accessorKey: 'doctorName',
       header: ({ column }) => (
-        <DataTableColumnHeader column={column} title='Bác sĩ' />
+        <DataTableColumnHeader
+          column={column}
+          title={i18n.t('messages.doctor')}
+        />
       ),
       cell: ({ row }) => (
         <LongText className='max-w-48'>{row.original.doctorName}</LongText>
@@ -77,7 +91,10 @@ export const medicalHistoryColumns: ColumnDef<MedicalHistoryListItem>[] =
     {
       accessorKey: 'diagnosis',
       header: ({ column }) => (
-        <DataTableColumnHeader column={column} title='Chẩn đoán' />
+        <DataTableColumnHeader
+          column={column}
+          title={i18n.t('messages.diagnosis')}
+        />
       ),
       cell: ({ row }) => (
         <LongText className='max-w-72'>{row.original.diagnosis}</LongText>
@@ -87,7 +104,10 @@ export const medicalHistoryColumns: ColumnDef<MedicalHistoryListItem>[] =
     {
       id: 'medicineCount',
       header: ({ column }) => (
-        <DataTableColumnHeader column={column} title='Số thuốc' />
+        <DataTableColumnHeader
+          column={column}
+          title={i18n.t('messages.medicineCount')}
+        />
       ),
       cell: ({ row }) => (
         <div className='text-right tabular-nums'>

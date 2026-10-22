@@ -1,4 +1,5 @@
 import { useQueryClient } from '@tanstack/react-query'
+import { useTranslation } from 'react-i18next'
 import { toast } from 'sonner'
 import { showRequestError } from '@/lib/handle-server-error'
 import { ConfirmDialog } from '@/components/confirm-dialog'
@@ -9,6 +10,8 @@ import { PatientsMutateDialog } from './patients-mutate-dialog'
 import { usePatients } from './patients-provider'
 
 export function PatientsDialogs() {
+  const { t } = useTranslation()
+
   const { open, setOpen, currentRow, setCurrentRow } = usePatients()
   const queryClient = useQueryClient()
 
@@ -23,10 +26,10 @@ export function PatientsDialogs() {
     try {
       await DeletePatient(currentRow.id)
       queryClient.invalidateQueries({ queryKey: ['patients'] })
-      toast.success('Đã xoá bệnh nhân')
+      toast.success(t('messages.patientDeleted'))
       closeAndClear()
     } catch (error) {
-      showRequestError(error, 'Không xoá được bệnh nhân')
+      showRequestError(error, t('messages.couldNotDeletePatient'))
     }
   }
 
@@ -77,17 +80,18 @@ export function PatientsDialogs() {
             }}
             handleConfirm={handleDelete}
             className='max-w-md'
-            title={`Xoá bệnh nhân "${currentRow.fullName}"?`}
+            title={t('messages.deletePatient', { value0: currentRow.fullName })}
             desc={
               <>
-                Bệnh nhân <strong>{currentRow.fullName}</strong> (tên đăng nhập{' '}
-                <strong>{currentRow.userName}</strong>) sẽ bị xoá. <br />
-                Chỉ có thể xoá bệnh nhân chưa có lịch khám, hồ sơ khám hoặc
-                phiếu xuất kho. Hành động này không thể hoàn tác.
+                {t('messages.patient')} <strong>{currentRow.fullName}</strong>{' '}
+                {t('messages.usernameAlt2')}{' '}
+                <strong>{currentRow.userName}</strong>
+                {t('messages.willBeDeleted')} <br />
+                {t('messages.onlyPatientsWithoutAppointmentsMedicalRecordsOrG')}
               </>
             }
-            confirmText='Xoá'
-            cancelBtnText='Huỷ bỏ'
+            confirmText={t('messages.deleteAlt2')}
+            cancelBtnText={t('messages.discard')}
           />
         </>
       )}

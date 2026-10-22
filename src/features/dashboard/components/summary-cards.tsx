@@ -1,4 +1,5 @@
 import { Banknote, Package, Pill, Users } from 'lucide-react'
+import { useTranslation } from 'react-i18next'
 import { formatNumber } from '@/lib/utils'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import {
@@ -11,27 +12,29 @@ export function SummaryCards({
 }: {
   dashboard?: QueueDashboard | DashboardStatistics
 }) {
+  const { t } = useTranslation()
+
   const cards = [
     {
-      label: 'Tổng lượt khám',
+      label: t('messages.totalExaminations'),
       value: dashboard?.billing.invoiceCount ?? 0,
       icon: Users,
       money: false,
     },
     {
-      label: 'Tổng thu',
+      label: t('messages.totalRevenue'),
       value: dashboard?.billing.totalAmount ?? 0,
       icon: Banknote,
       money: true,
     },
     {
-      label: 'Tiền thuốc bán ra',
+      label: t('messages.medicineSales'),
       value: dashboard?.billing.medicineRevenue ?? 0,
       icon: Pill,
       money: true,
     },
     {
-      label: 'Giá vốn thuốc',
+      label: t('messages.medicineCost'),
       value: dashboard?.billing.medicineCost ?? 0,
       icon: Package,
       money: true,
@@ -48,7 +51,9 @@ export function SummaryCards({
           </CardHeader>
           <CardContent>
             <p className='text-2xl font-bold tabular-nums'>
-              {card.money ? `${formatNumber(card.value)} VNĐ` : card.value}
+              {card.money
+                ? t('messages.vndAlt2', { value0: formatNumber(card.value) })
+                : card.value}
             </p>
           </CardContent>
         </Card>

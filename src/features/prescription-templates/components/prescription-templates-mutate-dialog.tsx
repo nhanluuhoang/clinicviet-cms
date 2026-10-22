@@ -1,4 +1,5 @@
 import { Plus, Trash2 } from 'lucide-react'
+import { useTranslation } from 'react-i18next'
 import { Button } from '@/components/ui/button'
 import {
   Dialog,
@@ -49,6 +50,8 @@ export function PrescriptionTemplatesMutateDialog({
   | 'patchItem'
   | 'save'
 >) {
+  const { t } = useTranslation()
+
   return (
     <Dialog
       open={open === 'create' || open === 'update'}
@@ -60,25 +63,29 @@ export function PrescriptionTemplatesMutateDialog({
         <DialogBody>
           <DialogHeader>
             <DialogTitle>
-              {current ? 'Cập nhật mẫu đơn thuốc' : 'Thêm mẫu đơn thuốc'}
+              {current
+                ? t('messages.updatePrescriptionTemplate')
+                : t('messages.addPrescriptionTemplate')}
             </DialogTitle>
             <DialogDescription>
-              Thiết lập thuốc, số lượng và hướng dẫn sử dụng mặc định.
+              {t('messages.setDefaultMedicinesQuantitiesAndInstructions')}
             </DialogDescription>
           </DialogHeader>
           <div className='space-y-4 overflow-y-auto px-1'>
             <div className='space-y-2'>
-              <Label required>Tên mẫu</Label>
+              <Label required>{t('messages.templateName')}</Label>
               <Input
                 value={name}
                 onChange={(e) => setName(e.target.value)}
-                placeholder='VD: Cảm cúm người lớn'
+                placeholder={t('messages.eGAdultColdAndFlu')}
               />
             </div>
             {items.map((item, index) => (
               <div key={index} className='grid gap-3 rounded-md border p-3'>
                 <div className='flex items-center justify-between'>
-                  <Label required>Thuốc {index + 1}</Label>
+                  <Label required>
+                    {t('messages.medicine')} {index + 1}
+                  </Label>
                   <Button
                     variant='ghost'
                     size='icon'
@@ -101,7 +108,7 @@ export function PrescriptionTemplatesMutateDialog({
                   }}
                 >
                   <SelectTrigger className='w-full'>
-                    <SelectValue placeholder='Chọn thuốc' />
+                    <SelectValue placeholder={t('messages.selectMedicine')} />
                   </SelectTrigger>
                   <SelectContent>
                     {item.medicineId &&
@@ -119,7 +126,7 @@ export function PrescriptionTemplatesMutateDialog({
                 </Select>
                 <div className='grid gap-3 sm:grid-cols-[8rem_1fr]'>
                   <div className='space-y-2'>
-                    <Label required>Số lượng</Label>
+                    <Label required>{t('messages.quantityAlt2')}</Label>
                     <Input
                       type='number'
                       min={1}
@@ -130,7 +137,7 @@ export function PrescriptionTemplatesMutateDialog({
                     />
                   </div>
                   <div className='space-y-2'>
-                    <Label>Hướng dẫn sử dụng</Label>
+                    <Label>{t('messages.userGuide')}</Label>
                     <MedicineInstructionInput
                       value={item.instruction}
                       options={instructionOptions}
@@ -149,15 +156,17 @@ export function PrescriptionTemplatesMutateDialog({
               size='sm'
               onClick={() => setItems((rows) => [...rows, emptyItem()])}
             >
-              <Plus /> Thêm thuốc
+              <Plus /> {t('messages.addMedicine')}
             </Button>
           </div>
         </DialogBody>
         <DialogFooter>
           <DialogClose asChild>
-            <Button variant='outline'>Đóng</Button>
+            <Button variant='outline'>{t('messages.close')}</Button>
           </DialogClose>
-          <Button onClick={() => void save()}>Lưu mẫu</Button>
+          <Button onClick={() => void save()}>
+            {t('messages.saveTemplate')}
+          </Button>
         </DialogFooter>
       </DialogFormContent>
     </Dialog>

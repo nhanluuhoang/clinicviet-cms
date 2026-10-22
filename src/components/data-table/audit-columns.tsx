@@ -1,4 +1,5 @@
 import type { ColumnDef } from '@tanstack/react-table'
+import i18n, { getLocale } from '@/i18n'
 import { DataTableColumnHeader } from './column-header'
 
 export type AuditFields = {
@@ -11,10 +12,18 @@ export type AuditFields = {
 }
 
 export const auditLabels = {
-  createdAt: 'Ngày tạo',
-  createdBy: 'Người tạo',
-  updatedAt: 'Ngày cập nhật',
-  updatedBy: 'Người cập nhật',
+  get createdAt() {
+    return i18n.t('messages.createdAt')
+  },
+  get createdBy() {
+    return i18n.t('messages.createdBy')
+  },
+  get updatedAt() {
+    return i18n.t('messages.updatedAt')
+  },
+  get updatedBy() {
+    return i18n.t('messages.updatedBy')
+  },
 } as const
 
 export type AuditColumnId = keyof typeof auditLabels
@@ -31,7 +40,7 @@ export function formatAuditValue(record: AuditFields, key: AuditColumnId) {
   if (key === 'createdAt' || key === 'updatedAt') {
     if (!value) return '—'
     const date = new Date(value)
-    return Number.isNaN(date.getTime()) ? '—' : date.toLocaleString('vi-VN')
+    return Number.isNaN(date.getTime()) ? '—' : date.toLocaleString(getLocale())
   }
   return (
     record[key === 'createdBy' ? 'creator' : 'updater']?.fullName ||

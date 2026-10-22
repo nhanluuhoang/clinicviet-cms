@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { useQuery } from '@tanstack/react-query'
 import { Banknote, CalendarDays, Pill, Stethoscope, Users } from 'lucide-react'
+import { useTranslation } from 'react-i18next'
 import {
   Bar,
   BarChart,
@@ -33,6 +34,8 @@ import { getYearlyQueueDashboard } from '@/features/examination-queue/api'
 import { OperationalStatistics } from './operational-statistics'
 
 export function YearlyDashboard() {
+  const { t } = useTranslation()
+
   const [year, setYear] = useState(getCurrentYear)
   const { data, isLoading, isError } = useQuery({
     queryKey: ['dashboard', 'year', year],
@@ -41,29 +44,29 @@ export function YearlyDashboard() {
   })
   const chartData = (data?.monthlyRevenue ?? []).map((item) => ({
     ...item,
-    label: `Tháng ${item.month}`,
+    label: t('messages.monthAlt2', { value0: item.month }),
   }))
   const cards = [
     {
-      label: 'Tổng lượt khám',
+      label: t('messages.totalExaminations'),
       value: data?.billing.invoiceCount ?? 0,
       icon: Users,
       money: false,
     },
     {
-      label: 'Tổng thu trong năm',
+      label: t('messages.yearlyRevenue'),
       value: data?.billing.totalAmount ?? 0,
       icon: Banknote,
       money: true,
     },
     {
-      label: 'Doanh thu thuốc',
+      label: t('messages.medicineRevenue'),
       value: data?.billing.medicineRevenue ?? 0,
       icon: Pill,
       money: true,
     },
     {
-      label: 'Doanh thu khám',
+      label: t('messages.consultationRevenue'),
       value: data?.billing.consultationRevenue ?? 0,
       icon: Stethoscope,
       money: true,
@@ -82,24 +85,26 @@ export function YearlyDashboard() {
       <Main className='flex flex-1 flex-col gap-6'>
         <div className='flex flex-wrap items-end justify-between gap-3'>
           <div>
-            <h1 className='text-2xl font-bold tracking-tight'>Thống kê năm</h1>
+            <h1 className='text-2xl font-bold tracking-tight'>
+              {t('messages.yearlyStatistics')}
+            </h1>
             <p className='text-muted-foreground'>
-              Tổng quan doanh thu của từng tháng trong năm.
+              {t('messages.monthlyRevenueOverviewForTheYear')}
             </p>
           </div>
           <div className='w-full space-y-1.5 sm:w-auto'>
             <label className='flex items-center gap-1.5 text-sm font-medium'>
-              <CalendarDays className='size-4' /> Năm thống kê
+              <CalendarDays className='size-4' /> {t('messages.reportingYear')}
             </label>
             <div className='rounded-lg border bg-card p-1.5 shadow-sm'>
               <Select value={year} onValueChange={setYear}>
                 <SelectTrigger className='w-36 border-0 font-semibold shadow-none'>
-                  <SelectValue placeholder='Chọn năm' />
+                  <SelectValue placeholder={t('messages.selectYear')} />
                 </SelectTrigger>
                 <SelectContent>
                   {YEAR_OPTIONS.map((option) => (
                     <SelectItem key={option} value={String(option)}>
-                      Năm {option}
+                      {t('messages.year')} {option}
                     </SelectItem>
                   ))}
                 </SelectContent>
@@ -110,7 +115,7 @@ export function YearlyDashboard() {
 
         {isError && (
           <p className='rounded-md border border-destructive/30 bg-destructive/10 p-3 text-sm text-destructive'>
-            Không thể tải dữ liệu thống kê. Vui lòng thử lại.
+            {t('messages.couldNotLoadStatisticsPleaseTryAgain')}
           </p>
         )}
 
@@ -128,7 +133,9 @@ export function YearlyDashboard() {
               <CardContent>
                 <p className='text-2xl font-bold tabular-nums'>
                   {card.money
-                    ? `${formatNumber(card.value)} VNĐ`
+                    ? t('messages.vndAlt2', {
+                        value0: formatNumber(card.value),
+                      })
                     : formatNumber(card.value)}
                 </p>
               </CardContent>
@@ -138,7 +145,9 @@ export function YearlyDashboard() {
 
         <Card>
           <CardHeader>
-            <CardTitle>Doanh thu từng tháng năm {year}</CardTitle>
+            <CardTitle>
+              {t('messages.monthlyRevenueFor')} {year}
+            </CardTitle>
           </CardHeader>
           <CardContent>
             <ResponsiveContainer width='100%' height={380}>
@@ -161,7 +170,9 @@ export function YearlyDashboard() {
                 />
                 <Tooltip
                   formatter={(value, name) => [
-                    `${formatNumber(Number(value))} VNĐ`,
+                    t('messages.vndAlt2', {
+                      value0: formatNumber(Number(value)),
+                    }),
                     name,
                   ]}
                   contentStyle={{
@@ -175,7 +186,7 @@ export function YearlyDashboard() {
                 />
                 <Bar
                   dataKey='totalAmount'
-                  name='Tổng thu'
+                  name={t('messages.totalRevenue')}
                   fill='#2f66d8'
                   radius={[5, 5, 0, 0]}
                 />

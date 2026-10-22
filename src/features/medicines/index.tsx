@@ -1,4 +1,5 @@
 import { Plus } from 'lucide-react'
+import { useTranslation } from 'react-i18next'
 import { Button } from '@/components/ui/button'
 // import { LanguageSwitcher } from '@/components/language-switcher'
 import { Header } from '@/components/layout/header'
@@ -13,6 +14,8 @@ import {
 import { MedicinesTable } from './components/medicines-table'
 
 function MedicinesContent() {
+  const { t } = useTranslation()
+
   const { setOpen } = useMedicines()
 
   return (
@@ -29,10 +32,10 @@ function MedicinesContent() {
         <div className='flex flex-wrap items-end justify-between gap-2'>
           <div>
             <h2 className='text-2xl font-bold tracking-tight'>
-              Danh mục thuốc
+              {t('messages.medicineCatalog')}
             </h2>
             <p className='text-muted-foreground'>
-              Quản lý thông tin thuốc dùng trong kho và khi kê toa.
+              {t('messages.manageMedicineInformationForInventoryAndPrescript')}
             </p>
           </div>
           <div className='flex flex-wrap items-center gap-2'>
@@ -40,7 +43,7 @@ function MedicinesContent() {
               data-tour='create-medicine'
               onClick={() => setOpen('medicine-create')}
             >
-              Thêm danh mục
+              {t('messages.addCatalogEntry')}
               <Plus className='size-4' />
             </Button>
           </div>
@@ -55,6 +58,8 @@ function MedicinesContent() {
 }
 
 export function Medicines() {
+  useTranslation()
+
   return (
     <MedicinesProvider>
       <MedicinesContent />

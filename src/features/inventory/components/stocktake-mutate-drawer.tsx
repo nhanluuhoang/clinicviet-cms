@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from 'react'
 import { useQuery, useQueryClient } from '@tanstack/react-query'
 import { Check, ChevronsUpDown } from 'lucide-react'
+import { useTranslation } from 'react-i18next'
 import { toast } from 'sonner'
 import { showRequestError } from '@/lib/handle-server-error'
 import { cn, formatNumber, toDateInput } from '@/lib/utils'
@@ -44,6 +45,8 @@ function MedicinePicker({
   selected: Medicine | null
   onChange: (medicine: Medicine) => void
 }) {
+  const { t } = useTranslation()
+
   const [open, setOpen] = useState(false)
   const [search, setSearch] = useState('')
   const debouncedSearch = useDebounce(search, 300)
@@ -67,7 +70,7 @@ function MedicinePicker({
           <span className='truncate'>
             {selected
               ? `${selected.name} · ${selected.strength}`
-              : 'Tìm và chọn thuốc'}
+              : t('messages.findAndSelectAMedicine')}
           </span>
           <ChevronsUpDown className='ms-2 size-4 shrink-0 opacity-50' />
         </Button>
@@ -80,11 +83,13 @@ function MedicinePicker({
           <CommandInput
             value={search}
             onValueChange={setSearch}
-            placeholder='Tìm tên, mã hoặc hoạt chất...'
+            placeholder={t('messages.searchNameCodeOrActiveIngredientAlt2')}
           />
           <CommandList>
             <CommandEmpty>
-              {isLoading ? 'Đang tìm...' : 'Không tìm thấy thuốc.'}
+              {isLoading
+                ? t('messages.searching')
+                : t('messages.noMedicinesFound')}
             </CommandEmpty>
             <CommandGroup>
               {(medicines ?? []).map((medicine) => (
@@ -129,6 +134,8 @@ export function StockTakeMutateDrawer({
   open: boolean
   onOpenChange: (open: boolean) => void
 }) {
+  const { t } = useTranslation()
+
   const queryClient = useQueryClient()
   const [medicineId, setMedicineId] = useState('')
   const [selectedMedicine, setSelectedMedicine] = useState<Medicine | null>(
@@ -179,12 +186,14 @@ export function StockTakeMutateDrawer({
     try {
       await CreateStockTake({ countedAt, note, lines: changedLines })
       queryClient.invalidateQueries({ queryKey: ['inventory'] })
-      toast.success('Đã lưu phiếu kiểm kê', {
-        description: `${changedLines.length} lô được điều chỉnh tồn.`,
+      toast.success(t('messages.stocktakeSaved'), {
+        description: t('messages.stockAdjustedForBatches', {
+          value0: changedLines.length,
+        }),
       })
       onOpenChange(false)
     } catch (error) {
-      showRequestError(error, 'Không lưu được phiếu kiểm kê')
+      showRequestError(error, t('messages.couldNotSaveStocktake'))
     } finally {
       setIsSubmitting(false)
     }
@@ -199,17 +208,16 @@ export function StockTakeMutateDrawer({
       >
         <DialogBody>
           <DialogHeader className='pe-8 text-start'>
-            <DialogTitle>Kiểm kê tồn kho</DialogTitle>
+            <DialogTitle>{t('messages.inventoryStocktake')}</DialogTitle>
             <DialogDescription>
-              Chọn thuốc rồi nhập số thực đếm cho từng lô. Chỉ những lô có số
-              lệch mới được ghi vào phiếu.
+              {t('messages.chooseAMedicineAndEnterThePhysicalCountForEach')}
             </DialogDescription>
           </DialogHeader>
           <div className='-mx-1 space-y-6 overflow-y-auto px-1'>
             <div className='grid gap-4 sm:grid-cols-2'>
               <div className='space-y-2'>
                 <Label required htmlFor='stocktake-medicine'>
-                  Thuốc
+                  {t('messages.medicine')}
                 </Label>
                 <MedicinePicker
                   selected={selectedMedicine}
@@ -221,7 +229,7 @@ export function StockTakeMutateDrawer({
               </div>
               <div className='space-y-2'>
                 <Label required htmlFor='stocktake-date'>
-                  Ngày kiểm kê
+                  {t('messages.stocktakeDate')}
                 </Label>
                 <DatePickerInput
                   id='stocktake-date'
@@ -233,10 +241,13 @@ export function StockTakeMutateDrawer({
 
             {medicineId && (
               <div className='space-y-2'>
-                <Label>Các lô đang còn tồn ({batches.length})</Label>
+                <Label>
+                  {t('messages.batchesWithRemainingStock')}
+                  {batches.length})
+                </Label>
                 {batches.length === 0 ? (
                   <p className='rounded-md border border-dashed p-4 text-center text-sm text-muted-foreground'>
-                    Thuốc này không còn lô nào có tồn.
+                    {t('messages.thisMedicineHasNoBatchesWithRemainingStock')}
                   </p>
                 ) : (
                   <>
@@ -252,16 +263,19 @@ export function StockTakeMutateDrawer({
                             key={batch.id}
                             className='space-y-2 rounded-md border p-3 text-sm'
                           >
-                            <p className='font-medium'>Lô {batch.batchNo}</p>
+                            <p className='font-medium'>
+                              {t('messages.batchAlt2')} {batch.batchNo}
+                            </p>
                             <p>
-                              Hạn sử dụng:{' '}
+                              {t('messages.expiryDateAlt2')}{' '}
                               <ExpiryBadge date={batch.expiryDate} />
                             </p>
                             <p>
-                              Tồn hệ thống: {formatNumber(batch.qtyRemaining)}
+                              {t('messages.systemStock')}{' '}
+                              {formatNumber(batch.qtyRemaining)}
                             </p>
                             <label className='block space-y-1'>
-                              <span>Thực đếm</span>
+                              <span>{t('messages.physicalCount')}</span>
                               <Input
                                 type='number'
                                 min={0}
@@ -283,7 +297,7 @@ export function StockTakeMutateDrawer({
                               />
                             </label>
                             <p>
-                              Lệch:{' '}
+                              {t('messages.difference')}{' '}
                               {diff === null
                                 ? '—'
                                 : diff > 0
@@ -299,19 +313,19 @@ export function StockTakeMutateDrawer({
                         <thead className='bg-muted/50 text-xs text-muted-foreground'>
                           <tr>
                             <th className='px-3 py-2 text-start font-medium'>
-                              Số lô
+                              {t('messages.batchNumber')}
                             </th>
                             <th className='px-3 py-2 text-start font-medium'>
-                              Hạn sử dụng
+                              {t('messages.expiryDate')}
                             </th>
                             <th className='px-3 py-2 text-end font-medium'>
-                              Tồn hệ thống
+                              {t('messages.systemStockAlt2')}
                             </th>
                             <th className='px-3 py-2 text-end font-medium'>
-                              Thực đếm
+                              {t('messages.physicalCount')}
                             </th>
                             <th className='px-3 py-2 text-end font-medium'>
-                              Lệch
+                              {t('messages.differenceAlt2')}
                             </th>
                           </tr>
                         </thead>
@@ -384,29 +398,31 @@ export function StockTakeMutateDrawer({
             )}
 
             <div className='space-y-2'>
-              <Label htmlFor='stocktake-note'>Ghi chú</Label>
+              <Label htmlFor='stocktake-note'>{t('messages.notes')}</Label>
               <Textarea
                 id='stocktake-note'
                 rows={2}
                 value={note}
                 onChange={(e) => setNote(e.target.value)}
-                placeholder='Lý do lệch tồn, người kiểm kê... (không bắt buộc)'
+                placeholder={t(
+                  'messages.reasonForDiscrepancyStocktakerOptional'
+                )}
               />
             </div>
           </div>
         </DialogBody>
         <DialogFooter className='border-t pt-4 sm:items-center'>
           <span className='flex-1 basis-full text-sm text-muted-foreground sm:basis-auto'>
-            {changedLines.length} lô có số lệch
+            {changedLines.length} {t('messages.batchesWithDiscrepancies')}
           </span>
           <DialogClose asChild>
-            <Button variant='outline'>Đóng</Button>
+            <Button variant='outline'>{t('messages.close')}</Button>
           </DialogClose>
           <Button
             onClick={onSubmit}
             disabled={isSubmitting || changedLines.length === 0}
           >
-            {isSubmitting ? 'Đang lưu...' : 'Lưu phiếu kiểm kê'}
+            {isSubmitting ? t('messages.saving') : t('messages.saveStocktake')}
           </Button>
         </DialogFooter>
       </DialogFormContent>

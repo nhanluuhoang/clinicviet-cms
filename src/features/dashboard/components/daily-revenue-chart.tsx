@@ -1,3 +1,5 @@
+import i18n from '@/i18n'
+import { useTranslation } from 'react-i18next'
 import { Cell, Pie, PieChart, ResponsiveContainer, Tooltip } from 'recharts'
 import { formatNumber } from '@/lib/utils'
 import {
@@ -12,14 +14,16 @@ export function DailyRevenueChart({
   dashboard?: QueueDashboard | DashboardStatistics
   periodLabel: string
 }) {
+  const { t } = useTranslation()
+
   const chartData = [
     {
-      name: 'Thuốc',
+      name: t('messages.medicine'),
       value: dashboard?.billing.medicineRevenue ?? 0,
       color: '#2f66d8',
     },
     {
-      name: 'Khám',
+      name: t('messages.examinations'),
       value: dashboard?.billing.consultationRevenue ?? 0,
       color: '#32b890',
     },
@@ -29,10 +33,11 @@ export function DailyRevenueChart({
     return (
       <div className='flex h-[320px] flex-col items-center justify-center gap-1'>
         <span className='text-sm text-muted-foreground'>
-          Tổng thu {periodLabel}
+          {t('messages.totalRevenue')} {periodLabel}
         </span>
         <strong className='text-xl tabular-nums'>
-          {formatNumber(dashboard?.billing.totalAmount ?? 0)} VNĐ
+          {formatNumber(dashboard?.billing.totalAmount ?? 0)}{' '}
+          {t('messages.vnd')}
         </strong>
       </div>
     )
@@ -63,8 +68,8 @@ export function DailyRevenueChart({
             </Pie>
             <Tooltip
               formatter={(value) => [
-                `${formatNumber(Number(value))} VNĐ`,
-                'Doanh thu',
+                t('messages.vndAlt2', { value0: formatNumber(Number(value)) }),
+                i18n.t('messages.revenue'),
               ]}
               contentStyle={{
                 background: 'var(--popover)',
@@ -79,10 +84,11 @@ export function DailyRevenueChart({
         </ResponsiveContainer>
         <div className='pointer-events-none absolute top-[48%] left-1/2 flex -translate-x-1/2 -translate-y-1/2 flex-col items-center'>
           <span className='text-xs text-muted-foreground'>
-            Tổng thu {periodLabel}
+            {t('messages.totalRevenue')} {periodLabel}
           </span>
           <strong className='text-sm whitespace-nowrap tabular-nums'>
-            {formatNumber(dashboard?.billing.totalAmount ?? 0)} VNĐ
+            {formatNumber(dashboard?.billing.totalAmount ?? 0)}{' '}
+            {t('messages.vnd')}
           </strong>
         </div>
       </div>

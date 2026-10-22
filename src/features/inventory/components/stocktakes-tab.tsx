@@ -1,6 +1,8 @@
 import { useQuery } from '@tanstack/react-query'
 import { type ColumnDef, type Row } from '@tanstack/react-table'
+import i18n from '@/i18n'
 import { ChevronDown, ChevronRight } from 'lucide-react'
+import { useTranslation } from 'react-i18next'
 import { cn, formatDate, formatNumber } from '@/lib/utils'
 import { useApiSearch } from '@/hooks/use-api-search'
 import { Button } from '@/components/ui/button'
@@ -21,6 +23,8 @@ const withSign = (diff: number) =>
   diff > 0 ? `+${formatNumber(diff)}` : formatNumber(diff)
 
 function StockTakeLines({ row }: { row: Row<StockTakeSummary> }) {
+  const { t } = useTranslation()
+
   const {
     data: stockTake,
     isLoading,
@@ -31,13 +35,15 @@ function StockTakeLines({ row }: { row: Row<StockTakeSummary> }) {
   })
 
   if (isLoading) {
-    return <div className='px-4 py-6 text-sm'>Đang tải chi tiết...</div>
+    return (
+      <div className='px-4 py-6 text-sm'>{t('messages.loadingDetails')}</div>
+    )
   }
 
   if (isError || !stockTake) {
     return (
       <div className='px-4 py-6 text-sm text-destructive'>
-        Không thể tải chi tiết phiếu kiểm kê.
+        {t('messages.couldNotLoadStocktakeDetails')}
       </div>
     )
   }
@@ -45,7 +51,7 @@ function StockTakeLines({ row }: { row: Row<StockTakeSummary> }) {
   return (
     <div className='px-4 py-3'>
       <p className='mb-2 text-xs font-medium text-muted-foreground'>
-        Điều chỉnh theo từng lô — tổng lệch{' '}
+        {t('messages.adjustmentsByBatchTotalDifference')}{' '}
         <span className={diffClass(stockTake.totalDiff)}>
           {withSign(stockTake.totalDiff)}
         </span>
@@ -57,13 +63,21 @@ function StockTakeLines({ row }: { row: Row<StockTakeSummary> }) {
             className='space-y-1 rounded-md border p-3 text-sm'
           >
             <p className='font-medium'>{line.medicineName}</p>
-            <p>Số lô: {line.batchNo}</p>
             <p>
-              Hạn dùng: <ExpiryBadge date={line.expiryDate} />
+              {t('messages.batchNumberAlt2')} {line.batchNo}
             </p>
-            <p>Tồn hệ thống: {formatNumber(line.systemQty)}</p>
-            <p>Thực đếm: {formatNumber(line.countedQty)}</p>
-            <p className={diffClass(line.diff)}>Lệch: {withSign(line.diff)}</p>
+            <p>
+              {t('messages.expiry')} <ExpiryBadge date={line.expiryDate} />
+            </p>
+            <p>
+              {t('messages.systemStock')} {formatNumber(line.systemQty)}
+            </p>
+            <p>
+              {t('messages.physicalCountAlt2')} {formatNumber(line.countedQty)}
+            </p>
+            <p className={diffClass(line.diff)}>
+              {t('messages.difference')} {withSign(line.diff)}
+            </p>
           </div>
         ))}
       </div>
@@ -71,12 +85,24 @@ function StockTakeLines({ row }: { row: Row<StockTakeSummary> }) {
         <table className='w-full text-sm'>
           <thead className='text-xs text-muted-foreground'>
             <tr className='border-b'>
-              <th className='py-1.5 pe-4 text-start font-medium'>Thuốc</th>
-              <th className='py-1.5 pe-4 text-start font-medium'>Số lô</th>
-              <th className='py-1.5 pe-4 text-start font-medium'>Hạn dùng</th>
-              <th className='py-1.5 pe-4 text-end font-medium'>Tồn hệ thống</th>
-              <th className='py-1.5 pe-4 text-end font-medium'>Thực đếm</th>
-              <th className='py-1.5 text-end font-medium'>Lệch</th>
+              <th className='py-1.5 pe-4 text-start font-medium'>
+                {t('messages.medicine')}
+              </th>
+              <th className='py-1.5 pe-4 text-start font-medium'>
+                {t('messages.batchNumber')}
+              </th>
+              <th className='py-1.5 pe-4 text-start font-medium'>
+                {t('messages.expiryAlt2')}
+              </th>
+              <th className='py-1.5 pe-4 text-end font-medium'>
+                {t('messages.systemStockAlt2')}
+              </th>
+              <th className='py-1.5 pe-4 text-end font-medium'>
+                {t('messages.physicalCount')}
+              </th>
+              <th className='py-1.5 text-end font-medium'>
+                {t('messages.differenceAlt2')}
+              </th>
             </tr>
           </thead>
           <tbody>
@@ -122,7 +148,11 @@ const columns: ColumnDef<StockTakeSummary>[] = [
         size='icon'
         className='size-7'
         onClick={row.getToggleExpandedHandler()}
-        aria-label={row.getIsExpanded() ? 'Thu gọn' : 'Xem chi tiết'}
+        aria-label={
+          row.getIsExpanded()
+            ? i18n.t('messages.collapse')
+            : i18n.t('messages.viewDetails')
+        }
       >
         {row.getIsExpanded() ? (
           <ChevronDown className='size-4' />
@@ -137,7 +167,10 @@ const columns: ColumnDef<StockTakeSummary>[] = [
   {
     accessorKey: 'code',
     header: ({ column }) => (
-      <DataTableColumnHeader column={column} title='Mã phiếu' />
+      <DataTableColumnHeader
+        column={column}
+        title={i18n.t('messages.documentCode')}
+      />
     ),
     cell: ({ row }) => (
       <span className='font-mono text-xs font-medium'>{row.original.code}</span>
@@ -146,7 +179,10 @@ const columns: ColumnDef<StockTakeSummary>[] = [
   {
     accessorKey: 'countedAt',
     header: ({ column }) => (
-      <DataTableColumnHeader column={column} title='Ngày kiểm kê' />
+      <DataTableColumnHeader
+        column={column}
+        title={i18n.t('messages.stocktakeDate')}
+      />
     ),
     cell: ({ row }) => (
       <span className='tabular-nums'>{formatDate(row.original.countedAt)}</span>
@@ -156,7 +192,10 @@ const columns: ColumnDef<StockTakeSummary>[] = [
     id: 'lineCount',
     accessorKey: 'lineCount',
     header: ({ column }) => (
-      <DataTableColumnHeader column={column} title='Số lô' />
+      <DataTableColumnHeader
+        column={column}
+        title={i18n.t('messages.batchNumber')}
+      />
     ),
     cell: ({ row }) => (
       <span className='tabular-nums'>{row.original.lineCount}</span>
@@ -166,7 +205,7 @@ const columns: ColumnDef<StockTakeSummary>[] = [
   {
     accessorKey: 'note',
     header: ({ column }) => (
-      <DataTableColumnHeader column={column} title='Ghi chú' />
+      <DataTableColumnHeader column={column} title={i18n.t('messages.notes')} />
     ),
     cell: ({ row }) => (
       <span className='text-muted-foreground'>{row.original.note || '—'}</span>
@@ -175,6 +214,8 @@ const columns: ColumnDef<StockTakeSummary>[] = [
 ]
 
 export function StockTakesTab() {
+  const { t } = useTranslation()
+
   const search = useApiSearch()
   const { data, isLoading } = useQuery({
     queryKey: ['inventory', 'stocktakes', search],
@@ -186,8 +227,10 @@ export function StockTakesTab() {
       columns={withAuditColumns(columns)}
       data={data ?? []}
       isLoading={isLoading}
-      searchPlaceholder='Tìm theo mã phiếu, thuốc, số lô...'
-      emptyMessage='Chưa có phiếu kiểm kê nào. Bấm "Kiểm kê" để tạo phiếu đầu tiên.'
+      searchPlaceholder={t('messages.searchDocumentCodeMedicineOrBatchNumber')}
+      emptyMessage={t(
+        'messages.noStocktakesYetClickStocktakeToCreateTheFirstO'
+      )}
       getSearchText={(s) => `${s.code} ${s.note}`}
       initialSorting={[{ id: 'countedAt', desc: true }]}
       renderSubRow={(row) => <StockTakeLines row={row} />}

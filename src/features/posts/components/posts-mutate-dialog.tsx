@@ -4,7 +4,9 @@ import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useQueryClient } from '@tanstack/react-query'
 import { API_URL } from '@/config'
+import i18n from '@/i18n'
 import { ImagePlus, Loader2, X } from 'lucide-react'
+import { useTranslation } from 'react-i18next'
 import { toast } from 'sonner'
 import { showRequestError } from '@/lib/handle-server-error'
 import {
@@ -45,10 +47,19 @@ type Props = {
   currentRow?: Post
 }
 const schema = z.object({
-  title: z.string().min(1, 'Vui lòng nhập tiêu đề.'),
-  category: z.string().min(1, 'Vui lòng nhập chuyên mục.'),
-  excerpt: z.string().min(1, 'Vui lòng nhập mô tả ngắn.').max(500),
-  content: z.string().min(1, 'Vui lòng nhập nội dung.'),
+  title: z
+    .string()
+    .min(1, { error: () => i18n.t('messages.pleaseEnterATitle') }),
+  category: z
+    .string()
+    .min(1, { error: () => i18n.t('messages.pleaseEnterACategory') }),
+  excerpt: z
+    .string()
+    .min(1, { error: () => i18n.t('messages.pleaseEnterAShortDescription') })
+    .max(500),
+  content: z
+    .string()
+    .min(1, { error: () => i18n.t('messages.pleaseEnterContent') }),
   thumbnailUrl: z.string(),
   readTime: z.number().int().min(1).max(120),
   isPublished: z.boolean(),
@@ -71,6 +82,8 @@ const authenticatedImageUrl = (url: string | null | undefined) => {
 }
 
 export function PostsMutateDialog({ open, onOpenChange, currentRow }: Props) {
+  const { t } = useTranslation()
+
   const queryClient = useQueryClient()
   const [isUploadingThumbnail, setIsUploadingThumbnail] = useState(false)
   const [thumbnailPreview, setThumbnailPreview] = useState('')
@@ -100,13 +113,18 @@ export function PostsMutateDialog({ open, onOpenChange, currentRow }: Props) {
     file = normalizeImageFile(file)
     if (!IMAGE_UPLOAD_TYPES.includes(file.type)) {
       toast.error(
-        `Tệp "${file.name}" có định dạng không được hỗ trợ. Chỉ nhận ảnh JPG, JPEG, PNG, WebP, HEIC hoặc HEIF.`
+        t('messages.fileHasAnUnsupportedFormatOnlyJpgJpegPngWebpH', {
+          value0: file.name,
+        })
       )
       return
     }
     if (file.size > 5 * 1024 * 1024) {
       toast.error(
-        `Ảnh "${file.name}" có dung lượng ${(file.size / 1024 / 1024).toFixed(2)} MB, vượt giới hạn 5 MB.`
+        t('messages.imageIsMbExceedingThe5MbLimit', {
+          value0: file.name,
+          value1: (file.size / 1024 / 1024).toFixed(2),
+        })
       )
       return
     }
@@ -120,10 +138,10 @@ export function PostsMutateDialog({ open, onOpenChange, currentRow }: Props) {
         shouldDirty: true,
         shouldValidate: true,
       })
-      toast.success('Đã tải ảnh đại diện')
+      toast.success(t('messages.coverImageUploaded'))
     } catch (error) {
       setThumbnailPreview(authenticatedImageUrl(currentRow?.thumbnailUrl))
-      showRequestError(error, 'Không thể tải ảnh lên')
+      showRequestError(error, t('messages.couldNotUploadImage'))
     } finally {
       setIsUploadingThumbnail(false)
     }
@@ -138,10 +156,12 @@ export function PostsMutateDialog({ open, onOpenChange, currentRow }: Props) {
       if (currentRow) await UpdatePost(currentRow.id, data)
       else await CreatePost(data)
       await queryClient.invalidateQueries({ queryKey: ['posts'] })
-      toast.success(currentRow ? 'Đã cập nhật bài viết' : 'Đã tạo bài viết')
+      toast.success(
+        currentRow ? t('messages.postUpdated') : t('messages.postCreated')
+      )
       onOpenChange(false)
     } catch (error) {
-      showRequestError(error, 'Không thể lưu bài viết')
+      showRequestError(error, t('messages.couldNotSavePost'))
     }
   }
 
@@ -155,10 +175,10 @@ export function PostsMutateDialog({ open, onOpenChange, currentRow }: Props) {
         <DialogBody>
           <DialogHeader className='pe-8 text-start'>
             <DialogTitle>
-              {currentRow ? 'Cập nhật bài viết' : 'Tạo bài viết'}
+              {currentRow ? t('messages.updatePost') : t('messages.createPost')}
             </DialogTitle>
             <DialogDescription>
-              Nội dung công khai sẽ xuất hiện trên trang phòng khám.
+              {t('messages.publishedContentAppearsOnTheClinicWebsite')}
             </DialogDescription>
           </DialogHeader>
           <Form {...form}>
@@ -172,7 +192,7 @@ export function PostsMutateDialog({ open, onOpenChange, currentRow }: Props) {
                 name='title'
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel required>Tiêu đề</FormLabel>
+                    <FormLabel required>{t('messages.title')}</FormLabel>
                     <FormControl>
                       <Input {...field} />
                     </FormControl>
@@ -186,7 +206,7 @@ export function PostsMutateDialog({ open, onOpenChange, currentRow }: Props) {
                   name='category'
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel required>Chuyên mục</FormLabel>
+                      <FormLabel required>{t('messages.category')}</FormLabel>
                       <FormControl>
                         <Input {...field} />
                       </FormControl>
@@ -199,7 +219,9 @@ export function PostsMutateDialog({ open, onOpenChange, currentRow }: Props) {
                   name='readTime'
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel required>Thời gian đọc (phút)</FormLabel>
+                      <FormLabel required>
+                        {t('messages.readingTimeMinutes')}
+                      </FormLabel>
                       <FormControl>
                         <Input
                           type='number'
@@ -221,7 +243,9 @@ export function PostsMutateDialog({ open, onOpenChange, currentRow }: Props) {
                 name='excerpt'
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel required>Mô tả ngắn</FormLabel>
+                    <FormLabel required>
+                      {t('messages.shortDescription')}
+                    </FormLabel>
                     <FormControl>
                       <Textarea rows={3} {...field} />
                     </FormControl>
@@ -235,7 +259,7 @@ export function PostsMutateDialog({ open, onOpenChange, currentRow }: Props) {
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>
-                      Ảnh đại diện — khuyến nghị 1200 × 675 px (16:9)
+                      {t('messages.coverImageRecommended1200675Px169')}
                     </FormLabel>
                     <FormControl>
                       <div className='space-y-3'>
@@ -250,11 +274,11 @@ export function PostsMutateDialog({ open, onOpenChange, currentRow }: Props) {
                           )}
                           <span className='text-sm font-medium'>
                             {isUploadingThumbnail
-                              ? 'Đang tải ảnh...'
-                              : 'Chọn ảnh đại diện'}
+                              ? t('messages.uploadingImage')
+                              : t('messages.chooseCoverImage')}
                           </span>
                           <span className='text-xs text-muted-foreground'>
-                            JPG, PNG hoặc WebP, tối đa 5 MB.
+                            {t('messages.jpgPngOrWebpUpTo5Mb')}
                           </span>
                         </label>
                         <Input
@@ -272,7 +296,7 @@ export function PostsMutateDialog({ open, onOpenChange, currentRow }: Props) {
                           <div className='relative overflow-hidden rounded-lg border bg-muted'>
                             <img
                               src={thumbnailPreview}
-                              alt='Xem trước ảnh đại diện'
+                              alt={t('messages.previewCoverImage')}
                               className='aspect-video w-full object-cover'
                             />
                             <Button
@@ -280,7 +304,7 @@ export function PostsMutateDialog({ open, onOpenChange, currentRow }: Props) {
                               variant='destructive'
                               size='icon'
                               className='absolute top-2 right-2 size-8'
-                              aria-label='Xóa ảnh đại diện'
+                              aria-label={t('messages.removeCoverImage')}
                               onClick={() => {
                                 field.onChange('')
                                 setThumbnailPreview('')
@@ -302,7 +326,7 @@ export function PostsMutateDialog({ open, onOpenChange, currentRow }: Props) {
                 name='content'
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel required>Nội dung</FormLabel>
+                    <FormLabel required>{t('messages.content')}</FormLabel>
                     <FormControl>
                       <PostContentEditor
                         value={field.value}
@@ -318,7 +342,7 @@ export function PostsMutateDialog({ open, onOpenChange, currentRow }: Props) {
                 name='isPublished'
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Trạng thái</FormLabel>
+                    <FormLabel>{t('messages.status')}</FormLabel>
                     <SelectDropdown
                       defaultValue={String(field.value)}
                       onValueChange={(value) =>
@@ -338,14 +362,16 @@ export function PostsMutateDialog({ open, onOpenChange, currentRow }: Props) {
         </DialogBody>
         <DialogFooter className='border-t pt-4'>
           <DialogClose asChild>
-            <Button variant='outline'>Đóng</Button>
+            <Button variant='outline'>{t('messages.close')}</Button>
           </DialogClose>
           <Button
             form='posts-form'
             type='submit'
             disabled={form.formState.isSubmitting || isUploadingThumbnail}
           >
-            {form.formState.isSubmitting ? 'Đang lưu...' : 'Lưu bài viết'}
+            {form.formState.isSubmitting
+              ? t('messages.saving')
+              : t('messages.savePost')}
           </Button>
         </DialogFooter>
       </DialogFormContent>

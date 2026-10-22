@@ -1,11 +1,14 @@
+import { useTranslation } from 'react-i18next'
 import { ContentSection } from '../components/content-section'
 import { ProfileForm } from './profile-form'
 
 export function SettingsProfile() {
+  const { t } = useTranslation()
+
   return (
     <ContentSection
-      title='Hồ sơ cá nhân'
-      desc='Xem và cập nhật thông tin tài khoản của bạn.'
+      title={t('messages.profile')}
+      desc={t('messages.viewAndUpdateYourAccountInformation')}
     >
       <ProfileForm />
     </ContentSection>

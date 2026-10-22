@@ -1,4 +1,5 @@
 import { useQueryClient } from '@tanstack/react-query'
+import { useTranslation } from 'react-i18next'
 import { toast } from 'sonner'
 import { showRequestError } from '@/lib/handle-server-error'
 import { formatNumber } from '@/lib/utils'
@@ -11,6 +12,8 @@ import { ReceiptMutateDrawer } from './receipt-mutate-drawer'
 import { StockTakeMutateDrawer } from './stocktake-mutate-drawer'
 
 export function InventoryDialogs() {
+  const { t } = useTranslation()
+
   const { open, setOpen, currentBatch, setCurrentBatch } = useInventory()
   const queryClient = useQueryClient()
 
@@ -24,10 +27,10 @@ export function InventoryDialogs() {
     try {
       await DisposeBatch(currentBatch.id)
       queryClient.invalidateQueries({ queryKey: ['inventory'] })
-      toast.success('Đã huỷ lô khỏi kho')
+      toast.success(t('messages.batchDiscardedFromInventory'))
       closeAndClear(() => setCurrentBatch(null))
     } catch (error) {
-      showRequestError(error, 'Không huỷ được lô')
+      showRequestError(error, t('messages.couldNotDiscardBatch'))
     }
   }
 
@@ -78,20 +81,24 @@ export function InventoryDialogs() {
           }}
           handleConfirm={handleDisposeBatch}
           className='max-w-md'
-          title={`Huỷ lô ${currentBatch.batchNo}?`}
+          title={t('messages.discardBatchAlt2', {
+            value0: currentBatch.batchNo,
+          })}
           desc={
             <>
-              Toàn bộ{' '}
+              {t('messages.all')}{' '}
               <strong>
                 {formatNumber(currentBatch.qtyRemaining)} {currentBatch.unit}
               </strong>{' '}
-              còn lại của <strong>{currentBatch.medicineName}</strong> (lô{' '}
-              {currentBatch.batchNo}) sẽ được đưa về 0. <br />
-              Dùng khi lô đã hết hạn hoặc hỏng. Không thể hoàn tác.
+              {t('messages.remainingStockOf')}{' '}
+              <strong>{currentBatch.medicineName}</strong>{' '}
+              {t('messages.batchAlt3')} {currentBatch.batchNo}
+              {t('messages.willBeSetToZero')} <br />
+              {t('messages.useThisForExpiredOrDamagedBatchesThisCannotBe')}
             </>
           }
-          confirmText='Huỷ lô'
-          cancelBtnText='Huỷ bỏ'
+          confirmText={t('messages.discardBatchAlt3')}
+          cancelBtnText={t('messages.discard')}
         />
       )}
     </>

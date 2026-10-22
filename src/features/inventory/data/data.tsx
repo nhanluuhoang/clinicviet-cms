@@ -1,3 +1,4 @@
+import i18n from '@/i18n'
 import {
   CircleAlert,
   CircleCheck,
@@ -31,11 +32,41 @@ export const inventoryTabs: {
   label: string
   icon: React.ComponentType<{ className?: string }>
 }[] = [
-  { value: 'stock', label: 'Tồn kho', icon: Warehouse },
-  { value: 'batches', label: 'Lô hàng', icon: Layers },
-  { value: 'receipts', label: 'Nhập hàng', icon: PackagePlus },
-  { value: 'issues', label: 'Xuất hàng', icon: PackageMinus },
-  { value: 'stocktakes', label: 'Kiểm kê', icon: ClipboardCheck },
+  {
+    value: 'stock',
+    get label() {
+      return i18n.t('messages.inventory')
+    },
+    icon: Warehouse,
+  },
+  {
+    value: 'batches',
+    get label() {
+      return i18n.t('messages.batchesAlt2')
+    },
+    icon: Layers,
+  },
+  {
+    value: 'receipts',
+    get label() {
+      return i18n.t('messages.receipts')
+    },
+    icon: PackagePlus,
+  },
+  {
+    value: 'issues',
+    get label() {
+      return i18n.t('messages.issues')
+    },
+    icon: PackageMinus,
+  },
+  {
+    value: 'stocktakes',
+    get label() {
+      return i18n.t('messages.stocktake')
+    },
+    icon: ClipboardCheck,
+  },
 ]
 
 type ExpiryMeta = {
@@ -50,7 +81,9 @@ type ExpiryMeta = {
 
 export const expiryStatuses: ExpiryMeta[] = [
   {
-    label: 'Đã hết hạn',
+    get label() {
+      return i18n.t('subscriptionStatuses.EXPIRED')
+    },
     value: 'expired',
     icon: CircleX,
     textClass: 'text-red-600 dark:text-red-400',
@@ -58,7 +91,11 @@ export const expiryStatuses: ExpiryMeta[] = [
       'border-red-200 bg-red-50 text-red-700 dark:border-red-900 dark:bg-red-950 dark:text-red-300',
   },
   {
-    label: `Còn dưới ${EXPIRY_CRITICAL_DAYS} ngày`,
+    get label() {
+      return i18n.t('messages.lessThanDaysLeft', {
+        value0: EXPIRY_CRITICAL_DAYS,
+      })
+    },
     value: 'critical',
     icon: TriangleAlert,
     textClass: 'text-orange-600 dark:text-orange-400',
@@ -66,7 +103,11 @@ export const expiryStatuses: ExpiryMeta[] = [
       'border-orange-200 bg-orange-50 text-orange-700 dark:border-orange-900 dark:bg-orange-950 dark:text-orange-300',
   },
   {
-    label: `Còn dưới ${EXPIRY_WARNING_DAYS} ngày`,
+    get label() {
+      return i18n.t('messages.lessThanDaysLeft', {
+        value0: EXPIRY_WARNING_DAYS,
+      })
+    },
     value: 'warning',
     icon: CircleAlert,
     textClass: 'text-amber-600 dark:text-amber-400',
@@ -74,7 +115,9 @@ export const expiryStatuses: ExpiryMeta[] = [
       'border-amber-200 bg-amber-50 text-amber-700 dark:border-amber-900 dark:bg-amber-950 dark:text-amber-300',
   },
   {
-    label: 'Còn hạn dài',
+    get label() {
+      return i18n.t('messages.longShelfLifeRemaining')
+    },
     value: 'ok',
     icon: CircleCheck,
     textClass: 'text-emerald-600 dark:text-emerald-400',

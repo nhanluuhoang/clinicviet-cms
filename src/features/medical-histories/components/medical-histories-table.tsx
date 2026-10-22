@@ -7,6 +7,8 @@ import {
   type VisibilityState,
 } from '@tanstack/react-table'
 import { hasAnyRole, PRESCRIBER_ROLES } from '@/config/access-control'
+import i18n from '@/i18n'
+import { useTranslation } from 'react-i18next'
 import { useAuthStore } from '@/stores/auth-store'
 import { cn } from '@/lib/utils'
 import { type NavigateFn, useTableUrlState } from '@/hooks/use-table-url-state'
@@ -46,6 +48,8 @@ export function MedicalHistoriesTable({
   navigate,
   isLoading,
 }: Props) {
+  const { t } = useTranslation()
+
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>(
     defaultAuditVisibility
   )
@@ -112,14 +116,20 @@ export function MedicalHistoriesTable({
       <DataTableToolbar
         table={table}
         searchFields={[
-          { columnId: 'patientName', placeholder: 'Tìm tên bệnh nhân...' },
-          { columnId: 'doctorName', placeholder: 'Tìm tên bác sĩ...' },
+          {
+            columnId: 'patientName',
+            placeholder: t('messages.searchPatientName'),
+          },
+          {
+            columnId: 'doctorName',
+            placeholder: t('messages.searchDoctorName'),
+          },
         ]}
         hasExtraFilters={Boolean(date)}
         onReset={resetFilters}
       >
         <label htmlFor='medical-history-date' className='sr-only'>
-          Ngày khám
+          {t('messages.examinationDate')}
         </label>
         <DatePickerInput
           id='medical-history-date'
@@ -143,8 +153,8 @@ export function MedicalHistoriesTable({
         isLoading={isLoading}
         emptyMessage={
           date
-            ? 'Không có lịch sử khám bệnh trong ngày đã chọn.'
-            : 'Không có lịch sử khám bệnh.'
+            ? t('messages.noMedicalHistoryOnTheSelectedDate')
+            : t('messages.noMedicalHistory')
         }
         renderSubRow={(row) => (
           <MedicalHistoryDetails
@@ -186,13 +196,17 @@ export function MedicalHistoriesTable({
                   colSpan={table.getVisibleLeafColumns().length}
                   className='h-24 text-center text-muted-foreground'
                 >
-                  Đang tải...
+                  {t('messages.loading')}
                 </TableCell>
               </TableRow>
             ) : table.getRowModel().rows.length ? (
               table.getRowModel().rows.map((row) => (
                 <Fragment key={row.id}>
-                  <TableRow data-state={row.getIsExpanded() && 'selected'}>
+                  <TableRow
+                    data-state={
+                      row.getIsExpanded() && i18n.t('messages.selectedCount')
+                    }
+                  >
                     {row.getVisibleCells().map((cell) => (
                       <TableCell
                         key={cell.id}
@@ -230,8 +244,8 @@ export function MedicalHistoriesTable({
                   className='h-24 text-center text-muted-foreground'
                 >
                   {date
-                    ? 'Không có lịch sử khám bệnh trong ngày đã chọn.'
-                    : 'Không có lịch sử khám bệnh.'}
+                    ? t('messages.noMedicalHistoryOnTheSelectedDate')
+                    : t('messages.noMedicalHistory')}
                 </TableCell>
               </TableRow>
             )}

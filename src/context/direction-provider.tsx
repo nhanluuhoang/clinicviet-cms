@@ -50,4 +50,3 @@ export function DirectionProvider({ children }: { children: React.ReactNode }) {
     </DirectionContext>
   )
 }
-

@@ -1,3 +1,4 @@
+import i18n from '@/i18n'
 import { IMAGE_UPLOAD_TYPES } from '@/lib/image-upload'
 import { VIDEO_UPLOAD_TYPES } from '@/lib/video-upload'
 import type { MedicineRow } from '../types'
@@ -23,7 +24,31 @@ export const ACCEPTED_MEDIA_TYPES = [
 ]
 
 export const SERVICE_TABS = [
-  { value: 'EXAMINATION', label: 'Khám bệnh', saveLabel: 'Lưu phiếu khám' },
-  { value: 'PHARMACY', label: 'Bán thuốc', saveLabel: 'Lưu phiếu bán thuốc' },
-  { value: 'VACCINATION', label: 'Tiêm vắc xin', saveLabel: 'Lưu phiếu tiêm' },
+  {
+    value: 'EXAMINATION',
+    get label() {
+      return i18n.t('messages.examination')
+    },
+    get saveLabel() {
+      return i18n.t('messages.saveExaminationRecord')
+    },
+  },
+  {
+    value: 'PHARMACY',
+    get label() {
+      return i18n.t('messages.pharmacySale')
+    },
+    get saveLabel() {
+      return i18n.t('messages.savePharmacySale')
+    },
+  },
+  {
+    value: 'VACCINATION',
+    get label() {
+      return i18n.t('messages.vaccination')
+    },
+    get saveLabel() {
+      return i18n.t('messages.saveVaccination')
+    },
+  },
 ] as const

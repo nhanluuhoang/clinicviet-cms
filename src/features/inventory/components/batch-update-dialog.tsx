@@ -3,6 +3,8 @@ import { z } from 'zod'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useQueryClient } from '@tanstack/react-query'
+import i18n from '@/i18n'
+import { useTranslation } from 'react-i18next'
 import { toast } from 'sonner'
 import { showRequestError } from '@/lib/handle-server-error'
 import { toDateInput } from '@/lib/utils'
@@ -32,13 +34,17 @@ import { type StockBatch, UpdateBatch } from '../api'
 
 const formSchema = z
   .object({
-    batchNo: z.string().min(1, 'Nhập số lô'),
+    batchNo: z
+      .string()
+      .min(1, { error: () => i18n.t('messages.enterBatchNumber') }),
     mfgDate: z.string(),
-    expiryDate: z.string().min(1, 'Chọn hạn sử dụng'),
+    expiryDate: z
+      .string()
+      .min(1, { error: () => i18n.t('messages.selectExpiryDate') }),
     note: z.string(),
   })
   .refine((value) => !value.mfgDate || value.mfgDate < value.expiryDate, {
-    message: 'Hạn sử dụng phải sau ngày sản xuất',
+    error: () => i18n.t('messages.expiryDateMustBeAfterTheManufacturingDate'),
     path: ['expiryDate'],
   })
 
@@ -53,6 +59,8 @@ export function BatchUpdateDialog({
   open: boolean
   onOpenChange: (open: boolean) => void
 }) {
+  const { t } = useTranslation()
+
   const queryClient = useQueryClient()
   const form = useForm<BatchForm>({
     resolver: zodResolver(formSchema),
@@ -79,10 +87,10 @@ export function BatchUpdateDialog({
     try {
       await UpdateBatch(batch.id, data)
       await queryClient.invalidateQueries({ queryKey: ['inventory'] })
-      toast.success('Đã cập nhật lô hàng')
+      toast.success(t('messages.batchUpdated'))
       onOpenChange(false)
     } catch (error) {
-      showRequestError(error, 'Không cập nhật được lô hàng')
+      showRequestError(error, t('messages.couldNotUpdateBatch'))
     }
   }
 
@@ -91,9 +99,10 @@ export function BatchUpdateDialog({
       <DialogFormContent className='sm:max-w-lg'>
         <DialogBody>
           <DialogHeader>
-            <DialogTitle>Cập nhật lô hàng</DialogTitle>
+            <DialogTitle>{t('messages.updateBatch')}</DialogTitle>
             <DialogDescription>
-              {batch.medicineName} · Tồn {batch.qtyRemaining} {batch.unit}
+              {batch.medicineName} {t('messages.stock')} {batch.qtyRemaining}{' '}
+              {batch.unit}
             </DialogDescription>
           </DialogHeader>
           <Form {...form}>
@@ -107,7 +116,7 @@ export function BatchUpdateDialog({
                 name='batchNo'
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel required>Số lô</FormLabel>
+                    <FormLabel required>{t('messages.batchNumber')}</FormLabel>
                     <FormControl>
                       <Input {...field} />
                     </FormControl>
@@ -121,7 +130,7 @@ export function BatchUpdateDialog({
                   name='mfgDate'
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Ngày sản xuất</FormLabel>
+                      <FormLabel>{t('messages.manufacturingDate')}</FormLabel>
                       <DatePickerInput
                         value={field.value}
                         onChange={field.onChange}
@@ -135,7 +144,7 @@ export function BatchUpdateDialog({
                   name='expiryDate'
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel required>Hạn sử dụng</FormLabel>
+                      <FormLabel required>{t('messages.expiryDate')}</FormLabel>
                       <DatePickerInput
                         value={field.value}
                         onChange={field.onChange}
@@ -150,7 +159,7 @@ export function BatchUpdateDialog({
                 name='note'
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Ghi chú</FormLabel>
+                    <FormLabel>{t('messages.notes')}</FormLabel>
                     <FormControl>
                       <Textarea {...field} rows={3} />
                     </FormControl>
@@ -163,14 +172,16 @@ export function BatchUpdateDialog({
         </DialogBody>
         <DialogFooter>
           <DialogClose asChild>
-            <Button variant='outline'>Đóng</Button>
+            <Button variant='outline'>{t('messages.close')}</Button>
           </DialogClose>
           <Button
             form='batch-update-form'
             type='submit'
             disabled={form.formState.isSubmitting}
           >
-            {form.formState.isSubmitting ? 'Đang lưu...' : 'Lưu thay đổi'}
+            {form.formState.isSubmitting
+              ? t('messages.saving')
+              : t('messages.saveChanges')}
           </Button>
         </DialogFooter>
       </DialogFormContent>

@@ -1,7 +1,9 @@
 import { useCallback, useEffect, useLayoutEffect, useState } from 'react'
 import { useLocation, useNavigate } from '@tanstack/react-router'
+import i18n from '@/i18n'
 import { AlertTriangle, CircleHelp, X } from 'lucide-react'
 import { createPortal } from 'react-dom'
+import { useTranslation } from 'react-i18next'
 import { useAuthStore } from '@/stores/auth-store'
 import { Button } from '@/components/ui/button'
 import { useSidebar } from '@/components/ui/sidebar'
@@ -22,68 +24,98 @@ type TourStep = {
 
 const overviewSteps: TourStep[] = [
   {
-    title: 'Chào mừng đến với ClinicViet',
-    description:
-      'Tour ngắn này sẽ giới thiệu những khu vực quan trọng để bạn bắt đầu sử dụng hệ thống.',
+    get title() {
+      return i18n.t('messages.welcomeToClinicviet')
+    },
+    get description() {
+      return i18n.t('messages.thisShortTourIntroducesTheKeyAreasToHelpYouGe')
+    },
   },
   {
-    title: 'Menu chức năng',
-    description:
-      'Các nghiệp vụ của phòng khám được sắp xếp theo nhóm tại đây. Bạn có thể thu gọn menu để có thêm không gian làm việc.',
+    get title() {
+      return i18n.t('messages.navigationMenu')
+    },
+    get description() {
+      return i18n.t('messages.clinicWorkflowsAreGroupedHereCollapseTheMenuFor')
+    },
     target: '[data-tour="sidebar"]',
   },
   {
-    title: 'Thực tế khám',
-    description:
-      'Tiếp nhận bệnh nhân, theo dõi hàng đợi, gọi lượt và hoàn tất quá trình khám trong ngày.',
+    get title() {
+      return i18n.t('messages.dailyExaminations')
+    },
+    get description() {
+      return i18n.t('messages.admitPatientsMonitorTheQueueCallPatientsAndComp')
+    },
     target: '[data-tour-url="/"]',
   },
   {
-    title: 'Hồ sơ bệnh nhân',
-    description:
-      'Quản lý thông tin bệnh nhân và tra cứu lịch sử khám bệnh khi cần.',
+    get title() {
+      return i18n.t('messages.patientRecords')
+    },
+    get description() {
+      return i18n.t('messages.managePatientInformationAndLookUpMedicalHistory')
+    },
     target: '[data-tour="create-patient"]',
   },
   {
-    title: 'Thuốc và kho',
-    description:
-      'Danh mục thuốc dùng để kê đơn; khu vực kho giúp theo dõi tồn, nhập, xuất và kiểm kê.',
+    get title() {
+      return i18n.t('messages.medicinesAndInventory')
+    },
+    get description() {
+      return i18n.t('messages.useTheMedicineCatalogForPrescriptionsAndInventor')
+    },
     target: '[data-tour-url="/medicines"]',
   },
   {
-    title: 'Tài khoản của bạn',
-    description:
-      'Mở menu này để xem hồ sơ cá nhân hoặc đăng xuất khỏi hệ thống.',
+    get title() {
+      return i18n.t('messages.yourAccount')
+    },
+    get description() {
+      return i18n.t('messages.openThisMenuToViewYourProfileOrSignOut')
+    },
     target: '[data-tour="user-menu"]',
   },
 ]
 
 const patientWorkflowSteps: TourStep[] = [
   {
-    title: '1. Tạo bệnh nhân mới',
-    description:
-      'Mở Bệnh nhân, chọn Thêm bệnh nhân và nhập thông tin cơ bản. Số điện thoại giúp bạn tìm lại hồ sơ nhanh khi bệnh nhân quay lại.',
+    get title() {
+      return i18n.t('messages.1CreateAPatient')
+    },
+    get description() {
+      return i18n.t('messages.openPatientsSelectAddPatientAndEnterBasicInform')
+    },
     destination: 'patients',
     target: '[data-tour-url="/patients"]',
   },
   {
-    title: '2. Tiếp nhận bệnh nhân',
-    description:
-      'Mở Thực tế khám, chọn Tiếp nhận, tìm bệnh nhân vừa tạo và đưa bệnh nhân vào hàng đợi khám trong ngày.',
+    get title() {
+      return i18n.t('messages.2AdmitThePatient')
+    },
+    get description() {
+      return i18n.t('messages.openDailyExaminationsSelectAdmitFindThePatientA')
+    },
     destination: 'queue',
     target: '[data-tour="create-queue"]',
   },
   {
-    title: '3. Lập phiếu dịch vụ',
-    description:
-      'Khi lượt bệnh nhân ở trạng thái Đang khám, nút Lập phiếu sẽ xuất hiện tại cuối dòng. Chọn nút này để ghi nhận thông tin khám, thuốc, vaccine và phí dịch vụ trước khi lưu.',
+    get title() {
+      return i18n.t('messages.3CreateAServiceRecord')
+    },
+    get description() {
+      return i18n.t('messages.whenAPatientIsBeingExaminedCreateRecordAppears')
+    },
     destination: 'queue',
     target: '[data-tour="create-prescription"]',
   },
   {
-    title: '4. Xuất hóa đơn',
-    description:
-      'Khi lượt khám đã hoàn tất và có hóa đơn, nút In hóa đơn sẽ xuất hiện tại cuối dòng. Chọn nút và khổ giấy phù hợp để in.',
+    get title() {
+      return i18n.t('messages.4PrintAnInvoice')
+    },
+    get description() {
+      return i18n.t('messages.afterAnExaminationIsCompletedAndHasAnInvoicePr')
+    },
     destination: 'queue',
     target: '[data-tour="print-invoice"]',
   },
@@ -91,32 +123,45 @@ const patientWorkflowSteps: TourStep[] = [
 
 const inventoryWorkflowSteps: TourStep[] = [
   {
-    title: '1. Tạo danh mục thuốc',
-    description:
-      'Trước khi tạo, hãy tìm theo tên thuốc, hoạt chất và hàm lượng để kiểm tra sản phẩm đã tồn tại hay chưa. Chỉ tạo mới khi chắc chắn chưa có trong danh mục.',
-    warning:
-      'Quan trọng: Mỗi sản phẩm thuốc chỉ nên tồn tại một lần. Không tạo trùng vì sẽ làm sai lệch tồn kho, lịch sử nhập xuất và dữ liệu kê toa.',
+    get title() {
+      return i18n.t('messages.1CreateAMedicineCatalog')
+    },
+    get description() {
+      return i18n.t('messages.beforeCreatingAMedicineSearchByNameActiveIngred')
+    },
+    get warning() {
+      return i18n.t('messages.importantEachMedicineProductShouldAppearOnlyOnce')
+    },
     destination: 'medicines',
     target: '[data-tour="create-medicine"]',
   },
   {
-    title: '2. Nhập hàng',
-    description:
-      'Mở Kho thuốc, chọn tab Nhập hàng và tạo phiếu nhập. Chọn thuốc, khai báo lô, hạn sử dụng, số lượng và giá nhập.',
+    get title() {
+      return i18n.t('messages.2ReceiveGoods')
+    },
+    get description() {
+      return i18n.t('messages.openMedicineInventorySelectReceiptsAndCreateARe')
+    },
     destination: 'inventory-receipts',
     target: '[data-tour="create-receipt"]',
   },
   {
-    title: '3. Kiểm kê',
-    description:
-      'Trong Kho thuốc, mở tab Kiểm kê để ghi nhận số lượng thực tế và đối chiếu với tồn kho trên hệ thống.',
+    get title() {
+      return i18n.t('messages.3TakeStock')
+    },
+    get description() {
+      return i18n.t('messages.inMedicineInventoryOpenStocktakesToRecordPhysica')
+    },
     destination: 'inventory-stocktakes',
     target: '[data-tour="create-stocktake"]',
   },
   {
-    title: '4. Xuất hàng',
-    description:
-      'Cuối cùng, mở tab Xuất hàng để tạo phiếu xuất, chọn đúng lô thuốc, số lượng và người nhận.',
+    get title() {
+      return i18n.t('messages.4IssueGoods')
+    },
+    get description() {
+      return i18n.t('messages.openIssuesAndCreateAnIssueDocumentSelectTheCor')
+    },
     destination: 'inventory-issues',
     target: '[data-tour="create-issue"]',
   },
@@ -133,6 +178,8 @@ const tourSteps: Record<TourKind, TourStep[]> = {
 type Rect = Pick<DOMRect, 'top' | 'left' | 'width' | 'height' | 'bottom'>
 
 export function ProductTour() {
+  const { t } = useTranslation()
+
   const navigate = useNavigate()
   const locationHref = useLocation({ select: (location) => location.href })
   const userId = useAuthStore((state) => state.auth.user?.id)
@@ -305,8 +352,8 @@ export function ProductTour() {
           size='icon'
           className='fixed end-5 bottom-5 z-40 size-11 rounded-full shadow-lg'
           onClick={start}
-          aria-label='Mở hướng dẫn sử dụng'
-          title='Hướng dẫn sử dụng'
+          aria-label={t('messages.openUserGuide')}
+          title={t('messages.userGuide')}
         >
           <CircleHelp className='size-5' />
         </Button>
@@ -314,7 +361,11 @@ export function ProductTour() {
 
       {active &&
         createPortal(
-          <div role='dialog' aria-modal='true' aria-label='Hướng dẫn sử dụng'>
+          <div
+            role='dialog'
+            aria-modal='true'
+            aria-label={t('messages.userGuide')}
+          >
             {rect ? (
               <div
                 className='pointer-events-none fixed z-[100] rounded-lg ring-2 ring-primary ring-offset-4 ring-offset-background transition-all duration-200'
@@ -342,12 +393,12 @@ export function ProductTour() {
                 type='button'
                 className='absolute end-3 top-3 rounded-md p-1 text-muted-foreground hover:bg-muted hover:text-foreground'
                 onClick={() => setActive(false)}
-                aria-label='Đóng hướng dẫn'
+                aria-label={t('messages.closeGuide')}
               >
                 <X className='size-4' />
               </button>
               <div className='mb-2 text-xs font-medium text-primary'>
-                Bước {stepIndex + 1}/{steps.length}
+                {t('messages.step')} {stepIndex + 1}/{steps.length}
               </div>
               <h2 className='pe-6 text-lg font-semibold'>{step.title}</h2>
               <p className='mt-2 text-sm leading-6 text-muted-foreground'>
@@ -366,7 +417,7 @@ export function ProductTour() {
                   size='sm'
                   onClick={finish}
                 >
-                  Bỏ qua
+                  {t('messages.skip')}
                 </Button>
                 <div className='flex gap-2'>
                   {stepIndex > 0 && (
@@ -376,7 +427,7 @@ export function ProductTour() {
                       size='sm'
                       onClick={() => setStepIndex((value) => value - 1)}
                     >
-                      Quay lại
+                      {t('messages.back')}
                     </Button>
                   )}
                   <Button
@@ -388,7 +439,9 @@ export function ProductTour() {
                         : setStepIndex((value) => value + 1)
                     }
                   >
-                    {stepIndex === steps.length - 1 ? 'Hoàn tất' : 'Tiếp theo'}
+                    {stepIndex === steps.length - 1
+                      ? t('messages.finish')
+                      : t('messages.next')}
                   </Button>
                 </div>
               </div>

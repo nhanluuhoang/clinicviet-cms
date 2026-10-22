@@ -1,3 +1,4 @@
+import i18n from '@/i18n'
 import { axios } from '@/lib/axios'
 import { isExpired, worstExpiryStatus } from '@/lib/utils'
 import type { AuditFields } from '@/components/data-table/audit-columns'
@@ -361,8 +362,10 @@ const DisposeBatch = (batchId: string): Promise<void> =>
   axios.post('/stock-takes', {
     code: generatedCode('HUY'),
     countedAt: new Date().toISOString(),
-    note: 'Hủy toàn bộ tồn của lô hết hạn',
-    lines: [{ batchId, countedQty: 0, reason: 'Hủy lô' }],
+    note: i18n.t('messages.discardAllRemainingStockInThisExpiredBatch'),
+    lines: [
+      { batchId, countedQty: 0, reason: i18n.t('messages.discardBatch') },
+    ],
   })
 
 export {

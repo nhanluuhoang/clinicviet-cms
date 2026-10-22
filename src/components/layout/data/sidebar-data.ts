@@ -6,6 +6,7 @@ import {
   TENANT_STAFF_PLANS,
   SUPER_ADMIN_ROLES,
 } from '@/config/access-control'
+import i18n from '@/i18n'
 import {
   LayoutDashboard,
   Users,
@@ -34,27 +35,37 @@ export const sidebarData: SidebarData = {
     {
       items: [
         {
-          title: 'Hệ thống',
+          get title() {
+            return i18n.t('messages.system')
+          },
           icon: Building2,
           roles: SUPER_ADMIN_ROLES,
           items: [
             {
-              title: 'Yêu cầu hỗ trợ',
+              get title() {
+                return i18n.t('messages.supportRequests')
+              },
               url: '/system/support-requests',
               roles: SUPER_ADMIN_ROLES,
             },
             {
-              title: 'Phòng khám',
+              get title() {
+                return i18n.t('messages.clinics')
+              },
               url: '/system/tenants',
               roles: SUPER_ADMIN_ROLES,
             },
             {
-              title: 'Người dùng',
+              get title() {
+                return i18n.t('messages.users')
+              },
               url: '/system/users',
               roles: SUPER_ADMIN_ROLES,
             },
             {
-              title: 'Yêu cầu dùng thử',
+              get title() {
+                return i18n.t('messages.trialRequests')
+              },
               url: '/system/trial-requests',
               roles: SUPER_ADMIN_ROLES,
             },
@@ -63,28 +74,38 @@ export const sidebarData: SidebarData = {
       ],
     },
     {
-      title: 'Tổng quan',
+      get title() {
+        return i18n.t('messages.overview')
+      },
       items: [
         {
-          title: 'Thứ tự khám',
+          get title() {
+            return i18n.t('messages.examinationQueue')
+          },
           url: '/',
           icon: ListOrdered,
           roles: STAFF_ROLES,
         },
         {
-          title: 'Bệnh nhân',
+          get title() {
+            return i18n.t('messages.patient')
+          },
           url: '/patients',
           icon: HeartPulse,
           roles: STAFF_ROLES,
         },
         {
-          title: 'Lịch sử khám bệnh',
+          get title() {
+            return i18n.t('messages.medicalHistory')
+          },
           url: '/medical-histories',
           icon: History,
           roles: STAFF_ROLES,
         },
         {
-          title: 'Quản lý hóa đơn',
+          get title() {
+            return i18n.t('messages.invoices')
+          },
           url: '/invoices',
           icon: ReceiptText,
           roles: STAFF_ROLES,
@@ -94,7 +115,9 @@ export const sidebarData: SidebarData = {
     {
       items: [
         {
-          title: 'Nhân viên',
+          get title() {
+            return i18n.t('messages.staff')
+          },
           url: '/admins',
           icon: Users,
           roles: TENANT_ADMIN_ROLES,
@@ -103,22 +126,30 @@ export const sidebarData: SidebarData = {
       ],
     },
     {
-      title: 'Quản lý thuốc',
+      get title() {
+        return i18n.t('messages.medicineManagement')
+      },
       items: [
         {
-          title: 'Danh mục thuốc',
+          get title() {
+            return i18n.t('messages.medicineCatalog')
+          },
           url: '/medicines',
           icon: Pill,
           roles: STAFF_ROLES,
         },
         {
-          title: 'Kho thuốc',
+          get title() {
+            return i18n.t('messages.medicineInventory')
+          },
           url: '/inventory',
           icon: Warehouse,
           roles: STAFF_ROLES,
         },
         {
-          title: 'Mẫu đơn thuốc',
+          get title() {
+            return i18n.t('messages.prescriptionTemplates')
+          },
           url: '/prescription-templates',
           icon: ClipboardList,
           roles: CLINICAL_ADMIN_ROLES,
@@ -126,22 +157,30 @@ export const sidebarData: SidebarData = {
       ],
     },
     {
-      title: 'Thống kê',
+      get title() {
+        return i18n.t('messages.statistics')
+      },
       items: [
         {
-          title: 'Thống kê ngày',
+          get title() {
+            return i18n.t('messages.dailyStatistics')
+          },
           url: '/dashboards',
           icon: LayoutDashboard,
           roles: CLINICAL_ADMIN_ROLES,
         },
         {
-          title: 'Thống kê tháng',
+          get title() {
+            return i18n.t('messages.monthlyStatistics')
+          },
           url: '/monthly-statistics',
           icon: CalendarRange,
           roles: CLINICAL_ADMIN_ROLES,
         },
         {
-          title: 'Thống kê năm',
+          get title() {
+            return i18n.t('messages.yearlyStatistics')
+          },
           url: '/yearly-statistics',
           icon: ChartColumn,
           roles: CLINICAL_ADMIN_ROLES,
@@ -149,21 +188,29 @@ export const sidebarData: SidebarData = {
       ],
     },
     {
-      title: 'Cài đặt',
+      get title() {
+        return i18n.t('messages.settings')
+      },
       items: [
         {
-          title: 'Giao diện',
+          get title() {
+            return i18n.t('messages.appearance')
+          },
           icon: ShieldCheck,
           plans: TENANT_APPEARANCE_PLANS,
           items: [
             {
-              title: 'Trang giới thiệu',
+              get title() {
+                return i18n.t('messages.clinicWebsite')
+              },
               url: '/landing-config',
               icon: PanelsTopLeft,
               roles: TENANT_ADMIN_ROLES,
             },
             {
-              title: 'Bài viết',
+              get title() {
+                return i18n.t('messages.posts')
+              },
               url: '/posts',
               icon: SquarePen,
               roles: TENANT_ADMIN_ROLES,
@@ -171,17 +218,23 @@ export const sidebarData: SidebarData = {
           ],
         },
         {
-          title: 'Cài đặt',
+          get title() {
+            return i18n.t('messages.settings')
+          },
           icon: Settings,
           items: [
             {
-              title: 'Cấu hình chung',
+              get title() {
+                return i18n.t('messages.generalSettings')
+              },
               url: '/master-data',
               icon: Database,
               roles: CLINICAL_ADMIN_ROLES,
             },
             {
-              title: 'Ngày nghỉ phòng khám',
+              get title() {
+                return i18n.t('messages.clinicHolidays')
+              },
               url: '/clinic-days-off',
               icon: CalendarOff,
               roles: CLINICAL_ADMIN_ROLES,
@@ -194,7 +247,9 @@ export const sidebarData: SidebarData = {
     {
       items: [
         {
-          title: 'Hỗ trợ & góp ý',
+          get title() {
+            return i18n.t('messages.supportFeedback')
+          },
           url: '/support-requests',
           icon: MessageSquare,
           roles: STAFF_ROLES,

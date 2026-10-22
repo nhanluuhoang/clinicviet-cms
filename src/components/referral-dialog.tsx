@@ -1,6 +1,7 @@
 import { useState, type FormEvent } from 'react'
 import { useMutation } from '@tanstack/react-query'
 import { SERVICE_PLAN_LABELS } from '@/config/service-plans'
+import { useTranslation } from 'react-i18next'
 import { toast } from 'sonner'
 import { useAuthStore } from '@/stores/auth-store'
 import { axios } from '@/lib/axios'
@@ -30,6 +31,8 @@ export function ReferralDialog({
   open: boolean
   onOpenChange: (open: boolean) => void
 }) {
+  const { t } = useTranslation()
+
   const user = useAuthStore((state) => state.auth.user)
   const [submitted, setSubmitted] = useState(false)
   const plan = user?.tenant?.servicePlan
@@ -38,10 +41,10 @@ export function ReferralDialog({
       axios.post('/trial-requests/referrals', data),
     onSuccess: () => {
       setSubmitted(true)
-      toast.success('Đã gửi thông tin giới thiệu')
+      toast.success(t('messages.referralSubmitted'))
     },
     onError: (error) =>
-      showRequestError(error, 'Không thể gửi thông tin giới thiệu'),
+      showRequestError(error, t('messages.couldNotSubmitReferral')),
   })
 
   function submit(event: FormEvent<HTMLFormElement>) {
@@ -65,23 +68,21 @@ export function ReferralDialog({
       <DialogFormContent>
         <DialogBody className='space-y-4'>
           <DialogHeader>
-            <DialogTitle>Giới thiệu cho bạn bè</DialogTitle>
+            <DialogTitle>{t('messages.referAFriend')}</DialogTitle>
             <DialogDescription>
-              Giới thiệu ClinicViet đến bạn bè hoặc cơ sở có nhu cầu sử dụng.
+              {t('messages.introduceClinicvietToFriendsOrOrganizationsThatN')}
             </DialogDescription>
           </DialogHeader>
           <div className='rounded-lg border border-primary/20 bg-primary/5 p-4 text-sm leading-6'>
-            Khi người bạn giới thiệu mua gói dịch vụ thành công, bạn được cộng
-            thêm <strong>1 tháng sử dụng theo gói đang dùng</strong>
-            {plan ? ` (${SERVICE_PLAN_LABELS[plan]})` : ''} tại thời điểm ghi
-            nhận thưởng. Đội ngũ ClinicViet sẽ xác nhận và cập nhật thời hạn sử
-            dụng cho bạn.
+            {t('messages.whenYourReferralPurchasesAServicePlanYouReceive')}{' '}
+            <strong>{t('messages.monthOnYourCurrentPlan')}</strong>
+            {plan ? ` (${SERVICE_PLAN_LABELS[plan]})` : ''}{' '}
+            {t('messages.atTheTimeTheRewardIsRecordedTheClinicvietTeam')}
           </div>
           {submitted ? (
             <div className='space-y-4'>
               <p className='text-sm leading-6'>
-                Đã nhận thông tin giới thiệu. ClinicViet sẽ liên hệ người được
-                giới thiệu để tư vấn.
+                {t('messages.referralReceivedClinicvietWillContactTheReferred')}
               </p>
             </div>
           ) : (
@@ -89,7 +90,7 @@ export function ReferralDialog({
               <fieldset disabled={mutation.isPending} className='space-y-4'>
                 <div className='space-y-2'>
                   <Label required htmlFor='referral-phone'>
-                    SĐT người được giới thiệu
+                    {t('messages.referralSPhoneNumber')}
                   </Label>
                   <Input
                     id='referral-phone'
@@ -97,12 +98,12 @@ export function ReferralDialog({
                     type='tel'
                     required
                     maxLength={20}
-                    placeholder='Nhập số điện thoại liên hệ'
+                    placeholder={t('messages.enterAContactPhoneNumber')}
                   />
                 </div>
                 <div className='space-y-2'>
                   <Label required htmlFor='referral-name'>
-                    Tên người được giới thiệu
+                    {t('messages.referralSName')}
                   </Label>
                   <Input
                     id='referral-name'
@@ -112,8 +113,9 @@ export function ReferralDialog({
                   />
                 </div>
                 <p className='text-xs text-muted-foreground'>
-                  Thông tin người giới thiệu được lấy từ tài khoản đang đăng
-                  nhập.
+                  {t(
+                    'messages.referrerInformationIsTakenFromTheSignedInAccoun'
+                  )}
                 </p>
               </fieldset>
             </form>
@@ -129,7 +131,7 @@ export function ReferralDialog({
               onOpenChange(false)
             }}
           >
-            Đóng
+            {t('messages.close')}
           </Button>
           {!submitted && (
             <Button
@@ -137,7 +139,9 @@ export function ReferralDialog({
               form='referral-form'
               disabled={mutation.isPending}
             >
-              {mutation.isPending ? 'Đang gửi…' : 'Gửi thông tin giới thiệu'}
+              {mutation.isPending
+                ? t('messages.sending')
+                : t('messages.submitReferral')}
             </Button>
           )}
         </DialogFooter>

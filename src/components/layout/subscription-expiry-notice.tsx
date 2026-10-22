@@ -1,12 +1,15 @@
-import { AlertTriangle, Clock3 } from 'lucide-react'
 import { useState } from 'react'
-import { useAuthStore } from '@/stores/auth-store'
 import { SERVICE_PLAN_LABELS } from '@/config/service-plans'
+import { AlertTriangle, Clock3 } from 'lucide-react'
+import { useTranslation } from 'react-i18next'
+import { useAuthStore } from '@/stores/auth-store'
 
 const WARNING_DAYS = 14
 const DAY_IN_MS = 24 * 60 * 60 * 1000
 
 export function SubscriptionExpiryNotice() {
+  const { t } = useTranslation()
+
   const tenant = useAuthStore((state) => state.auth.user?.tenant)
   const [currentTime] = useState(() => Date.now())
 
@@ -39,8 +42,13 @@ export function SubscriptionExpiryNotice() {
     >
       <Icon className='size-4 shrink-0' />
       {isExpired
-        ? `Gói ${SERVICE_PLAN_LABELS[tenant.servicePlan]} của phòng khám đã hết hạn. Bạn chỉ có thể xem dữ liệu cho đến khi gia hạn.`
-        : `Gói ${SERVICE_PLAN_LABELS[tenant.servicePlan]} sẽ hết hạn sau ${remainingDays} ngày.`}
+        ? t('subscription.expired', {
+            value0: SERVICE_PLAN_LABELS[tenant.servicePlan],
+          })
+        : t('subscription.expiring', {
+            value0: SERVICE_PLAN_LABELS[tenant.servicePlan],
+            count: remainingDays,
+          })}
     </div>
   )
 }

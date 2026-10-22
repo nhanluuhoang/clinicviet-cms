@@ -1,4 +1,5 @@
 import type { ColumnDef } from '@tanstack/react-table'
+import i18n, { getLocale } from '@/i18n'
 import { formatNumber } from '@/lib/utils'
 import { DataTableColumnHeader } from '@/components/data-table'
 import { withAuditColumns } from '@/components/data-table/audit-columns'
@@ -6,16 +7,36 @@ import type { Invoice } from '../api'
 import { InvoiceServiceFees } from './invoice-service-fees'
 
 export const invoiceMobileLabels = {
-  invoiceCode: 'Mã hóa đơn',
-  issuedAt: 'Ngày lập hóa đơn',
-  patientName: 'Bệnh nhân',
-  phone: 'Số điện thoại',
-  serviceType: 'Loại dịch vụ',
-  doctorName: 'Bác sĩ',
-  totalAmount: 'Tổng tiền',
-  consultationFee: 'Phí khám',
-  medicineRevenue: 'Tiền thuốc',
-  serviceFee: 'Phí dịch vụ',
+  get invoiceCode() {
+    return i18n.t('messages.invoiceCode')
+  },
+  get issuedAt() {
+    return i18n.t('messages.invoiceDate')
+  },
+  get patientName() {
+    return i18n.t('messages.patient')
+  },
+  get phone() {
+    return i18n.t('messages.phoneNumber')
+  },
+  get serviceType() {
+    return i18n.t('messages.serviceType')
+  },
+  get doctorName() {
+    return i18n.t('messages.doctor')
+  },
+  get totalAmount() {
+    return i18n.t('messages.totalAmount')
+  },
+  get consultationFee() {
+    return i18n.t('messages.consultationFee')
+  },
+  get medicineRevenue() {
+    return i18n.t('messages.medicineCharges')
+  },
+  get serviceFee() {
+    return i18n.t('messages.serviceFee')
+  },
 }
 
 const feeKeys = [
@@ -30,7 +51,10 @@ function serviceFees(invoice: Invoice) {
     .map(([amountKey, labelKey], index) => ({
       amount: Number(invoice[amountKey]),
       label: invoice[labelKey].trim(),
-      fallback: index === 0 ? 'Phí dịch vụ' : `Phí khác ${index}`,
+      fallback:
+        index === 0
+          ? i18n.t('messages.serviceFee')
+          : i18n.t('messages.additionalFee', { value0: index }),
     }))
     .filter((fee) => fee.amount !== 0 || fee.label !== '')
 }
@@ -38,26 +62,47 @@ function serviceFees(invoice: Invoice) {
 const currency = (value: number | string) => `${formatNumber(Number(value))} ₫`
 
 export const invoiceServiceTypes = [
-  { label: 'Khám bệnh', value: 'EXAMINATION' },
-  { label: 'Nhà thuốc', value: 'PHARMACY' },
-  { label: 'Tiêm chủng', value: 'VACCINATION' },
+  {
+    get label() {
+      return i18n.t('messages.examination')
+    },
+    value: 'EXAMINATION',
+  },
+  {
+    get label() {
+      return i18n.t('messages.pharmacy')
+    },
+    value: 'PHARMACY',
+  },
+  {
+    get label() {
+      return i18n.t('messages.vaccinationAlt2')
+    },
+    value: 'VACCINATION',
+  },
 ]
 
 export const invoiceColumns: ColumnDef<Invoice>[] = withAuditColumns([
   {
     accessorKey: 'invoiceCode',
     header: ({ column }) => (
-      <DataTableColumnHeader column={column} title='Mã hóa đơn' />
+      <DataTableColumnHeader
+        column={column}
+        title={i18n.t('messages.invoiceCode')}
+      />
     ),
     enableSorting: false,
   },
   {
     accessorKey: 'issuedAt',
     header: ({ column }) => (
-      <DataTableColumnHeader column={column} title='Ngày lập' />
+      <DataTableColumnHeader
+        column={column}
+        title={i18n.t('messages.issuedOn')}
+      />
     ),
     cell: ({ row }) =>
-      new Date(row.original.issuedAt).toLocaleString('vi-VN', {
+      new Date(row.original.issuedAt).toLocaleString(getLocale(), {
         timeZone: 'Asia/Ho_Chi_Minh',
       }),
     enableSorting: false,
@@ -66,7 +111,10 @@ export const invoiceColumns: ColumnDef<Invoice>[] = withAuditColumns([
     id: 'patientName',
     accessorFn: (invoice) => invoice.prescription.patient.fullName,
     header: ({ column }) => (
-      <DataTableColumnHeader column={column} title='Bệnh nhân' />
+      <DataTableColumnHeader
+        column={column}
+        title={i18n.t('messages.patient')}
+      />
     ),
     enableSorting: false,
   },
@@ -74,7 +122,10 @@ export const invoiceColumns: ColumnDef<Invoice>[] = withAuditColumns([
     id: 'phone',
     accessorFn: (invoice) => invoice.prescription.patient.phone || '-',
     header: ({ column }) => (
-      <DataTableColumnHeader column={column} title='Số điện thoại' />
+      <DataTableColumnHeader
+        column={column}
+        title={i18n.t('messages.phoneNumber')}
+      />
     ),
     enableSorting: false,
   },
@@ -82,7 +133,10 @@ export const invoiceColumns: ColumnDef<Invoice>[] = withAuditColumns([
     id: 'serviceType',
     accessorFn: (invoice) => invoice.prescription.medicalHistory.serviceType,
     header: ({ column }) => (
-      <DataTableColumnHeader column={column} title='Loại dịch vụ' />
+      <DataTableColumnHeader
+        column={column}
+        title={i18n.t('messages.serviceType')}
+      />
     ),
     cell: ({ getValue }) =>
       invoiceServiceTypes.find((type) => type.value === getValue())?.label ??
@@ -94,13 +148,18 @@ export const invoiceColumns: ColumnDef<Invoice>[] = withAuditColumns([
     accessorFn: (invoice) =>
       invoice.prescription.medicalHistory.doctorName || '-',
     header: ({ column }) => (
-      <DataTableColumnHeader column={column} title='Bác sĩ' />
+      <DataTableColumnHeader
+        column={column}
+        title={i18n.t('messages.doctor')}
+      />
     ),
     enableSorting: false,
   },
   {
     accessorKey: 'consultationFee',
-    header: 'Phí khám',
+    get header() {
+      return i18n.t('messages.consultationFee')
+    },
     cell: ({ row }) => (
       <span className='whitespace-nowrap tabular-nums'>
         {currency(row.original.consultationFee)}
@@ -111,7 +170,9 @@ export const invoiceColumns: ColumnDef<Invoice>[] = withAuditColumns([
   },
   {
     accessorKey: 'medicineRevenue',
-    header: 'Tiền thuốc',
+    get header() {
+      return i18n.t('messages.medicineCharges')
+    },
     cell: ({ row }) => (
       <span className='whitespace-nowrap tabular-nums'>
         {currency(row.original.medicineRevenue)}
@@ -122,7 +183,9 @@ export const invoiceColumns: ColumnDef<Invoice>[] = withAuditColumns([
   },
   {
     accessorKey: 'serviceFee',
-    header: 'Phí dịch vụ',
+    get header() {
+      return i18n.t('messages.serviceFee')
+    },
     cell: ({ row }) => <InvoiceServiceFees fees={serviceFees(row.original)} />,
     meta: {
       thClassName: 'text-right',
@@ -135,7 +198,10 @@ export const invoiceColumns: ColumnDef<Invoice>[] = withAuditColumns([
   {
     accessorKey: 'totalAmount',
     header: ({ column }) => (
-      <DataTableColumnHeader column={column} title='Tổng tiền' />
+      <DataTableColumnHeader
+        column={column}
+        title={i18n.t('messages.totalAmount')}
+      />
     ),
     cell: ({ row }) => (
       <span className='font-medium whitespace-nowrap tabular-nums'>

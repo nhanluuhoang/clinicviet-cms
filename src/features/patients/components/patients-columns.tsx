@@ -1,4 +1,5 @@
 import { type ColumnDef } from '@tanstack/react-table'
+import i18n from '@/i18n'
 import { DataTableColumnHeader } from '@/components/data-table'
 import { withAuditColumns } from '@/components/data-table/audit-columns'
 import { LongText } from '@/components/long-text'
@@ -17,7 +18,10 @@ export const patientsColumns: ColumnDef<Patient>[] = withAuditColumns([
   {
     accessorKey: 'fullName',
     header: ({ column }) => (
-      <DataTableColumnHeader column={column} title='Họ tên' />
+      <DataTableColumnHeader
+        column={column}
+        title={i18n.t('messages.fullName')}
+      />
     ),
     cell: ({ row }) => (
       <LongText className='max-w-44'>{row.original.fullName}</LongText>
@@ -26,7 +30,10 @@ export const patientsColumns: ColumnDef<Patient>[] = withAuditColumns([
   {
     accessorKey: 'phone',
     header: ({ column }) => (
-      <DataTableColumnHeader column={column} title='Số điện thoại' />
+      <DataTableColumnHeader
+        column={column}
+        title={i18n.t('messages.phoneNumber')}
+      />
     ),
     cell: ({ row }) => (
       <span className='tabular-nums'>
@@ -38,7 +45,10 @@ export const patientsColumns: ColumnDef<Patient>[] = withAuditColumns([
   {
     accessorKey: 'gender',
     header: ({ column }) => (
-      <DataTableColumnHeader column={column} title='Giới tính' />
+      <DataTableColumnHeader
+        column={column}
+        title={i18n.t('messages.gender')}
+      />
     ),
     cell: ({ row }) => <span>{genderLabel(row.original.gender)}</span>,
     enableSorting: false,
@@ -46,7 +56,10 @@ export const patientsColumns: ColumnDef<Patient>[] = withAuditColumns([
   {
     accessorKey: 'dateOfBirth',
     header: ({ column }) => (
-      <DataTableColumnHeader column={column} title='Ngày sinh' />
+      <DataTableColumnHeader
+        column={column}
+        title={i18n.t('messages.dateOfBirth')}
+      />
     ),
     cell: ({ row }) => (
       <span className='tabular-nums'>
@@ -57,7 +70,10 @@ export const patientsColumns: ColumnDef<Patient>[] = withAuditColumns([
   {
     accessorKey: 'address',
     header: ({ column }) => (
-      <DataTableColumnHeader column={column} title='Địa chỉ' />
+      <DataTableColumnHeader
+        column={column}
+        title={i18n.t('messages.address')}
+      />
     ),
     cell: ({ row }) =>
       row.original.address ? (
@@ -70,7 +86,7 @@ export const patientsColumns: ColumnDef<Patient>[] = withAuditColumns([
   {
     accessorKey: 'note',
     header: ({ column }) => (
-      <DataTableColumnHeader column={column} title='Ghi chú' />
+      <DataTableColumnHeader column={column} title={i18n.t('messages.notes')} />
     ),
     cell: ({ row }) =>
       row.original.note ? (

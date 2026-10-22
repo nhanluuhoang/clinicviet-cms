@@ -3,7 +3,9 @@ import { DotsHorizontalIcon } from '@radix-ui/react-icons'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { SERVICE_PLAN_OPTIONS } from '@/config/service-plans'
 import { SUBSCRIPTION_STATUS_OPTIONS } from '@/config/subscription-statuses'
+import i18n from '@/i18n'
 import { Pencil, Trash2 } from 'lucide-react'
+import { useTranslation } from 'react-i18next'
 import { toast } from 'sonner'
 import { showRequestError } from '@/lib/handle-server-error'
 import { toDateInput } from '@/lib/utils'
@@ -42,6 +44,8 @@ import { SelectDropdown } from '@/components/select-dropdown'
 import { deleteTenant, updateTenant, type Tenant } from '../api'
 
 export function TenantActions({ tenant }: { tenant: Tenant }) {
+  const { t } = useTranslation()
+
   const [editOpen, setEditOpen] = useState(false)
   const [deleteOpen, setDeleteOpen] = useState(false)
   const queryClient = useQueryClient()
@@ -78,23 +82,23 @@ export function TenantActions({ tenant }: { tenant: Tenant }) {
       }),
     onSuccess: async () => {
       await refresh()
-      toast.success('Đã cập nhật phòng khám')
+      toast.success(t('messages.clinicUpdated'))
       setEditOpen(false)
     },
     onError: (error) =>
-      showRequestError(error, 'Không thể cập nhật phòng khám'),
+      showRequestError(error, t('messages.couldNotUpdateClinic')),
   })
   const remove = useMutation({
     mutationFn: () => deleteTenant(tenant.id),
     onSuccess: async () => {
       await refresh()
-      toast.success('Đã xóa phòng khám')
+      toast.success(t('messages.clinicDeleted'))
       setDeleteOpen(false)
     },
     onError: (error) =>
       showRequestError(
         error,
-        'Không thể xóa phòng khám đang có dữ liệu nghiệp vụ'
+        t('messages.cannotDeleteAClinicWithBusinessData')
       ),
   })
 
@@ -104,7 +108,7 @@ export function TenantActions({ tenant }: { tenant: Tenant }) {
         <DropdownMenuTrigger asChild>
           <Button variant='ghost' className='flex h-8 w-8 p-0'>
             <DotsHorizontalIcon className='h-4 w-4' />
-            <span className='sr-only'>Mở menu</span>
+            <span className='sr-only'>{t('messages.openMenu')}</span>
           </Button>
         </DropdownMenuTrigger>
         <DropdownMenuContent align='end' className='w-[160px]'>
@@ -126,7 +130,7 @@ export function TenantActions({ tenant }: { tenant: Tenant }) {
               setEditOpen(true)
             }}
           >
-            Cập nhật
+            {t('messages.update')}
             <DropdownMenuShortcut>
               <Pencil size={16} />
             </DropdownMenuShortcut>
@@ -135,7 +139,7 @@ export function TenantActions({ tenant }: { tenant: Tenant }) {
             onClick={() => setDeleteOpen(true)}
             className='text-red-500!'
           >
-            Xóa
+            {t('messages.delete')}
             <DropdownMenuShortcut>
               <Trash2 size={16} />
             </DropdownMenuShortcut>
@@ -146,15 +150,15 @@ export function TenantActions({ tenant }: { tenant: Tenant }) {
         <DialogFormContent className='sm:max-w-xl'>
           <DialogBody>
             <DialogHeader>
-              <DialogTitle>Cập nhật phòng khám</DialogTitle>
+              <DialogTitle>{t('messages.updateClinic')}</DialogTitle>
             </DialogHeader>
             <div className='grid gap-4 sm:grid-cols-2'>
               {(
                 [
-                  ['code', 'Mã phòng khám'],
-                  ['name', 'Tên phòng khám'],
-                  ['subdomain', 'Subdomain'],
-                  ['address', 'Địa chỉ'],
+                  ['code', t('messages.clinicCode')],
+                  ['name', t('messages.clinicName')],
+                  ['subdomain', i18n.t('messages.subdomain')],
+                  ['address', t('messages.address')],
                 ] as const
               )
                 .filter(
@@ -173,7 +177,7 @@ export function TenantActions({ tenant }: { tenant: Tenant }) {
                 ))}
               <div className='space-y-2 sm:col-span-2'>
                 <Label required htmlFor={`tenant-storage-${tenant.id}`}>
-                  Dung lượng lưu trữ (GB)
+                  {t('messages.storageLimitGb')}
                 </Label>
                 <Input
                   id={`tenant-storage-${tenant.id}`}
@@ -192,7 +196,7 @@ export function TenantActions({ tenant }: { tenant: Tenant }) {
               </div>
               <div className='space-y-2 sm:col-span-2'>
                 <Label htmlFor={`tenant-note-${tenant.id}`}>
-                  Ghi chú nội bộ
+                  {t('messages.internalNotes')}
                 </Label>
                 <Textarea
                   id={`tenant-note-${tenant.id}`}
@@ -205,7 +209,7 @@ export function TenantActions({ tenant }: { tenant: Tenant }) {
                 />
               </div>
               <div className='space-y-2 sm:col-span-2'>
-                <Label required>Gói dịch vụ</Label>
+                <Label required>{t('messages.servicePlanAlt2')}</Label>
                 <SelectDropdown
                   standalone
                   defaultValue={values.servicePlan}
@@ -220,7 +224,7 @@ export function TenantActions({ tenant }: { tenant: Tenant }) {
                 />
               </div>
               <div className='space-y-2 sm:col-span-2'>
-                <Label required>Trạng thái sử dụng</Label>
+                <Label required>{t('messages.usageStatus')}</Label>
                 <SelectDropdown
                   standalone
                   isControlled
@@ -236,7 +240,7 @@ export function TenantActions({ tenant }: { tenant: Tenant }) {
               </div>
               <div className='space-y-2 sm:col-span-2'>
                 <Label required htmlFor={`tenant-expiry-${tenant.id}`}>
-                  Ngày hết hạn sử dụng
+                  {t('messages.usageExpiryDate')}
                 </Label>
                 <DatePickerInput
                   id={`tenant-expiry-${tenant.id}`}
@@ -251,13 +255,13 @@ export function TenantActions({ tenant }: { tenant: Tenant }) {
                     setValues({ ...values, isActive: checked === true })
                   }
                 />
-                Đang hoạt động
+                {t('subscriptionStatuses.ACTIVE')}
               </label>
             </div>
           </DialogBody>
           <DialogFooter>
             <Button variant='outline' onClick={() => setEditOpen(false)}>
-              Hủy
+              {t('messages.cancel')}
             </Button>
             <Button
               onClick={() => update.mutate()}
@@ -269,7 +273,7 @@ export function TenantActions({ tenant }: { tenant: Tenant }) {
                 values.storageLimitGb > 100000
               }
             >
-              Lưu thay đổi
+              {t('messages.saveChanges')}
             </Button>
           </DialogFooter>
         </DialogFormContent>
@@ -277,18 +281,15 @@ export function TenantActions({ tenant }: { tenant: Tenant }) {
       <AlertDialog open={deleteOpen} onOpenChange={setDeleteOpen}>
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>Xóa phòng khám?</AlertDialogTitle>
+            <AlertDialogTitle>{t('messages.deleteClinic')}</AlertDialogTitle>
             <AlertDialogDescription>
-              Chỉ có thể xóa phòng khám chưa có lịch khám, hồ sơ, dữ liệu kho,
-              mẫu đơn, bài viết hoặc lịch sử hỗ trợ. Tài khoản thuộc phòng khám
-              sẽ bị xóa cùng phòng khám. Nếu đã có dữ liệu, hãy khóa phòng khám
-              trong phần Cập nhật.
+              {t('messages.onlyClinicsWithoutAppointmentsMedicalRecordsInven')}
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel>Hủy</AlertDialogCancel>
+            <AlertDialogCancel>{t('messages.cancel')}</AlertDialogCancel>
             <AlertDialogAction onClick={() => remove.mutate()}>
-              Xóa
+              {t('messages.delete')}
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>

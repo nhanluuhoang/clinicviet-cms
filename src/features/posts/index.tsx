@@ -1,5 +1,6 @@
 import { useQuery } from '@tanstack/react-query'
 import { getRouteApi } from '@tanstack/react-router'
+import { useTranslation } from 'react-i18next'
 // import { LanguageSwitcher } from '@/components/language-switcher'
 import { Header } from '@/components/layout/header'
 import { Main } from '@/components/layout/main'
@@ -14,6 +15,8 @@ import { PostsTable } from './components/posts-table'
 const route = getRouteApi('/_authenticated/posts/')
 
 export default function Posts() {
+  const { t } = useTranslation()
+
   const search = route.useSearch()
 
   const { data, isLoading } = useQuery({
@@ -39,9 +42,11 @@ export default function Posts() {
       <Main>
         <div className='mb-2 flex flex-wrap items-center justify-between space-y-2'>
           <div>
-            <h2 className='text-2xl font-bold tracking-tight'>Bài viết</h2>
+            <h2 className='text-2xl font-bold tracking-tight'>
+              {t('messages.posts')}
+            </h2>
             <p className='text-muted-foreground'>
-              Quản lý nội dung hiển thị trên trang phòng khám.
+              {t('messages.manageContentDisplayedOnTheClinicWebsite')}
             </p>
           </div>
           <PostsPrimaryButtons />

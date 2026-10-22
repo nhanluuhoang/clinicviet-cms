@@ -1,3 +1,4 @@
+import { useTranslation } from 'react-i18next'
 import {
   Dialog,
   DialogBody,
@@ -18,12 +19,14 @@ export function PatientHistoryDialog({
   onOpenChange: (open: boolean) => void
   patient: Patient
 }) {
+  const { t } = useTranslation()
+
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogFormContent className='sm:max-w-4xl'>
         <DialogBody>
           <DialogHeader>
-            <DialogTitle>Lịch sử khám</DialogTitle>
+            <DialogTitle>{t('messages.medicalHistoryAlt2')}</DialogTitle>
             <DialogDescription>{patient.fullName}</DialogDescription>
           </DialogHeader>
           <MedicalHistoryContent patient={patient} />

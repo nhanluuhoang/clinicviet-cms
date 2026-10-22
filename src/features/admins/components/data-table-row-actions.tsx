@@ -1,6 +1,7 @@
 import { DotsHorizontalIcon } from '@radix-ui/react-icons'
 import { type Row } from '@tanstack/react-table'
 import { UserPen } from 'lucide-react'
+import { useTranslation } from 'react-i18next'
 import { Button } from '@/components/ui/button'
 import {
   DropdownMenu,
@@ -17,6 +18,8 @@ type DataTableRowActionsProps = {
 }
 
 export function DataTableRowActions({ row }: DataTableRowActionsProps) {
+  const { t } = useTranslation()
+
   const { setOpen, setCurrentRow } = useAdmins()
   if (row.original.role === 'TENANT_ADMIN') return null
 
@@ -29,7 +32,7 @@ export function DataTableRowActions({ row }: DataTableRowActionsProps) {
             className='flex h-8 w-8 p-0 data-[state=open]:bg-muted'
           >
             <DotsHorizontalIcon className='h-4 w-4' />
-            <span className='sr-only'>Mở menu</span>
+            <span className='sr-only'>{t('messages.openMenu')}</span>
           </Button>
         </DropdownMenuTrigger>
         <DropdownMenuContent align='end' className='w-[160px]'>
@@ -39,7 +42,7 @@ export function DataTableRowActions({ row }: DataTableRowActionsProps) {
               setOpen('edit')
             }}
           >
-            Cập nhật
+            {t('messages.update')}
             <DropdownMenuShortcut>
               <UserPen size={16} />
             </DropdownMenuShortcut>

@@ -1,16 +1,33 @@
 import { z } from 'zod'
+import i18n from '@/i18n'
 
 export const typeLabels = {
-  BUG: 'Báo lỗi',
-  FEATURE: 'Đề xuất tính năng',
-  GENERAL: 'Hỗ trợ chung',
+  get BUG() {
+    return i18n.t('messages.bugReport')
+  },
+  get FEATURE() {
+    return i18n.t('messages.featureRequest')
+  },
+  get GENERAL() {
+    return i18n.t('messages.generalSupport')
+  },
 }
 export const statusLabels = {
-  NEW: 'Mới gửi',
-  IN_PROGRESS: 'Đang xử lý',
-  NEEDS_INFO: 'Cần bổ sung',
-  COMPLETED: 'Hoàn tất',
-  DECLINED: 'Không thực hiện',
+  get NEW() {
+    return i18n.t('messages.new')
+  },
+  get IN_PROGRESS() {
+    return i18n.t('messages.inProgress')
+  },
+  get NEEDS_INFO() {
+    return i18n.t('messages.moreInformationNeeded')
+  },
+  get COMPLETED() {
+    return i18n.t('messages.finish')
+  },
+  get DECLINED() {
+    return i18n.t('messages.declined')
+  },
 }
 export const supportSearchSchema = z.object({
   page: z.number().int().min(1).optional().catch(1),

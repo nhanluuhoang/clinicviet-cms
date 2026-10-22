@@ -8,7 +8,9 @@
 
 ## Architecture
 
-- Tenant subscriptions use ACTIVE/EXPIRED/SUSPENDED with one usage expiry (`subscriptionEndsAt`); creation defaults to ACTIVE and requires an expiry. No TRIAL option or trial date columns. ACTIVE is labelled “Đang hoạt động”; trial requests/referrals remain separate. Expiry notices use only Vietnamese plan names, without BASIC/PLUS/PRO codes.
+- Tenant subscriptions use ACTIVE/EXPIRED/SUSPENDED with one usage expiry (`subscriptionEndsAt`); creation defaults to ACTIVE and requires an expiry. No TRIAL option or trial date columns. Trial requests/referrals remain separate. Expiry notices use localized plan names without BASIC/PLUS/PRO codes.
+
+- Reuse react-i18next `useTranslation()/t()` in components and the exported `i18n` instance for module-level labels/schema error callbacks. Shared label getters/options must update on language changes; memoized translated content depends on `t`. Vietnamese/English resources live in `src/locales/{vi,en}/translation.json`; Zod defaults and `getLocale()` follow the selected language. Axios sends Accept-Language; existing language switchers are enabled in Header and AuthLayout. Preserve stored/user-entered values when translating labels.
 
 - `/invoices` is a read-only staff invoice list (no row actions), using `UrlDataTable` and `DatePickerInput`. Audit columns are hidden by default and can be enabled through desktop column options. Defaults to today's issuance date; reset clears date and all filters. Search covers invoice code/patient name/phone; service type is a single-choice filter. Shows consultation and medicine charges, plus one service-fee group containing the service charge and up to three named extra fees. Desktop shows the combined service-fee total with a popover breakdown; mobile keeps the inline breakdown. Items with no label and zero amount are omitted; mobile hides the group when empty. All list queries are server-paginated and tenant-scoped; there is no creator filter or creator-options API.
 

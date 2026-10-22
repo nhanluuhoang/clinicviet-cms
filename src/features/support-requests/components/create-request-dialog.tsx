@@ -1,5 +1,6 @@
 import { useState, type FormEvent } from 'react'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
+import { useTranslation } from 'react-i18next'
 import { toast } from 'sonner'
 import { showRequestError } from '@/lib/handle-server-error'
 import { Button } from '@/components/ui/button'
@@ -34,6 +35,8 @@ export function CreateRequestDialog({
 }: {
   onCreated: (id: string) => void
 }) {
+  const { t } = useTranslation()
+
   const [open, setOpen] = useState(false)
   const [type, setType] = useState<RequestType>('BUG')
   const queryClient = useQueryClient()
@@ -41,11 +44,12 @@ export function CreateRequestDialog({
     mutationFn: createSupportRequest,
     onSuccess: async (request) => {
       await queryClient.invalidateQueries({ queryKey: ['support-requests'] })
-      toast.success('Đã gửi yêu cầu')
+      toast.success(t('messages.requestSubmitted'))
       setOpen(false)
       onCreated(request.id)
     },
-    onError: (error) => showRequestError(error, 'Không thể gửi yêu cầu'),
+    onError: (error) =>
+      showRequestError(error, t('messages.couldNotSubmitRequest')),
   })
   const submit = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault()
@@ -57,10 +61,10 @@ export function CreateRequestDialog({
     }
     const pagePath = String(form.get('pagePath')).trim()
     if (!input.title || !input.content)
-      return toast.error('Vui lòng nhập tiêu đề và nội dung')
+      return toast.error(t('messages.pleaseEnterATitleAndDescription'))
     if (pagePath && !/^\/(?!\/)[^?#\s]*$/.test(pagePath))
       return toast.error(
-        'Chỉ nhập đường dẫn trang, không kèm query hoặc tên miền'
+        t('messages.enterOnlyThePagePathWithoutAQueryStringOrDoma')
       )
     mutation.mutate({ ...input, ...(pagePath ? { pagePath } : {}) })
   }
@@ -75,14 +79,14 @@ export function CreateRequestDialog({
       }}
     >
       <DialogTrigger asChild>
-        <Button>Gửi yêu cầu</Button>
+        <Button>{t('messages.submitRequest')}</Button>
       </DialogTrigger>
       <DialogFormContent>
         <DialogBody>
           <DialogHeader>
-            <DialogTitle>Gửi yêu cầu hỗ trợ</DialogTitle>
+            <DialogTitle>{t('messages.submitSupportRequest')}</DialogTitle>
             <DialogDescription>
-              Báo lỗi hoặc đề xuất cải thiện cho phòng khám của bạn.
+              {t('messages.reportAnIssueOrSuggestImprovementsForYourClinic')}
             </DialogDescription>
           </DialogHeader>
           <form
@@ -93,7 +97,7 @@ export function CreateRequestDialog({
             <fieldset disabled={mutation.isPending} className='space-y-4'>
               <div className='space-y-2'>
                 <Label htmlFor='request-type' required>
-                  Loại yêu cầu
+                  {t('messages.requestType')}
                 </Label>
                 <Select
                   value={type}
@@ -103,15 +107,21 @@ export function CreateRequestDialog({
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value='GENERAL'>Hỗ trợ chung</SelectItem>
-                    <SelectItem value='BUG'>Báo lỗi</SelectItem>
-                    <SelectItem value='FEATURE'>Đề xuất tính năng</SelectItem>
+                    <SelectItem value='GENERAL'>
+                      {t('messages.generalSupport')}
+                    </SelectItem>
+                    <SelectItem value='BUG'>
+                      {t('messages.bugReport')}
+                    </SelectItem>
+                    <SelectItem value='FEATURE'>
+                      {t('messages.featureRequest')}
+                    </SelectItem>
                   </SelectContent>
                 </Select>
               </div>
               <div className='space-y-2'>
                 <Label htmlFor='request-title' required>
-                  Tiêu đề
+                  {t('messages.title')}
                 </Label>
                 <Input
                   id='request-title'
@@ -122,7 +132,7 @@ export function CreateRequestDialog({
               </div>
               <div className='space-y-2'>
                 <Label htmlFor='request-content' required>
-                  Nội dung
+                  {t('messages.content')}
                 </Label>
                 <Textarea
                   id='request-content'
@@ -132,13 +142,15 @@ export function CreateRequestDialog({
                   rows={7}
                   placeholder={
                     type === 'BUG'
-                      ? 'Thao tác đã thực hiện, kết quả mong muốn và lỗi thực tế…'
-                      : 'Bạn muốn thêm tính năng gì? Tính năng đó giúp ích như thế nào?'
+                      ? t('messages.actionsTakenExpectedResultAndActualIssue')
+                      : t('messages.whatFeatureWouldYouLikeHowWouldItHelp')
                   }
                 />
               </div>
               <div className='space-y-2'>
-                <Label htmlFor='request-path'>Trang gặp lỗi</Label>
+                <Label htmlFor='request-path'>
+                  {t('messages.affectedPage')}
+                </Label>
                 <Input
                   id='request-path'
                   name='pagePath'
@@ -146,7 +158,7 @@ export function CreateRequestDialog({
                   placeholder='/medical-histories'
                 />
                 <p className='text-xs text-muted-foreground'>
-                  Nhập đường dẫn trang nếu có.
+                  {t('messages.enterThePagePathIfApplicable')}
                 </p>
               </div>
             </fieldset>
@@ -159,14 +171,16 @@ export function CreateRequestDialog({
             disabled={mutation.isPending}
             onClick={() => setOpen(false)}
           >
-            Hủy
+            {t('messages.cancel')}
           </Button>
           <Button
             type='submit'
             form='create-support-request-form'
             disabled={mutation.isPending}
           >
-            {mutation.isPending ? 'Đang gửi…' : 'Gửi yêu cầu'}
+            {mutation.isPending
+              ? t('messages.sending')
+              : t('messages.submitRequest')}
           </Button>
         </DialogFooter>
       </DialogFormContent>

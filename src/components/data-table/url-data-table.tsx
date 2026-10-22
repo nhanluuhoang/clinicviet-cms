@@ -16,6 +16,8 @@ import {
   useReactTable,
   type VisibilityState,
 } from '@tanstack/react-table'
+import i18n from '@/i18n'
+import { useTranslation } from 'react-i18next'
 import { cn } from '@/lib/utils'
 import { type NavigateFn, useTableUrlState } from '@/hooks/use-table-url-state'
 import {
@@ -73,9 +75,9 @@ export function UrlDataTable<TData>({
   data,
   total,
   isLoading,
-  searchPlaceholder = 'Tìm kiếm...',
+  searchPlaceholder = i18n.t('messages.search'),
   filters = [],
-  emptyMessage = 'Không có dữ liệu.',
+  emptyMessage = i18n.t('messages.noData'),
   mobileLabels,
   initialSorting = [],
   pageSize = 10,
@@ -84,6 +86,8 @@ export function UrlDataTable<TData>({
   getSearchText,
   renderToolbar,
 }: UrlDataTableProps<TData>) {
+  const { t } = useTranslation()
+
   const search = useSearch({ strict: false })
   const navigate = useNavigate()
 
@@ -231,7 +235,7 @@ export function UrlDataTable<TData>({
                   colSpan={table.getVisibleLeafColumns().length}
                   className='h-24 text-center text-muted-foreground'
                 >
-                  Đang tải...
+                  {t('messages.loading')}
                 </TableCell>
               </TableRow>
             ) : rows.length ? (

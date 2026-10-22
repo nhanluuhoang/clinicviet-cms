@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { ClipboardCheck, ListOrdered, Plus, Stethoscope } from 'lucide-react'
+import { useTranslation } from 'react-i18next'
 import { toast } from 'sonner'
 import { cn, showQueueError, today } from '@/lib/utils'
 import { useDebounce } from '@/hooks/use-debounce'
@@ -28,6 +29,8 @@ type QueueTab = 'active' | 'processed'
 const PAGE_SIZE = 20
 
 export function ExaminationQueue() {
+  const { t } = useTranslation()
+
   const [queueDate, setQueueDate] = useState(today)
   const [createOpen, setCreateOpen] = useState(false)
   const [tab, setTab] = useState<QueueTab>('active')
@@ -67,7 +70,7 @@ export function ExaminationQueue() {
     mutationFn: ({ id, status }: { id: string; status: QueueStatus }) =>
       changeQueueStatus(id, status),
     onSuccess: () => {
-      toast.success('Đã cập nhật trạng thái')
+      toast.success(t('messages.statusUpdated'))
       if ((queue.data?.data.length ?? 0) === 1 && page > 1) {
         setPage(page - 1)
       }
@@ -78,7 +81,7 @@ export function ExaminationQueue() {
   const checkInMutation = useMutation({
     mutationFn: checkIn,
     onSuccess: () => {
-      toast.success('Check-in thành công')
+      toast.success(t('messages.checkedInSuccessfully'))
       refresh()
     },
     onError: showQueueError,
@@ -106,10 +109,11 @@ export function ExaminationQueue() {
         <div className='flex flex-wrap items-end justify-between gap-3'>
           <div>
             <h2 className='flex items-center gap-2 text-2xl font-bold tracking-tight'>
-              <ListOrdered className='size-6' /> Thứ tự khám
+              <ListOrdered className='size-6' />{' '}
+              {t('messages.examinationQueue')}
             </h2>
             <p className='text-muted-foreground'>
-              Tiếp nhận và điều phối lượt khám theo ngày.
+              {t('messages.admitPatientsAndManageTheDailyExaminationQueue')}
             </p>
           </div>
           <div className='flex flex-wrap gap-2'>
@@ -125,7 +129,7 @@ export function ExaminationQueue() {
               data-tour='create-queue'
               onClick={() => setCreateOpen(true)}
             >
-              Tiếp nhận
+              {t('messages.admit')}
               <Plus className='size-4' />
             </Button>
           </div>
@@ -139,12 +143,12 @@ export function ExaminationQueue() {
           {[
             {
               value: 'active' as const,
-              label: `Đang khám (${activeCount})`,
+              label: t('messages.activeAlt2', { value0: activeCount }),
               icon: Stethoscope,
             },
             {
               value: 'processed' as const,
-              label: `Đã xử lý (${processedCount})`,
+              label: t('messages.processed', { value0: processedCount }),
               icon: ClipboardCheck,
             },
           ].map((item) => {
@@ -181,7 +185,7 @@ export function ExaminationQueue() {
               setSearch(event.target.value)
               setPage(1)
             }}
-            placeholder='Tìm bệnh nhân, lý do khám...'
+            placeholder={t('messages.searchPatientOrReasonForVisit')}
           />
           <QueueTable
             data={queue.data?.data ?? []}
@@ -196,8 +200,8 @@ export function ExaminationQueue() {
             showActions
             emptyMessage={
               tab === 'active'
-                ? 'Không có bệnh nhân đang chờ xử lý.'
-                : 'Chưa có lượt khám đã xử lý.'
+                ? t('messages.noPatientsAwaitingProcessing')
+                : t('messages.noProcessedExaminationsYet')
             }
           />
         </div>

@@ -1,3 +1,4 @@
+import { useTranslation } from 'react-i18next'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 
@@ -10,6 +11,8 @@ export function ColorField({
   value: string
   onChange: (value: string) => void
 }) {
+  const { t } = useTranslation()
+
   return (
     <div className='space-y-2'>
       <Label required>{label}</Label>
@@ -19,7 +22,7 @@ export function ColorField({
           value={value}
           onChange={(event) => onChange(event.target.value)}
           className='h-9 w-12 cursor-pointer p-1'
-          aria-label={`Chọn ${label.toLowerCase()}`}
+          aria-label={t('messages.select', { value0: label.toLowerCase() })}
         />
         <Input
           value={value}

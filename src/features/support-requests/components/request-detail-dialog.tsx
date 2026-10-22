@@ -1,5 +1,7 @@
 import { useState, type FormEvent } from 'react'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
+import i18n, { getLocale } from '@/i18n'
+import { useTranslation } from 'react-i18next'
 import { toast } from 'sonner'
 import { showRequestError } from '@/lib/handle-server-error'
 import { Button } from '@/components/ui/button'
@@ -38,6 +40,8 @@ export function RequestDetailDialog({
   system: boolean
   onClose: () => void
 }) {
+  const { t } = useTranslation()
+
   const queryClient = useQueryClient()
   const [status, setStatus] = useState<RequestStatus | ''>('')
   const [reply, setReply] = useState('')
@@ -63,9 +67,10 @@ export function RequestDetailDialog({
         queryClient.invalidateQueries({ queryKey: ['support-request', id] }),
         queryClient.invalidateQueries({ queryKey: ['support-requests'] }),
       ])
-      toast.success('Đã cập nhật yêu cầu')
+      toast.success(t('messages.requestUpdated'))
     },
-    onError: (error) => showRequestError(error, 'Không thể cập nhật yêu cầu'),
+    onError: (error) =>
+      showRequestError(error, t('messages.couldNotUpdateRequest')),
   })
   const request = query.data
   const submit = (event: FormEvent<HTMLFormElement>) => {
@@ -74,9 +79,11 @@ export function RequestDetailDialog({
     const nextStatus =
       system && status && status !== request?.status ? status : undefined
     if (!nextStatus && !content)
-      return toast.error('Vui lòng nhập nội dung phản hồi')
+      return toast.error(t('messages.pleaseEnterAReply'))
     if ((nextStatus === 'DECLINED' || nextStatus === 'NEEDS_INFO') && !content)
-      return toast.error('Vui lòng nhập lý do hoặc thông tin cần bổ sung')
+      return toast.error(
+        t('messages.pleaseEnterAReasonOrTheAdditionalInformationReq')
+      )
     mutation.mutate({ content, nextStatus })
   }
   return (
@@ -89,18 +96,20 @@ export function RequestDetailDialog({
       <DialogFormContent className='sm:max-w-2xl'>
         <DialogBody className='space-y-4'>
           <DialogHeader>
-            <DialogTitle>{request?.title ?? 'Chi tiết yêu cầu'}</DialogTitle>
+            <DialogTitle>
+              {request?.title ?? t('messages.requestDetails')}
+            </DialogTitle>
             <DialogDescription>
-              Theo dõi phản hồi và lịch sử xử lý yêu cầu.
+              {t('messages.trackRepliesAndRequestHistory')}
             </DialogDescription>
           </DialogHeader>
           {query.isPending ? (
-            <p role='status'>Đang tải…</p>
+            <p role='status'>{t('messages.loadingAlt2')}</p>
           ) : query.isError ? (
             <div role='alert'>
-              <p>Không thể tải yêu cầu hoặc bạn không có quyền truy cập.</p>
+              <p>{t('messages.couldNotLoadThisRequestOrYouDoNotHaveAccess')}</p>
               <Button variant='outline' onClick={() => void query.refetch()}>
-                Thử lại
+                {t('messages.tryAgain')}
               </Button>
             </div>
           ) : (
@@ -114,18 +123,22 @@ export function RequestDetailDialog({
                   <p className='text-sm text-muted-foreground'>
                     {request.tenant
                       ? `${request.tenant.name} (${request.tenant.code})`
-                      : request.organization || 'Khách từ website'}{' '}
+                      : request.organization ||
+                        t('messages.websiteVisitor')}{' '}
                     ·{' '}
                     {request.creator?.fullName ??
                       request.contactName ??
-                      'Tài khoản đã xóa'}{' '}
-                    · {new Date(request.createdAt).toLocaleString('vi-VN')}
+                      t('messages.deletedAccount')}{' '}
+                    · {new Date(request.createdAt).toLocaleString(getLocale())}
                   </p>
                   {request.contactEmail && (
                     <p className='text-sm break-all text-muted-foreground'>
                       Email: {request.contactEmail}
                       {request.contactPhone && (
-                        <> · Điện thoại: {request.contactPhone}</>
+                        <>
+                          {' '}
+                          {t('messages.phoneAlt3')} {request.contactPhone}
+                        </>
                       )}
                     </p>
                   )}
@@ -134,18 +147,21 @@ export function RequestDetailDialog({
                   </p>
                   {request.pagePath && (
                     <p className='text-sm break-all text-muted-foreground'>
-                      Trang: {request.pagePath}
+                      {i18n.t('messages.pageLabel')}
+                      {request.pagePath}
                     </p>
                   )}
                 </div>
                 <section
                   className='space-y-3'
-                  aria-label='Trao đổi và lịch sử trạng thái'
+                  aria-label={t('messages.discussionAndStatusHistory')}
                 >
-                  <h3 className='font-semibold'>Trao đổi & lịch sử xử lý</h3>
+                  <h3 className='font-semibold'>
+                    {t('messages.discussionProcessingHistory')}
+                  </h3>
                   {!request.activities.length && (
                     <p className='text-sm text-muted-foreground'>
-                      Chưa có phản hồi.
+                      {t('messages.noRepliesYet')}
                     </p>
                   )}
                   {request.activities.map((activity) => (
@@ -157,10 +173,12 @@ export function RequestDetailDialog({
                         {activity.guestReply
                           ? request.contactName
                           : (activity.actor?.fullName ??
-                            'Tài khoản đã xóa')}{' '}
+                            t('messages.deletedAccount'))}{' '}
                         <span className='font-normal text-muted-foreground'>
                           ·{' '}
-                          {new Date(activity.createdAt).toLocaleString('vi-VN')}
+                          {new Date(activity.createdAt).toLocaleString(
+                            getLocale()
+                          )}
                         </span>
                       </p>
                       {activity.toStatus && (
@@ -186,14 +204,16 @@ export function RequestDetailDialog({
                 >
                   {request.contactEmail && (
                     <p className='text-sm text-muted-foreground'>
-                      Phản hồi và lịch sử trạng thái hiển thị cho khách trên
-                      trang theo dõi. Khách chủ động quay lại website để xem
-                      phản hồi; hệ thống không gửi email thông báo.
+                      {t(
+                        'messages.repliesAndStatusHistoryAreVisibleToVisitorsOnT'
+                      )}
                     </p>
                   )}
                   {system && (
                     <div className='space-y-2'>
-                      <Label htmlFor='support-status'>Trạng thái</Label>
+                      <Label htmlFor='support-status'>
+                        {t('messages.status')}
+                      </Label>
                       <Select
                         disabled={mutation.isPending}
                         value={status || request.status}
@@ -227,7 +247,7 @@ export function RequestDetailDialog({
                         status === 'NEEDS_INFO'
                       }
                     >
-                      Phản hồi
+                      {t('messages.reply')}
                     </Label>
                     <Textarea
                       id='support-reply'
@@ -250,7 +270,7 @@ export function RequestDetailDialog({
             disabled={mutation.isPending}
             onClick={onClose}
           >
-            Đóng
+            {t('messages.close')}
           </Button>
           {request && !query.isPending && !query.isError && (
             <Button
@@ -259,10 +279,10 @@ export function RequestDetailDialog({
               form='support-request-reply-form'
             >
               {mutation.isPending
-                ? 'Đang gửi…'
+                ? t('messages.sending')
                 : system
-                  ? 'Cập nhật yêu cầu'
-                  : 'Gửi phản hồi'}
+                  ? t('messages.updateRequest')
+                  : t('messages.sendReply')}
             </Button>
           )}
         </DialogFooter>

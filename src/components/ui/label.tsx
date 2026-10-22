@@ -1,8 +1,9 @@
-'use client'
-
 import * as React from 'react'
 import * as LabelPrimitive from '@radix-ui/react-label'
+import { useTranslation } from 'react-i18next'
 import { cn } from '@/lib/utils'
+
+;('use client')
 
 function Label({
   className,
@@ -10,6 +11,8 @@ function Label({
   required = false,
   ...props
 }: React.ComponentProps<typeof LabelPrimitive.Root> & { required?: boolean }) {
+  const { t } = useTranslation()
+
   return (
     <LabelPrimitive.Root
       data-slot='label'
@@ -21,7 +24,7 @@ function Label({
     >
       {children}
       {required && (
-        <span className='text-destructive' aria-label='Bắt buộc'>
+        <span className='text-destructive' aria-label={t('messages.required')}>
           *
         </span>
       )}

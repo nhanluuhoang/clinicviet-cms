@@ -1,18 +1,21 @@
 import { useQuery } from '@tanstack/react-query'
+import { useTranslation } from 'react-i18next'
 import { useAuthStore } from '@/stores/auth-store'
 import { Header } from '@/components/layout/header'
 import { Main } from '@/components/layout/main'
 import { ProfileDropdown } from '@/components/profile-dropdown'
 import { ThemeSwitch } from '@/components/theme-switch'
+import { GetMasterDatas } from '@/features/master-data/api'
 import { MasterDataForm } from './components/master-data-form'
 import {
   CONSULTATION_FEE_KEY,
   SHOW_MEDICINES_TO_PATIENT_KEY,
   MEDICINE_INSTRUCTION_OPTIONS_KEY,
 } from './data/constants'
-import { GetMasterDatas } from '@/features/master-data/api'
 
 export function MasterData() {
+  const { t } = useTranslation()
+
   const tenantId = useAuthStore((state) => state.auth.user?.tenantId)
   const { data, isLoading } = useQuery({
     queryKey: ['master-data', tenantId],
@@ -42,15 +45,17 @@ export function MasterData() {
       </Header>
       <Main className='mx-auto flex w-full max-w-3xl flex-1 flex-col gap-6'>
         <div>
-          <h2 className='text-2xl font-bold tracking-tight'>Cấu hình</h2>
+          <h2 className='text-2xl font-bold tracking-tight'>
+            {t('messages.configuration')}
+          </h2>
           <p className='text-muted-foreground'>
-            Thiết lập các giá trị mặc định của phòng khám.
+            {t('messages.setDefaultValuesForTheClinic')}
           </p>
         </div>
         <div className='w-full'>
           {isLoading ? (
             <p className='text-sm text-muted-foreground'>
-              Đang tải cấu hình...
+              {t('messages.loadingConfiguration')}
             </p>
           ) : (
             <MasterDataForm

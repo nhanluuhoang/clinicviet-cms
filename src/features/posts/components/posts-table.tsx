@@ -8,6 +8,8 @@ import {
   getExpandedRowModel,
   useReactTable,
 } from '@tanstack/react-table'
+import i18n from '@/i18n'
+import { useTranslation } from 'react-i18next'
 import { cn } from '@/lib/utils'
 import { useTableUrlState } from '@/hooks/use-table-url-state'
 import {
@@ -36,6 +38,8 @@ type PostsTableProps = {
 }
 
 export function PostsTable({ data, total, isLoading }: PostsTableProps) {
+  const { t } = useTranslation()
+
   const [rowSelection, setRowSelection] = useState({})
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({})
   const [expanded, setExpanded] = useState<ExpandedState>({})
@@ -108,11 +112,11 @@ export function PostsTable({ data, total, isLoading }: PostsTableProps) {
       <DataTableToolbar
         table={table}
         showSearch={true}
-        searchPlaceholder='Tìm theo tiêu đề...'
+        searchPlaceholder={t('messages.searchByTitle')}
         filters={[
           {
             columnId: 'isPublished',
-            title: 'Trạng thái',
+            title: t('messages.status'),
             options: postStatuses.map((s) => ({
               ...s,
               value: String(s.value),
@@ -124,7 +128,7 @@ export function PostsTable({ data, total, isLoading }: PostsTableProps) {
       <MobileDataCards
         table={table}
         isLoading={isLoading}
-        emptyMessage='Không tìm thấy kết quả.'
+        emptyMessage={t('messages.noResultsFound')}
         renderSubRow={(row) => (
           <div className='grid grid-cols-2 gap-2'>
             {row.original.postImages?.map((item) => (
@@ -163,14 +167,16 @@ export function PostsTable({ data, total, isLoading }: PostsTableProps) {
                   colSpan={columns.length}
                   className='h-24 text-center'
                 >
-                  Đang tải...
+                  {t('messages.loading')}
                 </TableCell>
               </TableRow>
             ) : table.getRowModel().rows?.length ? (
               table.getRowModel().rows.map((row) => (
                 <Fragment key={row.id}>
                   <TableRow
-                    data-state={row.getIsSelected() && 'selected'}
+                    data-state={
+                      row.getIsSelected() && i18n.t('messages.selectedCount')
+                    }
                     className={cn(row.getIsSelected() && 'bg-muted')}
                   >
                     {row.getVisibleCells().map((cell) => (
@@ -187,7 +193,7 @@ export function PostsTable({ data, total, isLoading }: PostsTableProps) {
                       <TableCell colSpan={row.getVisibleCells().length}>
                         <div className='mx-4 mb-4 rounded-lg bg-muted/50 p-4'>
                           <h4 className='mb-2 text-center text-sm font-semibold'>
-                            Ảnh trong bài viết
+                            {t('messages.postImages')}
                           </h4>
                           {(row.original.postImages?.length ?? 0) > 0 ? (
                             <ul className='grid grid-cols-1 justify-items-center gap-2 md:grid-cols-2 lg:grid-cols-3'>
@@ -206,7 +212,7 @@ export function PostsTable({ data, total, isLoading }: PostsTableProps) {
                             </ul>
                           ) : (
                             <p className='text-center text-sm text-muted-foreground italic'>
-                              Không có ảnh nào được đính kèm.
+                              {t('messages.noImagesAttached')}
                             </p>
                           )}
                         </div>
@@ -221,7 +227,7 @@ export function PostsTable({ data, total, isLoading }: PostsTableProps) {
                   colSpan={columns.length}
                   className='h-24 text-center'
                 >
-                  Không tìm thấy kết quả.
+                  {t('messages.noResultsFound')}
                 </TableCell>
               </TableRow>
             )}

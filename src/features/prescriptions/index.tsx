@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useState } from 'react'
 import { Stethoscope } from 'lucide-react'
+import { useTranslation } from 'react-i18next'
 import { useAuthStore } from '@/stores/auth-store'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { type ServiceType } from './api'
@@ -20,6 +21,8 @@ export function Prescriptions({
   onUploadingChange,
   ...props
 }: PrescriptionProps) {
+  const { t } = useTranslation()
+
   const userId = useAuthStore((state) => state.auth.user?.id ?? 'anonymous')
   const preferenceKey = 'clinicviet:last-service-tab:' + userId
   const [serviceType, setServiceType] = useState<ServiceType>(() => {
@@ -58,7 +61,7 @@ export function Prescriptions({
   return (
     <div className='grid min-w-0 grid-cols-[minmax(0,1fr)] gap-4'>
       <h2 className='flex items-center gap-2 text-2xl font-bold tracking-tight'>
-        <Stethoscope className='size-6' /> Lập phiếu dịch vụ
+        <Stethoscope className='size-6' /> {t('messages.createServiceRecord')}
       </h2>
       <Tabs
         className='min-w-0'
@@ -97,14 +100,14 @@ export function Prescriptions({
           role='status'
         >
           {props.initialData
-            ? 'Bạn đang cập nhật phiếu '
-            : 'Bạn đang lập phiếu '}
-          <strong>{activeTab.label.toLowerCase()}</strong>. Khi chọn{' '}
-          <strong>{activeTab.saveLabel}</strong>, chỉ nội dung và chi phí của
-          tab này được lưu.{' '}
+            ? t('messages.youAreUpdatingA')
+            : t('messages.youAreCreatingA')}
+          <strong>{activeTab.label.toLowerCase()}</strong>
+          {t('messages.whenYouSelect')} <strong>{activeTab.saveLabel}</strong>
+          {t('messages.onlyThisTabSContentAndChargesAreSaved')}{' '}
           {props.initialData
-            ? 'Loại phiếu được giữ nguyên khi cập nhật; hai tab còn lại đã được khóa.'
-            : 'Nội dung đã nhập ở tab khác được giữ khi chuyển tab, nhưng chưa được lưu và sẽ mất khi đóng cửa sổ.'}
+            ? t('messages.theRecordTypeCannotBeChangedWhenUpdatingTheOth')
+            : t('messages.contentEnteredInOtherTabsIsRetainedWhileSwitchi')}
         </div>
         {SERVICE_TABS.map((tab) => (
           <TabsContent

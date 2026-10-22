@@ -1,31 +1,40 @@
-'use client'
-
 import * as React from 'react'
 import * as DialogPrimitive from '@radix-ui/react-dialog'
 import { XIcon } from 'lucide-react'
+import { useTranslation } from 'react-i18next'
 import { cn } from '@/lib/utils'
+
+;('use client')
 
 function Dialog({
   ...props
 }: React.ComponentProps<typeof DialogPrimitive.Root>) {
+  useTranslation()
+
   return <DialogPrimitive.Root data-slot='dialog' {...props} />
 }
 
 function DialogTrigger({
   ...props
 }: React.ComponentProps<typeof DialogPrimitive.Trigger>) {
+  useTranslation()
+
   return <DialogPrimitive.Trigger data-slot='dialog-trigger' {...props} />
 }
 
 function DialogPortal({
   ...props
 }: React.ComponentProps<typeof DialogPrimitive.Portal>) {
+  useTranslation()
+
   return <DialogPrimitive.Portal data-slot='dialog-portal' {...props} />
 }
 
 function DialogClose({
   ...props
 }: React.ComponentProps<typeof DialogPrimitive.Close>) {
+  useTranslation()
+
   return <DialogPrimitive.Close data-slot='dialog-close' {...props} />
 }
 
@@ -33,6 +42,8 @@ function DialogOverlay({
   className,
   ...props
 }: React.ComponentProps<typeof DialogPrimitive.Overlay>) {
+  useTranslation()
+
   return (
     <DialogPrimitive.Overlay
       data-slot='dialog-overlay'
@@ -53,6 +64,8 @@ function DialogContent({
 }: React.ComponentProps<typeof DialogPrimitive.Content> & {
   showCloseButton?: boolean
 }) {
+  const { t } = useTranslation()
+
   return (
     <DialogPortal data-slot='dialog-portal'>
       <DialogOverlay />
@@ -71,7 +84,7 @@ function DialogContent({
             className='absolute end-3 top-3 z-10 inline-flex size-9 items-center justify-center rounded-full border border-border bg-muted text-foreground shadow-sm transition-colors hover:bg-accent hover:text-accent-foreground focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:outline-none disabled:pointer-events-none [&_svg]:pointer-events-none [&_svg]:size-5 [&_svg]:shrink-0'
           >
             <XIcon />
-            <span className='sr-only'>Đóng</span>
+            <span className='sr-only'>{t('messages.close')}</span>
           </DialogPrimitive.Close>
         )}
       </DialogPrimitive.Content>
@@ -83,6 +96,8 @@ function DialogFormContent({
   className,
   ...props
 }: React.ComponentProps<typeof DialogContent>) {
+  useTranslation()
+
   return (
     <DialogContent
       className={cn(
@@ -95,6 +110,8 @@ function DialogFormContent({
 }
 
 function DialogBody({ className, ...props }: React.ComponentProps<'div'>) {
+  useTranslation()
+
   return (
     <div
       className={cn(
@@ -107,6 +124,8 @@ function DialogBody({ className, ...props }: React.ComponentProps<'div'>) {
 }
 
 function DialogHeader({ className, ...props }: React.ComponentProps<'div'>) {
+  useTranslation()
+
   return (
     <div
       data-slot='dialog-header'
@@ -120,6 +139,8 @@ function DialogHeader({ className, ...props }: React.ComponentProps<'div'>) {
 }
 
 function DialogFooter({ className, ...props }: React.ComponentProps<'div'>) {
+  useTranslation()
+
   return (
     <div
       data-slot='dialog-footer'
@@ -136,6 +157,8 @@ function DialogTitle({
   className,
   ...props
 }: React.ComponentProps<typeof DialogPrimitive.Title>) {
+  useTranslation()
+
   return (
     <DialogPrimitive.Title
       data-slot='dialog-title'
@@ -149,6 +172,8 @@ function DialogDescription({
   className,
   ...props
 }: React.ComponentProps<typeof DialogPrimitive.Description>) {
+  useTranslation()
+
   return (
     <DialogPrimitive.Description
       data-slot='dialog-description'

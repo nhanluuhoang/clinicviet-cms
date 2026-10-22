@@ -1,4 +1,5 @@
 import { FileText, X } from 'lucide-react'
+import { useTranslation } from 'react-i18next'
 import { isVideoMedia } from '@/lib/utils'
 import { Button } from '@/components/ui/button'
 import { VideoPlayer } from '@/components/video-player'
@@ -17,6 +18,8 @@ export function MediaPreview({
   onRemove: () => void
   disabled?: boolean
 }) {
+  const { t } = useTranslation()
+
   const isPdf = media.mimeType === 'application/pdf'
   const isVideo = isVideoMedia(media)
 
@@ -27,8 +30,8 @@ export function MediaPreview({
           href={media.url}
           target='_blank'
           rel='noopener noreferrer'
-          aria-label={`Mở PDF ${media.name} trong tab mới`}
-          className='flex size-full flex-col items-center justify-center gap-2 p-3 pb-8 text-center hover:bg-muted/80 focus-visible:outline-2 focus-visible:outline-ring focus-visible:outline-offset-[-2px]'
+          aria-label={t('messages.openPdfInANewTab', { value0: media.name })}
+          className='flex size-full flex-col items-center justify-center gap-2 p-3 pb-8 text-center hover:bg-muted/80 focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-ring'
         >
           <FileText className='size-9 text-red-500' />
           <span className='line-clamp-2 text-xs font-medium'>{media.name}</span>
@@ -37,7 +40,7 @@ export function MediaPreview({
               ? media.size < 1024 * 1024
                 ? `${Math.max(1, Math.round(media.size / 1024))} KB`
                 : `${(media.size / 1024 / 1024).toFixed(1)} MB`
-              : 'Mở PDF'}
+              : t('messages.openPdf')}
           </span>
         </a>
       ) : isVideo ? (
@@ -50,8 +53,8 @@ export function MediaPreview({
           href={media.url}
           target='_blank'
           rel='noopener noreferrer'
-          aria-label={`Mở ảnh ${media.name} trong tab mới`}
-          className='block size-full focus-visible:outline-2 focus-visible:outline-ring focus-visible:outline-offset-[-2px]'
+          aria-label={t('messages.openImageInANewTab', { value0: media.name })}
+          className='block size-full focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-ring'
         >
           <img
             src={media.url}
@@ -69,7 +72,9 @@ export function MediaPreview({
         disabled={disabled}
       >
         <X className='size-4' />
-        <span className='sr-only'>Xóa tệp {media.name}</span>
+        <span className='sr-only'>
+          {t('messages.removeFile')} {media.name}
+        </span>
       </Button>
       <div className='pointer-events-none absolute inset-x-0 bottom-0 truncate bg-black/60 px-2 py-1 text-xs text-white'>
         {media.name}

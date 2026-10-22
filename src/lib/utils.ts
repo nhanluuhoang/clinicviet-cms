@@ -1,3 +1,4 @@
+import i18n, { getLocale } from '@/i18n'
 import { type ClassValue, clsx } from 'clsx'
 import { twMerge } from 'tailwind-merge'
 import { showRequestError } from '@/lib/handle-server-error'
@@ -92,7 +93,7 @@ export function worstExpiryStatus(dates: string[]): ExpiryStatus {
 
 export function formatDate(date: string | null): string {
   if (!date) return '—'
-  return new Date(date).toLocaleDateString('vi-VN', {
+  return new Date(date).toLocaleDateString(getLocale(), {
     day: '2-digit',
     month: '2-digit',
     year: 'numeric',
@@ -101,18 +102,18 @@ export function formatDate(date: string | null): string {
 
 export function formatMonthYear(date: string | null): string {
   if (!date) return '—'
-  return new Date(date).toLocaleDateString('vi-VN', {
+  return new Date(date).toLocaleDateString(getLocale(), {
     month: '2-digit',
     year: 'numeric',
   })
 }
 
 export function formatNumber(value: number): string {
-  return value.toLocaleString('vi-VN')
+  return value.toLocaleString(getLocale())
 }
 
 export function formatMoney(value: number): string {
-  return `${Math.round(value).toLocaleString('vi-VN')} ₫`
+  return `${Math.round(value).toLocaleString(getLocale())} ₫`
 }
 
 export function toDateInput(date: string | Date): string {
@@ -131,14 +132,14 @@ export const today = () =>
 
 export const formatTime = (value?: string | null) =>
   value
-    ? new Date(value).toLocaleTimeString('vi-VN', {
+    ? new Date(value).toLocaleTimeString(getLocale(), {
         hour: '2-digit',
         minute: '2-digit',
       })
     : '—'
 
 export function showQueueError(error: unknown) {
-  showRequestError(error, 'Không thể cập nhật thứ tự khám')
+  showRequestError(error, i18n.t('messages.couldNotUpdateExaminationQueue'))
 }
 
 export const getToday = () => {
@@ -155,7 +156,7 @@ export const DATE_ONLY_PATTERN = /^\d{4}-\d{2}-\d{2}$/
 
 export const MONTH_OPTIONS = Array.from({ length: 12 }, (_, index) => ({
   value: String(index + 1).padStart(2, '0'),
-  label: `Tháng ${index + 1}`,
+  label: i18n.t('messages.monthAlt2', { value0: index + 1 }),
 }))
 
 const currentYear = new Date().getFullYear()

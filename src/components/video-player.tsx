@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
 import Hls from 'hls.js'
+import { useTranslation } from 'react-i18next'
 
 export function VideoPlayer({
   src,
@@ -8,10 +9,14 @@ export function VideoPlayer({
   src: string
   className?: string
 }) {
+  useTranslation()
+
   return <HlsVideo key={src} src={src} className={className} />
 }
 
 function HlsVideo({ src, className }: { src: string; className?: string }) {
+  const { t } = useTranslation()
+
   const ref = useRef<HTMLVideoElement>(null)
   const [error, setError] = useState(false)
   useEffect(() => {
@@ -56,8 +61,7 @@ function HlsVideo({ src, className }: { src: string; className?: string }) {
       />
       {error && (
         <p role='alert' className='p-2 text-xs text-destructive'>
-          Không thể phát video. Vui lòng tải lại trang hoặc thử trình duyệt
-          khác.
+          {t('messages.couldNotPlayTheVideoReloadThePageOrTryAnother')}
         </p>
       )}
     </>

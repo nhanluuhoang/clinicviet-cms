@@ -1,5 +1,7 @@
 import * as React from 'react'
+import i18n from '@/i18n'
 import { CheckIcon, ChevronDownIcon, XIcon } from 'lucide-react'
+import { useTranslation } from 'react-i18next'
 import { cn } from '@/lib/utils'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
@@ -42,14 +44,16 @@ export function MultiSelect({
   options,
   value,
   onValueChange,
-  placeholder = 'Chọn tùy chọn',
-  searchPlaceholder = 'Tìm kiếm...',
-  emptyText = 'Không tìm thấy kết quả.',
+  placeholder = i18n.t('messages.selectAnOption'),
+  searchPlaceholder = i18n.t('messages.search'),
+  emptyText = i18n.t('messages.noResultsFound'),
   clearText = 'Clear',
   maxDisplayValues = 2,
   disabled,
   className,
 }: MultiSelectProps) {
+  useTranslation()
+
   const [open, setOpen] = React.useState(false)
 
   const selectedSet = React.useMemo(() => new Set(value), [value])
@@ -83,21 +87,32 @@ export function MultiSelect({
         >
           <span className='flex min-w-0 items-center gap-1.5 overflow-hidden'>
             {selectedOptions.length === 0 ? (
-              <span className='truncate text-muted-foreground'>{placeholder}</span>
+              <span className='truncate text-muted-foreground'>
+                {placeholder}
+              </span>
             ) : selectedOptions.length <= maxDisplayValues ? (
               selectedOptions.map((option) => (
-                <Badge key={option.value} variant='secondary' className='truncate'>
+                <Badge
+                  key={option.value}
+                  variant='secondary'
+                  className='truncate'
+                >
                   {option.label}
                 </Badge>
               ))
             ) : (
-              <Badge variant='secondary'>{selectedOptions.length} selected</Badge>
+              <Badge variant='secondary'>
+                {selectedOptions.length} {i18n.t('messages.selectedCount')}
+              </Badge>
             )}
           </span>
           <ChevronDownIcon className='size-4 shrink-0 text-muted-foreground' />
         </Button>
       </PopoverTrigger>
-      <PopoverContent className='w-(--radix-popover-trigger-width) p-0' align='start'>
+      <PopoverContent
+        className='w-(--radix-popover-trigger-width) p-0'
+        align='start'
+      >
         <Command>
           <CommandInput placeholder={searchPlaceholder} />
           <CommandList>
@@ -134,7 +149,10 @@ export function MultiSelect({
               <>
                 <CommandSeparator />
                 <CommandGroup>
-                  <CommandItem onSelect={handleClear} className='justify-between'>
+                  <CommandItem
+                    onSelect={handleClear}
+                    className='justify-between'
+                  >
                     {clearText}
                     <XIcon className='size-4 text-muted-foreground' />
                   </CommandItem>

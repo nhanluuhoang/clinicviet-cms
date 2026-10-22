@@ -1,8 +1,9 @@
 import { DotsHorizontalIcon } from '@radix-ui/react-icons'
 import { type Row } from '@tanstack/react-table'
-import { ClipboardList, Edit, FileClock, Trash } from 'lucide-react'
-import { useAuthStore } from '@/stores/auth-store'
 import { hasAnyRole, PRESCRIBER_ROLES } from '@/config/access-control'
+import { ClipboardList, Edit, FileClock, Trash } from 'lucide-react'
+import { useTranslation } from 'react-i18next'
+import { useAuthStore } from '@/stores/auth-store'
 import { Button } from '@/components/ui/button'
 import {
   DropdownMenu,
@@ -16,6 +17,8 @@ import { type Patient } from '../api'
 import { usePatients } from './patients-provider'
 
 export function DataTableRowActions({ row }: { row: Row<Patient> }) {
+  const { t } = useTranslation()
+
   const patient = row.original
   const { setOpen, setCurrentRow } = usePatients()
   const role = useAuthStore((state) => state.auth.user?.role)
@@ -29,7 +32,7 @@ export function DataTableRowActions({ row }: { row: Row<Patient> }) {
           className='flex h-8 w-8 p-0 data-[state=open]:bg-muted'
         >
           <DotsHorizontalIcon className='h-4 w-4' />
-          <span className='sr-only'>Mở menu</span>
+          <span className='sr-only'>{t('messages.openMenu')}</span>
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align='end' className='w-[160px]'>
@@ -39,7 +42,7 @@ export function DataTableRowActions({ row }: { row: Row<Patient> }) {
             setOpen('update')
           }}
         >
-          Cập nhật
+          {t('messages.update')}
           <DropdownMenuShortcut>
             <Edit size={16} />
           </DropdownMenuShortcut>
@@ -51,7 +54,7 @@ export function DataTableRowActions({ row }: { row: Row<Patient> }) {
               setOpen('prescription')
             }}
           >
-            Kê toa
+            {t('messages.prescribe')}
             <DropdownMenuShortcut>
               <ClipboardList size={16} />
             </DropdownMenuShortcut>
@@ -63,7 +66,7 @@ export function DataTableRowActions({ row }: { row: Row<Patient> }) {
             setOpen('history')
           }}
         >
-          Lịch sử khám
+          {t('messages.medicalHistoryAlt2')}
           <DropdownMenuShortcut>
             <FileClock size={16} />
           </DropdownMenuShortcut>
@@ -76,7 +79,7 @@ export function DataTableRowActions({ row }: { row: Row<Patient> }) {
           }}
           className='!text-red-500'
         >
-          Xoá
+          {t('messages.deleteAlt2')}
           <DropdownMenuShortcut>
             <Trash size={16} />
           </DropdownMenuShortcut>

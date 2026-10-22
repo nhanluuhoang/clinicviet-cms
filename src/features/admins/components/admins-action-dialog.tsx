@@ -3,6 +3,8 @@ import { z } from 'zod'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
+import i18n from '@/i18n'
+import { useTranslation } from 'react-i18next'
 import { toast } from 'sonner'
 import { showRequestError } from '@/lib/handle-server-error'
 import { Button } from '@/components/ui/button'
@@ -37,9 +39,18 @@ import { roles } from '../data/data'
 
 const formSchema = z
   .object({
-    fullName: z.string().trim().min(1, 'Vui lòng nhập họ tên.'),
-    email: z.union([z.literal(''), z.email('Email không hợp lệ.')]),
-    phone: z.string().trim().max(20, 'Tối đa 20 ký tự.'),
+    fullName: z
+      .string()
+      .trim()
+      .min(1, { error: () => i18n.t('messages.pleaseEnterAFullName') }),
+    email: z.union([
+      z.literal(''),
+      z.email({ error: () => i18n.t('messages.invalidEmailAddress') }),
+    ]),
+    phone: z
+      .string()
+      .trim()
+      .max(20, { error: () => i18n.t('messages.maximum20Characters') }),
     role: z.enum(['DOCTOR', 'ASSISTANT']),
     isActive: z.boolean(),
     password: z.string(),
@@ -50,21 +61,21 @@ const formSchema = z
       context.addIssue({
         code: 'custom',
         path: ['password'],
-        message: 'Mật khẩu phải có ít nhất 8 ký tự.',
+        message: i18n.t('messages.passwordMustContainAtLeast8Characters'),
       })
     }
     if (values.password.length > 20) {
       context.addIssue({
         code: 'custom',
         path: ['password'],
-        message: 'Mật khẩu tối đa 20 ký tự.',
+        message: i18n.t('messages.passwordMustNotExceed20Characters'),
       })
     }
     if (values.password !== values.passwordConfirmation) {
       context.addIssue({
         code: 'custom',
         path: ['passwordConfirmation'],
-        message: 'Mật khẩu nhập lại không khớp.',
+        message: i18n.t('messages.passwordsDoNotMatch'),
       })
     }
   })
@@ -90,6 +101,8 @@ export function AdminsActionDialog({
   open: boolean
   onOpenChange: (open: boolean) => void
 }) {
+  const { t } = useTranslation()
+
   const isEdit = !!currentRow
   const queryClient = useQueryClient()
   const form = useForm<StaffForm>({
@@ -117,7 +130,9 @@ export function AdminsActionDialog({
   const save = useMutation({
     mutationFn: (values: StaffForm) => {
       if (!isEdit && !values.password) {
-        form.setError('password', { message: 'Vui lòng nhập mật khẩu.' })
+        form.setError('password', {
+          message: t('messages.pleaseEnterAPassword'),
+        })
         throw new Error('missing-password')
       }
       const payload: StaffInput = {
@@ -137,12 +152,16 @@ export function AdminsActionDialog({
     },
     onSuccess: async () => {
       await queryClient.invalidateQueries({ queryKey: ['users'] })
-      toast.success(isEdit ? 'Đã cập nhật nhân viên' : 'Đã tạo nhân viên')
+      toast.success(
+        isEdit
+          ? t('messages.staffMemberUpdated')
+          : t('messages.staffMemberCreated')
+      )
       onOpenChange(false)
     },
     onError: (error) => {
       if (error instanceof Error && error.message === 'missing-password') return
-      showRequestError(error, 'Không thể lưu thông tin nhân viên')
+      showRequestError(error, t('messages.couldNotSaveStaffInformation'))
     },
   })
 
@@ -152,10 +171,12 @@ export function AdminsActionDialog({
         <DialogBody>
           <DialogHeader className='text-start'>
             <DialogTitle>
-              {isEdit ? 'Cập nhật nhân viên' : 'Thêm nhân viên'}
+              {isEdit
+                ? t('messages.updateStaffMember')
+                : t('messages.addStaffMember')}
             </DialogTitle>
             <DialogDescription>
-              Tài khoản nhân viên chỉ thuộc phòng khám hiện tại.
+              {t('messages.staffAccountsBelongOnlyToTheCurrentClinic')}
             </DialogDescription>
           </DialogHeader>
           <Form {...form}>
@@ -169,7 +190,7 @@ export function AdminsActionDialog({
                 name='fullName'
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel required>Họ tên</FormLabel>
+                    <FormLabel required>{t('messages.fullName')}</FormLabel>
                     <FormControl>
                       <Input {...field} />
                     </FormControl>
@@ -195,7 +216,7 @@ export function AdminsActionDialog({
                 name='phone'
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Số điện thoại</FormLabel>
+                    <FormLabel>{t('messages.phoneNumber')}</FormLabel>
                     <FormControl>
                       <Input {...field} />
                     </FormControl>
@@ -208,7 +229,7 @@ export function AdminsActionDialog({
                 name='role'
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel required>Vai trò</FormLabel>
+                    <FormLabel required>{t('messages.role')}</FormLabel>
                     <SelectDropdown
                       defaultValue={field.value}
                       isControlled
@@ -228,9 +249,9 @@ export function AdminsActionDialog({
                 render={({ field }) => (
                   <FormItem className='flex items-center justify-between rounded-md border p-3'>
                     <div className='space-y-1'>
-                      <FormLabel>Kích hoạt tài khoản</FormLabel>
+                      <FormLabel>{t('messages.activateAccount')}</FormLabel>
                       <p className='text-sm text-muted-foreground'>
-                        Chỉ tài khoản được kích hoạt mới có thể đăng nhập.
+                        {t('messages.onlyActiveAccountsCanSignIn')}
                       </p>
                     </div>
                     <FormControl>
@@ -253,7 +274,9 @@ export function AdminsActionDialog({
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel required={!isEdit}>
-                      {isEdit ? 'Mật khẩu mới (không bắt buộc)' : 'Mật khẩu'}
+                      {isEdit
+                        ? t('messages.newPasswordOptional')
+                        : t('messages.password')}
                     </FormLabel>
                     <FormControl>
                       <PasswordInput {...field} />
@@ -270,7 +293,7 @@ export function AdminsActionDialog({
                     <FormLabel
                       required={!isEdit || Boolean(form.watch('password'))}
                     >
-                      Nhập lại mật khẩu
+                      {t('messages.confirmPassword')}
                     </FormLabel>
                     <FormControl>
                       <PasswordInput {...field} />
@@ -284,7 +307,7 @@ export function AdminsActionDialog({
         </DialogBody>
         <DialogFooter>
           <Button type='submit' form='staff-form' disabled={save.isPending}>
-            {save.isPending ? 'Đang lưu...' : 'Lưu thay đổi'}
+            {save.isPending ? t('messages.saving') : t('messages.saveChanges')}
           </Button>
         </DialogFooter>
       </DialogFormContent>
