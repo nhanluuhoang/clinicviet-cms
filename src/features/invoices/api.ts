@@ -6,6 +6,7 @@ export type InvoiceServiceType = 'EXAMINATION' | 'PHARMACY' | 'VACCINATION'
 export type Invoice = AuditFields & {
   id: string
   invoiceCode: string
+  tenant?: { name: string; address: string }
   issuedAt: string
   totalAmount: number | string
   consultationFee: number | string

@@ -17,6 +17,7 @@ type InvoicePrintData = {
     | 'otherFee3'
     | 'otherFee3Label'
     | 'totalAmount'
+    | 'tenant'
   >
   patient: { fullName: string; phone?: string | null; address?: string | null }
   doctorName: string
@@ -88,9 +89,7 @@ export function printInvoice(
         })[character]!
     )
   const money = (value: number | string) =>
-    i18n.t('messages.vndAlt2', {
-      value0: Number(value).toLocaleString(getLocale()),
-    })
+    Number(value).toLocaleString(getLocale(), { maximumFractionDigits: 2 })
   const issuedAt = new Date(invoice.issuedAt)
   const invoiceCode = invoice.invoiceCode
   const paper = invoicePaperConfig[paperSize]
@@ -112,33 +111,53 @@ export function printInvoice(
       invoice.otherFee3,
     ],
   ].filter(([, value]) => Number(value) > 0)
-  const medicineRows = items
-    .map((line, index) => {
-      const quantity = Number(line.quantity ?? 0)
-      const unitPrice = Number(line.medicine?.salePrice ?? 0)
-      return `
-        <tr>
-          <td class="center">${index + 1}</td>
-          <td>
-            <strong>${escapeHtml(line.medicineName)}</strong>
-            ${line.instruction ? `<div class="muted">${escapeHtml(line.instruction)}</div>` : ''}
-          </td>
-          <td class="center optional-column">${escapeHtml(line.medicine?.unit || '-')}</td>
-          <td class="number">${quantity.toLocaleString(getLocale())}</td>
-          <td class="number optional-column">${money(unitPrice)}</td>
-          <td class="number">${money(unitPrice * quantity)}</td>
-        </tr>
+  const medicineDetails = showMedicines
+    ? items
+        .map(
+          (line) => `
+        <li>
+          <span>${escapeHtml(line.medicineName)}</span>
+          <span class="medicine-quantity">${line.quantity == null ? '—' : money(line.quantity)} ${escapeHtml(line.medicine?.unit || '')}</span>
+        </li>
       `
-    })
-    .join('')
-  const feeRows = extraFees
+        )
+        .join('')
+    : ''
+  const lines = [
+    {
+      label: i18n.t('print.consultationFee'),
+      amount: Number(invoice.consultationFee),
+      medicines: false,
+    },
+    {
+      label: i18n.t('print.medicineRevenue'),
+      amount: Number(invoice.medicineRevenue),
+      medicines: true,
+    },
+    ...extraFees.map(([label, value]) => ({
+      label: String(label),
+      amount: Number(value),
+      medicines: false,
+    })),
+  ].filter(
+    (line) =>
+      line.amount !== 0 || (line.medicines && showMedicines && items.length > 0)
+  )
+  const lineRows = lines
     .map(
-      ([label, value]) => `
-        <tr>
-          <td>${escapeHtml(label)}</td>
-          <td class="number">${money(value)}</td>
-        </tr>
-      `
+      (line, index) => `
+      <tr>
+        <td class="center row-number">${index + 1}</td>
+        <td class="description">
+          ${escapeHtml(line.label)}
+          ${line.medicines && medicineDetails ? `<ul class="medicine-details">${medicineDetails}</ul>` : ''}
+        </td>
+        <td class="center optional-column">${line.medicines ? '—' : escapeHtml(i18n.t('print.serviceUnit'))}</td>
+        <td class="number optional-column">${line.medicines ? '—' : '1'}</td>
+        <td class="number optional-column">${line.medicines ? '—' : money(line.amount)}</td>
+        <td class="number">${money(line.amount)}</td>
+      </tr>
+    `
     )
     .join('')
 
@@ -155,99 +174,60 @@ export function printInvoice(
       <head>
         <meta charset="utf-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
-        <title>${escapeHtml(i18n.t('print.invoice'))} ${escapeHtml(invoiceCode)}</title>
+        <title>${escapeHtml(i18n.t('print.paymentReceipt'))} ${escapeHtml(invoiceCode)}</title>
         <style>
           * { box-sizing: border-box; }
-          body {
-            margin: 0;
-            background: #f3f4f6;
-            color: #111827;
-            font: 14px/1.45 Arial, sans-serif;
-          }
-          .page {
-            width: ${paper.width};
-            min-height: ${paper.minHeight};
-            margin: 20px auto;
-            padding: ${paper.padding};
-            background: #fff;
-            box-shadow: 0 4px 24px rgba(0, 0, 0, .08);
-          }
-          .header {
-            display: flex;
-            justify-content: space-between;
-            gap: 24px;
-            padding-bottom: 18px;
-            border-bottom: 2px solid #111827;
-          }
-          .clinic { font-size: 18px; font-weight: 700; }
-          h1 { margin: 0 0 4px; font-size: 24px; text-align: right; }
-          .invoice-meta { text-align: right; }
-          .muted { color: #6b7280; font-size: 12px; }
-          .patient {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 8px 24px;
-            margin: 20px 0;
-            padding: 14px;
-            border: 1px solid #e5e7eb;
-            border-radius: 8px;
-          }
-          .patient p { margin: 0; }
+          body { margin: 0; background: #e5e7eb; color: #111; font: 14px/1.5 "Times New Roman", serif; }
+          .page { width: ${paper.width}; min-height: ${paper.minHeight}; margin: 20px auto; padding: ${paper.padding}; background: #fff; }
+          .header { padding-bottom: 14px; border-bottom: 1px solid #111; }
+          .clinic { font-size: 18px; font-weight: bold; text-transform: uppercase; overflow-wrap: anywhere; }
+          .clinic-address { margin-top: 4px; }
+          .document-heading { text-align: center; margin: 20px 0 16px; }
+          h1 { margin: 0 0 4px; font-size: 25px; text-transform: uppercase; }
+          .invoice-meta { display: flex; justify-content: space-between; gap: 12px; margin-top: 12px; }
+          .patient { display: grid; grid-template-columns: 1fr 1fr; gap: 6px 20px; padding: 12px 0; border-top: 1px solid #111; }
+          .patient p { margin: 0; overflow-wrap: anywhere; }
           .full { grid-column: 1 / -1; }
+          .currency { margin: 8px 0 4px; text-align: right; font-style: italic; }
           table { width: 100%; border-collapse: collapse; }
-          th {
-            padding: 10px 8px;
-            background: #f3f4f6;
-            border: 1px solid #d1d5db;
-            font-size: 12px;
-            text-align: left;
-            text-transform: uppercase;
-          }
-          td { padding: 10px 8px; border: 1px solid #e5e7eb; vertical-align: top; }
+          thead { display: table-header-group; }
+          th, td { padding: 8px 6px; border: 1px solid #555; vertical-align: top; }
+          th { text-align: center; font-weight: bold; }
           .center { text-align: center; }
-          .number { text-align: right; white-space: nowrap; }
-          .summary {
-            width: 52%;
-            margin: 22px 0 0 auto;
-          }
-          .summary td { border-width: 0 0 1px; }
-          .summary .total td {
-            padding-top: 14px;
-            border-top: 2px solid #111827;
-            border-bottom: 0;
-            font-size: 17px;
-            font-weight: 700;
-          }
-          .signatures {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 80px;
-            margin-top: 48px;
-            text-align: center;
-          }
+          .number { text-align: right; white-space: nowrap; font-variant-numeric: tabular-nums; }
+          .row-number { width: 7%; }
+          .description { width: 45%; overflow-wrap: anywhere; }
+          .medicine-details { list-style: none; margin: 6px 0 0; padding: 0; font-size: 12px; }
+          .medicine-details li { display: flex; justify-content: space-between; gap: 12px; padding: 3px 0; border-top: 1px dotted #aaa; }
+          .medicine-quantity { flex-shrink: 0; }
+          .total td { font-size: 16px; font-weight: bold; border-top: 2px solid #111; }
+          .total-label { text-align: right; }
+          .signatures { display: grid; grid-template-columns: 1fr 1fr; gap: 32px; margin-top: 28px; text-align: center; break-inside: avoid; }
+          .signature-hint { font-size: 12px; font-style: italic; }
           .signature-space { height: 72px; }
+          .document-note { border-top: 1px solid #aaa; padding-top: 8px; margin-top: 12px; font-size: 11px; text-align: center; }
           .actions { display: flex; justify-content: center; margin: 24px 0; }
-          button {
-            padding: 10px 18px;
-            border: 0;
-            border-radius: 6px;
-            background: #111827;
-            color: #fff;
-            font-weight: 600;
-            cursor: pointer;
-          }
+          button { padding: 10px 18px; border: 0; border-radius: 6px; background: #111827; color: #fff; font-weight: 600; cursor: pointer; }
           ${
             paper.thermal
               ? `
-          body { font-size: 11px; }
-          .header { display: block; padding-bottom: 8px; }
-          .invoice-meta, h1 { margin-top: 8px; text-align: left; }
-          .patient { display: block; margin: 10px 0; padding: 8px; }
+          body { font: 11px/1.45 Arial, sans-serif; }
+          .header { padding-bottom: 8px; }
+          .clinic { font-size: 13px; }
+          .document-heading { margin: 12px 0 8px; }
+          h1 { font-size: 16px; }
+          .invoice-meta { display: block; margin-top: 8px; }
+          .invoice-meta > span { display: block; }
+          .patient { display: block; padding: 8px 0; }
           .patient p { margin-bottom: 3px; }
           th, td { padding: 5px 3px; font-size: 10px; }
           .optional-column { display: none; }
-          .summary { width: 100%; margin-top: 12px; }
-          .signatures { gap: 12px; margin-top: 24px; }
+          .description { width: auto; }
+          .medicine-details, .signature-hint, .document-note { font-size: 9px; }
+          .medicine-details li { gap: 4px; }
+          .medicine-quantity { text-align: right; white-space: nowrap; }
+          .total td { font-size: 12px; }
+          .signatures { gap: 8px; margin-top: 18px; font-size: 10px; }
           .signature-space { height: 40px; }
           `
               : ''
@@ -255,7 +235,7 @@ export function printInvoice(
           @page { size: ${paper.pageSize}; margin: 0; }
           @media print {
             body { background: #fff; }
-            .page { margin: 0; box-shadow: none; }
+            .page { margin: 0; }
             .actions { display: none; }
           }
         </style>
@@ -263,68 +243,57 @@ export function printInvoice(
       <body>
         <main class="page">
           <header class="header">
-            <div>
-              <div class="clinic">${escapeHtml(i18n.t('print.clinic'))}</div>
-              <div class="muted">${escapeHtml(i18n.t('print.receipt'))}</div>
-            </div>
-            <div class="invoice-meta">
-              <h1>${escapeHtml(i18n.t('print.invoice'))}</h1>
-              <div>${escapeHtml(i18n.t('print.code'))} <strong>${escapeHtml(invoiceCode)}</strong></div>
-              <div class="muted">${issuedAt.toLocaleString(getLocale())}</div>
-            </div>
+            <div class="clinic">${escapeHtml(invoice.tenant?.name || i18n.t('print.clinic'))}</div>
+            ${invoice.tenant?.address ? `<div class="clinic-address">${escapeHtml(i18n.t('print.address'))} ${escapeHtml(invoice.tenant.address)}</div>` : ''}
           </header>
-
+          <section class="document-heading">
+            <h1>${escapeHtml(i18n.t('print.paymentReceipt'))}</h1>
+            <div>${escapeHtml(i18n.t('print.receipt'))}</div>
+            <div class="invoice-meta">
+              <span>${escapeHtml(i18n.t('print.receiptNumber'))} <strong>${escapeHtml(invoiceCode)}</strong></span>
+              <span>${escapeHtml(i18n.t('print.issuedAt'))} ${issuedAt.toLocaleString(getLocale(), { timeZone: 'Asia/Ho_Chi_Minh' })}</span>
+            </div>
+          </section>
           <section class="patient">
             <p class="full">${escapeHtml(i18n.t('print.patient'))} <strong>${escapeHtml(patient.fullName)}</strong></p>
-            <p>${escapeHtml(i18n.t('print.phone'))} ${escapeHtml(patient.phone || '-')}</p>
-            <p>${escapeHtml(i18n.t('print.address'))} ${escapeHtml(patient.address || '-')}</p>
-            <p class="full">${escapeHtml(i18n.t('print.doctor'))} ${escapeHtml(doctorName || '-')}</p>
+            <p class="full">${escapeHtml(i18n.t('print.address'))} ${escapeHtml(patient.address || '—')}</p>
+            <p>${escapeHtml(i18n.t('print.phone'))} ${escapeHtml(patient.phone || '—')}</p>
+            <p>${escapeHtml(i18n.t('print.doctor'))} ${escapeHtml(doctorName || '—')}</p>
           </section>
-
-          ${
-            showMedicines
-              ? `<table>
+          <div class="currency">${escapeHtml(i18n.t('print.currency'))}</div>
+          <table>
             <thead>
               <tr>
-                <th class="center">${escapeHtml(i18n.t('print.number'))}</th>
-                <th>${escapeHtml(i18n.t('print.medicine'))}</th>
-                <th class="center optional-column">${escapeHtml(i18n.t('print.unit'))}</th>
-                <th class="number">${escapeHtml(i18n.t('print.quantity'))}</th>
-                <th class="number optional-column">${escapeHtml(i18n.t('print.unitPrice'))}</th>
-                <th class="number">${escapeHtml(i18n.t('print.amount'))}</th>
+                <th class="row-number">${escapeHtml(i18n.t('print.number'))}</th>
+                <th>${escapeHtml(i18n.t('print.goodsAndServices'))}</th>
+                <th class="optional-column">${escapeHtml(i18n.t('print.unit'))}</th>
+                <th class="optional-column">${escapeHtml(i18n.t('print.quantity'))}</th>
+                <th class="optional-column">${escapeHtml(i18n.t('print.unitPrice'))}</th>
+                <th>${escapeHtml(i18n.t('print.amount'))}</th>
               </tr>
             </thead>
-            <tbody>
-              ${medicineRows || `<tr><td colspan="${paper.thermal ? 4 : 6}" class="center muted">${escapeHtml(i18n.t('print.noMedicines'))}</td></tr>`}
-            </tbody>
-          </table>`
-              : ''
-          }
-
-          <table class="summary">
-            <tbody>
-              <tr><td>${escapeHtml(i18n.t('print.consultationFee'))}</td><td class="number">${money(invoice.consultationFee)}</td></tr>
-              <tr><td>${escapeHtml(i18n.t('print.medicineRevenue'))}</td><td class="number">${money(invoice.medicineRevenue)}</td></tr>
-              ${feeRows}
+            <tbody>${lineRows}</tbody>
+            <tfoot>
               <tr class="total">
-                <td>${escapeHtml(i18n.t('print.total'))}</td>
+                <td class="total-label" colspan="${paper.thermal ? 2 : 5}">${escapeHtml(i18n.t('print.total'))}</td>
                 <td class="number">${money(invoice.totalAmount)}</td>
               </tr>
-            </tbody>
+            </tfoot>
           </table>
 
           <section class="signatures">
             <div>
               <strong>${escapeHtml(i18n.t('print.payer'))}</strong>
-              <div class="muted">${escapeHtml(i18n.t('print.signature'))}</div>
+              <div class="signature-hint">${escapeHtml(i18n.t('print.signature'))}</div>
               <div class="signature-space"></div>
             </div>
             <div>
               <strong>${escapeHtml(i18n.t('print.collector'))}</strong>
-              <div class="muted">${escapeHtml(i18n.t('print.signature'))}</div>
+              <div class="signature-hint">${escapeHtml(i18n.t('print.signature'))}</div>
               <div class="signature-space"></div>
             </div>
           </section>
+          <p class="document-note">${escapeHtml(i18n.t('print.internalReceiptNote'))}</p>
         </main>
         <div class="actions"><button onclick="window.print()">${escapeHtml(i18n.t('print.print'))}</button></div>
       </body>

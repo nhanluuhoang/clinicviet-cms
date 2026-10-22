@@ -84,6 +84,7 @@ export interface QueueEntry {
         }
       }>
       invoice: null | {
+        tenant?: { name: string; address: string }
         invoiceCode: string
         issuedAt: string
         consultationFee: number | string

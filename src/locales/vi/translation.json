@@ -1240,8 +1240,15 @@
     "payer": "Người nộp tiền",
     "collector": "Người thu tiền",
     "signature": "(Ký và ghi rõ họ tên)",
-    "print": "In hóa đơn",
-    "showMedicines": "Hi?n th? thu?c"
+    "print": "In phiếu thanh toán",
+    "showMedicines": "Hiển thị thuốc",
+    "paymentReceipt": "PHIẾU THANH TOÁN",
+    "receiptNumber": "Số phiếu:",
+    "issuedAt": "Ngày lập:",
+    "currency": "Đơn vị tiền tệ: VND",
+    "goodsAndServices": "Tên hàng hóa, dịch vụ",
+    "serviceUnit": "Lần",
+    "internalReceiptNote": "Phiếu thanh toán nội bộ — không thay thế hóa đơn điện tử."
   },
   "medicineUnits": {
     "tablet": "viên",
