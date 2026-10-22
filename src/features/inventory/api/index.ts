@@ -104,9 +104,6 @@ interface ApiGoodsIssue extends AuditFields {
   lines: Array<{ quantity: number; batch: ApiBatch }>
 }
 
-const generatedCode = (prefix: string) =>
-  `${prefix}-${Date.now().toString(36).toUpperCase()}`
-
 const getAll = async <T>(url: string, search = ''): Promise<T[]> => {
   const first = await axios.get<unknown, Page<T>>(url, {
     params: { page: 1, limit: 100, search: search || undefined },
@@ -279,7 +276,6 @@ const GetReceipt = async (id: string): Promise<GoodsReceipt> =>
 const CreateReceipt = (data: GoodsReceiptInput): Promise<void> =>
   axios.post('/goods-receipts', {
     ...data,
-    code: generatedCode('PN'),
     lines: data.lines.map((line) => ({
       ...line,
       mfgDate: line.mfgDate || undefined,
@@ -317,10 +313,7 @@ const GetGoodsIssue = async (id: string): Promise<GoodsIssue> => {
 }
 
 const CreateGoodsIssue = (data: GoodsIssueInput): Promise<void> =>
-  axios.post('/goods-issues', {
-    ...data,
-    code: generatedCode('PX'),
-  })
+  axios.post('/goods-issues', data)
 
 const GetStockTakes = async (search = ''): Promise<StockTakeSummary[]> => {
   const summaries = await getAll<ApiStockTakeSummary>('/stock-takes', search)
@@ -356,11 +349,11 @@ const GetStockTake = async (id: string): Promise<StockTake> => {
 }
 
 const CreateStockTake = (data: StockTakeInput): Promise<void> =>
-  axios.post('/stock-takes', { ...data, code: generatedCode('KK') })
+  axios.post('/stock-takes', data)
 
 const DisposeBatch = (batchId: string): Promise<void> =>
   axios.post('/stock-takes', {
-    code: generatedCode('HUY'),
+    kind: 'DISPOSAL',
     countedAt: new Date().toISOString(),
     note: i18n.t('messages.discardAllRemainingStockInThisExpiredBatch'),
     lines: [
