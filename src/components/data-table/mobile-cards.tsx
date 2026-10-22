@@ -238,7 +238,13 @@ export function MobileDataCards<TData>({
               {actionCells.length > 0 && (
                 <div className='flex flex-wrap items-center justify-end gap-2 border-t pt-3'>
                   {actionCells.map((cell) => (
-                    <div key={cell.id}>
+                    <div
+                      key={cell.id}
+                      className={cn(
+                        ['expand', 'expander'].includes(cell.column.id) &&
+                          'min-w-0 flex-1 [&_button]:h-11 [&_button]:w-full [&_button]:justify-end'
+                      )}
+                    >
                       {flexRender(
                         cell.column.columnDef.cell,
                         cell.getContext()
