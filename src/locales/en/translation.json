@@ -1240,8 +1240,15 @@
     "payer": "Payer",
     "collector": "Collected by",
     "signature": "(Signature and full name)",
-    "print": "Print invoice",
-    "showMedicines": "Show medicines"
+    "print": "Print payment receipt",
+    "showMedicines": "Show medicines",
+    "paymentReceipt": "PAYMENT RECEIPT",
+    "receiptNumber": "Receipt no.:",
+    "issuedAt": "Issued at:",
+    "currency": "Currency: VND",
+    "goodsAndServices": "Goods and services",
+    "serviceUnit": "Service",
+    "internalReceiptNote": "Internal payment receipt — does not replace an electronic invoice."
   },
   "medicineUnits": {
     "tablet": "tablet",
