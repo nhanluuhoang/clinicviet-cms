@@ -57,6 +57,7 @@ const routeRoles: Array<{
   },
   { path: '/settings/tenant', roles: TENANT_ADMIN_ROLES },
   { path: '/master-data', roles: CLINICAL_ADMIN_ROLES },
+  { path: '/diagnoses', roles: CLINICAL_ADMIN_ROLES },
   {
     path: '/clinic-days-off',
     roles: CLINICAL_ADMIN_ROLES,

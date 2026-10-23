@@ -9,6 +9,7 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Textarea } from '@/components/ui/textarea'
 import { DatePickerInput } from '@/components/date-picker-input'
+import { DiagnosisInput } from '@/components/diagnosis-input'
 import { MAX_MEDIA_FILES } from '../data/constants'
 import type { ServicePrescriptionFormState } from '../hooks/use-service-prescription-form'
 import { Field } from './field'
@@ -155,12 +156,10 @@ export function PatientInformationSection({
               label={t('messages.diagnosisAlt3')}
               htmlFor={formId + '-diagnosis'}
             >
-              <Textarea
+              <DiagnosisInput
                 id={formId + '-diagnosis'}
                 value={diagnosis}
-                onChange={(e) => setDiagnosis(e.target.value)}
-                placeholder={t('messages.enterTheDoctorSDiagnosis')}
-                required
+                onChange={setDiagnosis}
               />
             </Field>
             <Field

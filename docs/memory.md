@@ -8,6 +8,8 @@
 
 ## Architecture
 
+- Diagnosis catalogs use /diagnoses (common plus own clinic) and /system/diagnoses (Super Admin common entries). Clinic admins/doctors manage only their own entries. DiagnosisInput searches paginated /diagnoses suggestions and retains editable multiline text; clinical history stores text independently of catalog entries.
+
 - MedicalHistory uses one optional appointmentDate (DATE) for the next examination/vaccination appointment. Migration 20261023010000_unify_appointment_date renames nextDoseDate and preserves existing vaccine dates. The read-only /reminders page reads appointmentDate with staff access, URL filters and server pagination; dateFrom defaults to today only when absent, while an explicit empty string/reset clears the date filter; there is no separate reminder/contact/attendance state.
 
 - Tenant subscriptions use ACTIVE/EXPIRED/SUSPENDED with one usage expiry (`subscriptionEndsAt`); creation defaults to ACTIVE and requires an expiry. No TRIAL option or trial date columns. Trial requests/referrals remain separate. Expiry notices use localized plan names without BASIC/PLUS/PRO codes.
