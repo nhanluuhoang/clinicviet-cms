@@ -10,6 +10,7 @@ import { Card, CardContent } from '@/components/ui/card'
 import { Checkbox } from '@/components/ui/checkbox'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
+import { NumberInput } from '@/components/number-input'
 import {
   CreateMasterData,
   UpdateMasterData,
@@ -100,14 +101,13 @@ export function MasterDataForm({
           <div className='max-w-md space-y-2'>
             <Label htmlFor='consultation-fee'>{t('messages.amountAlt3')}</Label>
             <div className='relative'>
-              <Input
+              <NumberInput
                 id='consultation-fee'
                 className='pr-16'
-                type='number'
                 min={0}
                 step={1000}
                 value={value}
-                onChange={(event) => setValue(event.target.value)}
+                onValueChange={(value) => setValue(value)}
                 placeholder={t('messages.enterConsultationFee')}
               />
               <span className='absolute inset-y-0 right-3 flex items-center text-sm text-muted-foreground'>

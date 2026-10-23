@@ -45,6 +45,7 @@ import {
 } from '@/components/ui/popover'
 import { Textarea } from '@/components/ui/textarea'
 import { DatePickerInput } from '@/components/date-picker-input'
+import { NumberInput } from '@/components/number-input'
 import { CreateGoodsIssue, SearchBatches, type StockBatch } from '../api'
 
 const lineSchema = z.object({
@@ -332,14 +333,13 @@ export function IssueMutateDialog({
                               {t('messages.quantityAlt2')}
                             </FormLabel>
                             <FormControl>
-                              <Input
+                              <NumberInput
                                 {...field}
-                                type='number'
                                 min={1}
                                 step={1}
                                 max={selected?.qtyRemaining}
-                                onChange={(event) =>
-                                  field.onChange(Number(event.target.value))
+                                onValueChange={(value) =>
+                                  field.onChange(Number(value))
                                 }
                               />
                             </FormControl>

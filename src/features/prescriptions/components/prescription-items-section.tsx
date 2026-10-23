@@ -9,9 +9,9 @@ import {
   CardHeader,
   CardTitle,
 } from '@/components/ui/card'
-import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { MedicineInstructionInput } from '@/components/medicine-instruction-input'
+import { NumberInput } from '@/components/number-input'
 import type { ServicePrescriptionFormState } from '../hooks/use-service-prescription-form'
 import { Field } from './field'
 import { MedicinePicker } from './medicine-picker'
@@ -121,18 +121,15 @@ export function PrescriptionItemsSection({
                 label={t('messages.quantityAlt3')}
                 className='grid-rows-[auto_2.25rem_1rem] content-start'
               >
-                <Input
-                  type='number'
+                <NumberInput
                   min={1}
                   step={1}
                   required={Boolean(item.medicineId)}
                   aria-invalid={Boolean(getQuantityError(item))}
                   value={item.quantity ?? ''}
-                  onChange={(e) =>
+                  onValueChange={(value) =>
                     updateItem(item.key, {
-                      quantity: e.target.value
-                        ? Number(e.target.value)
-                        : undefined,
+                      quantity: value ? Number(value) : undefined,
                     })
                   }
                 />

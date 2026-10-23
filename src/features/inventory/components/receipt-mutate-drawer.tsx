@@ -46,6 +46,7 @@ import {
 } from '@/components/ui/popover'
 import { Textarea } from '@/components/ui/textarea'
 import { DatePickerInput } from '@/components/date-picker-input'
+import { NumberInput } from '@/components/number-input'
 import { GetMedicines, type Medicine } from '@/features/medicines/api'
 import { CreateReceipt } from '../api'
 import { expiryMeta } from '../data/data'
@@ -476,15 +477,12 @@ export function ReceiptMutateDrawer({
                                 {t('messages.quantityAlt2')}
                               </FormLabel>
                               <FormControl>
-                                <Input
+                                <NumberInput
                                   {...field}
-                                  type='number'
                                   min={1}
-                                  onChange={(e) =>
+                                  onValueChange={(value) =>
                                     field.onChange(
-                                      e.target.value === ''
-                                        ? 0
-                                        : Number(e.target.value)
+                                      value === '' ? 0 : Number(value)
                                     )
                                   }
                                 />
@@ -502,15 +500,12 @@ export function ReceiptMutateDrawer({
                                 {t('messages.purchaseUnitPrice')}
                               </FormLabel>
                               <FormControl>
-                                <Input
+                                <NumberInput
                                   {...field}
-                                  type='number'
                                   min={0}
-                                  onChange={(e) =>
+                                  onValueChange={(value) =>
                                     field.onChange(
-                                      e.target.value === ''
-                                        ? 0
-                                        : Number(e.target.value)
+                                      value === '' ? 0 : Number(value)
                                     )
                                   }
                                 />

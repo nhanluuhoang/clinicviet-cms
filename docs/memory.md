@@ -31,6 +31,8 @@
 
 ## Convention
 
+- Price and quantity fields use shared `NumberInput` (`src/components/number-input.tsx`) for immediate locale grouping. `onValueChange` emits an unformatted numeric string; callers retain their existing number/empty conversion. Preserve native min/max/step validation and forward refs for React Hook Form.
+
 - Inventory document tabs (receipts/issues/stocktakes) use URL-backed dateFrom/dateTo filters on the document date. Stock/batch Excel exports use all filtered, sorted rows before pagination; preserve identifiers as text and quantities/amounts as numbers. ExcelJS loads only when exporting.
 
 
