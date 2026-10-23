@@ -111,7 +111,10 @@ export function UpdateSystemUserDialog({ user }: { user: SystemUser }) {
           user.role !== 'USER' && { role: values.role as ManagedRole }),
       }),
     onSuccess: async () => {
-      await queryClient.invalidateQueries({ queryKey: ['system-users'] })
+      await Promise.all([
+        queryClient.invalidateQueries({ queryKey: ['system-users'] }),
+        queryClient.invalidateQueries({ queryKey: ['vaccination-staff'] }),
+      ])
       toast.success(t('messages.userUpdated'))
       setOpen(false)
     },

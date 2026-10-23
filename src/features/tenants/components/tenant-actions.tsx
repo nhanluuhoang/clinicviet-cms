@@ -66,7 +66,14 @@ export function TenantActions({ tenant }: { tenant: Tenant }) {
     storageLimitGb: tenant.storageLimitGb,
     isActive: tenant.isActive,
   })
-  const refresh = () => queryClient.invalidateQueries({ queryKey: ['tenants'] })
+  const refresh = () =>
+    Promise.all([
+      queryClient.invalidateQueries({ queryKey: ['tenants'] }),
+      queryClient.invalidateQueries({
+        queryKey: ['support-requests', 'tenant-options'],
+      }),
+      queryClient.invalidateQueries({ queryKey: ['landing-config'] }),
+    ])
   const update = useMutation({
     mutationFn: () =>
       updateTenant(tenant.id, {

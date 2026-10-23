@@ -17,8 +17,6 @@ export function ClinicDaysOff() {
     queryKey: ['master-data', tenantId],
     queryFn: () => GetMasterDatas(),
     enabled: !!tenantId,
-    staleTime: 0,
-    gcTime: 0,
   })
   const item = data?.data.find((row) => row.key === DAYS_OFF_KEY)
 

@@ -153,6 +153,7 @@ export function CreateSystemUserDialog({
     onSuccess: async () => {
       await Promise.all([
         queryClient.invalidateQueries({ queryKey: ['system-users'] }),
+        queryClient.invalidateQueries({ queryKey: ['vaccination-staff'] }),
         queryClient.invalidateQueries({ queryKey: ['tenants'] }),
       ])
       toast.success(t('messages.accountCreated'))

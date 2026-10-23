@@ -96,7 +96,12 @@ export function CreateTenantDialog() {
         subscriptionEndsAt: new Date(`${endsOn}T23:59:59`).toISOString(),
       }),
     onSuccess: async () => {
-      await queryClient.invalidateQueries({ queryKey: ['tenants'] })
+      await Promise.all([
+        queryClient.invalidateQueries({ queryKey: ['tenants'] }),
+        queryClient.invalidateQueries({
+          queryKey: ['support-requests', 'tenant-options'],
+        }),
+      ])
       toast.success(t('messages.clinicCreated'))
       form.reset(defaultValues)
       setOpen(false)

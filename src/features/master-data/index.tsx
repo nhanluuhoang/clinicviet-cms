@@ -20,8 +20,6 @@ export function MasterData() {
     queryKey: ['master-data', tenantId],
     queryFn: () => GetMasterDatas(),
     enabled: !!tenantId,
-    staleTime: 0,
-    gcTime: 0,
   })
   const consultationFeeItem = data?.data.find(
     (row) => row.key === CONSULTATION_FEE_KEY

@@ -1,3 +1,4 @@
+import { useQueryClient } from '@tanstack/react-query'
 import { useNavigate, useLocation } from '@tanstack/react-router'
 import { useTranslation } from 'react-i18next'
 import { useAuthStore } from '@/stores/auth-store'
@@ -16,11 +17,14 @@ export function SignOutDialog({ open, onOpenChange }: SignOutDialogProps) {
   const navigate = useNavigate()
   const location = useLocation()
   const { auth } = useAuthStore()
+  const queryClient = useQueryClient()
 
   const handleSignOut = async () => {
     try {
       await Logout()
       auth.reset()
+      await queryClient.cancelQueries()
+      queryClient.clear()
       // Preserve current location for redirect after sign-in
       const currentPath = location.href
       navigate({
