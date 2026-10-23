@@ -1,4 +1,13 @@
 {
+  "inventoryExport": {
+    "dateFrom": "Từ ngày",
+    "dateTo": "Đến ngày",
+    "exportExcel": "Xuất Excel",
+    "exporting": "Đang xuất…",
+    "failed": "Không thể xuất Excel. Vui lòng thử lại.",
+    "stock": "Tồn kho",
+    "batches": "Lô thuốc"
+  },
   "auth": {
     "appName": "ClinicViet",
     "appDescription": "Quản lý phòng khám",

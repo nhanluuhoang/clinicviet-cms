@@ -10,6 +10,8 @@ import { DataTableColumnHeader } from '@/components/data-table'
 import { withAuditColumns } from '@/components/data-table/audit-columns'
 import { UrlDataTable } from '@/components/data-table/url-data-table'
 import { GetGoodsIssue, GetGoodsIssues, type GoodsIssueSummary } from '../api'
+import { useDocumentDates } from '../hooks/use-document-dates'
+import { DocumentDateToolbar } from './document-date-toolbar'
 
 function IssueLines({ row }: { row: Row<GoodsIssueSummary> }) {
   const { t } = useTranslation()
@@ -172,6 +174,8 @@ export function IssuesTab() {
     retry: false,
   })
 
+  const filteredData = useDocumentDates(data ?? [], (item) => item.issuedAt)
+
   return (
     <>
       {isError && (
@@ -181,12 +185,18 @@ export function IssuesTab() {
       )}
       <UrlDataTable
         columns={withAuditColumns(columns)}
-        data={data ?? []}
+        data={filteredData}
         isLoading={isLoading}
         searchPlaceholder={t('messages.searchDocumentCodeOrRecipient')}
         emptyMessage={t('messages.noIssuesYet')}
         getSearchText={(issue) => `${issue.code} ${issue.recipientName}`}
         initialSorting={[{ id: 'issuedAt', desc: true }]}
+        renderToolbar={(table) => (
+          <DocumentDateToolbar
+            table={table}
+            placeholder={t('messages.searchDocumentCodeOrRecipient')}
+          />
+        )}
         renderSubRow={(row) => <IssueLines row={row} />}
       />
     </>
