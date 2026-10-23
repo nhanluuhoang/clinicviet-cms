@@ -59,6 +59,26 @@ const queryClient = new QueryClient({
   }),
 })
 
+for (const queryKey of [
+  ['diagnoses'],
+  ['medicineInstructions'],
+  ['prescription-templates'],
+  ['vaccination-staff'],
+  ['posts'],
+  ['landing-config'],
+  ['master-data'],
+  ['tenants'],
+  ['support-requests', 'tenant-options'],
+]) {
+  queryClient.setQueryDefaults(queryKey, {
+    staleTime: 15 * 60 * 1000,
+    gcTime: 30 * 60 * 1000,
+    refetchOnMount: true,
+    refetchOnWindowFocus: true,
+    refetchOnReconnect: true,
+  })
+}
+
 // Create a new router instance
 const router = createRouter({
   routeTree,

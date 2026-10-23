@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { useQuery, useQueryClient } from '@tanstack/react-query'
 import i18n from '@/i18n'
 import { toast } from 'sonner'
+import { useAuthStore } from '@/stores/auth-store'
 import { showRequestError } from '@/lib/handle-server-error'
 import { getMedicines } from '@/features/prescriptions/api'
 import {
@@ -16,6 +17,7 @@ import { emptyItem } from '../data/constants'
 import type { DialogType } from '../types'
 
 export function usePrescriptionTemplates() {
+  const user = useAuthStore((state) => state.auth.user)
   const queryClient = useQueryClient()
 
   const [open, setOpen] = useState<DialogType>(null)
@@ -28,7 +30,7 @@ export function usePrescriptionTemplates() {
   const [items, setItems] = useState<PrescriptionTemplateItem[]>([emptyItem()])
 
   const { data: templates = [], isLoading } = useQuery({
-    queryKey: ['prescription-templates'],
+    queryKey: ['prescription-templates', 'list', user?.tenantId, user?.role],
     queryFn: () => getPrescriptionTemplates(),
   })
 

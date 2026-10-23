@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import i18n from '@/i18n'
 import { toast } from 'sonner'
+import { useAuthStore } from '@/stores/auth-store'
 import { showRequestError } from '@/lib/handle-server-error'
 import { GetPosts } from '@/features/posts/api'
 import { updateOwnTenant } from '@/features/settings/tenant/api'
@@ -13,11 +14,12 @@ import {
 import { emptyConfig } from '../data/constants'
 
 export function useLandingConfigForm() {
+  const user = useAuthStore((state) => state.auth.user)
   const queryClient = useQueryClient()
   const [postsOpen, setPostsOpen] = useState(false)
 
   const { data, isLoading } = useQuery({
-    queryKey: ['landing-config'],
+    queryKey: ['landing-config', user?.tenantId, user?.role],
     queryFn: getLandingConfig,
   })
 
@@ -27,7 +29,7 @@ export function useLandingConfigForm() {
     isError: postsError,
     refetch: refetchPosts,
   } = useQuery({
-    queryKey: ['posts', 'landing-featured'],
+    queryKey: ['posts', 'landing-featured', user?.tenantId, user?.role],
     queryFn: () => GetPosts({ page: 1, limit: 100, isPublic: true }),
     enabled: postsOpen,
   })
@@ -54,6 +56,10 @@ export function useLandingConfigForm() {
       await Promise.all([
         queryClient.invalidateQueries({ queryKey: ['landing-config'] }),
         queryClient.invalidateQueries({ queryKey: ['tenant', 'me'] }),
+        queryClient.invalidateQueries({ queryKey: ['tenants'] }),
+        queryClient.invalidateQueries({
+          queryKey: ['support-requests', 'tenant-options'],
+        }),
         queryClient.invalidateQueries({ queryKey: ['auth', 'profile'] }),
       ])
       toast.success(i18n.t('messages.clinicWebsiteConfigurationSaved'))

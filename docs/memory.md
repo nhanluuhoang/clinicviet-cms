@@ -8,6 +8,8 @@
 
 ## Architecture
 
+- TanStack Query defaults for diagnoses, medicineInstructions, prescription-templates, vaccination-staff, posts, landing-config, master-data, tenants and support-requests/tenant-options use staleTime 15 minutes, gcTime 30 minutes and refetch stale data on mount/focus/reconnect. Tenant-specific catalog/template/post/website keys include tenant/role (master-data and staff options use tenant). Successful writes invalidate related lists/pickers; staff writes also invalidate vaccination-staff, clinic name changes invalidate website/clinic options. Login/logout clear the memory-only query cache. Stock, medicine search, queue and transactional queries retain short defaults.
+
 - Diagnosis/medicine instruction suggestion popups show one flat list without common/private headings. Use modal Popover inside prescription/template dialogs so the portal remains scrollable under the dialog scroll lock; constrain content height to Radix available height with a shrinking Command and fixed load-more action.
 
 - Medicine instruction catalogs follow diagnosis scope/permissions at /medicine-instructions and /system/medicine-instructions. MedicineInstructionInput searches common plus own-clinic entries from the API, preserves free text (255 characters) and the document preview in prescriptions/templates. The former master-data settings editor and hardcoded suggestions are replaced by the catalog.
@@ -30,7 +32,7 @@
 - Trang `/system/users` cho Super Admin đặt lại mật khẩu từng tài khoản bằng hộp thoại riêng; đổi thành công sẽ đăng xuất các phiên hiện tại của tài khoản đó.
 
 - Tính năng ở `src/features/`, route ở `src/routes/_authenticated/`; API và kiểu dữ liệu nằm trong `api.ts` của feature, gọi qua `src/lib/axios.ts`. Interceptor trả `response.data`, giữ `AxiosError` để nhận diện 401; CSRF lấy từ `/auth/csrf` và gửi cho request ghi.
-- Master data cache thuộc BE. Settings, ngày nghỉ, đơn thuốc và template dùng `useQuery` trực tiếp với key `['master-data', tenantId]`, `staleTime: 0`, `gcTime: 0`; refetch khi mount, bỏ dữ liệu không active, giữ focus behavior toàn cục. Mutation invalidate tiền tố `['master-data']`; không tạo hook master data riêng.
+- Master data uses direct useQuery calls keyed by ['master-data', tenantId] in settings, days off and prescription forms; inherit the 15-minute CMS policy alongside backend cache. Mutations invalidate ['master-data']; do not introduce a dedicated master-data hook.
 - PATCH medical history gửi đủ các danh sách media còn giữ, kể cả mảng rỗng; bỏ trường nghĩa là không đổi. Nhận HLS MIME `application/vnd.apple.mpegurl` là video. Bỏ media cũ chỉ sửa draft đến lúc Save; DELETE và dọn khi đóng dialog chỉ áp dụng upload mới. Giới hạn 5 ảnh, 5 PDF, 1 video.
 - PrescriptionDialog dùng chung ba tab EXAMINATION/PHARMACY/VACCINATION; mỗi tab giữ form và chi phí riêng, chỉ gửi tab mở. Nhớ tab gần nhất theo user trong localStorage, không lưu dữ liệu bệnh nhân. Sửa phiếu mở đúng loại đã lưu và khóa hai tab khác; PATCH theo history.id, refresh medical histories. Hồ sơ không có prescription chỉ sửa thông tin hồ sơ, ẩn thuốc và chi phí. Phí khám chỉ áp dụng EXAMINATION.
 - Vaccination API dùng trường phẳng; `getVaccinationFields` đổi ngày DB sang `YYYY-MM-DD`. Form hiện dấu hiệu sinh tồn, mũi/liều/đường/vị trí/người tiêm và các ngày; người tiêm từ `/users/staff-options`, mặc định user hiện tại, ngày tiêm mặc định hôm nay local, sửa phiếu giữ dữ liệu cũ.

@@ -213,8 +213,6 @@ export function useServicePrescriptionForm({
     queryKey: ['master-data', currentUser?.tenantId],
     queryFn: () => GetMasterDatas(),
     enabled: !!currentUser?.tenantId,
-    staleTime: 0,
-    gcTime: 0,
   })
 
   const vaccinationStaff = useQuery({

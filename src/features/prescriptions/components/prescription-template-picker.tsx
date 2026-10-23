@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { useQuery } from '@tanstack/react-query'
 import { ChevronsUpDown } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
+import { useAuthStore } from '@/stores/auth-store'
 import { useDebounce } from '@/hooks/use-debounce'
 import { Button } from '@/components/ui/button'
 import {
@@ -28,12 +29,19 @@ export function PrescriptionTemplatePicker({
   onSelect: (template: PrescriptionTemplate) => void
 }) {
   const { t } = useTranslation()
+  const user = useAuthStore((state) => state.auth.user)
 
   const [open, setOpen] = useState(false)
   const [search, setSearch] = useState('')
   const debouncedSearch = useDebounce(search, 300)
   const { data: templates = [], isLoading } = useQuery({
-    queryKey: ['prescription-templates', 'search', debouncedSearch],
+    queryKey: [
+      'prescription-templates',
+      'search',
+      user?.tenantId,
+      user?.role,
+      debouncedSearch,
+    ],
     queryFn: () => getPrescriptionTemplates(debouncedSearch),
     enabled: open,
   })
