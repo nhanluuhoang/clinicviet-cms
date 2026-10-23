@@ -8,6 +8,8 @@
 
 ## Architecture
 
+- Medicine instruction catalogs follow diagnosis scope/permissions at /medicine-instructions and /system/medicine-instructions. MedicineInstructionInput searches common plus own-clinic entries from the API, preserves free text (255 characters) and the document preview in prescriptions/templates. The former master-data settings editor and hardcoded suggestions are replaced by the catalog.
+
 - Diagnosis catalogs use /diagnoses (common plus own clinic) and /system/diagnoses (Super Admin common entries). Clinic admins/doctors manage only their own entries. DiagnosisInput searches paginated /diagnoses suggestions and retains editable multiline text; clinical history stores text independently of catalog entries.
 
 - MedicalHistory uses one optional appointmentDate (DATE) for the next examination/vaccination appointment. Migration 20261023010000_unify_appointment_date renames nextDoseDate and preserves existing vaccine dates. The read-only /reminders page reads appointmentDate with staff access, URL filters and server pagination; dateFrom defaults to today only when absent, while an explicit empty string/reset clears the date filter; there is no separate reminder/contact/attendance state.

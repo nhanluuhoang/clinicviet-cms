@@ -1343,5 +1343,29 @@
     "expiring": "Your {{value0}} plan expires in {{count}} days.",
     "expiring_one": "Your {{value0}} plan expires in {{count}} day.",
     "expiring_other": "Your {{value0}} plan expires in {{count}} days."
+  },
+  "medicineInstructions": {
+    "title": "Medicine instruction catalog",
+    "commonTitle": "Shared medicine instructions",
+    "description": "Use shared medicine instructions and manage your clinic's own catalog.",
+    "name": "Medicine instruction name",
+    "scope": "Source",
+    "COMMON": "Shared",
+    "CLINIC": "Clinic",
+    "commonHint": "Shared medicine instructions are suggested to all clinics.",
+    "clinicHint": "This medicine instruction is suggested only within your clinic.",
+    "add": "Add medicine instruction",
+    "edit": "Edit medicine instruction",
+    "delete": "Delete medicine instruction",
+    "editName": "Edit {{name}}",
+    "deleteName": "Delete {{name}}",
+    "deleteConfirm": "Delete “{{name}}” from the catalog? Saved medical records will keep their existing medicine instruction text.",
+    "saved": "Medicine instruction saved.",
+    "deleted": "Medicine instruction deleted.",
+    "saveFailed": "Could not save the medicine instruction.",
+    "deleteFailed": "Could not delete the medicine instruction.",
+    "loadFailed": "Could not load medicine instructions.",
+    "empty": "No matching medicine instructions.",
+    "loadMore": "Load more"
   }
 }

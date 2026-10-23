@@ -277,15 +277,6 @@ export function useServicePrescriptionForm({
       )
     : 0
 
-  const instructionOptions = (
-    masterData.data?.data.find(
-      (item) => item.key === 'MEDICINE_INSTRUCTION_OPTIONS'
-    )?.value ?? ''
-  )
-    .split(/\r?\n/)
-    .map((value) => value.trim())
-    .filter(Boolean)
-
   const medicineFee = items.reduce((sum, item) => {
     return (
       sum + Number(item.selectedMedicine?.salePrice ?? 0) * (item.quantity ?? 0)
@@ -634,7 +625,6 @@ export function useServicePrescriptionForm({
     selectedStaffId,
     applyTemplate,
     consultationFee,
-    instructionOptions,
     medicineFee,
     invoiceTotal,
     save,

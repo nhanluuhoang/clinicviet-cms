@@ -2,9 +2,7 @@ import { useState } from 'react'
 import { useQuery, useQueryClient } from '@tanstack/react-query'
 import i18n from '@/i18n'
 import { toast } from 'sonner'
-import { useAuthStore } from '@/stores/auth-store'
 import { showRequestError } from '@/lib/handle-server-error'
-import { GetMasterDatas } from '@/features/master-data/api'
 import { getMedicines } from '@/features/prescriptions/api'
 import {
   createPrescriptionTemplate,
@@ -18,7 +16,6 @@ import { emptyItem } from '../data/constants'
 import type { DialogType } from '../types'
 
 export function usePrescriptionTemplates() {
-  const tenantId = useAuthStore((state) => state.auth.user?.tenantId)
   const queryClient = useQueryClient()
 
   const [open, setOpen] = useState<DialogType>(null)
@@ -40,22 +37,6 @@ export function usePrescriptionTemplates() {
     queryFn: () => getMedicines(),
     enabled: isMutating,
   })
-
-  const { data: masterData } = useQuery({
-    queryKey: ['master-data', tenantId],
-    queryFn: () => GetMasterDatas(),
-    enabled: !!tenantId && isMutating,
-    staleTime: 0,
-    gcTime: 0,
-  })
-
-  const instructionOptions = (
-    masterData?.data.find((item) => item.key === 'MEDICINE_INSTRUCTION_OPTIONS')
-      ?.value ?? ''
-  )
-    .split(/\r?\n/)
-    .map((value) => value.trim())
-    .filter(Boolean)
 
   const close = () => {
     setOpen(null)
@@ -127,7 +108,6 @@ export function usePrescriptionTemplates() {
     templates,
     isLoading,
     medicines,
-    instructionOptions,
     close,
     patchItem,
     save,

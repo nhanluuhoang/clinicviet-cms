@@ -32,6 +32,7 @@ import { Route as AuthenticatedInvoicesIndexRouteImport } from './routes/_authen
 import { Route as AuthenticatedLandingConfigIndexRouteImport } from './routes/_authenticated/landing-config/index'
 import { Route as AuthenticatedMasterDataIndexRouteImport } from './routes/_authenticated/master-data/index'
 import { Route as AuthenticatedMedicalHistoriesIndexRouteImport } from './routes/_authenticated/medical-histories/index'
+import { Route as AuthenticatedMedicineInstructionsIndexRouteImport } from './routes/_authenticated/medicine-instructions/index'
 import { Route as AuthenticatedMedicinesIndexRouteImport } from './routes/_authenticated/medicines/index'
 import { Route as AuthenticatedMonthlyStatisticsIndexRouteImport } from './routes/_authenticated/monthly-statistics/index'
 import { Route as AuthenticatedPatientsIndexRouteImport } from './routes/_authenticated/patients/index'
@@ -42,6 +43,7 @@ import { Route as AuthenticatedSettingsIndexRouteImport } from './routes/_authen
 import { Route as AuthenticatedSettingsChangePasswordRouteImport } from './routes/_authenticated/settings/change-password'
 import { Route as AuthenticatedSettingsTenantRouteImport } from './routes/_authenticated/settings/tenant'
 import { Route as AuthenticatedSystemDiagnosesRouteImport } from './routes/_authenticated/system/diagnoses'
+import { Route as AuthenticatedSystemMedicineInstructionsRouteImport } from './routes/_authenticated/system/medicine-instructions'
 import { Route as AuthenticatedSystemSupportRequestsRouteImport } from './routes/_authenticated/system/support-requests'
 import { Route as AuthenticatedSystemTenantsRouteImport } from './routes/_authenticated/system/tenants'
 import { Route as AuthenticatedSystemTrialRequestsRouteImport } from './routes/_authenticated/system/trial-requests'
@@ -176,6 +178,12 @@ const AuthenticatedMedicalHistoriesIndexRoute =
     path: '/medical-histories/',
     getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
+const AuthenticatedMedicineInstructionsIndexRoute =
+  AuthenticatedMedicineInstructionsIndexRouteImport.update({
+    id: '/medicine-instructions/',
+    path: '/medicine-instructions/',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
 const AuthenticatedMedicinesIndexRoute =
   AuthenticatedMedicinesIndexRouteImport.update({
     id: '/medicines/',
@@ -235,6 +243,12 @@ const AuthenticatedSystemDiagnosesRoute =
     path: '/system/diagnoses',
     getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
+const AuthenticatedSystemMedicineInstructionsRoute =
+  AuthenticatedSystemMedicineInstructionsRouteImport.update({
+    id: '/system/medicine-instructions',
+    path: '/system/medicine-instructions',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
 const AuthenticatedSystemSupportRequestsRoute =
   AuthenticatedSystemSupportRequestsRouteImport.update({
     id: '/system/support-requests',
@@ -288,6 +302,7 @@ export interface FileRoutesByFullPath {
   '/settings/change-password': typeof AuthenticatedSettingsChangePasswordRoute
   '/settings/tenant': typeof AuthenticatedSettingsTenantRoute
   '/system/diagnoses': typeof AuthenticatedSystemDiagnosesRoute
+  '/system/medicine-instructions': typeof AuthenticatedSystemMedicineInstructionsRoute
   '/system/support-requests': typeof AuthenticatedSystemSupportRequestsRoute
   '/system/tenants': typeof AuthenticatedSystemTenantsRoute
   '/system/trial-requests': typeof AuthenticatedSystemTrialRequestsRoute
@@ -302,6 +317,7 @@ export interface FileRoutesByFullPath {
   '/landing-config/': typeof AuthenticatedLandingConfigIndexRoute
   '/master-data/': typeof AuthenticatedMasterDataIndexRoute
   '/medical-histories/': typeof AuthenticatedMedicalHistoriesIndexRoute
+  '/medicine-instructions/': typeof AuthenticatedMedicineInstructionsIndexRoute
   '/medicines/': typeof AuthenticatedMedicinesIndexRoute
   '/monthly-statistics/': typeof AuthenticatedMonthlyStatisticsIndexRoute
   '/patients/': typeof AuthenticatedPatientsIndexRoute
@@ -327,6 +343,7 @@ export interface FileRoutesByTo {
   '/settings/change-password': typeof AuthenticatedSettingsChangePasswordRoute
   '/settings/tenant': typeof AuthenticatedSettingsTenantRoute
   '/system/diagnoses': typeof AuthenticatedSystemDiagnosesRoute
+  '/system/medicine-instructions': typeof AuthenticatedSystemMedicineInstructionsRoute
   '/system/support-requests': typeof AuthenticatedSystemSupportRequestsRoute
   '/system/tenants': typeof AuthenticatedSystemTenantsRoute
   '/system/trial-requests': typeof AuthenticatedSystemTrialRequestsRoute
@@ -341,6 +358,7 @@ export interface FileRoutesByTo {
   '/landing-config': typeof AuthenticatedLandingConfigIndexRoute
   '/master-data': typeof AuthenticatedMasterDataIndexRoute
   '/medical-histories': typeof AuthenticatedMedicalHistoriesIndexRoute
+  '/medicine-instructions': typeof AuthenticatedMedicineInstructionsIndexRoute
   '/medicines': typeof AuthenticatedMedicinesIndexRoute
   '/monthly-statistics': typeof AuthenticatedMonthlyStatisticsIndexRoute
   '/patients': typeof AuthenticatedPatientsIndexRoute
@@ -369,6 +387,7 @@ export interface FileRoutesById {
   '/_authenticated/settings/change-password': typeof AuthenticatedSettingsChangePasswordRoute
   '/_authenticated/settings/tenant': typeof AuthenticatedSettingsTenantRoute
   '/_authenticated/system/diagnoses': typeof AuthenticatedSystemDiagnosesRoute
+  '/_authenticated/system/medicine-instructions': typeof AuthenticatedSystemMedicineInstructionsRoute
   '/_authenticated/system/support-requests': typeof AuthenticatedSystemSupportRequestsRoute
   '/_authenticated/system/tenants': typeof AuthenticatedSystemTenantsRoute
   '/_authenticated/system/trial-requests': typeof AuthenticatedSystemTrialRequestsRoute
@@ -383,6 +402,7 @@ export interface FileRoutesById {
   '/_authenticated/landing-config/': typeof AuthenticatedLandingConfigIndexRoute
   '/_authenticated/master-data/': typeof AuthenticatedMasterDataIndexRoute
   '/_authenticated/medical-histories/': typeof AuthenticatedMedicalHistoriesIndexRoute
+  '/_authenticated/medicine-instructions/': typeof AuthenticatedMedicineInstructionsIndexRoute
   '/_authenticated/medicines/': typeof AuthenticatedMedicinesIndexRoute
   '/_authenticated/monthly-statistics/': typeof AuthenticatedMonthlyStatisticsIndexRoute
   '/_authenticated/patients/': typeof AuthenticatedPatientsIndexRoute
@@ -411,6 +431,7 @@ export interface FileRouteTypes {
     | '/settings/change-password'
     | '/settings/tenant'
     | '/system/diagnoses'
+    | '/system/medicine-instructions'
     | '/system/support-requests'
     | '/system/tenants'
     | '/system/trial-requests'
@@ -425,6 +446,7 @@ export interface FileRouteTypes {
     | '/landing-config/'
     | '/master-data/'
     | '/medical-histories/'
+    | '/medicine-instructions/'
     | '/medicines/'
     | '/monthly-statistics/'
     | '/patients/'
@@ -450,6 +472,7 @@ export interface FileRouteTypes {
     | '/settings/change-password'
     | '/settings/tenant'
     | '/system/diagnoses'
+    | '/system/medicine-instructions'
     | '/system/support-requests'
     | '/system/tenants'
     | '/system/trial-requests'
@@ -464,6 +487,7 @@ export interface FileRouteTypes {
     | '/landing-config'
     | '/master-data'
     | '/medical-histories'
+    | '/medicine-instructions'
     | '/medicines'
     | '/monthly-statistics'
     | '/patients'
@@ -491,6 +515,7 @@ export interface FileRouteTypes {
     | '/_authenticated/settings/change-password'
     | '/_authenticated/settings/tenant'
     | '/_authenticated/system/diagnoses'
+    | '/_authenticated/system/medicine-instructions'
     | '/_authenticated/system/support-requests'
     | '/_authenticated/system/tenants'
     | '/_authenticated/system/trial-requests'
@@ -505,6 +530,7 @@ export interface FileRouteTypes {
     | '/_authenticated/landing-config/'
     | '/_authenticated/master-data/'
     | '/_authenticated/medical-histories/'
+    | '/_authenticated/medicine-instructions/'
     | '/_authenticated/medicines/'
     | '/_authenticated/monthly-statistics/'
     | '/_authenticated/patients/'
@@ -691,6 +717,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedMedicalHistoriesIndexRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/medicine-instructions/': {
+      id: '/_authenticated/medicine-instructions/'
+      path: '/medicine-instructions'
+      fullPath: '/medicine-instructions/'
+      preLoaderRoute: typeof AuthenticatedMedicineInstructionsIndexRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/medicines/': {
       id: '/_authenticated/medicines/'
       path: '/medicines'
@@ -759,6 +792,13 @@ declare module '@tanstack/react-router' {
       path: '/system/diagnoses'
       fullPath: '/system/diagnoses'
       preLoaderRoute: typeof AuthenticatedSystemDiagnosesRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/system/medicine-instructions': {
+      id: '/_authenticated/system/medicine-instructions'
+      path: '/system/medicine-instructions'
+      fullPath: '/system/medicine-instructions'
+      preLoaderRoute: typeof AuthenticatedSystemMedicineInstructionsRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
     '/_authenticated/system/support-requests': {
@@ -831,6 +871,7 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedIndexRoute: typeof AuthenticatedIndexRoute
   AuthenticatedErrorsErrorRoute: typeof AuthenticatedErrorsErrorRoute
   AuthenticatedSystemDiagnosesRoute: typeof AuthenticatedSystemDiagnosesRoute
+  AuthenticatedSystemMedicineInstructionsRoute: typeof AuthenticatedSystemMedicineInstructionsRoute
   AuthenticatedSystemSupportRequestsRoute: typeof AuthenticatedSystemSupportRequestsRoute
   AuthenticatedSystemTenantsRoute: typeof AuthenticatedSystemTenantsRoute
   AuthenticatedSystemTrialRequestsRoute: typeof AuthenticatedSystemTrialRequestsRoute
@@ -845,6 +886,7 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedLandingConfigIndexRoute: typeof AuthenticatedLandingConfigIndexRoute
   AuthenticatedMasterDataIndexRoute: typeof AuthenticatedMasterDataIndexRoute
   AuthenticatedMedicalHistoriesIndexRoute: typeof AuthenticatedMedicalHistoriesIndexRoute
+  AuthenticatedMedicineInstructionsIndexRoute: typeof AuthenticatedMedicineInstructionsIndexRoute
   AuthenticatedMedicinesIndexRoute: typeof AuthenticatedMedicinesIndexRoute
   AuthenticatedMonthlyStatisticsIndexRoute: typeof AuthenticatedMonthlyStatisticsIndexRoute
   AuthenticatedPatientsIndexRoute: typeof AuthenticatedPatientsIndexRoute
@@ -861,6 +903,8 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedIndexRoute: AuthenticatedIndexRoute,
   AuthenticatedErrorsErrorRoute: AuthenticatedErrorsErrorRoute,
   AuthenticatedSystemDiagnosesRoute: AuthenticatedSystemDiagnosesRoute,
+  AuthenticatedSystemMedicineInstructionsRoute:
+    AuthenticatedSystemMedicineInstructionsRoute,
   AuthenticatedSystemSupportRequestsRoute:
     AuthenticatedSystemSupportRequestsRoute,
   AuthenticatedSystemTenantsRoute: AuthenticatedSystemTenantsRoute,
@@ -877,6 +921,8 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedMasterDataIndexRoute: AuthenticatedMasterDataIndexRoute,
   AuthenticatedMedicalHistoriesIndexRoute:
     AuthenticatedMedicalHistoriesIndexRoute,
+  AuthenticatedMedicineInstructionsIndexRoute:
+    AuthenticatedMedicineInstructionsIndexRoute,
   AuthenticatedMedicinesIndexRoute: AuthenticatedMedicinesIndexRoute,
   AuthenticatedMonthlyStatisticsIndexRoute:
     AuthenticatedMonthlyStatisticsIndexRoute,

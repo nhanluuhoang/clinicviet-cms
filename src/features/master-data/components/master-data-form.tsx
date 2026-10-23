@@ -1,14 +1,12 @@
 import { useState } from 'react'
 import { useQueryClient } from '@tanstack/react-query'
-import { Eye, Minus, Pill, Plus, Save, Stethoscope } from 'lucide-react'
+import { Eye, Save, Stethoscope } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 import { toast } from 'sonner'
 import { showRequestError } from '@/lib/handle-server-error'
-import { getDefaultMedicineInstructions } from '@/lib/medicine-instructions'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
 import { Checkbox } from '@/components/ui/checkbox'
-import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { NumberInput } from '@/components/number-input'
 import {
@@ -19,18 +17,15 @@ import {
 import {
   CONSULTATION_FEE_KEY,
   SHOW_MEDICINES_TO_PATIENT_KEY,
-  MEDICINE_INSTRUCTION_OPTIONS_KEY,
 } from '../data/constants'
 import { SettingHeading } from './setting-heading'
 
 export function MasterDataForm({
   consultationFeeItem,
   showMedicinesItem,
-  defaultAdviceItem,
 }: {
   consultationFeeItem?: MasterDataItem
   showMedicinesItem?: MasterDataItem
-  defaultAdviceItem?: MasterDataItem
 }) {
   const { t } = useTranslation()
 
@@ -39,13 +34,7 @@ export function MasterDataForm({
   const [showMedicines, setShowMedicines] = useState(
     showMedicinesItem?.value !== 'false'
   )
-  const [adviceOptions, setAdviceOptions] = useState<string[]>(() => {
-    const options = (defaultAdviceItem?.value ?? '')
-      .split(/\r?\n/)
-      .map((item) => item.trim())
-      .filter(Boolean)
-    return options.length ? options : getDefaultMedicineInstructions()
-  })
+
   const [savingKeys, setSavingKeys] = useState<string[]>([])
 
   const saveSetting = async (
@@ -73,18 +62,6 @@ export function MasterDataForm({
       return
     }
     void saveSetting(consultationFeeItem, CONSULTATION_FEE_KEY, String(fee))
-  }
-
-  const saveInstructions = () => {
-    const instructions = adviceOptions
-      .map((item) => item.trim())
-      .filter(Boolean)
-      .join('\n')
-    void saveSetting(
-      defaultAdviceItem,
-      MEDICINE_INSTRUCTION_OPTIONS_KEY,
-      instructions
-    )
   }
 
   return (
@@ -172,74 +149,6 @@ export function MasterDataForm({
             >
               <Save />{' '}
               {savingKeys.includes(SHOW_MEDICINES_TO_PATIENT_KEY)
-                ? t('messages.saving')
-                : t('messages.save')}
-            </Button>
-          </div>
-        </CardContent>
-      </Card>
-
-      <Card className='overflow-hidden'>
-        <SettingHeading
-          icon={Pill}
-          title={t('messages.medicineInstructions')}
-          description={t(
-            'messages.clinicSpecificOptionsTheFormAlsoProvidesCommonS'
-          )}
-        />
-        <CardContent className='space-y-3 pt-6'>
-          {adviceOptions.map((option, index) => (
-            <div key={index} className='flex items-center gap-2'>
-              <span className='w-6 shrink-0 text-right text-sm text-muted-foreground'>
-                {index + 1}.
-              </span>
-              <Input
-                id={index === 0 ? 'default-advice' : undefined}
-                value={option}
-                onChange={(event) =>
-                  setAdviceOptions((current) =>
-                    current.map((item, optionIndex) =>
-                      optionIndex === index ? event.target.value : item
-                    )
-                  )
-                }
-                placeholder={t('messages.instruction', { value0: index + 1 })}
-              />
-              <Button
-                type='button'
-                variant='ghost'
-                size='icon'
-                disabled={adviceOptions.length === 1}
-                onClick={() =>
-                  setAdviceOptions((current) =>
-                    current.filter((_, optionIndex) => optionIndex !== index)
-                  )
-                }
-                aria-label={t('messages.removeInstruction', {
-                  value0: index + 1,
-                })}
-              >
-                <Minus className='size-4' />
-              </Button>
-            </div>
-          ))}
-          <Button
-            type='button'
-            variant='outline'
-            size='sm'
-            className='ml-8'
-            onClick={() => setAdviceOptions((current) => [...current, ''])}
-          >
-            <Plus className='size-4' /> {t('messages.addInstruction')}
-          </Button>
-          <div className='flex justify-end border-t pt-4'>
-            <Button
-              type='button'
-              disabled={savingKeys.includes(MEDICINE_INSTRUCTION_OPTIONS_KEY)}
-              onClick={saveInstructions}
-            >
-              <Save />{' '}
-              {savingKeys.includes(MEDICINE_INSTRUCTION_OPTIONS_KEY)
                 ? t('messages.saving')
                 : t('messages.save')}
             </Button>

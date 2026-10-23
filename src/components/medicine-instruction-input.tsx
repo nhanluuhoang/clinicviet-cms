@@ -1,6 +1,8 @@
 import { useState } from 'react'
+import { useInfiniteQuery } from '@tanstack/react-query'
 import { useTranslation } from 'react-i18next'
-import { getDefaultMedicineInstructions } from '@/lib/medicine-instructions'
+import { useAuthStore } from '@/stores/auth-store'
+import { useDebounce } from '@/hooks/use-debounce'
 import { Button } from '@/components/ui/button'
 import {
   Command,
@@ -16,31 +18,47 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from '@/components/ui/popover'
+import { getMedicineInstructions } from '@/features/medicine-instructions/api'
 
 export function MedicineInstructionInput({
   value,
-  options,
   onChange,
 }: {
   value: string
-  options: string[]
   onChange: (value: string) => void
 }) {
   const { t } = useTranslation()
-
+  const user = useAuthStore((state) => state.auth.user)
   const [open, setOpen] = useState(false)
-  const configuredOptions = [...new Set(options.filter(Boolean))]
-  const extraOptions = getDefaultMedicineInstructions().filter(
-    (option) => !configuredOptions.includes(option)
-  )
-
+  const [search, setSearch] = useState('')
+  const debouncedSearch = useDebounce(search, 300)
+  const query = useInfiniteQuery({
+    queryKey: [
+      'medicineInstructions',
+      'suggestions',
+      user?.tenantId,
+      user?.role,
+      debouncedSearch,
+    ],
+    enabled: open && Boolean(user),
+    initialPageParam: 1,
+    queryFn: ({ pageParam }) =>
+      getMedicineInstructions({
+        page: pageParam,
+        limit: 20,
+        search: debouncedSearch || undefined,
+      }),
+    getNextPageParam: (last) =>
+      last.page * last.limit < last.total ? last.page + 1 : undefined,
+  })
+  const suggestions = query.data?.pages.flatMap((page) => page.data) ?? []
   return (
     <div className='min-w-0 space-y-2'>
-      <div className='flex min-w-0 gap-2'>
+      <div className='flex min-w-0 items-start gap-2'>
         <Input
           aria-label={t('messages.userGuide')}
-          value={value}
           maxLength={255}
+          value={value}
           onChange={(event) => onChange(event.target.value)}
           placeholder={t('messages.enterInstructionsForThePatient')}
         />
@@ -58,46 +76,87 @@ export function MedicineInstructionInput({
             align='end'
             className='w-80 max-w-[calc(100vw-2rem)] p-0'
           >
-            <Command>
-              <CommandInput placeholder={t('messages.searchInstructions')} />
+            <Command shouldFilter={false}>
+              <CommandInput
+                value={search}
+                onValueChange={setSearch}
+                placeholder={t('messages.searchInstructions')}
+              />
               <CommandList>
-                <CommandEmpty>
-                  {t('messages.noMatchingSuggestions')}
-                </CommandEmpty>
-                {configuredOptions.length > 0 && (
-                  <CommandGroup heading={t('messages.clinicOptions')}>
-                    {configuredOptions.map((option) => (
-                      <CommandItem
-                        key={option}
-                        value={option}
-                        onSelect={() => {
-                          onChange(option)
-                          setOpen(false)
-                        }}
-                      >
-                        {option}
-                      </CommandItem>
-                    ))}
-                  </CommandGroup>
-                )}
-                {extraOptions.length > 0 && (
-                  <CommandGroup heading={t('messages.commonSuggestions')}>
-                    {extraOptions.map((option) => (
-                      <CommandItem
-                        key={option}
-                        value={option}
-                        onSelect={() => {
-                          onChange(option)
-                          setOpen(false)
-                        }}
-                      >
-                        {option}
-                      </CommandItem>
-                    ))}
-                  </CommandGroup>
+                {query.isPending ? (
+                  <p
+                    role='status'
+                    className='p-4 text-sm text-muted-foreground'
+                  >
+                    {t('messages.loading')}
+                  </p>
+                ) : query.isError ? (
+                  <div role='alert' className='p-4 text-sm'>
+                    <p>{t('medicineInstructions.loadFailed')}</p>
+                    <Button
+                      type='button'
+                      variant='ghost'
+                      onClick={() => void query.refetch()}
+                    >
+                      {t('messages.tryAgain')}
+                    </Button>
+                  </div>
+                ) : (
+                  <>
+                    <CommandEmpty>
+                      {t(
+                        search.trim()
+                          ? 'messages.noMatchingSuggestions'
+                          : 'medicineInstructions.empty'
+                      )}
+                    </CommandEmpty>
+                    {(['COMMON', 'CLINIC'] as const).map((scope) => {
+                      const rows = suggestions.filter((option) =>
+                        scope === 'COMMON'
+                          ? option.tenantId === null
+                          : option.tenantId !== null
+                      )
+                      return rows.length ? (
+                        <CommandGroup
+                          key={scope}
+                          heading={t(`medicineInstructions.${scope}`)}
+                        >
+                          {rows.map((option) => (
+                            <CommandItem
+                              key={option.id}
+                              value={option.id}
+                              keywords={[option.name]}
+                              className='break-words whitespace-pre-wrap'
+                              onSelect={() => {
+                                onChange(option.name)
+                                setOpen(false)
+                              }}
+                            >
+                              {option.name}
+                            </CommandItem>
+                          ))}
+                        </CommandGroup>
+                      ) : null
+                    })}
+                  </>
                 )}
               </CommandList>
             </Command>
+            {query.hasNextPage && (
+              <Button
+                type='button'
+                variant='ghost'
+                className='w-full rounded-none border-t'
+                disabled={query.isFetchingNextPage}
+                onClick={() => void query.fetchNextPage()}
+              >
+                {t(
+                  query.isFetchingNextPage
+                    ? 'messages.loading'
+                    : 'medicineInstructions.loadMore'
+                )}
+              </Button>
+            )}
           </PopoverContent>
         </Popover>
       </div>

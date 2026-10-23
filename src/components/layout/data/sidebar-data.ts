@@ -52,6 +52,13 @@ export const sidebarData: SidebarData = {
             },
             {
               get title() {
+                return i18n.t('medicineInstructions.commonTitle')
+              },
+              url: '/system/medicine-instructions',
+              roles: SUPER_ADMIN_ROLES,
+            },
+            {
+              get title() {
                 return i18n.t('messages.supportRequests')
               },
               url: '/system/support-requests',
@@ -116,6 +123,14 @@ export const sidebarData: SidebarData = {
             return i18n.t('diagnoses.title')
           },
           url: '/diagnoses',
+          icon: ClipboardPlus,
+          roles: CLINICAL_ADMIN_ROLES,
+        },
+        {
+          get title() {
+            return i18n.t('medicineInstructions.title')
+          },
+          url: '/medicine-instructions',
           icon: ClipboardPlus,
           roles: CLINICAL_ADMIN_ROLES,
         },

@@ -24,7 +24,6 @@ export function PrescriptionItemsSection({
   items,
   setItems,
   applyTemplate,
-  instructionOptions,
   updateItem,
   addItem,
   getQuantityError,
@@ -36,7 +35,6 @@ export function PrescriptionItemsSection({
   | 'items'
   | 'setItems'
   | 'applyTemplate'
-  | 'instructionOptions'
   | 'updateItem'
   | 'addItem'
   | 'getQuantityError'
@@ -146,7 +144,6 @@ export function PrescriptionItemsSection({
               >
                 <MedicineInstructionInput
                   value={item.instruction ?? ''}
-                  options={instructionOptions}
                   onChange={(value) =>
                     updateItem(item.key, {
                       instruction: value,

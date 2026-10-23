@@ -1343,5 +1343,29 @@
     "expiring": "Gói {{value0}} sẽ hết hạn sau {{count}} ngày.",
     "expiring_one": "Gói {{value0}} sẽ hết hạn sau {{count}} ngày.",
     "expiring_other": "Gói {{value0}} sẽ hết hạn sau {{count}} ngày."
+  },
+  "medicineInstructions": {
+    "title": "Danh mục hướng dẫn sử dụng thuốc",
+    "commonTitle": "Hướng dẫn sử dụng thuốc dùng chung",
+    "description": "Sử dụng hướng dẫn sử dụng thuốc chung và quản lý danh sách riêng của phòng khám.",
+    "name": "Tên hướng dẫn sử dụng thuốc",
+    "scope": "Nguồn",
+    "COMMON": "Dùng chung",
+    "CLINIC": "Phòng khám",
+    "commonHint": "Hướng dẫn sử dụng thuốc dùng chung được gợi ý cho tất cả phòng khám.",
+    "clinicHint": "Hướng dẫn sử dụng thuốc này chỉ được gợi ý trong phòng khám của bạn.",
+    "add": "Thêm hướng dẫn sử dụng thuốc",
+    "edit": "Sửa hướng dẫn sử dụng thuốc",
+    "delete": "Xóa hướng dẫn sử dụng thuốc",
+    "editName": "Sửa {{name}}",
+    "deleteName": "Xóa {{name}}",
+    "deleteConfirm": "Xóa hướng dẫn sử dụng thuốc “{{name}}” khỏi danh mục? Nội dung các phiếu khám đã lưu được giữ nguyên.",
+    "saved": "Đã lưu hướng dẫn sử dụng thuốc.",
+    "deleted": "Đã xóa hướng dẫn sử dụng thuốc.",
+    "saveFailed": "Không thể lưu hướng dẫn sử dụng thuốc.",
+    "deleteFailed": "Không thể xóa hướng dẫn sử dụng thuốc.",
+    "loadFailed": "Không thể tải danh mục hướng dẫn sử dụng thuốc.",
+    "empty": "Chưa có hướng dẫn sử dụng thuốc phù hợp.",
+    "loadMore": "Xem thêm"
   }
 }
