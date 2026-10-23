@@ -10,6 +10,8 @@ import { DataTableColumnHeader } from '@/components/data-table'
 import { withAuditColumns } from '@/components/data-table/audit-columns'
 import { UrlDataTable } from '@/components/data-table/url-data-table'
 import { GetReceipt, GetReceipts, type GoodsReceiptSummary } from '../api'
+import { useDocumentDates } from '../hooks/use-document-dates'
+import { DocumentDateToolbar } from './document-date-toolbar'
 import { ExpiryBadge } from './expiry-badge'
 
 function ReceiptLines({ row }: { row: Row<GoodsReceiptSummary> }) {
@@ -221,10 +223,12 @@ export function ReceiptsTab() {
     queryFn: () => GetReceipts(search),
   })
 
+  const filteredData = useDocumentDates(data ?? [], (item) => item.receivedAt)
+
   return (
     <UrlDataTable
       columns={withAuditColumns(columns)}
-      data={data ?? []}
+      data={filteredData}
       isLoading={isLoading}
       searchPlaceholder={t(
         'messages.searchDocumentCodeSupplierOrInvoiceNumber'
@@ -232,6 +236,12 @@ export function ReceiptsTab() {
       emptyMessage={t('messages.noReceiptsYet')}
       getSearchText={(r) => `${r.code} ${r.supplierName} ${r.invoiceNo}`}
       initialSorting={[{ id: 'receivedAt', desc: true }]}
+      renderToolbar={(table) => (
+        <DocumentDateToolbar
+          table={table}
+          placeholder={t('messages.searchDocumentCodeSupplierOrInvoiceNumber')}
+        />
+      )}
       renderSubRow={(row) => <ReceiptLines row={row} />}
     />
   )

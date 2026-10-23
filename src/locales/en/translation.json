@@ -1,4 +1,13 @@
 {
+  "inventoryExport": {
+    "dateFrom": "From date",
+    "dateTo": "To date",
+    "exportExcel": "Export Excel",
+    "exporting": "Exporting?",
+    "failed": "Could not export Excel. Please try again.",
+    "stock": "Stock",
+    "batches": "Batches"
+  },
   "auth": {
     "appName": "ClinicViet",
     "appDescription": "Clinic Management",
