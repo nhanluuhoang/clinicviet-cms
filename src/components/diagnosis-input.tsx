@@ -59,7 +59,6 @@ export function DiagnosisInput({
       <div className='flex min-w-0 items-start gap-2'>
         <Textarea
           id={id}
-          rows={1}
           className='min-h-9 min-w-0 flex-1 sm:min-h-16'
           value={value}
           onChange={(event) => onChange(event.target.value)}
