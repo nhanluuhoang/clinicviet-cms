@@ -1,7 +1,7 @@
-import { getLocale } from '@/i18n'
 import { useTranslation } from 'react-i18next'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
+import { NumberInput } from '@/components/number-input'
 
 export function OtherFeeField({
   index,
@@ -32,16 +32,12 @@ export function OtherFeeField({
         onChange={(event) => onLabelChange(event.target.value)}
       />
       <div className='relative min-w-0'>
-        <Input
-          type='text'
-          inputMode='numeric'
+        <NumberInput
+          min={0}
           aria-label={t('messages.amountAlt4', { value0: title })}
-          value={amount.toLocaleString(getLocale())}
+          value={amount}
           className='w-full min-w-0 pe-10 text-end tabular-nums'
-          onChange={(event) => {
-            const digits = event.target.value.replace(/\D/g, '')
-            onAmountChange(digits ? Number(digits) : 0)
-          }}
+          onValueChange={(value) => onAmountChange(Number(value))}
         />
         <span className='pointer-events-none absolute inset-y-0 end-3 flex items-center text-sm text-muted-foreground'>
           ₫

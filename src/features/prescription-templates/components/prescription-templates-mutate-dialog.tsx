@@ -21,6 +21,7 @@ import {
   SelectValue,
 } from '@/components/ui/select'
 import { MedicineInstructionInput } from '@/components/medicine-instruction-input'
+import { NumberInput } from '@/components/number-input'
 import { emptyItem } from '../data/constants'
 import type { PrescriptionTemplatesState } from '../hooks/use-prescription-templates'
 
@@ -127,12 +128,11 @@ export function PrescriptionTemplatesMutateDialog({
                 <div className='grid gap-3 sm:grid-cols-[8rem_1fr]'>
                   <div className='space-y-2'>
                     <Label required>{t('messages.quantityAlt2')}</Label>
-                    <Input
-                      type='number'
+                    <NumberInput
                       min={1}
                       value={item.quantity}
-                      onChange={(e) =>
-                        patchItem(index, { quantity: Number(e.target.value) })
+                      onValueChange={(value) =>
+                        patchItem(index, { quantity: Number(value) })
                       }
                     />
                   </div>
