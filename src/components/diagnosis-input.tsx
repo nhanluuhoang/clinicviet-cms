@@ -64,7 +64,7 @@ export function DiagnosisInput({
           placeholder={t('messages.enterTheDoctorSDiagnosis')}
           required
         />
-        <Popover open={open} onOpenChange={setOpen}>
+        <Popover modal open={open} onOpenChange={setOpen}>
           <PopoverTrigger asChild>
             <Button
               type='button'
@@ -76,9 +76,9 @@ export function DiagnosisInput({
           </PopoverTrigger>
           <PopoverContent
             align='end'
-            className='w-80 max-w-[calc(100vw-2rem)] p-0'
+            className='flex max-h-[var(--radix-popover-content-available-height)] w-80 max-w-[calc(100vw-2rem)] flex-col overflow-hidden p-0'
           >
-            <Command shouldFilter={false}>
+            <Command shouldFilter={false} className='h-auto min-h-0'>
               <CommandInput
                 value={search}
                 onValueChange={setSearch}
@@ -112,34 +112,22 @@ export function DiagnosisInput({
                           : 'diagnosisSuggestions.empty'
                       )}
                     </CommandEmpty>
-                    {(['COMMON', 'CLINIC'] as const).map((scope) => {
-                      const rows = suggestions.filter((option) =>
-                        scope === 'COMMON'
-                          ? option.tenantId === null
-                          : option.tenantId !== null
-                      )
-                      return rows.length ? (
-                        <CommandGroup
-                          key={scope}
-                          heading={t(`diagnoses.${scope}`)}
+                    <CommandGroup>
+                      {suggestions.map((option) => (
+                        <CommandItem
+                          key={option.id}
+                          value={option.id}
+                          keywords={[option.name]}
+                          className='break-words whitespace-pre-wrap'
+                          onSelect={() => {
+                            onChange(option.name)
+                            setOpen(false)
+                          }}
                         >
-                          {rows.map((option) => (
-                            <CommandItem
-                              key={option.id}
-                              value={option.id}
-                              keywords={[option.name]}
-                              className='break-words whitespace-pre-wrap'
-                              onSelect={() => {
-                                onChange(option.name)
-                                setOpen(false)
-                              }}
-                            >
-                              {option.name}
-                            </CommandItem>
-                          ))}
-                        </CommandGroup>
-                      ) : null
-                    })}
+                          {option.name}
+                        </CommandItem>
+                      ))}
+                    </CommandGroup>
                   </>
                 )}
               </CommandList>
@@ -148,7 +136,7 @@ export function DiagnosisInput({
               <Button
                 type='button'
                 variant='ghost'
-                className='w-full rounded-none border-t'
+                className='w-full shrink-0 rounded-none border-t'
                 disabled={query.isFetchingNextPage}
                 onClick={() => void query.fetchNextPage()}
               >
