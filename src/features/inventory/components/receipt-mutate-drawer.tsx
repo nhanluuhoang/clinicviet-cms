@@ -4,7 +4,9 @@ import { useFieldArray, useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useQuery, useQueryClient } from '@tanstack/react-query'
 import { Link } from '@tanstack/react-router'
+import i18n, { getLocale } from '@/i18n'
 import { Check, ChevronsUpDown, ExternalLink, Plus, Trash2 } from 'lucide-react'
+import { useTranslation } from 'react-i18next'
 import { toast } from 'sonner'
 import { showRequestError } from '@/lib/handle-server-error'
 import { cn, formatMoney, getExpiryStatus, toDateInput } from '@/lib/utils'
@@ -50,24 +52,38 @@ import { expiryMeta } from '../data/data'
 
 const lineSchema = z
   .object({
-    medicineId: z.string().min(1, 'Chọn thuốc'),
-    batchNo: z.string().min(1, 'Nhập số lô'),
+    medicineId: z
+      .string()
+      .min(1, { error: () => i18n.t('messages.selectMedicine') }),
+    batchNo: z.string().trim(),
     mfgDate: z.string(),
-    expiryDate: z.string().min(1, 'Nhập hạn sử dụng'),
-    qty: z.number().positive('Số lượng phải lớn hơn 0'),
-    unitCost: z.number().min(0, 'Đơn giá không hợp lệ'),
+    expiryDate: z
+      .string()
+      .min(1, { error: () => i18n.t('messages.enterExpiryDate') }),
+    qty: z.number().positive({
+      error: () => i18n.t('messages.quantityMustBeGreaterThanZero'),
+    }),
+    unitCost: z
+      .number()
+      .min(0, { error: () => i18n.t('messages.invalidUnitPrice') }),
   })
   .refine((l) => !l.mfgDate || l.mfgDate < l.expiryDate, {
-    message: 'Hạn sử dụng phải sau ngày sản xuất',
+    error: () => i18n.t('messages.expiryDateMustBeAfterTheManufacturingDate'),
     path: ['expiryDate'],
   })
 
 const formSchema = z.object({
-  supplierName: z.string().min(1, 'Nhập nhà cung cấp'),
-  invoiceNo: z.string().min(1, 'Nhập số hoá đơn'),
-  receivedAt: z.string().min(1, 'Chọn ngày nhập'),
+  supplierName: z
+    .string()
+    .min(1, { error: () => i18n.t('messages.enterSupplier') }),
+  invoiceNo: z.string().trim(),
+  receivedAt: z
+    .string()
+    .min(1, { error: () => i18n.t('messages.selectReceiptDate') }),
   note: z.string(),
-  lines: z.array(lineSchema).min(1, 'Phiếu nhập cần ít nhất một dòng'),
+  lines: z
+    .array(lineSchema)
+    .min(1, { error: () => i18n.t('messages.aReceiptMustHaveAtLeastOneLine') }),
 })
 
 type ReceiptForm = z.infer<typeof formSchema>
@@ -94,6 +110,8 @@ function MedicinePicker({
 }: {
   onChange: (medicineId: string) => void
 }) {
+  const { t } = useTranslation()
+
   const [open, setOpen] = useState(false)
   const [search, setSearch] = useState('')
   const [selected, setSelected] = useState<Medicine | null>(null)
@@ -119,8 +137,8 @@ function MedicinePicker({
               {selected
                 ? `${selected.name} · ${selected.strength}`
                 : isLoading
-                  ? 'Đang tải thuốc...'
-                  : 'Tìm và chọn thuốc'}
+                  ? t('messages.loadingMedicines')
+                  : t('messages.findAndSelectAMedicine')}
             </span>
             <ChevronsUpDown className='ms-2 size-4 shrink-0 opacity-50' />
           </Button>
@@ -133,15 +151,19 @@ function MedicinePicker({
             <CommandInput
               value={search}
               onValueChange={setSearch}
-              placeholder='Tìm tên, mã, hoạt chất...'
+              placeholder={t('messages.searchNameCodeOrActiveIngredient')}
             />
             <CommandList>
               <CommandEmpty>
                 <div className='space-y-2 px-3'>
-                  <p>{isLoading ? 'Đang tìm...' : 'Không tìm thấy thuốc.'}</p>
+                  <p>
+                    {isLoading
+                      ? t('messages.searching')
+                      : t('messages.noMedicinesFound')}
+                  </p>
                   <Button asChild variant='outline' size='sm'>
                     <Link to='/medicines'>
-                      Vào danh mục để thêm
+                      {t('messages.goToCatalogToAdd')}
                       <ExternalLink className='size-3.5' />
                     </Link>
                   </Button>
@@ -186,10 +208,15 @@ function MedicinePicker({
       {selected && (
         <p
           className='truncate text-xs text-muted-foreground'
-          title={`${selected.code} · ${selected.activeIngredient} · ${selected.manufacturer} · ĐVT: ${selected.unit}`}
+          title={t('messages.unitAlt2', {
+            value0: selected.code,
+            value1: selected.activeIngredient,
+            value2: selected.manufacturer,
+            value3: selected.unit,
+          })}
         >
           {selected.code} · {selected.activeIngredient} ·{' '}
-          {selected.manufacturer} · ĐVT: {selected.unit}
+          {selected.manufacturer} {t('messages.unitAlt3')} {selected.unit}
         </p>
       )}
     </div>
@@ -203,6 +230,8 @@ export function ReceiptMutateDrawer({
   open: boolean
   onOpenChange: (open: boolean) => void
 }) {
+  const { t } = useTranslation()
+
   const queryClient = useQueryClient()
 
   const form = useForm<ReceiptForm>({
@@ -230,12 +259,14 @@ export function ReceiptMutateDrawer({
     try {
       await CreateReceipt(data)
       queryClient.invalidateQueries({ queryKey: ['inventory'] })
-      toast.success('Đã nhập hàng', {
-        description: `${data.lines.length} lô hàng mới đã được thêm vào kho.`,
+      toast.success(t('messages.goodsReceived'), {
+        description: t('messages.newBatchesAddedToInventory', {
+          value0: data.lines.length,
+        }),
       })
       onOpenChange(false)
     } catch (error) {
-      showRequestError(error, 'Không nhập được hàng')
+      showRequestError(error, t('messages.couldNotReceiveGoods'))
     }
   }
 
@@ -249,11 +280,9 @@ export function ReceiptMutateDrawer({
       >
         <DialogBody>
           <DialogHeader className='pe-8 text-start'>
-            <DialogTitle>Nhập hàng</DialogTitle>
+            <DialogTitle>{t('messages.receipts')}</DialogTitle>
             <DialogDescription>
-              Mỗi dòng dưới đây tạo ra một lô riêng trong kho. Số lô và hạn sử
-              dụng là bắt buộc để phân biệt được các đợt nhập của cùng một
-              thuốc.
+              {t('messages.eachLineCreatesASeparateInventoryBatchBatchNumb')}
             </DialogDescription>
           </DialogHeader>
           <Form {...form}>
@@ -268,9 +297,12 @@ export function ReceiptMutateDrawer({
                   name='supplierName'
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel required>Nhà cung cấp</FormLabel>
+                      <FormLabel required>{t('messages.supplier')}</FormLabel>
                       <FormControl>
-                        <Input {...field} placeholder='VD: Dược Hậu Giang' />
+                        <Input
+                          {...field}
+                          placeholder={t('messages.eGDhgPharma')}
+                        />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -281,9 +313,12 @@ export function ReceiptMutateDrawer({
                   name='invoiceNo'
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel required>Số hoá đơn</FormLabel>
+                      <FormLabel>{t('messages.invoiceNumber')}</FormLabel>
                       <FormControl>
-                        <Input {...field} placeholder='VD: HD12345' />
+                        <Input
+                          {...field}
+                          placeholder={t('messages.leaveBlankToGenerate')}
+                        />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -294,7 +329,7 @@ export function ReceiptMutateDrawer({
                   name='receivedAt'
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel required>Ngày nhập</FormLabel>
+                      <FormLabel required>{t('messages.receivedOn')}</FormLabel>
                       <DatePickerInput
                         value={field.value}
                         onChange={field.onChange}
@@ -308,7 +343,8 @@ export function ReceiptMutateDrawer({
               <div className='space-y-3'>
                 <div className='flex items-center justify-between'>
                   <FormLabel className='text-base'>
-                    Chi tiết hàng nhập ({fields.length} lô)
+                    {t('messages.receiptDetails')}
+                    {fields.length} {t('messages.batches')}
                   </FormLabel>
                   <Button
                     type='button'
@@ -317,7 +353,7 @@ export function ReceiptMutateDrawer({
                     onClick={() => append({ ...emptyLine })}
                   >
                     <Plus className='size-4' />
-                    Thêm lô
+                    {t('messages.addBatch')}
                   </Button>
                 </div>
 
@@ -335,7 +371,8 @@ export function ReceiptMutateDrawer({
                     >
                       <div className='flex items-center justify-between'>
                         <span className='text-xs font-medium text-muted-foreground'>
-                          Lô #{index + 1}
+                          {t('messages.batchAlt6')}
+                          {index + 1}
                         </span>
                         <div className='flex items-center gap-2'>
                           <span className='text-sm font-medium tabular-nums'>
@@ -350,7 +387,9 @@ export function ReceiptMutateDrawer({
                             className='size-7 text-red-600 dark:text-red-400'
                             disabled={fields.length === 1}
                             onClick={() => remove(index)}
-                            aria-label={`Xoá lô ${index + 1}`}
+                            aria-label={t('messages.removeBatch', {
+                              value0: index + 1,
+                            })}
                           >
                             <Trash2 className='size-4' />
                           </Button>
@@ -364,7 +403,7 @@ export function ReceiptMutateDrawer({
                           render={({ field }) => (
                             <FormItem className='min-w-0 lg:col-span-6'>
                               <FormLabel required className='text-xs'>
-                                Thuốc
+                                {t('messages.medicine')}
                               </FormLabel>
                               <MedicinePicker onChange={field.onChange} />
                               <FormMessage />
@@ -376,13 +415,15 @@ export function ReceiptMutateDrawer({
                           name={`lines.${index}.batchNo`}
                           render={({ field }) => (
                             <FormItem className='lg:col-span-6'>
-                              <FormLabel required className='text-xs'>
-                                Số lô
+                              <FormLabel className='text-xs'>
+                                {t('messages.batchNumber')}
                               </FormLabel>
                               <FormControl>
                                 <Input
                                   {...field}
-                                  placeholder='VD: L2408AB'
+                                  placeholder={t(
+                                    'messages.leaveBlankToGenerate'
+                                  )}
                                   className='font-mono'
                                 />
                               </FormControl>
@@ -395,7 +436,9 @@ export function ReceiptMutateDrawer({
                           name={`lines.${index}.mfgDate`}
                           render={({ field }) => (
                             <FormItem className='lg:col-span-3'>
-                              <FormLabel className='text-xs'>Ngày SX</FormLabel>
+                              <FormLabel className='text-xs'>
+                                {t('messages.manufacturedOn')}
+                              </FormLabel>
                               <DatePickerInput
                                 value={field.value}
                                 onChange={field.onChange}
@@ -410,7 +453,7 @@ export function ReceiptMutateDrawer({
                           render={({ field }) => (
                             <FormItem className='lg:col-span-3'>
                               <FormLabel required className='text-xs'>
-                                Hạn dùng
+                                {t('messages.expiryAlt2')}
                               </FormLabel>
                               <DatePickerInput
                                 value={field.value}
@@ -430,7 +473,7 @@ export function ReceiptMutateDrawer({
                           render={({ field }) => (
                             <FormItem className='lg:col-span-2'>
                               <FormLabel required className='text-xs'>
-                                Số lượng
+                                {t('messages.quantityAlt2')}
                               </FormLabel>
                               <FormControl>
                                 <Input
@@ -456,7 +499,7 @@ export function ReceiptMutateDrawer({
                           render={({ field }) => (
                             <FormItem className='lg:col-span-4'>
                               <FormLabel required className='text-xs'>
-                                Đơn giá nhập (₫)
+                                {t('messages.purchaseUnitPrice')}
                               </FormLabel>
                               <FormControl>
                                 <Input
@@ -488,8 +531,12 @@ export function ReceiptMutateDrawer({
                         >
                           <meta.icon className='size-3.5' />
                           {status === 'expired'
-                            ? 'Lô này đã hết hạn — kiểm tra lại trước khi nhập.'
-                            : `${meta.label} — nên ưu tiên xuất lô này trước.`}
+                            ? t(
+                                'messages.thisBatchHasExpiredCheckBeforeReceivingIt'
+                              )
+                            : t('messages.prioritizeIssuingThisBatch', {
+                                value0: meta.label,
+                              })}
                         </div>
                       )}
                     </div>
@@ -508,12 +555,12 @@ export function ReceiptMutateDrawer({
                 name='note'
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Ghi chú</FormLabel>
+                    <FormLabel>{t('messages.notes')}</FormLabel>
                     <FormControl>
                       <Textarea
                         {...field}
                         rows={2}
-                        placeholder='Ghi chú thêm về đơn hàng (không bắt buộc)'
+                        placeholder={t('messages.additionalOrderNotesOptional')}
                       />
                     </FormControl>
                     <FormMessage />
@@ -526,27 +573,29 @@ export function ReceiptMutateDrawer({
         <DialogFooter className='border-t pt-4 sm:items-center'>
           <div className='flex flex-1 basis-full flex-wrap items-center gap-x-6 gap-y-1 text-sm sm:basis-auto'>
             <span className='text-muted-foreground'>
-              Tổng số lượng:{' '}
+              {t('messages.totalQuantity')}{' '}
               <span className='font-medium text-foreground tabular-nums'>
-                {totalQty.toLocaleString('vi-VN')}
+                {totalQty.toLocaleString(getLocale())}
               </span>
             </span>
             <span className='text-muted-foreground'>
-              Tổng tiền:{' '}
+              {t('messages.total')}{' '}
               <span className='font-medium text-foreground tabular-nums'>
                 {formatMoney(totalAmount)}
               </span>
             </span>
           </div>
           <DialogClose asChild>
-            <Button variant='outline'>Đóng</Button>
+            <Button variant='outline'>{t('messages.close')}</Button>
           </DialogClose>
           <Button
             form='receipt-form'
             type='submit'
             disabled={form.formState.isSubmitting}
           >
-            {form.formState.isSubmitting ? 'Đang lưu...' : 'Nhập hàng'}
+            {form.formState.isSubmitting
+              ? t('messages.saving')
+              : t('messages.receipts')}
           </Button>
         </DialogFooter>
       </DialogFormContent>

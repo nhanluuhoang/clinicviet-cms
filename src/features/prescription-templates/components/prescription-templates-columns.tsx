@@ -1,4 +1,5 @@
 import { type ColumnDef } from '@tanstack/react-table'
+import i18n from '@/i18n'
 import { DataTableColumnHeader } from '@/components/data-table'
 import { type PrescriptionTemplate } from '../api'
 import type { PrescriptionTemplatesState } from '../hooks/use-prescription-templates'
@@ -15,7 +16,10 @@ export function getPrescriptionTemplatesColumns(
     {
       accessorKey: 'name',
       header: ({ column }) => (
-        <DataTableColumnHeader column={column} title='Tên mẫu' />
+        <DataTableColumnHeader
+          column={column}
+          title={i18n.t('messages.templateName')}
+        />
       ),
       cell: ({ row }) => (
         <span className='font-medium'>{row.original.name}</span>
@@ -23,7 +27,7 @@ export function getPrescriptionTemplatesColumns(
     },
     {
       id: 'medicines',
-      header: 'Thuốc trong mẫu',
+      header: i18n.t('messages.medicinesInTemplate'),
       cell: ({ row }) => (
         <span className='text-muted-foreground'>
           {row.original.items.map((item) => item.medicineName).join(', ')}
@@ -33,7 +37,7 @@ export function getPrescriptionTemplatesColumns(
     },
     {
       id: 'itemCount',
-      header: 'Số thuốc',
+      header: i18n.t('messages.medicineCount'),
       cell: ({ row }) => row.original.items.length,
       meta: { className: 'text-end', tdClassName: 'text-end' },
     },

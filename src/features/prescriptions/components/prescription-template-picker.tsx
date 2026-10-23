@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { useQuery } from '@tanstack/react-query'
 import { ChevronsUpDown } from 'lucide-react'
+import { useTranslation } from 'react-i18next'
 import { useDebounce } from '@/hooks/use-debounce'
 import { Button } from '@/components/ui/button'
 import {
@@ -26,6 +27,8 @@ export function PrescriptionTemplatePicker({
 }: {
   onSelect: (template: PrescriptionTemplate) => void
 }) {
+  const { t } = useTranslation()
+
   const [open, setOpen] = useState(false)
   const [search, setSearch] = useState('')
   const debouncedSearch = useDebounce(search, 300)
@@ -43,7 +46,7 @@ export function PrescriptionTemplatePicker({
           variant='outline'
           className='w-full justify-between font-normal'
         >
-          Chọn mẫu để áp dụng
+          {t('messages.chooseATemplateToApply')}
           <ChevronsUpDown className='size-4 opacity-50' />
         </Button>
       </PopoverTrigger>
@@ -55,11 +58,13 @@ export function PrescriptionTemplatePicker({
           <CommandInput
             value={search}
             onValueChange={setSearch}
-            placeholder='Tìm tên mẫu hoặc tên thuốc...'
+            placeholder={t('messages.searchTemplateOrMedicineName')}
           />
           <CommandList>
             <CommandEmpty>
-              {isLoading ? 'Đang tìm...' : 'Không tìm thấy mẫu đơn.'}
+              {isLoading
+                ? t('messages.searching')
+                : t('messages.noPrescriptionTemplatesFound')}
             </CommandEmpty>
             <CommandGroup>
               {templates.map((template) => (

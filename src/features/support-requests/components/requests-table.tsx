@@ -1,4 +1,6 @@
 import { type ColumnDef } from '@tanstack/react-table'
+import { getLocale } from '@/i18n'
+import { useTranslation } from 'react-i18next'
 import { Button } from '@/components/ui/button'
 import { DataTableColumnHeader } from '@/components/data-table/column-header'
 import { UrlDataTable } from '@/components/data-table/url-data-table'
@@ -21,11 +23,13 @@ export function RequestsTable({
   tenants,
   onOpen,
 }: Props) {
+  const { t } = useTranslation()
+
   const columns: ColumnDef<SupportRequest>[] = [
     {
       accessorKey: 'title',
       header: ({ column }) => (
-        <DataTableColumnHeader column={column} title='Tiêu đề' />
+        <DataTableColumnHeader column={column} title={t('messages.title')} />
       ),
       cell: ({ row }) => (
         <span className='block max-w-sm truncate'>{row.original.title}</span>
@@ -36,51 +40,56 @@ export function RequestsTable({
           {
             id: 'tenantId',
             accessorFn: (request: SupportRequest) => request.tenantId,
-            header: 'Phòng khám',
+            header: t('messages.clinics'),
             enableSorting: false,
             cell: ({ row }: { row: { original: SupportRequest } }) =>
               row.original.tenant
                 ? `${row.original.tenant.name} (${row.original.tenant.code})`
-                : row.original.organization || 'Khách từ website',
+                : row.original.organization || t('messages.websiteVisitor'),
           },
         ]
       : []),
     {
       id: 'creator',
-      header: 'Người gửi',
+      header: t('messages.submittedBy'),
       accessorFn: (request) =>
-        request.creator?.fullName ?? request.contactName ?? 'Tài khoản đã xóa',
+        request.creator?.fullName ??
+        request.contactName ??
+        t('messages.deletedAccount'),
       enableSorting: false,
     },
     {
       accessorKey: 'type',
-      header: 'Loại',
+      header: t('messages.type'),
       cell: ({ row }) => typeLabels[row.original.type],
     },
     {
       accessorKey: 'status',
-      header: 'Trạng thái',
+      header: t('messages.status'),
       cell: ({ row }) => statusLabels[row.original.status],
     },
     {
       accessorKey: 'createdAt',
       header: ({ column }) => (
-        <DataTableColumnHeader column={column} title='Ngày gửi' />
+        <DataTableColumnHeader
+          column={column}
+          title={t('messages.submittedAt')}
+        />
       ),
       cell: ({ row }) =>
-        new Date(row.original.createdAt).toLocaleString('vi-VN'),
+        new Date(row.original.createdAt).toLocaleString(getLocale()),
     },
     {
       accessorKey: 'updatedAt',
       header: ({ column }) => (
-        <DataTableColumnHeader column={column} title='Cập nhật' />
+        <DataTableColumnHeader column={column} title={t('messages.update')} />
       ),
       cell: ({ row }) =>
-        new Date(row.original.updatedAt).toLocaleString('vi-VN'),
+        new Date(row.original.updatedAt).toLocaleString(getLocale()),
     },
     {
       id: 'actions',
-      header: 'Thao tác',
+      header: t('messages.actions'),
       enableSorting: false,
       enableHiding: false,
       cell: ({ row }) => (
@@ -89,7 +98,7 @@ export function RequestsTable({
           size='sm'
           onClick={() => onOpen(row.original.id)}
         >
-          Chi tiết
+          {t('messages.details')}
         </Button>
       ),
     },
@@ -100,25 +109,25 @@ export function RequestsTable({
       data={data}
       total={total}
       isLoading={isLoading}
-      searchPlaceholder='Tìm yêu cầu, phòng khám…'
-      emptyMessage='Chưa có yêu cầu phù hợp.'
+      searchPlaceholder={t('messages.searchRequestsOrClinics')}
+      emptyMessage={t('messages.noMatchingRequests')}
       getSearchText={(request) =>
         `${request.title} ${request.tenant?.name ?? request.organization ?? ''} ${request.tenant?.code ?? ''} ${request.contactName ?? ''} ${request.contactEmail ?? ''}`
       }
       mobileLabels={{
-        title: 'Tiêu đề',
-        tenantId: 'Phòng khám',
-        creator: 'Người gửi',
-        type: 'Loại',
-        status: 'Trạng thái',
-        createdAt: 'Ngày gửi',
-        updatedAt: 'Cập nhật',
-        actions: 'Thao tác',
+        title: t('messages.title'),
+        tenantId: t('messages.clinics'),
+        creator: t('messages.submittedBy'),
+        type: t('messages.type'),
+        status: t('messages.status'),
+        createdAt: t('messages.submittedAt'),
+        updatedAt: t('messages.update'),
+        actions: t('messages.actions'),
       }}
       filters={[
         {
           columnId: 'type',
-          title: 'Loại',
+          title: t('messages.type'),
           variant: 'radio',
           options: Object.entries(typeLabels).map(([value, label]) => ({
             value,
@@ -127,7 +136,7 @@ export function RequestsTable({
         },
         {
           columnId: 'status',
-          title: 'Trạng thái',
+          title: t('messages.status'),
           variant: 'radio',
           options: Object.entries(statusLabels).map(([value, label]) => ({
             value,
@@ -138,7 +147,7 @@ export function RequestsTable({
           ? [
               {
                 columnId: 'tenantId',
-                title: 'Phòng khám',
+                title: t('messages.clinics'),
                 variant: 'radio' as const,
                 options: tenants.map((tenant) => ({
                   value: tenant.id,

@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { Link } from '@tanstack/react-router'
 import { hasAnyRole, STAFF_ROLES } from '@/config/access-control'
 import { BookOpen, Building2, Gift, PackageOpen } from 'lucide-react'
+import { useTranslation } from 'react-i18next'
 import { useAuthStore } from '@/stores/auth-store'
 import useDialogState from '@/hooks/use-dialog-state'
 import { Avatar, AvatarFallback } from '@/components/ui/avatar'
@@ -19,10 +20,13 @@ import { ReferralDialog } from '@/components/referral-dialog'
 import { SignOutDialog } from '@/components/sign-out-dialog'
 
 export function ProfileDropdown() {
+  const { t } = useTranslation()
+
   const [open, setOpen] = useDialogState()
   const [referralOpen, setReferralOpen] = useState(false)
   const user = useAuthStore((state) => state.auth.user)
-  const displayName = user?.fullName?.trim() || user?.userName || 'Tài khoản'
+  const displayName =
+    user?.fullName?.trim() || user?.userName || t('messages.account')
   const email = user?.email?.trim() || null
   const initials = displayName
     .split(/\s+/)
@@ -55,26 +59,26 @@ export function ProfileDropdown() {
           <DropdownMenuSeparator />
           <DropdownMenuGroup>
             <DropdownMenuItem asChild>
-              <Link to='/settings'>Hồ sơ cá nhân</Link>
+              <Link to='/settings'>{t('messages.profile')}</Link>
             </DropdownMenuItem>
             {user?.role === 'TENANT_ADMIN' && (
               <DropdownMenuItem asChild>
                 <Link to='/settings/tenant'>
                   <Building2 />
-                  Thông tin phòng khám
+                  {t('messages.clinicInformation')}
                 </Link>
               </DropdownMenuItem>
             )}
             {user?.tenant && hasAnyRole(user.role, STAFF_ROLES) && (
               <DropdownMenuItem onSelect={() => setReferralOpen(true)}>
                 <Gift aria-hidden='true' />
-                Giới thiệu cho bạn bè
+                {t('messages.referAFriend')}
               </DropdownMenuItem>
             )}
           </DropdownMenuGroup>
           <DropdownMenuSeparator />
           <DropdownMenuLabel className='text-xs text-muted-foreground'>
-            Hướng dẫn sử dụng
+            {t('messages.userGuide')}
           </DropdownMenuLabel>
           <DropdownMenuGroup>
             <DropdownMenuItem
@@ -87,7 +91,7 @@ export function ProfileDropdown() {
               }
             >
               <BookOpen />
-              Quy trình khám bệnh
+              {t('messages.examinationWorkflow')}
             </DropdownMenuItem>
             <DropdownMenuItem
               onSelect={() =>
@@ -99,12 +103,12 @@ export function ProfileDropdown() {
               }
             >
               <PackageOpen />
-              Quy trình quản lý kho
+              {t('messages.inventoryWorkflow')}
             </DropdownMenuItem>
           </DropdownMenuGroup>
           <DropdownMenuSeparator />
           <DropdownMenuItem variant='destructive' onClick={() => setOpen(true)}>
-            Đăng xuất
+            {t('messages.signOut')}
           </DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>

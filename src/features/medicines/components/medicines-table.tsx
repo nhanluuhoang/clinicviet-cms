@@ -1,7 +1,9 @@
 import { DotsHorizontalIcon } from '@radix-ui/react-icons'
 import { useQuery } from '@tanstack/react-query'
 import { type ColumnDef } from '@tanstack/react-table'
+import i18n, { getLocale } from '@/i18n'
 import { Edit, Trash } from 'lucide-react'
+import { useTranslation } from 'react-i18next'
 import { useApiSearch } from '@/hooks/use-api-search'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
@@ -21,6 +23,8 @@ import { medicineGroupLabel, medicineGroups, medicineUnits } from '../data/data'
 import { useMedicines } from './medicines-provider'
 
 function RowActions({ medicine }: { medicine: Medicine }) {
+  const { t } = useTranslation()
+
   const { setOpen, setCurrentMedicine } = useMedicines()
 
   return (
@@ -31,7 +35,7 @@ function RowActions({ medicine }: { medicine: Medicine }) {
           className='flex h-8 w-8 p-0 data-[state=open]:bg-muted'
         >
           <DotsHorizontalIcon className='h-4 w-4' />
-          <span className='sr-only'>Mở menu</span>
+          <span className='sr-only'>{t('messages.openMenu')}</span>
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align='end' className='w-[160px]'>
@@ -41,7 +45,7 @@ function RowActions({ medicine }: { medicine: Medicine }) {
             setOpen('medicine-update')
           }}
         >
-          Cập nhật
+          {t('messages.update')}
           <DropdownMenuShortcut>
             <Edit size={16} />
           </DropdownMenuShortcut>
@@ -54,7 +58,7 @@ function RowActions({ medicine }: { medicine: Medicine }) {
           }}
           className='!text-red-500'
         >
-          Xoá
+          {t('messages.deleteAlt2')}
           <DropdownMenuShortcut>
             <Trash size={16} />
           </DropdownMenuShortcut>
@@ -65,13 +69,16 @@ function RowActions({ medicine }: { medicine: Medicine }) {
 }
 
 const formatNumber = (value: number) =>
-  new Intl.NumberFormat('vi-VN').format(value)
+  new Intl.NumberFormat(getLocale()).format(value)
 
 const columns: ColumnDef<Medicine>[] = withAuditColumns([
   {
     accessorKey: 'name',
     header: ({ column }) => (
-      <DataTableColumnHeader column={column} title='Tên thuốc' />
+      <DataTableColumnHeader
+        column={column}
+        title={i18n.t('messages.medicineName')}
+      />
     ),
     cell: ({ row }) => (
       <div className='min-w-48'>
@@ -85,20 +92,23 @@ const columns: ColumnDef<Medicine>[] = withAuditColumns([
   {
     accessorKey: 'strength',
     header: ({ column }) => (
-      <DataTableColumnHeader column={column} title='Hàm lượng' />
+      <DataTableColumnHeader
+        column={column}
+        title={i18n.t('messages.strength')}
+      />
     ),
   },
   {
     accessorKey: 'unit',
     header: ({ column }) => (
-      <DataTableColumnHeader column={column} title='Đơn vị' />
+      <DataTableColumnHeader column={column} title={i18n.t('messages.unit')} />
     ),
     filterFn: (row, id, value) => value.includes(row.getValue(id)),
   },
   {
     accessorKey: 'group',
     header: ({ column }) => (
-      <DataTableColumnHeader column={column} title='Nhóm' />
+      <DataTableColumnHeader column={column} title={i18n.t('messages.group')} />
     ),
     cell: ({ row }) => (
       <Badge variant='secondary' className='font-normal'>
@@ -110,7 +120,10 @@ const columns: ColumnDef<Medicine>[] = withAuditColumns([
   {
     accessorKey: 'manufacturer',
     header: ({ column }) => (
-      <DataTableColumnHeader column={column} title='Nhà sản xuất' />
+      <DataTableColumnHeader
+        column={column}
+        title={i18n.t('messages.manufacturer')}
+      />
     ),
     cell: ({ row }) => (
       <span className='text-muted-foreground'>{row.original.manufacturer}</span>
@@ -120,7 +133,10 @@ const columns: ColumnDef<Medicine>[] = withAuditColumns([
   {
     accessorKey: 'salePrice',
     header: ({ column }) => (
-      <DataTableColumnHeader column={column} title='Giá bán' />
+      <DataTableColumnHeader
+        column={column}
+        title={i18n.t('messages.sellingPrice')}
+      />
     ),
     cell: ({ row }) => (
       <span className='tabular-nums'>
@@ -131,7 +147,10 @@ const columns: ColumnDef<Medicine>[] = withAuditColumns([
   {
     accessorKey: 'minStock',
     header: ({ column }) => (
-      <DataTableColumnHeader column={column} title='Định mức tối thiểu' />
+      <DataTableColumnHeader
+        column={column}
+        title={i18n.t('messages.minimumStock')}
+      />
     ),
     cell: ({ row }) => (
       <span className='text-muted-foreground tabular-nums'>
@@ -147,6 +166,8 @@ const columns: ColumnDef<Medicine>[] = withAuditColumns([
 ])
 
 export function MedicinesTable() {
+  const { t } = useTranslation()
+
   const search = useApiSearch()
   const { data: medicines, isLoading } = useQuery({
     queryKey: ['medicines', search],
@@ -158,8 +179,8 @@ export function MedicinesTable() {
       columns={columns}
       data={medicines ?? []}
       isLoading={isLoading}
-      searchPlaceholder='Tìm theo tên, mã, hoạt chất...'
-      emptyMessage='Chưa có thuốc nào trong danh mục.'
+      searchPlaceholder={t('messages.searchNameCodeOrActiveIngredientAlt3')}
+      emptyMessage={t('messages.noMedicinesInTheCatalogYet')}
       mobileLabels={{ name: 'mobileTable.context.medicineName' }}
       getSearchText={(m) =>
         `${m.name} ${m.code} ${m.activeIngredient} ${m.manufacturer}`
@@ -168,13 +189,13 @@ export function MedicinesTable() {
       filters={[
         {
           columnId: 'unit',
-          title: 'Đơn vị',
+          title: t('messages.unit'),
           variant: 'checkbox',
           options: medicineUnits.map((unit) => ({ label: unit, value: unit })),
         },
         {
           columnId: 'group',
-          title: 'Nhóm thuốc',
+          title: t('messages.medicineGroup'),
           options: medicineGroups.map((g) => ({
             label: g.label,
             value: g.value,

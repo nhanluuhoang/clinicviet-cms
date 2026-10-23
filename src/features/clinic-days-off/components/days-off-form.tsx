@@ -1,6 +1,7 @@
 import { useMemo, useState } from 'react'
 import { useQueryClient } from '@tanstack/react-query'
 import { CalendarOff, Info, Plus, Save, Trash2 } from 'lucide-react'
+import { useTranslation } from 'react-i18next'
 import { toast } from 'sonner'
 import { showRequestError } from '@/lib/handle-server-error'
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert'
@@ -40,6 +41,8 @@ export function DaysOffForm({
 }: {
   item?: { id: string; value: string }
 }) {
+  const { t } = useTranslation()
+
   const queryClient = useQueryClient()
   const initialDays = useMemo(() => readDaysOff(item?.value), [item?.value])
   const [daysOff, setDaysOff] = useState(initialDays)
@@ -51,7 +54,7 @@ export function DaysOffForm({
   const addDay = () => {
     const value = `${pad(month)}-${pad(Math.min(day, daysInMonth))}`
     if (daysOff.includes(value)) {
-      toast.error('Ngày nghỉ này đã có trong danh sách')
+      toast.error(t('messages.thisHolidayIsAlreadyInTheList'))
       return
     }
     setDaysOff((current) => [...current, value].sort())
@@ -63,9 +66,9 @@ export function DaysOffForm({
       const data = { key: DAYS_OFF_KEY, value: JSON.stringify(daysOff) }
       await (item ? UpdateMasterData(item.id, data) : CreateMasterData(data))
       await queryClient.invalidateQueries({ queryKey: ['master-data'] })
-      toast.success('Đã lưu ngày nghỉ của phòng khám')
+      toast.success(t('messages.clinicHolidaysSaved'))
     } catch (error) {
-      showRequestError(error, 'Không thể lưu ngày nghỉ')
+      showRequestError(error, t('messages.couldNotSaveHolidays'))
     } finally {
       setIsSaving(false)
     }
@@ -75,24 +78,25 @@ export function DaysOffForm({
     <div className='space-y-5'>
       <Alert className='border-amber-500/50 bg-amber-500/10 text-amber-950 dark:text-amber-100'>
         <Info />
-        <AlertTitle>Lưu ý: ngày nghỉ được lặp lại hằng năm</AlertTitle>
+        <AlertTitle>{t('messages.noteHolidaysRepeatEveryYear')}</AlertTitle>
         <AlertDescription>
-          Bạn chỉ cần chọn ngày và tháng. Hệ thống đang hiển thị theo năm{' '}
-          <strong>{currentYear}</strong> và sẽ tự áp dụng cùng ngày, tháng cho
-          các năm tiếp theo.
+          {t('messages.selectOnlyADayAndMonthTheDisplayedYearIs')}{' '}
+          <strong>{currentYear}</strong>{' '}
+          {t('messages.andTheSameDayAndMonthWillApplyInSubsequentYea')}
         </AlertDescription>
       </Alert>
 
       <Card>
         <CardHeader>
           <CardTitle className='flex items-center gap-2 text-base'>
-            <CalendarOff className='size-5 text-primary' /> Thêm ngày nghỉ
+            <CalendarOff className='size-5 text-primary' />{' '}
+            {t('messages.addHoliday')}
           </CardTitle>
         </CardHeader>
         <CardContent className='space-y-5'>
           <div className='grid max-w-md grid-cols-2 gap-4'>
             <div className='space-y-2'>
-              <Label required>Ngày</Label>
+              <Label required>{t('messages.day')}</Label>
               <Select
                 value={String(Math.min(day, daysInMonth))}
                 onValueChange={(value) => setDay(Number(value))}
@@ -113,7 +117,7 @@ export function DaysOffForm({
               </Select>
             </div>
             <div className='space-y-2'>
-              <Label required>Tháng</Label>
+              <Label required>{t('messages.month')}</Label>
               <Select
                 value={String(month)}
                 onValueChange={(value) => {
@@ -134,7 +138,7 @@ export function DaysOffForm({
                   {Array.from({ length: 12 }, (_, index) => index + 1).map(
                     (value) => (
                       <SelectItem key={value} value={String(value)}>
-                        Tháng {value}
+                        {t('messages.month')} {value}
                       </SelectItem>
                     )
                   )}
@@ -144,10 +148,11 @@ export function DaysOffForm({
           </div>
           <div className='flex items-center gap-3'>
             <Button type='button' variant='outline' onClick={addDay}>
-              <Plus /> Thêm ngày nghỉ
+              <Plus /> {t('messages.addHoliday')}
             </Button>
             <span className='text-sm text-muted-foreground'>
-              Ngày đang chọn: {pad(Math.min(day, daysInMonth))}/{pad(month)}
+              {t('messages.selectedDate')} {pad(Math.min(day, daysInMonth))}/
+              {pad(month)}
             </span>
           </div>
         </CardContent>
@@ -156,12 +161,14 @@ export function DaysOffForm({
       <Card>
         <CardHeader>
           <CardTitle className='text-base'>
-            Danh sách ngày nghỉ hằng năm
+            {t('messages.annualHolidays')}
           </CardTitle>
         </CardHeader>
         <CardContent className='space-y-4'>
           {daysOff.length === 0 ? (
-            <p className='text-sm text-muted-foreground'>Chưa có ngày nghỉ.</p>
+            <p className='text-sm text-muted-foreground'>
+              {t('messages.noHolidaysYet')}
+            </p>
           ) : (
             <div className='grid gap-2 sm:grid-cols-2'>
               {daysOff.map((value) => {
@@ -178,7 +185,10 @@ export function DaysOffForm({
                       type='button'
                       variant='ghost'
                       size='icon'
-                      aria-label={`Xóa ngày ${itemDay}/${itemMonth}`}
+                      aria-label={t('messages.remove', {
+                        value0: itemDay,
+                        value1: itemMonth,
+                      })}
                       onClick={() =>
                         setDaysOff((current) =>
                           current.filter((itemValue) => itemValue !== value)
@@ -194,7 +204,8 @@ export function DaysOffForm({
           )}
           <div className='flex justify-end border-t pt-4'>
             <Button type='button' disabled={isSaving} onClick={save}>
-              <Save /> {isSaving ? 'Đang lưu...' : 'Lưu ngày nghỉ'}
+              <Save />{' '}
+              {isSaving ? t('messages.saving') : t('messages.saveHolidays')}
             </Button>
           </div>
         </CardContent>

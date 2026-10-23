@@ -3,6 +3,7 @@ import Axios, {
   type InternalAxiosRequestConfig,
 } from 'axios'
 import { API_URL } from '@/config'
+import i18n from '@/i18n'
 import { toast } from 'sonner'
 
 let csrfToken: string | null = null
@@ -67,6 +68,7 @@ const authRequestInterceptor = async (
   config: InternalAxiosRequestConfig
 ): Promise<InternalAxiosRequestConfig> => {
   config.headers.Accept = 'application/json'
+  config.headers['Accept-Language'] = i18n.resolvedLanguage ?? 'vi'
 
   if (!config.headers['Content-Type'])
     config.headers['Content-Type'] = 'application/json'

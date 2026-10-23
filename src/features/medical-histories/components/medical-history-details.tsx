@@ -1,5 +1,7 @@
 import type { VisibilityState } from '@tanstack/react-table'
 import { API_URL } from '@/config'
+import i18n, { getLocale } from '@/i18n'
+import { useTranslation } from 'react-i18next'
 import {
   Table,
   TableBody,
@@ -13,7 +15,9 @@ import { VideoPlayer } from '@/components/video-player'
 import { type MedicalHistoryListItem } from '../api'
 
 const money = (value: number | string) =>
-  `${Number(value).toLocaleString('vi-VN')} VNĐ`
+  i18n.t('messages.vndAlt2', {
+    value0: Number(value).toLocaleString(getLocale()),
+  })
 
 export function MedicalHistoryDetails({
   history,
@@ -22,6 +26,8 @@ export function MedicalHistoryDetails({
   auditVisibility?: VisibilityState
   history: MedicalHistoryListItem
 }) {
+  const { t } = useTranslation()
+
   const prescription = history.prescription
   const invoice = prescription?.invoice
   const hasMedia =
@@ -32,7 +38,7 @@ export function MedicalHistoryDetails({
   if (!prescription && !hasMedia) {
     return (
       <p className='py-6 text-center text-sm text-muted-foreground'>
-        Hồ sơ chưa có thông tin toa thuốc hoặc tệp đính kèm.
+        {t('messages.thisRecordHasNoPrescriptionOrAttachments')}
       </p>
     )
   }
@@ -41,7 +47,7 @@ export function MedicalHistoryDetails({
       {prescription && (
         <section>
           <h4 className='mb-3 text-sm font-semibold underline underline-offset-4'>
-            Thuốc kê đơn
+            {t('messages.prescribedMedicines')}
           </h4>
           <AuditDetails record={prescription} visibility={auditVisibility} />
           <div className='mt-3 grid gap-2 sm:hidden'>
@@ -55,15 +61,17 @@ export function MedicalHistoryDetails({
                 >
                   <p className='font-medium'>{item.medicineName}</p>
                   <p className='text-muted-foreground'>
-                    {item.instruction || 'Không có hướng dẫn'}
+                    {item.instruction || t('messages.noInstructions')}
                   </p>
                   <p>
-                    {quantity.toLocaleString('vi-VN')}{' '}
-                    {item.medicine?.unit || ''} ×{' '}
-                    {price.toLocaleString('vi-VN')} VNĐ
+                    {quantity.toLocaleString(getLocale())}{' '}
+                    {item.medicine?.unit || ''} {t('messages.Alt2')}{' '}
+                    {price.toLocaleString(getLocale())} {t('messages.vnd')}
                   </p>
                   <p className='font-medium'>
-                    Thành tiền: {(price * quantity).toLocaleString('vi-VN')} VNĐ
+                    {t('messages.amount')}{' '}
+                    {(price * quantity).toLocaleString(getLocale())}{' '}
+                    {t('messages.vnd')}
                   </p>
                 </div>
               )
@@ -73,12 +81,18 @@ export function MedicalHistoryDetails({
             <Table>
               <TableHeader>
                 <TableRow>
-                  <TableHead>Tên thuốc</TableHead>
-                  <TableHead>Hướng dẫn sử dụng</TableHead>
-                  <TableHead>Đơn vị</TableHead>
-                  <TableHead className='text-right'>Số lượng</TableHead>
-                  <TableHead className='text-right'>Giá bán</TableHead>
-                  <TableHead className='text-right'>Thành tiền</TableHead>
+                  <TableHead>{t('messages.medicineName')}</TableHead>
+                  <TableHead>{t('messages.userGuide')}</TableHead>
+                  <TableHead>{t('messages.unit')}</TableHead>
+                  <TableHead className='text-right'>
+                    {t('messages.quantityAlt2')}
+                  </TableHead>
+                  <TableHead className='text-right'>
+                    {t('messages.sellingPrice')}
+                  </TableHead>
+                  <TableHead className='text-right'>
+                    {t('messages.amountAlt2')}
+                  </TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -93,13 +107,14 @@ export function MedicalHistoryDetails({
                       <TableCell>{item.instruction || '-'}</TableCell>
                       <TableCell>{item.medicine?.unit || '-'}</TableCell>
                       <TableCell className='text-right tabular-nums'>
-                        {quantity.toLocaleString('vi-VN')}
+                        {quantity.toLocaleString(getLocale())}
                       </TableCell>
                       <TableCell className='text-right tabular-nums'>
-                        {price.toLocaleString('vi-VN')} VNĐ
+                        {price.toLocaleString(getLocale())} {t('messages.vnd')}
                       </TableCell>
                       <TableCell className='text-right font-medium tabular-nums'>
-                        {(price * quantity).toLocaleString('vi-VN')} VNĐ
+                        {(price * quantity).toLocaleString(getLocale())}{' '}
+                        {t('messages.vnd')}
                       </TableCell>
                     </TableRow>
                   )
@@ -113,18 +128,31 @@ export function MedicalHistoryDetails({
       {invoice && (
         <section className='border-t pt-4'>
           <h4 className='mb-3 text-sm font-semibold underline underline-offset-4'>
-            Hóa đơn {invoice.invoiceCode && `#${invoice.invoiceCode}`}
+            {t('messages.invoiceAlt2')}{' '}
+            {invoice.invoiceCode && `#${invoice.invoiceCode}`}
           </h4>
           <AuditDetails record={invoice} visibility={auditVisibility} />
           <div className='mt-3 grid gap-x-8 gap-y-4 sm:grid-cols-2 lg:grid-cols-4'>
             {[
-              ['Tổng tiền', invoice.totalAmount],
-              ['Tiền thuốc', invoice.medicineRevenue],
-              ['Phí khám bệnh', invoice.consultationFee],
-              [invoice.serviceFeeLabel || 'Phí dịch vụ', invoice.serviceFee],
-              [invoice.otherFee1Label || 'Phí khác 1', invoice.otherFee1],
-              [invoice.otherFee2Label || 'Phí khác 2', invoice.otherFee2],
-              [invoice.otherFee3Label || 'Phí khác 3', invoice.otherFee3],
+              [t('messages.totalAmount'), invoice.totalAmount],
+              [t('messages.medicineCharges'), invoice.medicineRevenue],
+              [t('messages.consultationFeeAlt3'), invoice.consultationFee],
+              [
+                invoice.serviceFeeLabel || t('messages.serviceFee'),
+                invoice.serviceFee,
+              ],
+              [
+                invoice.otherFee1Label || t('messages.additionalFee1'),
+                invoice.otherFee1,
+              ],
+              [
+                invoice.otherFee2Label || t('messages.additionalFee2'),
+                invoice.otherFee2,
+              ],
+              [
+                invoice.otherFee3Label || t('messages.additionalFee3'),
+                invoice.otherFee3,
+              ],
             ].map(([label, value], index) => (
               <div key={index} className='min-w-0 space-y-1'>
                 <p className='truncate text-sm text-muted-foreground'>
@@ -140,7 +168,7 @@ export function MedicalHistoryDetails({
       {history.images.length > 0 && (
         <section className='border-t pt-4'>
           <h4 className='mb-3 text-sm font-semibold underline underline-offset-4'>
-            Hình ảnh
+            {t('messages.images')}
           </h4>
           <div className='grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6'>
             {history.images.map((file) => (

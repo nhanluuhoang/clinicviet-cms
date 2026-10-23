@@ -1,6 +1,8 @@
 import { useEffect, useState } from 'react'
+import { getLocale } from '@/i18n'
 import { CalendarIcon } from 'lucide-react'
-import { vi } from 'react-day-picker/locale'
+import { enUS, vi } from 'react-day-picker/locale'
+import { useTranslation } from 'react-i18next'
 import { cn } from '@/lib/utils'
 import { Button } from '@/components/ui/button'
 import { Calendar } from '@/components/ui/calendar'
@@ -66,6 +68,8 @@ export function DatePickerInput({
   minDate?: string
   placeholder?: string
 }) {
+  const { t } = useTranslation()
+
   const [open, setOpen] = useState(false)
   const [inputValue, setInputValue] = useState(() =>
     toDisplayDate(parseIsoDate(value))
@@ -112,17 +116,17 @@ export function DatePickerInput({
             variant='ghost'
             size='icon'
             className='absolute top-0 right-0 h-full shrink-0 rounded-l-none text-muted-foreground hover:text-foreground'
-            aria-label='Mở lịch chọn ngày'
+            aria-label={t('messages.openDatePicker')}
           >
             <CalendarIcon className='size-4' />
           </Button>
         </PopoverTrigger>
         <PopoverContent className='w-auto p-0' align='end'>
           <Calendar
-            locale={vi}
+            locale={getLocale() === 'en-US' ? enUS : vi}
             labels={{
-              labelNext: () => 'Tháng sau',
-              labelPrevious: () => 'Tháng trước',
+              labelNext: () => t('messages.nextMonth'),
+              labelPrevious: () => t('messages.previousMonth'),
             }}
             mode='single'
             selected={selected}

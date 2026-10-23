@@ -1,14 +1,15 @@
 import { useState } from 'react'
 import { useQueryClient } from '@tanstack/react-query'
 import { Eye, Minus, Pill, Plus, Save, Stethoscope } from 'lucide-react'
+import { useTranslation } from 'react-i18next'
 import { toast } from 'sonner'
 import { showRequestError } from '@/lib/handle-server-error'
+import { getDefaultMedicineInstructions } from '@/lib/medicine-instructions'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
 import { Checkbox } from '@/components/ui/checkbox'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
-import { DEFAULT_MEDICINE_INSTRUCTIONS } from '@/lib/medicine-instructions'
 import {
   CreateMasterData,
   UpdateMasterData,
@@ -30,6 +31,8 @@ export function MasterDataForm({
   showMedicinesItem?: MasterDataItem
   defaultAdviceItem?: MasterDataItem
 }) {
+  const { t } = useTranslation()
+
   const queryClient = useQueryClient()
   const [value, setValue] = useState(consultationFeeItem?.value ?? '0')
   const [showMedicines, setShowMedicines] = useState(
@@ -40,7 +43,7 @@ export function MasterDataForm({
       .split(/\r?\n/)
       .map((item) => item.trim())
       .filter(Boolean)
-    return options.length ? options : DEFAULT_MEDICINE_INSTRUCTIONS
+    return options.length ? options : getDefaultMedicineInstructions()
   })
   const [savingKeys, setSavingKeys] = useState<string[]>([])
 
@@ -54,9 +57,9 @@ export function MasterDataForm({
       const data = { key, value: settingValue }
       await (item ? UpdateMasterData(item.id, data) : CreateMasterData(data))
       await queryClient.invalidateQueries({ queryKey: ['master-data'] })
-      toast.success('Đã lưu cài đặt')
+      toast.success(t('messages.settingsSaved'))
     } catch (error) {
-      showRequestError(error, 'Không lưu được cài đặt')
+      showRequestError(error, t('messages.couldNotSaveSettings'))
     } finally {
       setSavingKeys((current) => current.filter((item) => item !== key))
     }
@@ -65,7 +68,7 @@ export function MasterDataForm({
   const saveConsultationFee = () => {
     const fee = Number(value)
     if (!Number.isFinite(fee) || fee < 0) {
-      toast.error('Giá khám bệnh không hợp lệ')
+      toast.error(t('messages.invalidConsultationFee'))
       return
     }
     void saveSetting(consultationFeeItem, CONSULTATION_FEE_KEY, String(fee))
@@ -88,12 +91,14 @@ export function MasterDataForm({
       <Card className='overflow-hidden'>
         <SettingHeading
           icon={Stethoscope}
-          title='Giá khám bệnh'
-          description='Mức phí mặc định được sử dụng khi lập phiếu khám.'
+          title={t('messages.consultationFeeAlt2')}
+          description={t(
+            'messages.theDefaultFeeUsedWhenCreatingAnExaminationRecor'
+          )}
         />
         <CardContent className='space-y-5 pt-6'>
           <div className='max-w-md space-y-2'>
-            <Label htmlFor='consultation-fee'>Số tiền</Label>
+            <Label htmlFor='consultation-fee'>{t('messages.amountAlt3')}</Label>
             <div className='relative'>
               <Input
                 id='consultation-fee'
@@ -103,10 +108,10 @@ export function MasterDataForm({
                 step={1000}
                 value={value}
                 onChange={(event) => setValue(event.target.value)}
-                placeholder='Nhập giá khám bệnh'
+                placeholder={t('messages.enterConsultationFee')}
               />
               <span className='absolute inset-y-0 right-3 flex items-center text-sm text-muted-foreground'>
-                VNĐ
+                {t('messages.vnd')}
               </span>
             </div>
           </div>
@@ -118,8 +123,8 @@ export function MasterDataForm({
             >
               <Save />{' '}
               {savingKeys.includes(CONSULTATION_FEE_KEY)
-                ? 'Đang lưu...'
-                : 'Lưu'}
+                ? t('messages.saving')
+                : t('messages.save')}
             </Button>
           </div>
         </CardContent>
@@ -128,8 +133,10 @@ export function MasterDataForm({
       <Card className='overflow-hidden'>
         <SettingHeading
           icon={Eye}
-          title='Hồ sơ online của bệnh nhân'
-          description='Kiểm soát thông tin thuốc mà bệnh nhân có thể xem.'
+          title={t('messages.patientOnlineRecords')}
+          description={t(
+            'messages.controlTheMedicineInformationPatientsCanView'
+          )}
         />
         <CardContent className='space-y-5 pt-6'>
           <label
@@ -144,10 +151,10 @@ export function MasterDataForm({
             />
             <span className='grid gap-1'>
               <span className='text-sm font-medium'>
-                Hiển thị danh sách thuốc
+                {t('messages.showMedicineList')}
               </span>
               <span className='text-sm text-muted-foreground'>
-                Khi tắt, ẩn thuốc trong phiếu khám; phiếu bán thuốc và tiêm chủng vẫn hiển thị.
+                {t('messages.whenDisabledMedicinesAreHiddenInExaminationRecor')}
               </span>
             </span>
           </label>
@@ -165,8 +172,8 @@ export function MasterDataForm({
             >
               <Save />{' '}
               {savingKeys.includes(SHOW_MEDICINES_TO_PATIENT_KEY)
-                ? 'Đang lưu...'
-                : 'Lưu'}
+                ? t('messages.saving')
+                : t('messages.save')}
             </Button>
           </div>
         </CardContent>
@@ -175,8 +182,10 @@ export function MasterDataForm({
       <Card className='overflow-hidden'>
         <SettingHeading
           icon={Pill}
-          title='Hướng dẫn sử dụng thuốc'
-          description='Các lựa chọn riêng của phòng khám; biểu mẫu cũng có gợi ý phổ biến để chọn nhanh.'
+          title={t('messages.medicineInstructions')}
+          description={t(
+            'messages.clinicSpecificOptionsTheFormAlsoProvidesCommonS'
+          )}
         />
         <CardContent className='space-y-3 pt-6'>
           {adviceOptions.map((option, index) => (
@@ -194,7 +203,7 @@ export function MasterDataForm({
                     )
                   )
                 }
-                placeholder={`Hướng dẫn ${index + 1}`}
+                placeholder={t('messages.instruction', { value0: index + 1 })}
               />
               <Button
                 type='button'
@@ -206,7 +215,9 @@ export function MasterDataForm({
                     current.filter((_, optionIndex) => optionIndex !== index)
                   )
                 }
-                aria-label={`Xóa hướng dẫn ${index + 1}`}
+                aria-label={t('messages.removeInstruction', {
+                  value0: index + 1,
+                })}
               >
                 <Minus className='size-4' />
               </Button>
@@ -219,7 +230,7 @@ export function MasterDataForm({
             className='ml-8'
             onClick={() => setAdviceOptions((current) => [...current, ''])}
           >
-            <Plus className='size-4' /> Thêm hướng dẫn
+            <Plus className='size-4' /> {t('messages.addInstruction')}
           </Button>
           <div className='flex justify-end border-t pt-4'>
             <Button
@@ -229,8 +240,8 @@ export function MasterDataForm({
             >
               <Save />{' '}
               {savingKeys.includes(MEDICINE_INSTRUCTION_OPTIONS_KEY)
-                ? 'Đang lưu...'
-                : 'Lưu'}
+                ? t('messages.saving')
+                : t('messages.save')}
             </Button>
           </div>
         </CardContent>

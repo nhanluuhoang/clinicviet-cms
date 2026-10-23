@@ -1,5 +1,6 @@
 import { useState } from 'react'
-import { DEFAULT_MEDICINE_INSTRUCTIONS } from '@/lib/medicine-instructions'
+import { useTranslation } from 'react-i18next'
+import { getDefaultMedicineInstructions } from '@/lib/medicine-instructions'
 import { Button } from '@/components/ui/button'
 import {
   Command,
@@ -25,9 +26,11 @@ export function MedicineInstructionInput({
   options: string[]
   onChange: (value: string) => void
 }) {
+  const { t } = useTranslation()
+
   const [open, setOpen] = useState(false)
   const configuredOptions = [...new Set(options.filter(Boolean))]
-  const extraOptions = DEFAULT_MEDICINE_INSTRUCTIONS.filter(
+  const extraOptions = getDefaultMedicineInstructions().filter(
     (option) => !configuredOptions.includes(option)
   )
 
@@ -35,20 +38,20 @@ export function MedicineInstructionInput({
     <div className='min-w-0 space-y-2'>
       <div className='flex min-w-0 gap-2'>
         <Input
-          aria-label='Hướng dẫn sử dụng'
+          aria-label={t('messages.userGuide')}
           value={value}
           maxLength={255}
           onChange={(event) => onChange(event.target.value)}
-          placeholder='Nhập cách dùng cho người bệnh'
+          placeholder={t('messages.enterInstructionsForThePatient')}
         />
         <Popover open={open} onOpenChange={setOpen}>
           <PopoverTrigger asChild>
             <Button
               type='button'
               variant='outline'
-              aria-label='Chọn hướng dẫn gợi ý'
+              aria-label={t('messages.chooseSuggestedInstructions')}
             >
-              Gợi ý
+              {t('messages.suggestions')}
             </Button>
           </PopoverTrigger>
           <PopoverContent
@@ -56,11 +59,13 @@ export function MedicineInstructionInput({
             className='w-80 max-w-[calc(100vw-2rem)] p-0'
           >
             <Command>
-              <CommandInput placeholder='Tìm hướng dẫn...' />
+              <CommandInput placeholder={t('messages.searchInstructions')} />
               <CommandList>
-                <CommandEmpty>Không có gợi ý phù hợp.</CommandEmpty>
+                <CommandEmpty>
+                  {t('messages.noMatchingSuggestions')}
+                </CommandEmpty>
                 {configuredOptions.length > 0 && (
-                  <CommandGroup heading='Lựa chọn của phòng khám'>
+                  <CommandGroup heading={t('messages.clinicOptions')}>
                     {configuredOptions.map((option) => (
                       <CommandItem
                         key={option}
@@ -76,7 +81,7 @@ export function MedicineInstructionInput({
                   </CommandGroup>
                 )}
                 {extraOptions.length > 0 && (
-                  <CommandGroup heading='Gợi ý phổ biến'>
+                  <CommandGroup heading={t('messages.commonSuggestions')}>
                     {extraOptions.map((option) => (
                       <CommandItem
                         key={option}
@@ -98,8 +103,8 @@ export function MedicineInstructionInput({
       </div>
       <p className='text-xs leading-5 break-words text-muted-foreground'>
         {value.trim()
-          ? `Hiển thị trên phiếu: ${value.trim()}`
-          : 'Có thể ghi lượng mỗi lần, thời điểm và thời gian dùng.'}
+          ? t('messages.shownOnTheDocument', { value0: value.trim() })
+          : t('messages.includeTheAmountPerDoseTimingAndDuration')}
       </p>
     </div>
   )

@@ -3,6 +3,8 @@ import { z } from 'zod'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useQueryClient } from '@tanstack/react-query'
+import i18n from '@/i18n'
+import { useTranslation } from 'react-i18next'
 import { toast } from 'sonner'
 import { showRequestError } from '@/lib/handle-server-error'
 import { Button } from '@/components/ui/button'
@@ -38,8 +40,14 @@ type MasterDataMutateDrawerProps = {
 }
 
 const formSchema = z.object({
-  key: z.string().min(1, 'Key is required.').max(100),
-  value: z.string().min(1, 'Value is required.').max(100),
+  key: z
+    .string()
+    .min(1, { error: () => i18n.t('messages.keyRequired') })
+    .max(100),
+  value: z
+    .string()
+    .min(1, { error: () => i18n.t('messages.valueRequired') })
+    .max(100),
   searchKey: z.string().max(100).optional().or(z.literal('')),
 })
 type MasterDataForm = z.infer<typeof formSchema>
@@ -49,6 +57,8 @@ export function MasterDataMutateDrawer({
   onOpenChange,
   currentRow,
 }: MasterDataMutateDrawerProps) {
+  const { t } = useTranslation()
+
   const isUpdate = !!currentRow
   const queryClient = useQueryClient()
 
@@ -85,16 +95,16 @@ export function MasterDataMutateDrawer({
 
       if (isUpdate && currentRow) {
         await UpdateMasterData(currentRow.id, requestData)
-        toast.success('Master data updated successfully')
+        toast.success(i18n.t('messages.masterDataUpdated'))
       } else {
         await CreateMasterData(requestData)
-        toast.success('Master data created successfully')
+        toast.success(i18n.t('messages.masterDataCreated'))
       }
       queryClient.invalidateQueries({ queryKey: ['master-data'] })
       onOpenChange(false)
       form.reset()
     } catch (error) {
-      showRequestError(error, 'Không thể lưu cấu hình chung.')
+      showRequestError(error, t('messages.couldNotSaveGeneralSettings'))
     }
   }
 
@@ -110,12 +120,13 @@ export function MasterDataMutateDrawer({
         <div className='min-w-0 sm:min-h-0 sm:flex-1 sm:overflow-x-hidden sm:overflow-y-auto sm:overscroll-contain'>
           <SheetHeader className='text-start'>
             <SheetTitle>
-              {isUpdate ? 'Cập nhật' : 'Tạo'} cấu hình chung
+              {isUpdate ? t('messages.update') : t('messages.create')}{' '}
+              {t('messages.generalSetting')}
             </SheetTitle>
             <SheetDescription>
               {isUpdate
-                ? 'Cập nhật các thông tin cấu hình cần thiết.'
-                : 'Nhập các thông tin để tạo cấu hình mới.'}
+                ? t('messages.updateTheRequiredConfigurationDetails')
+                : t('messages.enterDetailsToCreateANewSetting')}
             </SheetDescription>
           </SheetHeader>
           <Form {...form}>
@@ -129,9 +140,9 @@ export function MasterDataMutateDrawer({
                 name='key'
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel required>Khóa</FormLabel>
+                    <FormLabel required>{t('messages.key')}</FormLabel>
                     <FormControl>
-                      <Input {...field} placeholder='Nhập khóa' />
+                      <Input {...field} placeholder={t('messages.enterKey')} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -142,9 +153,12 @@ export function MasterDataMutateDrawer({
                 name='value'
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel required>Giá trị</FormLabel>
+                    <FormLabel required>{t('messages.value')}</FormLabel>
                     <FormControl>
-                      <Input {...field} placeholder='Nhập giá trị' />
+                      <Input
+                        {...field}
+                        placeholder={t('messages.enterValue')}
+                      />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -155,9 +169,12 @@ export function MasterDataMutateDrawer({
                 name='searchKey'
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Khóa tìm kiếm</FormLabel>
+                    <FormLabel>{t('messages.searchKey')}</FormLabel>
                     <FormControl>
-                      <Input {...field} placeholder='Nhập khóa tìm kiếm' />
+                      <Input
+                        {...field}
+                        placeholder={t('messages.enterSearchKey')}
+                      />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -168,14 +185,16 @@ export function MasterDataMutateDrawer({
         </div>
         <SheetFooter className='mt-4 flex-row justify-end gap-2 border-t pb-[max(1rem,env(safe-area-inset-bottom))]'>
           <SheetClose asChild>
-            <Button variant='outline'>Đóng</Button>
+            <Button variant='outline'>{t('messages.close')}</Button>
           </SheetClose>
           <Button
             form='master-data-form'
             type='submit'
             disabled={form.formState.isSubmitting}
           >
-            {form.formState.isSubmitting ? 'Đang lưu...' : 'Lưu thay đổi'}
+            {form.formState.isSubmitting
+              ? t('messages.saving')
+              : t('messages.saveChanges')}
           </Button>
         </SheetFooter>
       </SheetContent>

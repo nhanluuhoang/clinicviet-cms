@@ -1,7 +1,14 @@
 import { useState } from 'react'
 import { Link } from '@tanstack/react-router'
 import { hasAnyRole, STAFF_ROLES } from '@/config/access-control'
-import { BadgeCheck, Building2, ChevronsUpDown, Gift, LogOut } from 'lucide-react'
+import {
+  BadgeCheck,
+  Building2,
+  ChevronsUpDown,
+  Gift,
+  LogOut,
+} from 'lucide-react'
+import { useTranslation } from 'react-i18next'
 import useDialogState from '@/hooks/use-dialog-state'
 import { Avatar, AvatarFallback } from '@/components/ui/avatar'
 import {
@@ -28,10 +35,13 @@ type NavUserProps = {
 }
 
 export function NavUser({ user }: NavUserProps) {
+  const { t } = useTranslation()
+
   const { isMobile } = useSidebar()
   const [open, setOpen] = useDialogState()
   const [referralOpen, setReferralOpen] = useState(false)
-  const displayName = user?.fullName?.trim() || user?.userName || 'Tài khoản'
+  const displayName =
+    user?.fullName?.trim() || user?.userName || t('messages.account')
   const email = user?.email?.trim() || null
   const initials = displayName
     .split(/\s+/)
@@ -88,21 +98,21 @@ export function NavUser({ user }: NavUserProps) {
                 <DropdownMenuItem asChild>
                   <Link to='/settings'>
                     <BadgeCheck />
-                    Hồ sơ cá nhân
+                    {t('messages.profile')}
                   </Link>
                 </DropdownMenuItem>
                 {user?.role === 'TENANT_ADMIN' && (
                   <DropdownMenuItem asChild>
                     <Link to='/settings/tenant'>
                       <Building2 />
-                      Thông tin phòng khám
+                      {t('messages.clinicInformation')}
                     </Link>
                   </DropdownMenuItem>
                 )}
                 {user?.tenant && hasAnyRole(user.role, STAFF_ROLES) && (
                   <DropdownMenuItem onSelect={() => setReferralOpen(true)}>
                     <Gift aria-hidden='true' />
-                    Giới thiệu cho bạn bè
+                    {t('messages.referAFriend')}
                   </DropdownMenuItem>
                 )}
               </DropdownMenuGroup>
@@ -112,7 +122,7 @@ export function NavUser({ user }: NavUserProps) {
                 onClick={() => setOpen(true)}
               >
                 <LogOut />
-                Đăng xuất
+                {t('messages.signOut')}
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>

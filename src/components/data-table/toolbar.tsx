@@ -1,6 +1,8 @@
 import { useEffect, useState, type ReactNode } from 'react'
 import { Cross2Icon } from '@radix-ui/react-icons'
 import { type Table } from '@tanstack/react-table'
+import i18n from '@/i18n'
+import { useTranslation } from 'react-i18next'
 import { useDebounce } from '@/hooks/use-debounce'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -32,7 +34,7 @@ type DataTableToolbarProps<TData> = {
 
 export function DataTableToolbar<TData>({
   table,
-  searchPlaceholder = 'Lọc dữ liệu...',
+  searchPlaceholder = i18n.t('messages.filterData'),
   searchKey,
   searchFields,
   filters = [],
@@ -43,6 +45,8 @@ export function DataTableToolbar<TData>({
   hasExtraFilters = false,
   onReset,
 }: DataTableToolbarProps<TData>) {
+  const { t } = useTranslation()
+
   const isFiltered =
     hasExtraFilters ||
     table
@@ -101,7 +105,7 @@ export function DataTableToolbar<TData>({
           }}
           className='h-8 shrink-0 gap-2 px-2'
         >
-          Xóa bộ lọc <Cross2Icon className='size-4' />
+          {t('messages.clearFilters')} <Cross2Icon className='size-4' />
         </Button>
       )}
       {showViewOptions && <DataTableViewOptions table={table} />}
@@ -118,6 +122,8 @@ function DataTableSearchInput<TData>({
   searchKey?: string
   placeholder: string
 }) {
+  useTranslation()
+
   const externalValue =
     (searchKey
       ? (table.getColumn(searchKey)?.getFilterValue() as string)

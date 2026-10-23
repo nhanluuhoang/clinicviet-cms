@@ -3,7 +3,9 @@ import { z } from 'zod'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useNavigate } from '@tanstack/react-router'
+import i18n from '@/i18n'
 import { Loader2, Save } from 'lucide-react'
+import { useTranslation } from 'react-i18next'
 import { toast } from 'sonner'
 import { showRequestError } from '@/lib/handle-server-error'
 import { cn } from '@/lib/utils'
@@ -22,9 +24,15 @@ import { ResetPassword } from '@/features/auth/api'
 const formSchema = z.object({
   password: z
     .string()
-    .min(8, 'Mật khẩu phải có ít nhất 8 ký tự')
-    .max(20, 'Mật khẩu không được vượt quá 20 ký tự'),
-  passwordConfirmation: z.string().min(1, 'Vui lòng nhập lại mật khẩu'),
+    .min(8, {
+      error: () => i18n.t('messages.passwordMustContainAtLeast8CharactersAlt2'),
+    })
+    .max(20, {
+      error: () => i18n.t('messages.passwordMustNotExceed20CharactersAlt2'),
+    }),
+  passwordConfirmation: z
+    .string()
+    .min(1, { error: () => i18n.t('messages.pleaseConfirmYourPassword') }),
 })
 
 interface ResetPasswordFormProps extends React.HTMLAttributes<HTMLFormElement> {
@@ -36,6 +44,8 @@ export function ResetPasswordForm({
   className,
   ...props
 }: ResetPasswordFormProps) {
+  const { t } = useTranslation()
+
   const [isLoading, setIsLoading] = useState(false)
   const navigate = useNavigate()
 
@@ -52,11 +62,11 @@ export function ResetPasswordForm({
     try {
       await ResetPassword({ ...data, token })
       navigate({ to: '/sign-in' })
-      toast.success('Đặt lại mật khẩu thành công')
+      toast.success(t('messages.passwordResetSuccessfully'))
     } catch (error) {
       showRequestError(
         error,
-        'Đặt lại mật khẩu thất bại. Vui lòng kiểm tra liên kết và thử lại.'
+        t('messages.couldNotResetYourPasswordCheckTheLinkAndTryAg')
       )
     } finally {
       setIsLoading(false)
@@ -75,7 +85,7 @@ export function ResetPasswordForm({
           name='password'
           render={({ field }) => (
             <FormItem className='relative'>
-              <FormLabel required>Mật khẩu</FormLabel>
+              <FormLabel required>{t('messages.password')}</FormLabel>
               <FormControl>
                 <PasswordInput placeholder='********' {...field} />
               </FormControl>
@@ -88,7 +98,7 @@ export function ResetPasswordForm({
           name='passwordConfirmation'
           render={({ field }) => (
             <FormItem className='relative'>
-              <FormLabel required>Nhập lại mật khẩu</FormLabel>
+              <FormLabel required>{t('messages.confirmPassword')}</FormLabel>
               <FormControl>
                 <PasswordInput placeholder='********' {...field} />
               </FormControl>
@@ -98,7 +108,7 @@ export function ResetPasswordForm({
         />
         <Button className='mt-2' disabled={isLoading}>
           {isLoading ? <Loader2 className='animate-spin' /> : <Save />}
-          Đặt lại mật khẩu
+          {t('messages.resetPassword')}
         </Button>
       </form>
     </Form>

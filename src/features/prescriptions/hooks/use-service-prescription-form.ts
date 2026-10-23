@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { API_URL } from '@/config'
+import i18n from '@/i18n'
 import { toast } from 'sonner'
 import { useAuthStore } from '@/stores/auth-store'
 import { getApiErrorMessage } from '@/lib/axios'
@@ -256,7 +257,7 @@ export function useServicePrescriptionForm({
     }))
     setItems(rows.length ? rows : [emptyMedicine(nextKey)])
     setNextKey((value) => value + Math.max(rows.length, 1))
-    toast.success(`Đã áp dụng mẫu ${template.name}`)
+    toast.success(i18n.t('messages.templateApplied', { value0: template.name }))
   }
 
   const defaultConsultationFee = Number(
@@ -371,7 +372,7 @@ export function useServicePrescriptionForm({
       }
     },
     onSuccess: () => {
-      toast.success('Đã lưu phiếu dịch vụ')
+      toast.success(i18n.t('messages.serviceRecordSaved'))
       setSymptoms('')
       setDiagnosis('')
       setTreatment('')
@@ -398,7 +399,10 @@ export function useServicePrescriptionForm({
       })
     },
     onError: (error) =>
-      showRequestError(error, 'Không thể lưu hồ sơ khám và đơn thuốc'),
+      showRequestError(
+        error,
+        i18n.t('messages.couldNotSaveMedicalHistoryAndPrescription')
+      ),
   })
 
   useEffect(() => {
@@ -423,7 +427,9 @@ export function useServicePrescriptionForm({
     for (const file of selected) {
       if (!ACCEPTED_MEDIA_TYPES.includes(file.type)) {
         toast.error(
-          `Tệp "${file.name}" có định dạng không được hỗ trợ. Chỉ nhận JPG, JPEG, PNG, WebP, HEIC, HEIF, PDF, MP4, MOV, M4V, WebM, 3GP hoặc 3G2.`
+          i18n.t('messages.fileHasAnUnsupportedFormatOnlyJpgJpegPngWebpHAlt2', {
+            value0: file.name,
+          })
         )
         return
       }
@@ -434,13 +440,19 @@ export function useServicePrescriptionForm({
           : MAX_MEDIA_FILE_SIZE
       if (file.size > maxSize) {
         toast.error(
-          `Tệp "${file.name}" có dung lượng ${(file.size / 1024 / 1024).toFixed(2)} MB, vượt giới hạn ${maxSize / 1024 / 1024} MB.`
+          i18n.t('messages.fileIsMbExceedingTheMbLimit', {
+            value0: file.name,
+            value1: (file.size / 1024 / 1024).toFixed(2),
+            value2: maxSize / 1024 / 1024,
+          })
         )
         return
       }
     }
     if (media.length + selected.length > MAX_MEDIA_FILES) {
-      toast.error(`Chỉ được tải lên tối đa ${MAX_MEDIA_FILES} tệp`)
+      toast.error(
+        i18n.t('messages.youCanUploadUpToFiles', { value0: MAX_MEDIA_FILES })
+      )
       return
     }
     const imageCount =
@@ -455,10 +467,10 @@ export function useServicePrescriptionForm({
     if (imageCount > 5 || pdfCount > 5 || videoCount > 1) {
       toast.error(
         imageCount > 5
-          ? 'Mỗi hồ sơ chỉ được đính kèm tối đa 5 ảnh.'
+          ? i18n.t('messages.eachRecordCanHaveUpTo5Images')
           : pdfCount > 5
-            ? 'Mỗi hồ sơ chỉ được đính kèm tối đa 5 tệp PDF.'
-            : 'Mỗi hồ sơ chỉ được đính kèm tối đa 1 video.'
+            ? i18n.t('messages.eachRecordCanHaveUpTo5PdfFiles')
+            : i18n.t('messages.eachRecordCanHaveUpTo1Video')
       )
       return
     }
@@ -484,11 +496,11 @@ export function useServicePrescriptionForm({
         )
       ) {
         toast.error(
-          'Một số tệp không tải lên được. Các tệp tải thành công đã được giữ lại.'
+          i18n.t('messages.someFilesCouldNotBeUploadedSuccessfullyUploaded')
         )
       }
     } catch (error) {
-      showRequestError(error, 'Không thể tải tệp lên')
+      showRequestError(error, i18n.t('messages.couldNotUploadFile'))
     } finally {
       setIsUploadingMedia(false)
       onUploadingChange?.(false)
@@ -508,7 +520,7 @@ export function useServicePrescriptionForm({
           (item) => item.id !== file.id || item.fileName !== file.fileName
         )
       )
-      toast.info('Tệp sẽ được xóa khi lưu hồ sơ.')
+      toast.info(i18n.t('messages.thisFileWillBeDeletedWhenTheRecordIsSaved'))
       return
     }
     setIsUploadingMedia(true)
@@ -523,9 +535,9 @@ export function useServicePrescriptionForm({
           (item) => item.id !== file.id || item.fileName !== file.fileName
         )
       )
-      toast.success('Đã xóa tệp')
+      toast.success(i18n.t('messages.fileDeleted'))
     } catch (error) {
-      showRequestError(error, 'Không thể xóa tệp')
+      showRequestError(error, i18n.t('messages.couldNotDeleteFile'))
     } finally {
       setIsUploadingMedia(false)
       onUploadingChange?.(false)
@@ -535,14 +547,16 @@ export function useServicePrescriptionForm({
   const getQuantityError = (item: MedicineRow) => {
     if (item.quantity === undefined) return null
     if (!Number.isInteger(item.quantity) || item.quantity < 1) {
-      return 'Số lượng phải là số nguyên từ 1 trở lên.'
+      return i18n.t('messages.quantityMustBeAnIntegerOfAtLeast1')
     }
     if (!item.medicineId) return null
     const available = item.selectedMedicine?.totalQty ?? 0
     const prescribed = items
       .filter((row) => row.medicineId === item.medicineId)
       .reduce((total, row) => total + (row.quantity ?? 0), 0)
-    return prescribed > available ? `Kho chỉ còn ${available}.` : null
+    return prescribed > available
+      ? i18n.t('messages.onlyLeftInStock', { value0: available })
+      : null
   }
 
   const isValid = Boolean(

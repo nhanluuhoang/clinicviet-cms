@@ -1,22 +1,26 @@
-export type SubscriptionStatus = 'TRIAL' | 'ACTIVE' | 'EXPIRED' | 'SUSPENDED'
+import i18n from '@/i18n'
+
+export type SubscriptionStatus = 'ACTIVE' | 'EXPIRED' | 'SUSPENDED'
 
 export const SUBSCRIPTION_STATUS_LABELS = {
-  TRIAL: 'Đăng ký dùng thử',
-  ACTIVE: 'Đăng ký chính thức',
-  EXPIRED: 'Đã hết hạn',
-  SUSPENDED: 'Tạm ngưng',
+  get ACTIVE() {
+    return i18n.t('subscriptionStatuses.ACTIVE')
+  },
+  get EXPIRED() {
+    return i18n.t('subscriptionStatuses.EXPIRED')
+  },
+  get SUSPENDED() {
+    return i18n.t('subscriptionStatuses.SUSPENDED')
+  },
 } satisfies Record<SubscriptionStatus, string>
 
-export const SUBSCRIPTION_STATUS_OPTIONS = Object.entries(
+export const SUBSCRIPTION_STATUS_OPTIONS = Object.keys(
   SUBSCRIPTION_STATUS_LABELS
-).map(([value, label]) => ({ value, label }))
+).map((value) => ({
+  value,
+  get label() {
+    return SUBSCRIPTION_STATUS_LABELS[value as SubscriptionStatus]
+  },
+}))
 
-export const NEW_SUBSCRIPTION_STATUS_OPTIONS = SUBSCRIPTION_STATUS_OPTIONS.filter(
-  ({ value }) => value === 'TRIAL' || value === 'ACTIVE'
-)
-
-export const SUBSCRIPTION_STATUS_SUMMARY_LABELS = {
-  ...SUBSCRIPTION_STATUS_LABELS,
-  TRIAL: 'Dùng thử',
-  ACTIVE: 'Đang hoạt động',
-} satisfies Record<SubscriptionStatus, string>
+export const SUBSCRIPTION_STATUS_SUMMARY_LABELS = SUBSCRIPTION_STATUS_LABELS

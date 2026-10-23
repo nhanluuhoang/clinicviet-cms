@@ -2,7 +2,9 @@ import { useState } from 'react'
 import { z } from 'zod'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
+import i18n from '@/i18n'
 import { ArrowRight, Loader2 } from 'lucide-react'
+import { useTranslation } from 'react-i18next'
 import { toast } from 'sonner'
 import { showRequestError } from '@/lib/handle-server-error'
 import { cn } from '@/lib/utils'
@@ -20,7 +22,10 @@ import { ForgotPassword } from '../../api'
 
 const formSchema = z.object({
   email: z.email({
-    error: (iss) => (iss.input === '' ? 'Vui lòng nhập email' : undefined),
+    error: (iss) =>
+      iss.input === ''
+        ? i18n.t('messages.pleaseEnterAnEmailAddress')
+        : undefined,
   }),
 })
 
@@ -28,6 +33,8 @@ export function ForgotPasswordForm({
   className,
   ...props
 }: React.HTMLAttributes<HTMLFormElement>) {
+  const { t } = useTranslation()
+
   const [isLoading, setIsLoading] = useState(false)
 
   const form = useForm<z.infer<typeof formSchema>>({
@@ -40,9 +47,9 @@ export function ForgotPasswordForm({
     try {
       await ForgotPassword(data)
       form.reset()
-      toast.success(`Đã gửi email đến ${data.email}`)
+      toast.success(t('messages.emailSentTo', { value0: data.email }))
     } catch (error) {
-      showRequestError(error, 'Không thể gửi email. Vui lòng thử lại.')
+      showRequestError(error, t('messages.couldNotSendEmailPleaseTryAgain'))
     } finally {
       setIsLoading(false)
     }
@@ -69,7 +76,7 @@ export function ForgotPasswordForm({
           )}
         />
         <Button className='mt-2' disabled={isLoading}>
-          Tiếp tục
+          {t('messages.continue')}
           {isLoading ? <Loader2 className='animate-spin' /> : <ArrowRight />}
         </Button>
       </form>

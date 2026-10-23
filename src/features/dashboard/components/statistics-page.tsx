@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { useQuery } from '@tanstack/react-query'
 import { CalendarDays } from 'lucide-react'
+import { useTranslation } from 'react-i18next'
 import {
   formatNumber,
   getCurrentMonth,
@@ -42,6 +43,8 @@ import { DailyRevenueChart } from './daily-revenue-chart'
 import { SummaryCards } from './summary-cards'
 
 export function StatisticsPage({ period }: { period: 'day' | 'month' }) {
+  const { t } = useTranslation()
+
   const isMonthly = period === 'month'
   const [selectedPeriod, setSelectedPeriod] = useState(
     isMonthly ? getCurrentMonth : getToday
@@ -58,7 +61,7 @@ export function StatisticsPage({ period }: { period: 'day' | 'month' }) {
       ? YEAR_MONTH_PATTERN.test(selectedPeriod)
       : DATE_ONLY_PATTERN.test(selectedPeriod),
   })
-  const periodLabel = isMonthly ? 'trong tháng' : 'trong ngày'
+  const periodLabel = isMonthly ? t('messages.thisMonth') : t('messages.today')
   const totalMedicineQuantity =
     data?.medicineUsage.reduce(
       (total, medicine) => total + medicine.quantity,
@@ -78,15 +81,19 @@ export function StatisticsPage({ period }: { period: 'day' | 'month' }) {
       <Main className='flex flex-1 flex-col gap-6'>
         <div className='flex flex-wrap items-end justify-between gap-3'>
           <div>
-            <h1 className='text-2xl font-bold tracking-tight'>Thống kê</h1>
+            <h1 className='text-2xl font-bold tracking-tight'>
+              {t('messages.statistics')}
+            </h1>
             <p className='text-muted-foreground'>
-              Tổng quan hoạt động khám bệnh {periodLabel}.
+              {t('messages.examinationActivityOverview')} {periodLabel}.
             </p>
           </div>
           <div className='w-full space-y-1.5 sm:w-auto'>
             <label className='flex items-center gap-1.5 text-sm font-medium'>
               <CalendarDays className='size-4' />{' '}
-              {isMonthly ? 'Tháng thống kê' : 'Ngày thống kê'}
+              {isMonthly
+                ? t('messages.reportingMonth')
+                : t('messages.reportingDate')}
             </label>
             {isMonthly ? (
               <div className='grid grid-cols-[minmax(0,1fr)_1px_minmax(0,1fr)] items-center gap-2 rounded-lg border bg-card p-1.5 shadow-sm sm:flex'>
@@ -97,7 +104,7 @@ export function StatisticsPage({ period }: { period: 'day' | 'month' }) {
                   }
                 >
                   <SelectTrigger className='w-full min-w-0 border-0 shadow-none sm:w-36'>
-                    <SelectValue placeholder='Chọn tháng' />
+                    <SelectValue placeholder={t('messages.selectMonth')} />
                   </SelectTrigger>
                   <SelectContent>
                     {MONTH_OPTIONS.map((option) => (
@@ -115,12 +122,12 @@ export function StatisticsPage({ period }: { period: 'day' | 'month' }) {
                   }
                 >
                   <SelectTrigger className='w-full min-w-0 border-0 shadow-none sm:w-36'>
-                    <SelectValue placeholder='Chọn năm' />
+                    <SelectValue placeholder={t('messages.selectYear')} />
                   </SelectTrigger>
                   <SelectContent>
                     {YEAR_OPTIONS.map((year) => (
                       <SelectItem key={year} value={String(year)}>
-                        Năm {year}
+                        {t('messages.year')} {year}
                       </SelectItem>
                     ))}
                   </SelectContent>
@@ -137,7 +144,7 @@ export function StatisticsPage({ period }: { period: 'day' | 'month' }) {
 
         {isError && (
           <p className='rounded-md border border-destructive/30 bg-destructive/10 p-3 text-sm text-destructive'>
-            Không thể tải dữ liệu thống kê. Vui lòng thử lại.
+            {t('messages.couldNotLoadStatisticsPleaseTryAgain')}
           </p>
         )}
 
@@ -147,20 +154,24 @@ export function StatisticsPage({ period }: { period: 'day' | 'month' }) {
 
         <Card>
           <CardHeader>
-            <CardTitle>Thống kê {periodLabel}</CardTitle>
+            <CardTitle>
+              {t('messages.statistics')} {periodLabel}
+            </CardTitle>
           </CardHeader>
           <CardContent className='grid gap-6 lg:grid-cols-2 lg:divide-x'>
             <div>
-              <h3 className='mb-2 text-sm font-medium'>Cơ cấu doanh thu</h3>
+              <h3 className='mb-2 text-sm font-medium'>
+                {t('messages.revenueBreakdown')}
+              </h3>
               <DailyRevenueChart dashboard={data} periodLabel={periodLabel} />
             </div>
             <div className='min-w-0 lg:pl-6'>
               <div className='mb-4 flex flex-wrap items-center justify-between gap-2'>
                 <h3 className='text-sm font-medium'>
-                  Thuốc sử dụng {periodLabel}
+                  {t('messages.medicinesUsed')} {periodLabel}
                 </h3>
                 <div className='rounded-md bg-primary/10 px-3 py-1.5 text-sm text-primary'>
-                  Tổng số lượng:{' '}
+                  {t('messages.totalQuantity')}{' '}
                   <strong className='tabular-nums'>
                     {formatNumber(totalMedicineQuantity)}
                   </strong>
@@ -175,14 +186,15 @@ export function StatisticsPage({ period }: { period: 'day' | 'month' }) {
                     >
                       <p className='font-medium'>{medicine.medicineName}</p>
                       <p className='text-muted-foreground'>
-                        Số lượng: {formatNumber(medicine.quantity)}{' '}
-                        {medicine.unit || ''}
+                        {t('messages.quantity')}{' '}
+                        {formatNumber(medicine.quantity)} {medicine.unit || ''}
                       </p>
                     </div>
                   ))
                 ) : (
                   <p className='rounded-md border p-4 text-center text-sm text-muted-foreground'>
-                    Chưa có thuốc được sử dụng {periodLabel} này.
+                    {t('messages.noMedicinesUsed')} {periodLabel}{' '}
+                    {t('messages.inThisPeriod')}
                   </p>
                 )}
               </div>
@@ -190,9 +202,11 @@ export function StatisticsPage({ period }: { period: 'day' | 'month' }) {
                 <Table>
                   <TableHeader className='sticky top-0 bg-card'>
                     <TableRow>
-                      <TableHead>Thuốc</TableHead>
-                      <TableHead>Đơn vị</TableHead>
-                      <TableHead className='text-right'>Số lượng</TableHead>
+                      <TableHead>{t('messages.medicine')}</TableHead>
+                      <TableHead>{t('messages.unit')}</TableHead>
+                      <TableHead className='text-right'>
+                        {t('messages.quantityAlt2')}
+                      </TableHead>
                     </TableRow>
                   </TableHeader>
                   <TableBody>
@@ -216,7 +230,8 @@ export function StatisticsPage({ period }: { period: 'day' | 'month' }) {
                           colSpan={3}
                           className='h-24 text-center text-muted-foreground'
                         >
-                          Chưa có thuốc được sử dụng {periodLabel} này.
+                          {t('messages.noMedicinesUsed')} {periodLabel}{' '}
+                          {t('messages.inThisPeriod')}
                         </TableCell>
                       </TableRow>
                     )}

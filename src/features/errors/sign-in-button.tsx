@@ -1,9 +1,12 @@
 import { useQueryClient } from '@tanstack/react-query'
 import { useNavigate } from '@tanstack/react-router'
+import { useTranslation } from 'react-i18next'
 import { useAuthStore } from '@/stores/auth-store'
 import { Button } from '@/components/ui/button'
 
 export function ErrorSignInButton() {
+  const { t } = useTranslation()
+
   const navigate = useNavigate()
   const queryClient = useQueryClient()
 
@@ -16,7 +19,7 @@ export function ErrorSignInButton() {
 
   return (
     <Button variant='outline' onClick={returnToSignIn}>
-      Đăng nhập lại
+      {t('messages.signInAgain')}
     </Button>
   )
 }

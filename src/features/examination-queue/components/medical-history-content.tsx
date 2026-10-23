@@ -1,4 +1,6 @@
 import { useQuery } from '@tanstack/react-query'
+import { getLocale } from '@/i18n'
+import { useTranslation } from 'react-i18next'
 import { getVaccinationFields } from '@/features/prescriptions/api'
 import { getMedicalHistories, type QueueUser } from '../api'
 
@@ -7,6 +9,8 @@ export function MedicalHistoryContent({
 }: {
   patient: Pick<QueueUser, 'id' | 'fullName'>
 }) {
+  const { t } = useTranslation()
+
   const histories = useQuery({
     queryKey: ['medical-histories', patient.id],
     queryFn: () => getMedicalHistories(patient.id),
@@ -15,7 +19,7 @@ export function MedicalHistoryContent({
   if (histories.isLoading) {
     return (
       <p className='py-8 text-center text-sm text-muted-foreground'>
-        Đang tải...
+        {t('messages.loading')}
       </p>
     )
   }
@@ -23,7 +27,7 @@ export function MedicalHistoryContent({
   if (!histories.data?.data.length) {
     return (
       <p className='py-8 text-center text-sm text-muted-foreground'>
-        Chưa có lịch sử khám.
+        {t('messages.noMedicalHistoryYet')}
       </p>
     )
   }
@@ -34,39 +38,39 @@ export function MedicalHistoryContent({
         <div key={history.id} className='space-y-2 rounded-lg border p-4'>
           <p className='text-sm font-medium'>
             {history.serviceType === 'PHARMACY'
-              ? 'Bán thuốc'
+              ? t('messages.pharmacySale')
               : history.serviceType === 'VACCINATION'
-                ? 'Tiêm vắc xin'
-                : 'Khám bệnh'}
+                ? t('messages.vaccination')
+                : t('messages.examination')}
           </p>
           {history.serviceType === 'VACCINATION' && (
             <div className='grid gap-2 rounded-md bg-muted/40 p-3 text-sm sm:grid-cols-2'>
               {Object.entries(getVaccinationFields(history)).map(
                 ([key, value]) => {
                   const labels: Record<string, string> = {
-                    temperature: 'Nhiệt độ (°C)',
-                    bloodPressure: 'Huyết áp (mmHg)',
-                    vaccineName: 'Vắc xin',
-                    batchNumber: 'Số lô',
-                    expiryDate: 'Hạn dùng',
-                    administeredDate: 'Ngày tiêm',
-                    nextDoseDate: 'Hẹn mũi tiếp theo',
-                    doseNumber: 'Mũi số',
-                    dose: 'Liều dùng',
-                    route: 'Đường tiêm',
-                    site: 'Vị trí tiêm',
-                    administeredBy: 'Người tiêm',
-                    screening: 'Sàng lọc',
-                    screeningNote: 'Ghi chú sàng lọc',
-                    observation: 'Theo dõi sau tiêm',
+                    temperature: t('messages.temperatureC'),
+                    bloodPressure: t('messages.bloodPressureMmhg'),
+                    vaccineName: t('messages.vaccine'),
+                    batchNumber: t('messages.batchNumber'),
+                    expiryDate: t('messages.expiryAlt2'),
+                    administeredDate: t('messages.vaccinationDate'),
+                    nextDoseDate: t('messages.nextDoseDate'),
+                    doseNumber: t('messages.doseNumber'),
+                    dose: t('messages.dose'),
+                    route: t('messages.administrationRoute'),
+                    site: t('messages.injectionSite'),
+                    administeredBy: t('messages.administeredBy'),
+                    screening: t('messages.screening'),
+                    screeningNote: t('messages.screeningNotes'),
+                    observation: t('messages.postVaccinationMonitoring'),
                   }
                   if (!value || !labels[key]) return null
                   const displayed =
                     key === 'screening'
                       ? ({
-                          PENDING: 'Chưa sàng lọc',
-                          ELIGIBLE: 'Đủ điều kiện tiêm',
-                          DEFERRED: 'Hoãn tiêm',
+                          PENDING: t('messages.notScreened'),
+                          ELIGIBLE: t('messages.eligibleForVaccination'),
+                          DEFERRED: t('messages.vaccinationDeferred'),
                         }[value as 'PENDING' | 'ELIGIBLE' | 'DEFERRED'] ??
                         value)
                       : value
@@ -84,38 +88,48 @@ export function MedicalHistoryContent({
           )}
           <div className='flex flex-wrap justify-between gap-2'>
             <strong>
-              {new Date(history.createdAt).toLocaleString('vi-VN')}
+              {new Date(history.createdAt).toLocaleString(getLocale())}
             </strong>
             <span className='text-sm text-muted-foreground'>
               {history.doctorName}
             </span>
           </div>
           <p>
-            <span className='text-muted-foreground'>Chẩn đoán:</span>{' '}
+            <span className='text-muted-foreground'>
+              {t('messages.diagnosisAlt2')}
+            </span>{' '}
             {history.diagnosis || '—'}
           </p>
           <p>
-            <span className='text-muted-foreground'>Triệu chứng:</span>{' '}
+            <span className='text-muted-foreground'>
+              {t('messages.symptoms')}
+            </span>{' '}
             {history.symptoms || '—'}
           </p>
           <p>
-            <span className='text-muted-foreground'>Điều trị:</span>{' '}
+            <span className='text-muted-foreground'>
+              {t('messages.treatment')}
+            </span>{' '}
             {history.treatment || '—'}
           </p>
           {history.note && (
             <p>
-              <span className='text-muted-foreground'>Ghi chú:</span>{' '}
+              <span className='text-muted-foreground'>
+                {t('messages.notesAlt2')}
+              </span>{' '}
               {history.note}
             </p>
           )}
           {history.advice && (
             <p>
-              <span className='text-muted-foreground'>Lời dặn:</span>{' '}
+              <span className='text-muted-foreground'>
+                {t('messages.advice')}
+              </span>{' '}
               {history.advice}
             </p>
           )}
           <div className='mt-3 border-t pt-3'>
-            <p className='mb-2 font-medium'>Toa thuốc</p>
+            <p className='mb-2 font-medium'>{t('messages.prescription')}</p>
             {history.prescription?.items.length ? (
               <>
                 <div className='grid gap-2 sm:hidden'>
@@ -130,8 +144,12 @@ export function MedicalHistoryContent({
                           {item.medicine.strength} · {item.medicine.unit}
                         </p>
                       )}
-                      <p>Số lượng: {item.quantity ?? '—'}</p>
-                      <p>Hướng dẫn: {item.instruction || '—'}</p>
+                      <p>
+                        {t('messages.quantity')} {item.quantity ?? '—'}
+                      </p>
+                      <p>
+                        {t('messages.instructions')} {item.instruction || '—'}
+                      </p>
                     </div>
                   ))}
                 </div>
@@ -139,9 +157,15 @@ export function MedicalHistoryContent({
                   <table className='w-full text-sm'>
                     <thead className='bg-muted/50 text-left'>
                       <tr>
-                        <th className='px-3 py-2 font-medium'>Thuốc</th>
-                        <th className='px-3 py-2 font-medium'>Số lượng</th>
-                        <th className='px-3 py-2 font-medium'>Hướng dẫn</th>
+                        <th className='px-3 py-2 font-medium'>
+                          {t('messages.medicine')}
+                        </th>
+                        <th className='px-3 py-2 font-medium'>
+                          {t('messages.quantityAlt2')}
+                        </th>
+                        <th className='px-3 py-2 font-medium'>
+                          {t('messages.instructionsAlt2')}
+                        </th>
                       </tr>
                     </thead>
                     <tbody>
@@ -169,7 +193,7 @@ export function MedicalHistoryContent({
               </>
             ) : (
               <p className='text-sm text-muted-foreground'>
-                Không có toa thuốc.
+                {t('messages.noPrescription')}
               </p>
             )}
           </div>

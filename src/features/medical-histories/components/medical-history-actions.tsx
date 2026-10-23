@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { DotsHorizontalIcon } from '@radix-ui/react-icons'
 import { hasAnyRole, PRESCRIBER_ROLES } from '@/config/access-control'
 import { Edit } from 'lucide-react'
+import { useTranslation } from 'react-i18next'
 import { useAuthStore } from '@/stores/auth-store'
 import { Button } from '@/components/ui/button'
 import {
@@ -19,6 +20,8 @@ export function MedicalHistoryActions({
 }: {
   history: MedicalHistoryListItem
 }) {
+  const { t } = useTranslation()
+
   const [open, setOpen] = useState(false)
   const role = useAuthStore((state) => state.auth.user?.role)
   if (!hasAnyRole(role, PRESCRIBER_ROLES)) return null
@@ -32,12 +35,12 @@ export function MedicalHistoryActions({
             className='flex h-8 w-8 p-0 data-[state=open]:bg-muted'
           >
             <DotsHorizontalIcon className='h-4 w-4' />
-            <span className='sr-only'>Mở menu thao tác</span>
+            <span className='sr-only'>{t('messages.openActionsMenu')}</span>
           </Button>
         </DropdownMenuTrigger>
         <DropdownMenuContent align='end' className='w-[160px]'>
           <DropdownMenuItem onClick={() => setOpen(true)}>
-            Cập nhật
+            {t('messages.update')}
             <DropdownMenuShortcut>
               <Edit size={16} />
             </DropdownMenuShortcut>

@@ -3,7 +3,9 @@ import { z } from 'zod'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useQueryClient } from '@tanstack/react-query'
+import i18n from '@/i18n'
 import { Info } from 'lucide-react'
+import { useTranslation } from 'react-i18next'
 import { toast } from 'sonner'
 import { showRequestError } from '@/lib/handle-server-error'
 import { cn } from '@/lib/utils'
@@ -62,15 +64,30 @@ const formSchema = z
   .object({
     fullName: z
       .string()
-      .min(1, 'Nhập họ tên')
-      .max(MAX.fullName, `Tối đa ${MAX.fullName} ký tự`),
-    email: z.string().max(MAX.email, `Tối đa ${MAX.email} ký tự`),
-    phone: z.string().max(MAX.phone, `Tối đa ${MAX.phone} ký tự`),
+      .min(1, { error: () => i18n.t('messages.enterFullName') })
+      .max(MAX.fullName, {
+        error: () =>
+          i18n.t('messages.maximumCharacters', { value0: MAX.fullName }),
+      }),
+    email: z.string().max(MAX.email, {
+      error: () => i18n.t('messages.maximumCharacters', { value0: MAX.email }),
+    }),
+    phone: z.string().max(MAX.phone, {
+      error: () => i18n.t('messages.maximumCharacters', { value0: MAX.phone }),
+    }),
     gender: z.enum(['0', '1', '2']),
     dateOfBirth: z.string(),
-    address: z.string().max(MAX.address, `Tối đa ${MAX.address} ký tự`),
-    note: z.string().max(MAX.note, `Tối đa ${MAX.note} ký tự`),
-    password: z.string().max(MAX.password, `Tối đa ${MAX.password} ký tự`),
+    address: z.string().max(MAX.address, {
+      error: () =>
+        i18n.t('messages.maximumCharacters', { value0: MAX.address }),
+    }),
+    note: z.string().max(MAX.note, {
+      error: () => i18n.t('messages.maximumCharacters', { value0: MAX.note }),
+    }),
+    password: z.string().max(MAX.password, {
+      error: () =>
+        i18n.t('messages.maximumCharacters', { value0: MAX.password }),
+    }),
     confirmPassword: z.string(),
     /** Cờ nội bộ để zod biết đang tạo hay sửa; không gửi lên API. */
     isEdit: z.boolean(),
@@ -80,7 +97,7 @@ const formSchema = z
       ctx.addIssue({
         code: 'custom',
         path: ['email'],
-        message: 'Email không hợp lệ',
+        message: i18n.t('messages.invalidEmailAddressAlt2'),
       })
     }
 
@@ -91,7 +108,7 @@ const formSchema = z
       ctx.addIssue({
         code: 'custom',
         path: ['dateOfBirth'],
-        message: 'Ngày sinh không thể ở tương lai',
+        message: i18n.t('messages.dateOfBirthCannotBeInTheFuture'),
       })
     }
 
@@ -100,7 +117,7 @@ const formSchema = z
       ctx.addIssue({
         code: 'custom',
         path: ['password'],
-        message: 'Nhập mật khẩu',
+        message: i18n.t('messages.enterPassword'),
       })
       return
     }
@@ -110,14 +127,14 @@ const formSchema = z
       ctx.addIssue({
         code: 'custom',
         path: ['password'],
-        message: 'Mật khẩu tối thiểu 8 ký tự',
+        message: i18n.t('messages.passwordMustContainAtLeast8CharactersAlt3'),
       })
     }
     if (v.password !== v.confirmPassword) {
       ctx.addIssue({
         code: 'custom',
         path: ['confirmPassword'],
-        message: 'Mật khẩu nhập lại không khớp',
+        message: i18n.t('messages.passwordsDoNotMatchAlt2'),
       })
     }
   })
@@ -146,6 +163,8 @@ export function PatientsMutateDialog({
   onOpenChange: (open: boolean) => void
   currentRow?: Patient
 }) {
+  const { t } = useTranslation()
+
   const isEdit = !!currentRow
   const queryClient = useQueryClient()
 
@@ -204,17 +223,17 @@ export function PatientsMutateDialog({
     try {
       if (isEdit && currentRow) {
         await UpdatePatient(currentRow.id, payload)
-        toast.success('Đã cập nhật bệnh nhân')
+        toast.success(t('messages.patientUpdated'))
       } else {
         await CreatePatient(payload)
-        toast.success('Đã thêm bệnh nhân')
+        toast.success(t('messages.patientAdded'))
       }
       queryClient.invalidateQueries({ queryKey: ['patients'] })
       onOpenChange(false)
     } catch (error) {
       showRequestError(
         error,
-        isEdit ? 'Không cập nhật được' : 'Không thêm được bệnh nhân'
+        isEdit ? t('messages.couldNotUpdate') : t('messages.couldNotAddPatient')
       )
     }
   }
@@ -230,12 +249,12 @@ export function PatientsMutateDialog({
         <DialogBody>
           <DialogHeader className='pe-8 text-start'>
             <DialogTitle>
-              {isEdit ? 'Cập nhật bệnh nhân' : 'Thêm bệnh nhân'}
+              {isEdit ? t('messages.updatePatient') : t('messages.addPatient')}
             </DialogTitle>
             <DialogDescription>
               {isEdit
-                ? 'Để trống hai ô mật khẩu nếu không muốn đổi mật khẩu.'
-                : 'Họ tên và mật khẩu là bắt buộc. Tên đăng nhập do hệ thống tự sinh sau khi lưu.'}
+                ? t('messages.leaveBothPasswordFieldsBlankToKeepTheCurrentPa')
+                : t('messages.fullNameAndPasswordAreRequiredTheSystemGenerate')}
             </DialogDescription>
           </DialogHeader>
           <Form {...form}>
@@ -256,19 +275,21 @@ export function PatientsMutateDialog({
                 {isEdit && (
                   <div className='space-y-2'>
                     <div className='flex items-center gap-1'>
-                      <Label htmlFor='patient-username'>Tên đăng nhập</Label>
+                      <Label htmlFor='patient-username'>
+                        {t('messages.username')}
+                      </Label>
                       <Tooltip>
                         <TooltipTrigger asChild>
                           <button
                             type='button'
-                            aria-label='Thông tin tên đăng nhập'
+                            aria-label={t('messages.usernameInformation')}
                             className='inline-flex size-5 items-center justify-center rounded-full text-muted-foreground hover:text-foreground focus-visible:ring-[3px] focus-visible:ring-ring/50 focus-visible:outline-none'
                           >
                             <Info className='size-3.5' />
                           </button>
                         </TooltipTrigger>
                         <TooltipContent>
-                          Do hệ thống sinh, không sửa được.
+                          {t('messages.generatedByTheSystemAndCannotBeEdited')}
                         </TooltipContent>
                       </Tooltip>
                     </div>
@@ -284,9 +305,12 @@ export function PatientsMutateDialog({
                   name='fullName'
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel required>Họ tên</FormLabel>
+                      <FormLabel required>{t('messages.fullName')}</FormLabel>
                       <FormControl>
-                        <Input {...field} placeholder='VD: Nguyễn Văn A' />
+                        <Input
+                          {...field}
+                          placeholder={t('messages.eGNguyenVanA')}
+                        />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -301,10 +325,10 @@ export function PatientsMutateDialog({
                   render={({ field }) => (
                     <FormItem>
                       <FormLabel required={!isEdit}>
-                        Mật khẩu{' '}
+                        {t('messages.password')}{' '}
                         {isEdit && (
                           <span className='font-normal text-muted-foreground'>
-                            (để trống nếu không đổi)
+                            {t('messages.leaveBlankToKeepUnchanged')}
                           </span>
                         )}
                       </FormLabel>
@@ -312,7 +336,7 @@ export function PatientsMutateDialog({
                         <PasswordInput
                           {...field}
                           autoComplete='new-password'
-                          placeholder='Tối thiểu 8 ký tự'
+                          placeholder={t('messages.atLeast8Characters')}
                         />
                       </FormControl>
                       <FormMessage />
@@ -327,13 +351,13 @@ export function PatientsMutateDialog({
                       <FormLabel
                         required={!isEdit || Boolean(form.watch('password'))}
                       >
-                        Nhập lại mật khẩu
+                        {t('messages.confirmPassword')}
                       </FormLabel>
                       <FormControl>
                         <PasswordInput
                           {...field}
                           autoComplete='new-password'
-                          placeholder='Nhập lại mật khẩu'
+                          placeholder={t('messages.confirmPassword')}
                         />
                       </FormControl>
                       <FormMessage />
@@ -353,7 +377,7 @@ export function PatientsMutateDialog({
                         <Input
                           {...field}
                           type='email'
-                          placeholder='VD: a@example.com'
+                          placeholder={i18n.t('messages.exampleEmail')}
                         />
                       </FormControl>
                       <FormMessage />
@@ -365,9 +389,12 @@ export function PatientsMutateDialog({
                   name='phone'
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Số điện thoại</FormLabel>
+                      <FormLabel>{t('messages.phoneNumber')}</FormLabel>
                       <FormControl>
-                        <Input {...field} placeholder='VD: 0901234567' />
+                        <Input
+                          {...field}
+                          placeholder={i18n.t('messages.examplePhone')}
+                        />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -381,14 +408,14 @@ export function PatientsMutateDialog({
                   name='gender'
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Giới tính</FormLabel>
+                      <FormLabel>{t('messages.gender')}</FormLabel>
                       <SelectDropdown
                         isControlled
                         defaultValue={field.value}
                         onValueChange={field.onChange}
-                        placeholder='Chọn giới tính'
+                        placeholder={t('messages.selectGender')}
                         items={[
-                          { label: 'Không rõ', value: GENDER_UNSET },
+                          { label: t('messages.unknown'), value: GENDER_UNSET },
                           ...genders.map((g) => ({
                             label: g.label,
                             value: g.value,
@@ -404,7 +431,7 @@ export function PatientsMutateDialog({
                   name='dateOfBirth'
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Ngày sinh</FormLabel>
+                      <FormLabel>{t('messages.dateOfBirth')}</FormLabel>
                       <DatePickerInput
                         value={field.value}
                         onChange={field.onChange}
@@ -420,11 +447,11 @@ export function PatientsMutateDialog({
                 name='address'
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Địa chỉ</FormLabel>
+                    <FormLabel>{t('messages.address')}</FormLabel>
                     <FormControl>
                       <Input
                         {...field}
-                        placeholder='Số nhà, đường, phường, tỉnh'
+                        placeholder={t('messages.streetWardProvince')}
                       />
                     </FormControl>
                     <FormMessage />
@@ -437,12 +464,12 @@ export function PatientsMutateDialog({
                 name='note'
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Ghi chú</FormLabel>
+                    <FormLabel>{t('messages.notes')}</FormLabel>
                     <FormControl>
                       <Textarea
                         {...field}
                         rows={2}
-                        placeholder='Ghi chú thêm (không bắt buộc)'
+                        placeholder={t('messages.additionalNotesOptional')}
                       />
                     </FormControl>
                     <FormMessage />
@@ -454,14 +481,16 @@ export function PatientsMutateDialog({
         </DialogBody>
         <DialogFooter className='border-t pt-4'>
           <DialogClose asChild>
-            <Button variant='outline'>Đóng</Button>
+            <Button variant='outline'>{t('messages.close')}</Button>
           </DialogClose>
           <Button
             form='patient-form'
             type='submit'
             disabled={form.formState.isSubmitting}
           >
-            {form.formState.isSubmitting ? 'Đang lưu...' : 'Lưu'}
+            {form.formState.isSubmitting
+              ? t('messages.saving')
+              : t('messages.save')}
           </Button>
         </DialogFooter>
       </DialogFormContent>

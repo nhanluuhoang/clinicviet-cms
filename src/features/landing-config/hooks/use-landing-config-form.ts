@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
+import i18n from '@/i18n'
 import { toast } from 'sonner'
 import { showRequestError } from '@/lib/handle-server-error'
 import { GetPosts } from '@/features/posts/api'
@@ -55,10 +56,13 @@ export function useLandingConfigForm() {
         queryClient.invalidateQueries({ queryKey: ['tenant', 'me'] }),
         queryClient.invalidateQueries({ queryKey: ['auth', 'profile'] }),
       ])
-      toast.success('Đã lưu cấu hình landing page')
+      toast.success(i18n.t('messages.clinicWebsiteConfigurationSaved'))
     },
     onError: (error) =>
-      showRequestError(error, 'Không thể lưu cấu hình landing page'),
+      showRequestError(
+        error,
+        i18n.t('messages.couldNotSaveClinicWebsiteConfiguration')
+      ),
   })
 
   const set = <K extends keyof LandingConfigFields>(

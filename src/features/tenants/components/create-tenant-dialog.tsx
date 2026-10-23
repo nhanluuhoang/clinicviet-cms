@@ -4,7 +4,8 @@ import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { SERVICE_PLAN_OPTIONS } from '@/config/service-plans'
-import { NEW_SUBSCRIPTION_STATUS_OPTIONS } from '@/config/subscription-statuses'
+import i18n from '@/i18n'
+import { useTranslation } from 'react-i18next'
 import { toast } from 'sonner'
 import { showRequestError } from '@/lib/handle-server-error'
 import { Button } from '@/components/ui/button'
@@ -32,12 +33,21 @@ import { createTenant } from '../api'
 
 const schema = z
   .object({
-    name: z.string().trim().min(1, 'Vui lòng nhập tên phòng khám.').max(255),
+    name: z
+      .string()
+      .trim()
+      .min(1, { error: () => i18n.t('messages.pleaseEnterAClinicNameAlt2') })
+      .max(255),
     subdomain: z.string().trim(),
-    address: z.string().trim().min(1, 'Vui lòng nhập địa chỉ.').max(255),
+    address: z
+      .string()
+      .trim()
+      .min(1, { error: () => i18n.t('messages.pleaseEnterAnAddressAlt2') })
+      .max(255),
     servicePlan: z.enum(['BASIC', 'PLUS', 'PRO']),
-    subscriptionStatus: z.enum(['TRIAL', 'ACTIVE']),
-    endsOn: z.string().min(1, 'Vui lòng chọn ngày kết thúc.'),
+    endsOn: z
+      .string()
+      .min(1, { error: () => i18n.t('messages.pleaseSelectAnEndDate') }),
   })
   .refine(
     ({ servicePlan, subdomain }) =>
@@ -45,13 +55,16 @@ const schema = z
       (subdomain.length <= 50 && /^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(subdomain)),
     {
       path: ['subdomain'],
-      message:
-        'Nhập subdomain tối đa 50 ký tự, chỉ dùng chữ thường, số và dấu gạch ngang.',
+      error: () =>
+        i18n.t('messages.enterASubdomainOfUpTo50CharactersUsingLowercas'),
     }
   )
   .refine(
     ({ endsOn }) => new Date(`${endsOn}T23:59:59`).getTime() > Date.now(),
-    { path: ['endsOn'], message: 'Ngày kết thúc phải ở tương lai.' }
+    {
+      path: ['endsOn'],
+      error: () => i18n.t('messages.theEndDateMustBeInTheFuture'),
+    }
   )
 
 type FormValues = z.infer<typeof schema>
@@ -61,11 +74,12 @@ const defaultValues: FormValues = {
   subdomain: '',
   address: '',
   servicePlan: 'BASIC',
-  subscriptionStatus: 'TRIAL',
   endsOn: '',
 }
 
 export function CreateTenantDialog() {
+  const { t } = useTranslation()
+
   const [open, setOpen] = useState(false)
   const queryClient = useQueryClient()
   const form = useForm<FormValues>({
@@ -73,42 +87,36 @@ export function CreateTenantDialog() {
     defaultValues,
   })
   const mutation = useMutation({
-    mutationFn: ({
-      endsOn,
-      subscriptionStatus,
-      subdomain,
-      ...values
-    }: FormValues) =>
+    mutationFn: ({ endsOn, subdomain, ...values }: FormValues) =>
       createTenant({
         ...values,
         ...(values.servicePlan === 'PRO' && { subdomain }),
         isActive: true,
-        subscriptionStatus,
-        ...(subscriptionStatus === 'TRIAL'
-          ? { trialEndsAt: new Date(`${endsOn}T23:59:59`).toISOString() }
-          : {
-              subscriptionEndsAt: new Date(`${endsOn}T23:59:59`).toISOString(),
-            }),
+        subscriptionStatus: 'ACTIVE',
+        subscriptionEndsAt: new Date(`${endsOn}T23:59:59`).toISOString(),
       }),
     onSuccess: async () => {
       await queryClient.invalidateQueries({ queryKey: ['tenants'] })
-      toast.success('Đã tạo phòng khám')
+      toast.success(t('messages.clinicCreated'))
       form.reset(defaultValues)
       setOpen(false)
     },
-    onError: (error) => showRequestError(error, 'Không thể tạo phòng khám.'),
+    onError: (error) =>
+      showRequestError(error, t('messages.couldNotCreateClinic')),
   })
 
   return (
     <>
-      <Button onClick={() => setOpen(true)}>Tạo phòng khám</Button>
+      <Button onClick={() => setOpen(true)}>
+        {t('messages.createClinic')}
+      </Button>
       <Dialog open={open} onOpenChange={setOpen}>
         <DialogFormContent className='sm:max-w-xl'>
           <DialogBody>
             <DialogHeader className='text-start'>
-              <DialogTitle>Tạo phòng khám</DialogTitle>
+              <DialogTitle>{t('messages.createClinic')}</DialogTitle>
               <DialogDescription>
-                Tài khoản có thể được tạo sau tại mục Người dùng.
+                {t('messages.accountsCanBeCreatedLaterUnderUsers')}
               </DialogDescription>
             </DialogHeader>
             <Form {...form}>
@@ -125,14 +133,16 @@ export function CreateTenantDialog() {
           </DialogBody>
           <DialogFooter>
             <Button variant='outline' onClick={() => setOpen(false)}>
-              Hủy
+              {t('messages.cancel')}
             </Button>
             <Button
               type='submit'
               form='create-tenant-form'
               disabled={mutation.isPending}
             >
-              {mutation.isPending ? 'Đang tạo...' : 'Tạo phòng khám'}
+              {mutation.isPending
+                ? t('messages.creating')
+                : t('messages.createClinic')}
             </Button>
           </DialogFooter>
         </DialogFormContent>
@@ -142,13 +152,20 @@ export function CreateTenantDialog() {
 }
 
 function Fields({ form }: { form: ReturnType<typeof useForm<FormValues>> }) {
+  const { t } = useTranslation()
+
   const fields: Array<{
     name: 'name' | 'subdomain' | 'address'
     label: string
   }> = [
-    { name: 'name', label: 'Tên phòng khám' },
-    { name: 'subdomain', label: 'Subdomain' },
-    { name: 'address', label: 'Địa chỉ' },
+    { name: 'name', label: t('messages.clinicName') },
+    {
+      name: 'subdomain',
+      get label() {
+        return i18n.t('messages.subdomain')
+      },
+    },
+    { name: 'address', label: t('messages.address') },
   ]
 
   return (
@@ -166,7 +183,7 @@ function Fields({ form }: { form: ReturnType<typeof useForm<FormValues>> }) {
         name='servicePlan'
         render={({ field }) => (
           <FormItem>
-            <FormLabel required>Gói dịch vụ</FormLabel>
+            <FormLabel required>{t('messages.servicePlanAlt2')}</FormLabel>
             <SelectDropdown
               defaultValue={field.value}
               isControlled
@@ -179,30 +196,10 @@ function Fields({ form }: { form: ReturnType<typeof useForm<FormValues>> }) {
       />
       <FormField
         control={form.control}
-        name='subscriptionStatus'
-        render={({ field }) => (
-          <FormItem>
-            <FormLabel required>Hình thức đăng ký</FormLabel>
-            <SelectDropdown
-              defaultValue={field.value}
-              isControlled
-              onValueChange={field.onChange}
-              items={NEW_SUBSCRIPTION_STATUS_OPTIONS}
-            />
-            <FormMessage />
-          </FormItem>
-        )}
-      />
-      <FormField
-        control={form.control}
         name='endsOn'
         render={({ field }) => (
           <FormItem>
-            <FormLabel required>
-              {form.watch('subscriptionStatus') === 'TRIAL'
-                ? 'Ngày kết thúc dùng thử'
-                : 'Ngày hết hạn gói'}
-            </FormLabel>
+            <FormLabel required>{t('messages.usageExpiryDate')}</FormLabel>
             <DatePickerInput value={field.value} onChange={field.onChange} />
             <FormMessage />
           </FormItem>
@@ -221,6 +218,8 @@ function TextField({
   name: 'name' | 'subdomain' | 'address'
   label: string
 }) {
+  useTranslation()
+
   return (
     <FormField
       control={form.control}

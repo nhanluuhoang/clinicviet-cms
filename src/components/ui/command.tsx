@@ -1,6 +1,8 @@
 import * as React from 'react'
+import i18n from '@/i18n'
 import { Command as CommandPrimitive } from 'cmdk'
 import { SearchIcon } from 'lucide-react'
+import { useTranslation } from 'react-i18next'
 import { cn } from '@/lib/utils'
 import {
   Dialog,
@@ -14,6 +16,8 @@ function Command({
   className,
   ...props
 }: React.ComponentProps<typeof CommandPrimitive>) {
+  useTranslation()
+
   return (
     <CommandPrimitive
       data-slot='command'
@@ -27,8 +31,8 @@ function Command({
 }
 
 function CommandDialog({
-  title = 'Bảng lệnh',
-  description = 'Tìm kiếm lệnh cần thực hiện...',
+  title = i18n.t('messages.commandMenu'),
+  description = i18n.t('messages.searchCommands'),
   children,
   className,
   showCloseButton = true,
@@ -41,6 +45,8 @@ function CommandDialog({
   showCloseButton?: boolean
   filter?: React.ComponentProps<typeof CommandPrimitive>['filter']
 }) {
+  useTranslation()
+
   return (
     <Dialog {...props}>
       <DialogHeader className='sr-only'>
@@ -69,6 +75,8 @@ function CommandInput({
   className,
   ...props
 }: React.ComponentProps<typeof CommandPrimitive.Input>) {
+  useTranslation()
+
   return (
     <div
       data-slot='command-input-wrapper'
@@ -91,6 +99,8 @@ function CommandList({
   className,
   ...props
 }: React.ComponentProps<typeof CommandPrimitive.List>) {
+  useTranslation()
+
   return (
     <CommandPrimitive.List
       data-slot='command-list'
@@ -106,6 +116,8 @@ function CommandList({
 function CommandEmpty({
   ...props
 }: React.ComponentProps<typeof CommandPrimitive.Empty>) {
+  useTranslation()
+
   return (
     <CommandPrimitive.Empty
       data-slot='command-empty'
@@ -119,6 +131,8 @@ function CommandGroup({
   className,
   ...props
 }: React.ComponentProps<typeof CommandPrimitive.Group>) {
+  useTranslation()
+
   return (
     <CommandPrimitive.Group
       data-slot='command-group'
@@ -135,6 +149,8 @@ function CommandSeparator({
   className,
   ...props
 }: React.ComponentProps<typeof CommandPrimitive.Separator>) {
+  useTranslation()
+
   return (
     <CommandPrimitive.Separator
       data-slot='command-separator'
@@ -148,6 +164,8 @@ function CommandItem({
   className,
   ...props
 }: React.ComponentProps<typeof CommandPrimitive.Item>) {
+  useTranslation()
+
   return (
     <CommandPrimitive.Item
       data-slot='command-item'
@@ -164,6 +182,8 @@ function CommandShortcut({
   className,
   ...props
 }: React.ComponentProps<'span'>) {
+  useTranslation()
+
   return (
     <span
       data-slot='command-shortcut'

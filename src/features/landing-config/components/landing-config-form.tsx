@@ -7,6 +7,7 @@ import {
   Search,
   Stethoscope,
 } from 'lucide-react'
+import { useTranslation } from 'react-i18next'
 import { toast } from 'sonner'
 import { Button } from '@/components/ui/button'
 import { Checkbox } from '@/components/ui/checkbox'
@@ -45,21 +46,25 @@ export function LandingConfigForm({
   | 'mutation'
   | 'set'
 >) {
+  const { t } = useTranslation()
+
   return (
     <div className='w-full space-y-5'>
       <Section
         icon={Palette}
-        title='Thương hiệu'
-        description='Tên phòng khám dùng trực tiếp từ thông tin tenant; landing chỉ lưu nội dung hiển thị riêng.'
+        title={t('messages.brand')}
+        description={t(
+          'messages.theClinicNameComesFromClinicInformationTheWebsi'
+        )}
       >
         <Field
-          label='Tên phòng khám'
+          label={t('messages.clinicName')}
           required
           value={clinicName}
           onChange={setClinicName}
         />
         <Field
-          label='Thông điệp ngắn'
+          label={t('messages.shortMessage')}
           value={config.tagline}
           onChange={(value) => set('tagline', value)}
         />
@@ -70,12 +75,12 @@ export function LandingConfigForm({
         />
         <div className='grid grid-cols-2 gap-3'>
           <ColorField
-            label='Màu chính'
+            label={t('messages.primaryColor')}
             value={config.primaryColor}
             onChange={(value) => set('primaryColor', value)}
           />
           <ColorField
-            label='Màu nhấn'
+            label={t('messages.accentColor')}
             value={config.accentColor}
             onChange={(value) => set('accentColor', value)}
           />
@@ -84,27 +89,27 @@ export function LandingConfigForm({
 
       <Section
         icon={Image}
-        title='Phần giới thiệu đầu trang'
-        description='Nội dung đầu tiên khách hàng nhìn thấy.'
+        title={t('messages.heroSection')}
+        description={t('messages.theFirstContentVisitorsSee')}
       >
         <Field
-          label='Tiêu đề'
+          label={t('messages.title')}
           value={config.heroTitle}
           onChange={(value) => set('heroTitle', value)}
         />
         <Field
-          label='Dòng nổi bật'
+          label={t('messages.highlight')}
           value={config.heroHighlightedText}
           onChange={(value) => set('heroHighlightedText', value)}
         />
         <Field
-          label='URL ảnh đầu trang'
+          label={t('messages.heroImageUrl')}
           value={config.heroImageUrl}
           onChange={(value) => set('heroImageUrl', value)}
           wide
         />
         <div className='space-y-2 md:col-span-2'>
-          <Label>Mô tả</Label>
+          <Label>{t('messages.description')}</Label>
           <Textarea
             value={config.heroDescription}
             onChange={(event) => set('heroDescription', event.target.value)}
@@ -114,27 +119,27 @@ export function LandingConfigForm({
 
       <Section
         icon={Stethoscope}
-        title='Bác sĩ phụ trách'
-        description='Phù hợp cho phòng khám có một bác sĩ.'
+        title={t('messages.doctorInCharge')}
+        description={t('messages.suitableForSingleDoctorClinics')}
       >
         <Field
-          label='Tên bác sĩ'
+          label={t('messages.doctorSName')}
           value={config.doctorName}
           onChange={(value) => set('doctorName', value)}
         />
         <Field
-          label='Chuyên khoa'
+          label={t('messages.specialty')}
           value={config.doctorSpecialty}
           onChange={(value) => set('doctorSpecialty', value)}
         />
         <Field
-          label='URL ảnh bác sĩ'
+          label={t('messages.doctorPhotoUrl')}
           value={config.doctorImageUrl}
           onChange={(value) => set('doctorImageUrl', value)}
           wide
         />
         <div className='space-y-2 md:col-span-2'>
-          <Label>Giới thiệu</Label>
+          <Label>{t('messages.introduction')}</Label>
           <Textarea
             value={config.doctorDescription}
             onChange={(event) => set('doctorDescription', event.target.value)}
@@ -144,11 +149,11 @@ export function LandingConfigForm({
 
       <Section
         icon={Globe2}
-        title='Dịch vụ và đặt lịch'
-        description='Mỗi dịch vụ hoặc khung giờ nằm trên một dòng.'
+        title={t('messages.servicesAndAppointments')}
+        description={t('messages.enterEachServiceOrTimeSlotOnASeparateLine')}
       >
         <div className='space-y-2'>
-          <Label>Dịch vụ</Label>
+          <Label>{t('messages.services')}</Label>
           <Textarea
             rows={6}
             value={config.services.join('\n')}
@@ -158,7 +163,7 @@ export function LandingConfigForm({
           />
         </div>
         <div className='space-y-2'>
-          <Label>Khung giờ</Label>
+          <Label>{t('messages.timeSlots')}</Label>
           <Textarea
             rows={6}
             value={config.bookingSlots.join('\n')}
@@ -168,7 +173,7 @@ export function LandingConfigForm({
           />
         </div>
         <Field
-          label='Giờ làm việc'
+          label={t('messages.openingHours')}
           value={config.bookingWorkingHours}
           onChange={(value) => set('bookingWorkingHours', value)}
           wide
@@ -177,19 +182,21 @@ export function LandingConfigForm({
 
       <Section
         icon={Globe2}
-        title='Liên hệ'
-        description='Địa chỉ dùng từ thông tin tenant; landing chỉ lưu thông tin liên hệ bổ sung.'
+        title={t('messages.contact')}
+        description={t(
+          'messages.theAddressComesFromClinicInformationTheWebsiteS'
+        )}
       >
         <Field
-          label='Số điện thoại'
+          label={t('messages.phoneNumber')}
           value={config.contactPhone}
           onChange={(value) => set('contactPhone', value)}
         />
         <Field
-          label='Địa chỉ'
+          label={t('messages.address')}
           value={data?.tenant.address ?? ''}
           readOnly
-          hint='Cập nhật tại menu tài khoản → Thông tin phòng khám.'
+          hint={t('messages.updateItFromTheAccountMenuClinicInformation')}
         />
         <Field
           label='URL Google Maps'
@@ -201,8 +208,10 @@ export function LandingConfigForm({
 
       <Section
         icon={Newspaper}
-        title='Bài viết trên trang chủ'
-        description='Chọn tối đa 3 bài viết đã công khai và sắp xếp theo thứ tự chọn.'
+        title={t('messages.homepagePosts')}
+        description={t(
+          'messages.selectUpTo3PublishedPostsDisplayedInSelectionO'
+        )}
       >
         <div className='space-y-3 md:col-span-2'>
           <Button
@@ -210,24 +219,35 @@ export function LandingConfigForm({
             variant='outline'
             onClick={() => setPostsOpen(!postsOpen)}
           >
-            {postsOpen ? 'Ẩn danh sách bài viết' : 'Xem và chọn bài viết'}
+            {postsOpen
+              ? t('messages.hidePostList')
+              : t('messages.viewAndSelectPosts')}
           </Button>
           {!postsOpen ? (
             <p className='text-sm text-muted-foreground'>
-              Đã chọn {config.featuredPostIds.length} bài viết.
+              {t('messages.selected')} {config.featuredPostIds.length}{' '}
+              {t('messages.postsAlt2')}
             </p>
           ) : postsLoading ? (
-            <p className='text-sm text-muted-foreground'>Đang tải bài viết...</p>
+            <p className='text-sm text-muted-foreground'>
+              {t('messages.loadingPosts')}
+            </p>
           ) : postsError ? (
             <div className='space-y-2'>
-              <p className='text-sm text-destructive'>Không tải được bài viết.</p>
-              <Button type='button' variant='outline' onClick={() => refetchPosts()}>
-                Thử lại
+              <p className='text-sm text-destructive'>
+                {t('messages.couldNotLoadPosts')}
+              </p>
+              <Button
+                type='button'
+                variant='outline'
+                onClick={() => refetchPosts()}
+              >
+                {t('messages.tryAgain')}
               </Button>
             </div>
           ) : (publishedPosts?.data.length ?? 0) === 0 ? (
             <p className='text-sm text-muted-foreground'>
-              Chưa có bài viết công khai. Hãy công khai bài viết trước khi chọn.
+              {t('messages.noPublishedPostsPublishAPostBeforeSelectingIt')}
             </p>
           ) : (
             publishedPosts?.data.map((post) => {
@@ -270,7 +290,7 @@ export function LandingConfigForm({
           )}
           {postsOpen && (
             <p className='text-xs text-muted-foreground'>
-              Nếu không chọn bài nào, trang chủ sẽ tự hiển thị 3 bài mới nhất.
+              {t('messages.ifNoneAreSelectedTheHomepageShowsThe3LatestPo')}
             </p>
           )}
         </div>
@@ -279,15 +299,15 @@ export function LandingConfigForm({
       <Section
         icon={Search}
         title='SEO'
-        description='Thông tin hiển thị trên công cụ tìm kiếm.'
+        description={t('messages.informationShownInSearchEngines')}
       >
         <Field
-          label='Tiêu đề SEO'
+          label={t('messages.seoTitle')}
           value={config.seoTitle}
           onChange={(value) => set('seoTitle', value)}
         />
         <Field
-          label='Mô tả SEO'
+          label={t('messages.seoDescription')}
           value={config.seoDescription}
           onChange={(value) => set('seoDescription', value)}
         />
@@ -298,7 +318,7 @@ export function LandingConfigForm({
           disabled={mutation.isPending || !clinicName.trim()}
           onClick={() => {
             if (!clinicName.trim()) {
-              toast.error('Vui lòng nhập tên phòng khám')
+              toast.error(t('messages.pleaseEnterAClinicName'))
               return
             }
             mutation.mutate({
@@ -313,7 +333,9 @@ export function LandingConfigForm({
           }}
         >
           <Save />
-          {mutation.isPending ? 'Đang lưu...' : 'Lưu cấu hình'}
+          {mutation.isPending
+            ? t('messages.saving')
+            : t('messages.saveConfiguration')}
         </Button>
       </div>
     </div>

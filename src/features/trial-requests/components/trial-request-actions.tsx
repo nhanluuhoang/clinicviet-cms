@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
+import { useTranslation } from 'react-i18next'
 import { toast } from 'sonner'
 import { showRequestError } from '@/lib/handle-server-error'
 import { Button } from '@/components/ui/button'
@@ -22,6 +23,8 @@ import {
 } from '../api'
 
 export function TrialRequestActions({ request }: { request: TrialRequest }) {
+  const { t } = useTranslation()
+
   const [mode, setMode] = useState<'approve' | 'reject' | null>(null)
   const [reason, setReason] = useState('')
   const [form, setForm] = useState<ApproveTrialInput>({ code: '' })
@@ -33,23 +36,25 @@ export function TrialRequestActions({ request }: { request: TrialRequest }) {
   }
   const approve = useMutation({
     mutationFn: () => approveTrialRequest(request.id, form),
-    onSuccess: () => done('Đã duyệt yêu cầu dùng thử'),
-    onError: (error) => showRequestError(error, 'Không thể duyệt yêu cầu'),
+    onSuccess: () => done(t('messages.trialRequestApproved')),
+    onError: (error) =>
+      showRequestError(error, t('messages.couldNotApproveRequest')),
   })
   const reject = useMutation({
     mutationFn: () => rejectTrialRequest(request.id, reason),
-    onSuccess: () => done('Đã từ chối yêu cầu'),
-    onError: (error) => showRequestError(error, 'Không thể từ chối yêu cầu'),
+    onSuccess: () => done(t('messages.requestRejected')),
+    onError: (error) =>
+      showRequestError(error, t('messages.couldNotRejectRequest')),
   })
   if (request.status !== 'PENDING') return null
   return (
     <>
       <div className='flex justify-end gap-2'>
         <Button size='sm' onClick={() => setMode('approve')}>
-          Duyệt
+          {t('messages.approve')}
         </Button>
         <Button size='sm' variant='outline' onClick={() => setMode('reject')}>
-          Từ chối
+          {t('messages.reject')}
         </Button>
       </div>
       <Dialog
@@ -59,11 +64,13 @@ export function TrialRequestActions({ request }: { request: TrialRequest }) {
         <DialogFormContent>
           <DialogBody>
             <DialogHeader>
-              <DialogTitle>Duyệt yêu cầu {request.phone}</DialogTitle>
+              <DialogTitle>
+                {t('messages.approveRequest')} {request.phone}
+              </DialogTitle>
             </DialogHeader>
             <div className='space-y-2'>
               <Label required htmlFor='trial-clinic-code'>
-                Mã phòng khám
+                {t('messages.clinicCode')}
               </Label>
               <Input
                 id='trial-clinic-code'
@@ -71,19 +78,19 @@ export function TrialRequestActions({ request }: { request: TrialRequest }) {
                 maxLength={9}
                 value={form.code}
                 onChange={(event) => setForm({ code: event.target.value })}
-                placeholder='Nhập mã gồm 9 chữ số'
+                placeholder={t('messages.enterA9DigitCode')}
               />
             </div>
           </DialogBody>
           <DialogFooter>
             <Button variant='outline' onClick={() => setMode(null)}>
-              Hủy
+              {t('messages.cancel')}
             </Button>
             <Button
               disabled={!/^[1-9]\d{8}$/.test(form.code) || approve.isPending}
               onClick={() => approve.mutate()}
             >
-              Xác nhận duyệt
+              {t('messages.confirmApproval')}
             </Button>
           </DialogFooter>
         </DialogFormContent>
@@ -95,10 +102,12 @@ export function TrialRequestActions({ request }: { request: TrialRequest }) {
         <DialogFormContent>
           <DialogBody>
             <DialogHeader>
-              <DialogTitle>Từ chối yêu cầu {request.phone}</DialogTitle>
+              <DialogTitle>
+                {t('messages.rejectRequest')} {request.phone}
+              </DialogTitle>
             </DialogHeader>
             <div className='space-y-2'>
-              <Label required>Lý do</Label>
+              <Label required>{t('messages.reason')}</Label>
               <Textarea
                 value={reason}
                 onChange={(event) => setReason(event.target.value)}
@@ -108,13 +117,13 @@ export function TrialRequestActions({ request }: { request: TrialRequest }) {
           </DialogBody>
           <DialogFooter>
             <Button variant='outline' onClick={() => setMode(null)}>
-              Hủy
+              {t('messages.cancel')}
             </Button>
             <Button
               disabled={!reason.trim() || reject.isPending}
               onClick={() => reject.mutate()}
             >
-              Xác nhận từ chối
+              {t('messages.confirmRejection')}
             </Button>
           </DialogFooter>
         </DialogFormContent>

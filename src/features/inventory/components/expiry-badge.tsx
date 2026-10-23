@@ -1,3 +1,4 @@
+import { useTranslation } from 'react-i18next'
 import { cn, daysUntil, formatDate, getExpiryStatus } from '@/lib/utils'
 import { Badge } from '@/components/ui/badge'
 import { expiryMeta } from '../data/data'
@@ -11,6 +12,8 @@ export function ExpiryBadge({
   showDate?: boolean
   className?: string
 }) {
+  const { t } = useTranslation()
+
   if (!date) {
     return <span className='text-muted-foreground'>—</span>
   }
@@ -21,10 +24,10 @@ export function ExpiryBadge({
 
   const remark =
     status === 'expired'
-      ? `quá ${Math.abs(days)} ngày`
+      ? t('messages.daysOverdue', { value0: Math.abs(days) })
       : days === 0
-        ? 'hết hạn hôm nay'
-        : `còn ${days} ngày`
+        ? t('messages.expiresToday')
+        : t('messages.daysLeft', { value0: days })
 
   return (
     <div className={cn('flex items-center gap-2 whitespace-nowrap', className)}>

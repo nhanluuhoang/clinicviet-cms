@@ -5,6 +5,7 @@ import {
   TriangleAlert,
   Wallet,
 } from 'lucide-react'
+import { useTranslation } from 'react-i18next'
 import { cn, formatMoney, formatNumber } from '@/lib/utils'
 import { Card, CardContent } from '@/components/ui/card'
 import { type InventoryStats as Stats } from '../api'
@@ -25,39 +26,41 @@ export function InventoryStats({
   stats?: Stats
   isLoading?: boolean
 }) {
+  const { t } = useTranslation()
+
   const tiles: Tile[] = [
     {
-      label: 'Mặt hàng',
+      label: t('messages.products'),
       value: isLoading ? '—' : formatNumber(stats?.medicineCount ?? 0),
-      hint: 'thuốc đang có',
+      hint: t('messages.medicinesAvailable'),
       icon: Package,
     },
     {
-      label: 'Giá trị tồn',
+      label: t('messages.stockValue'),
       value: isLoading ? '—' : formatMoney(stats?.totalStockValue ?? 0),
-      hint: 'theo giá nhập từng lô',
+      hint: t('messages.atEachBatchSPurchasePrice'),
       icon: Wallet,
     },
     {
-      label: 'Lô đã hết hạn',
+      label: t('messages.expiredBatches'),
       value: isLoading ? '—' : formatNumber(stats?.expiredBatches ?? 0),
-      hint: 'cần huỷ khỏi kho',
+      hint: t('messages.toDiscardFromInventory'),
       icon: CircleX,
       alert: (stats?.expiredBatches ?? 0) > 0,
       alertClass: 'text-red-600 dark:text-red-400',
     },
     {
-      label: 'Lô sắp hết hạn',
+      label: t('messages.expiringBatches'),
       value: isLoading ? '—' : formatNumber(stats?.criticalBatches ?? 0),
-      hint: 'còn dưới 30 ngày',
+      hint: t('messages.lessThan30DaysRemaining'),
       icon: TriangleAlert,
       alert: (stats?.criticalBatches ?? 0) > 0,
       alertClass: 'text-orange-600 dark:text-orange-400',
     },
     {
-      label: 'Dưới định mức',
+      label: t('messages.belowMinimumStock'),
       value: isLoading ? '—' : formatNumber(stats?.belowMinStock ?? 0),
-      hint: 'thuốc cần nhập thêm',
+      hint: t('messages.medicinesToRestock'),
       icon: TrendingDown,
       alert: (stats?.belowMinStock ?? 0) > 0,
       alertClass: 'text-amber-600 dark:text-amber-400',

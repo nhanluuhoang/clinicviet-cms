@@ -1,8 +1,11 @@
+import { useTranslation } from 'react-i18next'
 import { cn } from '@/lib/utils'
 import { inventoryTabs, type InventoryTab } from '../data/data'
 import { routeApi } from '../data/route'
 
 export function TabBar({ active }: { active: InventoryTab }) {
+  useTranslation()
+
   const navigate = routeApi.useNavigate()
 
   return (

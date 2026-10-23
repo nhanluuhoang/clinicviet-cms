@@ -1,3 +1,4 @@
+import { useTranslation } from 'react-i18next'
 import { useAuthStore } from '@/stores/auth-store'
 import { useLayout } from '@/context/layout-provider'
 import {
@@ -13,6 +14,8 @@ import { NavUser } from './nav-user'
 import { useNavigationGroups } from './use-navigation-groups'
 
 export function AppSidebar() {
+  useTranslation()
+
   const { collapsible, variant } = useLayout()
   const user = useAuthStore((state) => state.auth.user)
   const filteredNavGroups = useNavigationGroups()

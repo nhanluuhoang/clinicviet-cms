@@ -1,55 +1,146 @@
 import { flexRender, type Row, type Table } from '@tanstack/react-table'
+import i18n from '@/i18n'
 import { useTranslation } from 'react-i18next'
 import { cn } from '@/lib/utils'
 import { auditLabels, type AuditColumnId } from './audit-columns'
 
 const MOBILE_LABELS: Record<string, string> = {
-  address: 'Địa chỉ',
-  batchCount: 'Số lô',
-  batchNo: 'Số lô',
-  code: 'Mã phiếu',
-  countedAt: 'Ngày kiểm kê',
-  createdAt: 'Thời gian khám',
-  dateOfBirth: 'Ngày sinh',
-  diagnosis: 'Chẩn đoán',
-  doctorName: 'Bác sĩ',
+  get address() {
+    return i18n.t('messages.address')
+  },
+  get batchCount() {
+    return i18n.t('messages.batchNumber')
+  },
+  get batchNo() {
+    return i18n.t('messages.batchNumber')
+  },
+  get code() {
+    return i18n.t('messages.documentCode')
+  },
+  get countedAt() {
+    return i18n.t('messages.stocktakeDate')
+  },
+  get createdAt() {
+    return i18n.t('messages.examinationTime')
+  },
+  get dateOfBirth() {
+    return i18n.t('messages.dateOfBirth')
+  },
+  get diagnosis() {
+    return i18n.t('messages.diagnosis')
+  },
+  get doctorName() {
+    return i18n.t('messages.doctor')
+  },
   email: 'Email',
-  expiryDate: 'Hạn sử dụng',
-  expiryStatus: 'Cảnh báo',
-  excerpt: 'Mô tả',
-  fullName: 'Họ tên',
-  gender: 'Giới tính',
-  group: 'Nhóm',
-  isPublished: 'Trạng thái',
-  issuedAt: 'Ngày xuất',
-  itemCount: 'Số thuốc',
-  key: 'Khóa',
-  lineCount: 'Số dòng',
-  manufacturer: 'Nhà sản xuất',
-  medicineCount: 'Số thuốc',
-  medicineName: 'Thuốc',
-  medicines: 'Thuốc trong mẫu',
-  minStock: 'Định mức tối thiểu',
-  name: 'Tên',
-  nearestExpiry: 'Hạn sử dụng gần nhất',
-  note: 'Ghi chú',
-  patientName: 'Bệnh nhân',
-  phone: 'Số điện thoại',
-  qtyReceived: 'Đã nhập',
-  qtyRemaining: 'Tồn',
-  receiptCode: 'Phiếu nhập',
-  receivedAt: 'Ngày nhập',
-  recipientName: 'Người nhận',
-  salePrice: 'Giá bán',
-  stockValue: 'Giá trị tồn',
-  strength: 'Hàm lượng',
-  supplierName: 'Nhà cung cấp',
-  thumbnailUrl: 'Ảnh đại diện',
-  title: 'Tiêu đề',
-  totalQty: 'Tồn kho',
-  unit: 'Đơn vị',
-  unitCost: 'Giá nhập',
-  value: 'Giá trị',
+  get expiryDate() {
+    return i18n.t('messages.expiryDate')
+  },
+  get expiryStatus() {
+    return i18n.t('messages.warning')
+  },
+  get excerpt() {
+    return i18n.t('messages.description')
+  },
+  get fullName() {
+    return i18n.t('messages.fullName')
+  },
+  get gender() {
+    return i18n.t('messages.gender')
+  },
+  get group() {
+    return i18n.t('messages.group')
+  },
+  get isPublished() {
+    return i18n.t('messages.status')
+  },
+  get issuedAt() {
+    return i18n.t('messages.issueDate')
+  },
+  get itemCount() {
+    return i18n.t('messages.medicineCount')
+  },
+  get key() {
+    return i18n.t('messages.key')
+  },
+  get lineCount() {
+    return i18n.t('messages.lineCount')
+  },
+  get manufacturer() {
+    return i18n.t('messages.manufacturer')
+  },
+  get medicineCount() {
+    return i18n.t('messages.medicineCount')
+  },
+  get medicineName() {
+    return i18n.t('messages.medicine')
+  },
+  get medicines() {
+    return i18n.t('messages.medicinesInTemplate')
+  },
+  get minStock() {
+    return i18n.t('messages.minimumStock')
+  },
+  get name() {
+    return i18n.t('messages.name')
+  },
+  get nearestExpiry() {
+    return i18n.t('messages.nearestExpiryDate')
+  },
+  get note() {
+    return i18n.t('messages.notes')
+  },
+  get patientName() {
+    return i18n.t('messages.patient')
+  },
+  get phone() {
+    return i18n.t('messages.phoneNumber')
+  },
+  get qtyReceived() {
+    return i18n.t('messages.received')
+  },
+  get qtyRemaining() {
+    return i18n.t('messages.inStock')
+  },
+  get receiptCode() {
+    return i18n.t('messages.goodsReceipt')
+  },
+  get receivedAt() {
+    return i18n.t('messages.receivedOn')
+  },
+  get recipientName() {
+    return i18n.t('messages.recipient')
+  },
+  get salePrice() {
+    return i18n.t('messages.sellingPrice')
+  },
+  get stockValue() {
+    return i18n.t('messages.stockValue')
+  },
+  get strength() {
+    return i18n.t('messages.strength')
+  },
+  get supplierName() {
+    return i18n.t('messages.supplier')
+  },
+  get thumbnailUrl() {
+    return i18n.t('messages.avatar')
+  },
+  get title() {
+    return i18n.t('messages.title')
+  },
+  get totalQty() {
+    return i18n.t('messages.inventory')
+  },
+  get unit() {
+    return i18n.t('messages.unit')
+  },
+  get unitCost() {
+    return i18n.t('messages.purchasePrice')
+  },
+  get value() {
+    return i18n.t('messages.value')
+  },
 }
 
 type MobileCardsProps<TData> = {
@@ -147,7 +238,13 @@ export function MobileDataCards<TData>({
               {actionCells.length > 0 && (
                 <div className='flex flex-wrap items-center justify-end gap-2 border-t pt-3'>
                   {actionCells.map((cell) => (
-                    <div key={cell.id}>
+                    <div
+                      key={cell.id}
+                      className={cn(
+                        ['expand', 'expander'].includes(cell.column.id) &&
+                          'min-w-0 flex-1 [&_button]:h-11 [&_button]:w-full [&_button]:justify-end'
+                      )}
+                    >
                       {flexRender(
                         cell.column.columnDef.cell,
                         cell.getContext()

@@ -17,8 +17,7 @@ export interface TenantData {
     unmeasuredFiles: number
   }
   isActive: boolean
-  subscriptionStatus: 'TRIAL' | 'ACTIVE' | 'EXPIRED' | 'SUSPENDED'
-  trialEndsAt?: string | null
+  subscriptionStatus: 'ACTIVE' | 'EXPIRED' | 'SUSPENDED'
   subscriptionEndsAt?: string | null
 }
 

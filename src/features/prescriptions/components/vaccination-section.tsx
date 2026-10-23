@@ -1,3 +1,4 @@
+import { useTranslation } from 'react-i18next'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
 import {
@@ -31,20 +32,22 @@ export function VaccinationSection({
   | 'staffOptions'
   | 'selectedStaffId'
 >) {
+  const { t } = useTranslation()
+
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Thông tin tiêm</CardTitle>
+        <CardTitle>{t('messages.vaccinationDetails')}</CardTitle>
       </CardHeader>
       <CardContent className='grid gap-4 md:grid-cols-2'>
         {(
           [
-            ['temperature', 'Nhiệt độ (°C)'],
-            ['bloodPressure', 'Huyết áp (mmHg)'],
-            ['doseNumber', 'Mũi số'],
-            ['dose', 'Liều dùng'],
-            ['route', 'Đường tiêm'],
-            ['site', 'Vị trí tiêm'],
+            ['temperature', t('messages.temperatureC')],
+            ['bloodPressure', t('messages.bloodPressureMmhg')],
+            ['doseNumber', t('messages.doseNumber')],
+            ['dose', t('messages.dose')],
+            ['route', t('messages.administrationRoute')],
+            ['site', t('messages.injectionSite')],
           ] as const
         ).map(([key, label]) => (
           <Field key={key} label={label} htmlFor={formId + '-' + key}>
@@ -53,9 +56,9 @@ export function VaccinationSection({
               maxLength={255}
               placeholder={
                 key === 'temperature'
-                  ? 'Ví dụ: 36,5'
+                  ? t('messages.eG365')
                   : key === 'bloodPressure'
-                    ? 'Ví dụ: 120/80'
+                    ? t('messages.eG12080')
                     : undefined
               }
               value={vaccination[key] ?? ''}
@@ -68,7 +71,10 @@ export function VaccinationSection({
             />
           </Field>
         ))}
-        <Field label='Người tiêm' htmlFor={formId + '-administeredBy'}>
+        <Field
+          label={t('messages.administeredBy')}
+          htmlFor={formId + '-administeredBy'}
+        >
           <Select
             value={
               selectedStaffId ??
@@ -86,12 +92,12 @@ export function VaccinationSection({
             }}
           >
             <SelectTrigger id={formId + '-administeredBy'}>
-              <SelectValue placeholder='Chọn người tiêm' />
+              <SelectValue placeholder={t('messages.selectVaccinationStaff')} />
             </SelectTrigger>
             <SelectContent>
               {vaccination.administeredBy && !selectedStaffId && (
                 <SelectItem value='__legacy__' disabled>
-                  {vaccination.administeredBy} (đã lưu)
+                  {vaccination.administeredBy} {t('messages.saved')}
                 </SelectItem>
               )}
               {selectedStaffId &&
@@ -103,29 +109,29 @@ export function VaccinationSection({
               {staffOptions.map((user) => (
                 <SelectItem key={user.id} value={user.id}>
                   {user.fullName}
-                  {user.id === currentUser?.id ? ' (bạn)' : ''}
+                  {user.id === currentUser?.id ? t('messages.you') : ''}
                 </SelectItem>
               ))}
             </SelectContent>
           </Select>
           {vaccinationStaff.isError && (
             <p className='text-xs text-destructive'>
-              Không tải được danh sách nhân sự.{' '}
+              {t('messages.couldNotLoadStaffList')}{' '}
               <button
                 type='button'
                 className='underline'
                 onClick={() => void vaccinationStaff.refetch()}
               >
-                Thử lại
+                {t('messages.tryAgain')}
               </button>
             </p>
           )}
         </Field>
         {(
           [
-            ['expiryDate', 'Hạn dùng'],
-            ['administeredDate', 'Ngày tiêm'],
-            ['nextDoseDate', 'Hẹn mũi tiếp theo'],
+            ['expiryDate', t('messages.expiryAlt2')],
+            ['administeredDate', t('messages.vaccinationDate')],
+            ['nextDoseDate', t('messages.nextDoseDate')],
           ] as const
         ).map(([key, label]) => (
           <Field key={key} label={label} htmlFor={formId + '-' + key}>

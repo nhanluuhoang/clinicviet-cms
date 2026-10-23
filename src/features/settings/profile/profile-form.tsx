@@ -3,6 +3,8 @@ import { z } from 'zod'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useMutation } from '@tanstack/react-query'
+import i18n from '@/i18n'
+import { useTranslation } from 'react-i18next'
 import { toast } from 'sonner'
 import { useAuthStore } from '@/stores/auth-store'
 import { showRequestError } from '@/lib/handle-server-error'
@@ -29,7 +31,11 @@ import { UpdateProfile } from '@/features/auth/api'
 
 const profileFormSchema = z
   .object({
-    fullName: z.string().trim().min(1, 'Vui lòng nhập họ tên').max(255),
+    fullName: z
+      .string()
+      .trim()
+      .min(1, { error: () => i18n.t('messages.pleaseEnterAFullNameAlt2') })
+      .max(255),
     email: z.string().trim().max(255),
     phone: z.string().trim().max(20),
     gender: z.enum(['0', '1', '2']),
@@ -42,7 +48,7 @@ const profileFormSchema = z
       context.addIssue({
         code: 'custom',
         path: ['email'],
-        message: 'Email không hợp lệ',
+        message: i18n.t('messages.invalidEmailAddressAlt2'),
       })
     }
     if (
@@ -52,7 +58,7 @@ const profileFormSchema = z
       context.addIssue({
         code: 'custom',
         path: ['dateOfBirth'],
-        message: 'Ngày sinh không thể ở tương lai',
+        message: i18n.t('messages.dateOfBirthCannotBeInTheFuture'),
       })
     }
   })
@@ -70,6 +76,8 @@ const emptyValues: ProfileFormValues = {
 }
 
 export function ProfileForm() {
+  const { t } = useTranslation()
+
   const user = useAuthStore((state) => state.auth.user)
   const setUser = useAuthStore((state) => state.auth.setUser)
   const form = useForm<ProfileFormValues>({
@@ -103,9 +111,10 @@ export function ProfileForm() {
       }),
     onSuccess: ({ data }) => {
       setUser(data)
-      toast.success('Đã cập nhật hồ sơ')
+      toast.success(t('messages.profileUpdated'))
     },
-    onError: (error) => showRequestError(error, 'Không thể cập nhật hồ sơ'),
+    onError: (error) =>
+      showRequestError(error, t('messages.couldNotUpdateProfile')),
   })
 
   return (
@@ -115,7 +124,7 @@ export function ProfileForm() {
         className='space-y-6'
       >
         <FormItem>
-          <FormLabel>Tên đăng nhập</FormLabel>
+          <FormLabel>{t('messages.username')}</FormLabel>
           <FormControl>
             <Input value={user?.userName ?? ''} disabled />
           </FormControl>
@@ -126,9 +135,9 @@ export function ProfileForm() {
           name='fullName'
           render={({ field }) => (
             <FormItem>
-              <FormLabel required>Họ tên</FormLabel>
+              <FormLabel required>{t('messages.fullName')}</FormLabel>
               <FormControl>
-                <Input {...field} placeholder='Nguyễn Văn A' />
+                <Input {...field} placeholder={t('messages.nguyenVanA')} />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -154,7 +163,7 @@ export function ProfileForm() {
             name='phone'
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Số điện thoại</FormLabel>
+                <FormLabel>{t('messages.phoneNumber')}</FormLabel>
                 <FormControl>
                   <Input {...field} placeholder='0901234567' />
                 </FormControl>
@@ -170,17 +179,19 @@ export function ProfileForm() {
             name='gender'
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Giới tính</FormLabel>
+                <FormLabel>{t('messages.gender')}</FormLabel>
                 <Select value={field.value} onValueChange={field.onChange}>
                   <FormControl>
                     <SelectTrigger>
-                      <SelectValue placeholder='Chọn giới tính' />
+                      <SelectValue placeholder={t('messages.selectGender')} />
                     </SelectTrigger>
                   </FormControl>
                   <SelectContent>
-                    <SelectItem value='0'>Không xác định</SelectItem>
-                    <SelectItem value='1'>Nam</SelectItem>
-                    <SelectItem value='2'>Nữ</SelectItem>
+                    <SelectItem value='0'>
+                      {t('messages.unknownAlt2')}
+                    </SelectItem>
+                    <SelectItem value='1'>{i18n.t('messages.male')}</SelectItem>
+                    <SelectItem value='2'>{t('messages.female')}</SelectItem>
                   </SelectContent>
                 </Select>
                 <FormMessage />
@@ -192,7 +203,7 @@ export function ProfileForm() {
             name='dateOfBirth'
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Ngày sinh</FormLabel>
+                <FormLabel>{t('messages.dateOfBirth')}</FormLabel>
                 <DatePickerInput
                   value={field.value}
                   onChange={field.onChange}
@@ -208,11 +219,11 @@ export function ProfileForm() {
           name='address'
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Địa chỉ</FormLabel>
+              <FormLabel>{t('messages.address')}</FormLabel>
               <FormControl>
                 <Input
                   {...field}
-                  placeholder='Số nhà, đường, phường/xã, tỉnh/thành'
+                  placeholder={t('messages.streetWardProvinceCity')}
                 />
               </FormControl>
               <FormMessage />
@@ -225,7 +236,7 @@ export function ProfileForm() {
           name='note'
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Ghi chú</FormLabel>
+              <FormLabel>{t('messages.notes')}</FormLabel>
               <FormControl>
                 <Textarea {...field} className='resize-none' maxLength={255} />
               </FormControl>
@@ -235,7 +246,9 @@ export function ProfileForm() {
         />
 
         <Button type='submit' disabled={updateProfile.isPending}>
-          {updateProfile.isPending ? 'Đang lưu...' : 'Lưu thay đổi'}
+          {updateProfile.isPending
+            ? t('messages.saving')
+            : t('messages.saveChanges')}
         </Button>
       </form>
     </Form>

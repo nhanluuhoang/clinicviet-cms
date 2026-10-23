@@ -1,4 +1,5 @@
 import { Plus } from 'lucide-react'
+import { useTranslation } from 'react-i18next'
 import { Button } from '@/components/ui/button'
 import { emptyItem } from '../data/constants'
 import type { PrescriptionTemplatesState } from '../hooks/use-prescription-templates'
@@ -12,6 +13,8 @@ export function PrescriptionTemplatesPrimaryButtons({
   PrescriptionTemplatesState,
   'setOpen' | 'setCurrent' | 'setName' | 'setItems'
 >) {
+  const { t } = useTranslation()
+
   return (
     <Button
       onClick={() => {
@@ -21,7 +24,7 @@ export function PrescriptionTemplatesPrimaryButtons({
         setOpen('create')
       }}
     >
-      <Plus /> Thêm mẫu đơn
+      <Plus /> {t('messages.addPrescriptionTemplateAlt2')}
     </Button>
   )
 }

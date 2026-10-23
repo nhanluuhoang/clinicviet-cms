@@ -1,4 +1,5 @@
 import { useNavigate, useLocation } from '@tanstack/react-router'
+import { useTranslation } from 'react-i18next'
 import { useAuthStore } from '@/stores/auth-store'
 import { showRequestError } from '@/lib/handle-server-error'
 import { ConfirmDialog } from '@/components/confirm-dialog'
@@ -10,6 +11,8 @@ interface SignOutDialogProps {
 }
 
 export function SignOutDialog({ open, onOpenChange }: SignOutDialogProps) {
+  const { t } = useTranslation()
+
   const navigate = useNavigate()
   const location = useLocation()
   const { auth } = useAuthStore()
@@ -26,7 +29,10 @@ export function SignOutDialog({ open, onOpenChange }: SignOutDialogProps) {
         replace: true,
       })
     } catch (error) {
-      showRequestError(error, 'Không thể đăng xuất lúc này. Vui lòng thử lại.')
+      showRequestError(
+        error,
+        t('messages.couldNotSignOutRightNowPleaseTryAgain')
+      )
     }
   }
 
@@ -34,9 +40,9 @@ export function SignOutDialog({ open, onOpenChange }: SignOutDialogProps) {
     <ConfirmDialog
       open={open}
       onOpenChange={onOpenChange}
-      title='Đăng xuất'
-      desc='Bạn có chắc muốn đăng xuất? Bạn sẽ cần đăng nhập lại để truy cập tài khoản.'
-      confirmText='Đăng xuất'
+      title={t('messages.signOut')}
+      desc={t('messages.areYouSureYouWantToSignOutYouWillNeedToSign')}
+      confirmText={t('messages.signOut')}
       destructive
       handleConfirm={handleSignOut}
       className='sm:max-w-sm'

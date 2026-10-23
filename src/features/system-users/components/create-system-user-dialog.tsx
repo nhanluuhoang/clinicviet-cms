@@ -4,7 +4,9 @@ import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { MANAGED_USER_ROLE_OPTIONS } from '@/config/user-role-labels'
+import i18n from '@/i18n'
 import { Check, ChevronsUpDown } from 'lucide-react'
+import { useTranslation } from 'react-i18next'
 import { toast } from 'sonner'
 import { showRequestError } from '@/lib/handle-server-error'
 import { cn } from '@/lib/utils'
@@ -48,26 +50,42 @@ import { createSystemUser } from '../api'
 
 const schema = z
   .object({
-    tenantId: z.string().min(1, 'Vui lòng chọn phòng khám.'),
+    tenantId: z
+      .string()
+      .min(1, { error: () => i18n.t('messages.pleaseSelectAClinic') }),
     userName: z
       .string()
       .trim()
       .min(3)
       .max(50)
       .regex(/^[a-zA-Z0-9._-]+$/),
-    fullName: z.string().trim().min(1, 'Vui lòng nhập họ tên.'),
-    email: z.union([z.literal(''), z.email('Email không hợp lệ.')]),
-    phone: z.string().trim().max(20, 'Tối đa 20 ký tự.'),
+    fullName: z
+      .string()
+      .trim()
+      .min(1, { error: () => i18n.t('messages.pleaseEnterAFullName') }),
+    email: z.union([
+      z.literal(''),
+      z.email({ error: () => i18n.t('messages.invalidEmailAddress') }),
+    ]),
+    phone: z
+      .string()
+      .trim()
+      .max(20, { error: () => i18n.t('messages.maximum20Characters') }),
     role: z.enum(['TENANT_ADMIN', 'DOCTOR', 'ASSISTANT']),
     password: z
       .string()
-      .min(8, 'Mật khẩu tối thiểu 8 ký tự.')
-      .max(20, 'Mật khẩu tối đa 20 ký tự.'),
+      .min(8, {
+        error: () =>
+          i18n.t('messages.passwordMustContainAtLeast8CharactersAlt4'),
+      })
+      .max(20, {
+        error: () => i18n.t('messages.passwordMustNotExceed20Characters'),
+      }),
     passwordConfirmation: z.string(),
   })
   .refine((value) => value.password === value.passwordConfirmation, {
     path: ['passwordConfirmation'],
-    message: 'Mật khẩu nhập lại không khớp.',
+    error: () => i18n.t('messages.passwordsDoNotMatch'),
   })
 
 type Values = z.infer<typeof schema>
@@ -92,6 +110,8 @@ export function CreateSystemUserDialog({
   onOpenChange: (open: boolean) => void
   tenants: Tenant[]
 }) {
+  const { t } = useTranslation()
+
   const [clinicSearch, setClinicSearch] = useState('')
   const [clinicOpen, setClinicOpen] = useState(false)
   const [selectedTenant, setSelectedTenant] = useState<Tenant | null>(null)
@@ -135,10 +155,11 @@ export function CreateSystemUserDialog({
         queryClient.invalidateQueries({ queryKey: ['system-users'] }),
         queryClient.invalidateQueries({ queryKey: ['tenants'] }),
       ])
-      toast.success('Đã tạo tài khoản')
+      toast.success(t('messages.accountCreated'))
       handleOpenChange(false)
     },
-    onError: (error) => showRequestError(error, 'Không thể tạo tài khoản'),
+    onError: (error) =>
+      showRequestError(error, t('messages.couldNotCreateAccount')),
   })
 
   return (
@@ -146,9 +167,9 @@ export function CreateSystemUserDialog({
       <DialogFormContent className='sm:max-w-xl'>
         <DialogBody>
           <DialogHeader className='text-start'>
-            <DialogTitle>Tạo tài khoản cho phòng khám</DialogTitle>
+            <DialogTitle>{t('messages.createClinicAccount')}</DialogTitle>
             <DialogDescription>
-              Chọn phòng khám và vai trò của tài khoản mới.
+              {t('messages.chooseAClinicAndRoleForTheNewAccount')}
             </DialogDescription>
           </DialogHeader>
           <Form {...form}>
@@ -162,7 +183,7 @@ export function CreateSystemUserDialog({
                 name='tenantId'
                 render={({ field }) => (
                   <FormItem className='sm:col-span-2'>
-                    <FormLabel required>Phòng khám</FormLabel>
+                    <FormLabel required>{t('messages.clinics')}</FormLabel>
                     <Popover open={clinicOpen} onOpenChange={setClinicOpen}>
                       <PopoverTrigger asChild>
                         <Button
@@ -175,7 +196,7 @@ export function CreateSystemUserDialog({
                           <span className='truncate'>
                             {selectedTenant
                               ? `${selectedTenant.code} - ${selectedTenant.name}`
-                              : 'Tìm mã hoặc tên phòng khám...'}
+                              : t('messages.searchClinicCodeOrName')}
                           </span>
                           <ChevronsUpDown className='ms-2 size-4 shrink-0 opacity-50' />
                         </Button>
@@ -188,7 +209,7 @@ export function CreateSystemUserDialog({
                           <CommandInput
                             value={clinicSearch}
                             onValueChange={setClinicSearch}
-                            placeholder='Tìm theo mã hoặc tên...'
+                            placeholder={t('messages.searchByCodeOrName')}
                           />
                           <CommandList>
                             <CommandEmpty>
@@ -196,8 +217,8 @@ export function CreateSystemUserDialog({
                                 clinicSearch.trim() !==
                                   debouncedSearch.trim()) ||
                               clinicResults.isFetching
-                                ? 'Đang tìm...'
-                                : 'Không tìm thấy phòng khám.'}
+                                ? t('messages.searching')
+                                : t('messages.noClinicsFound')}
                             </CommandEmpty>
                             <CommandGroup>
                               {availableTenants.map((tenant) => (
@@ -232,10 +253,10 @@ export function CreateSystemUserDialog({
               />
               {(
                 [
-                  ['userName', 'Tên đăng nhập'],
-                  ['fullName', 'Họ tên'],
+                  ['userName', t('messages.username')],
+                  ['fullName', t('messages.fullName')],
                   ['email', 'Email'],
-                  ['phone', 'Số điện thoại'],
+                  ['phone', t('messages.phoneNumber')],
                 ] as const
               ).map(([name, label]) => (
                 <FormField
@@ -265,7 +286,7 @@ export function CreateSystemUserDialog({
                 name='role'
                 render={({ field }) => (
                   <FormItem className='sm:col-span-2'>
-                    <FormLabel required>Vai trò</FormLabel>
+                    <FormLabel required>{t('messages.role')}</FormLabel>
                     <SelectDropdown
                       defaultValue={field.value}
                       isControlled
@@ -284,7 +305,9 @@ export function CreateSystemUserDialog({
                   render={({ field }) => (
                     <FormItem>
                       <FormLabel required>
-                        {name === 'password' ? 'Mật khẩu' : 'Nhập lại mật khẩu'}
+                        {name === 'password'
+                          ? t('messages.password')
+                          : t('messages.confirmPassword')}
                       </FormLabel>
                       <FormControl>
                         <PasswordInput {...field} />
@@ -299,14 +322,16 @@ export function CreateSystemUserDialog({
         </DialogBody>
         <DialogFooter>
           <Button variant='outline' onClick={() => onOpenChange(false)}>
-            Hủy
+            {t('messages.cancel')}
           </Button>
           <Button
             type='submit'
             form='system-user-form'
             disabled={mutation.isPending}
           >
-            {mutation.isPending ? 'Đang tạo...' : 'Tạo tài khoản'}
+            {mutation.isPending
+              ? t('messages.creating')
+              : t('messages.createAccount')}
           </Button>
         </DialogFooter>
       </DialogFormContent>

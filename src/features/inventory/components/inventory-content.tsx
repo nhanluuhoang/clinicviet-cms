@@ -1,4 +1,5 @@
 import { useQuery } from '@tanstack/react-query'
+import { useTranslation } from 'react-i18next'
 import { Header } from '@/components/layout/header'
 import { Main } from '@/components/layout/main'
 import { ProfileDropdown } from '@/components/profile-dropdown'
@@ -16,6 +17,8 @@ import { StockTab } from './stock-tab'
 import { StockTakesTab } from './stocktakes-tab'
 
 export function InventoryContent() {
+  const { t } = useTranslation()
+
   const { tab = 'stock' } = routeApi.useSearch()
 
   const { data: stats, isLoading: loadingStats } = useQuery({
@@ -37,10 +40,11 @@ export function InventoryContent() {
       <Main className='flex flex-1 flex-col gap-4 sm:gap-6'>
         <div className='flex flex-wrap items-end justify-between gap-2'>
           <div>
-            <h2 className='text-2xl font-bold tracking-tight'>Kho thuốc</h2>
+            <h2 className='text-2xl font-bold tracking-tight'>
+              {t('messages.medicineInventory')}
+            </h2>
             <p className='text-muted-foreground'>
-              Quản lý tồn kho theo từng đợt nhập hàng và theo dõi hạn sử dụng
-              của từng lô.
+              {t('messages.manageInventoryByReceiptBatchAndTrackEachBatch')}
             </p>
           </div>
           <PrimaryButtons tab={tab} />

@@ -1,4 +1,5 @@
 import { useQueryClient } from '@tanstack/react-query'
+import { useTranslation } from 'react-i18next'
 import { toast } from 'sonner'
 import { showRequestError } from '@/lib/handle-server-error'
 import { ConfirmDialog } from '@/components/confirm-dialog'
@@ -7,6 +8,8 @@ import { MasterDataMutateDrawer } from './master-data-mutate-drawer'
 import { useMasterData } from './master-data-provider'
 
 export function MasterDataDialogs() {
+  const { t } = useTranslation()
+
   const { open, setOpen, currentRow, setCurrentRow } = useMasterData()
   const queryClient = useQueryClient()
 
@@ -17,9 +20,9 @@ export function MasterDataDialogs() {
       queryClient.invalidateQueries({ queryKey: ['master-data'] })
       setOpen(null)
       setCurrentRow(null)
-      toast.success('Đã xóa cấu hình chung')
+      toast.success(t('messages.generalSettingDeleted'))
     } catch (error) {
-      showRequestError(error, 'Không thể xóa cấu hình chung')
+      showRequestError(error, t('messages.couldNotDeleteGeneralSetting'))
     }
   }
 
@@ -42,9 +45,9 @@ export function MasterDataDialogs() {
           setOpen(null)
           setCurrentRow(null)
         }}
-        title='Xóa cấu hình chung'
-        desc='Bạn có chắc muốn xóa cấu hình này? Thao tác không thể hoàn tác.'
-        confirmText='Xóa'
+        title={t('messages.deleteGeneralSetting')}
+        desc={t('messages.areYouSureYouWantToDeleteThisSettingThisCanno')}
+        confirmText={t('messages.delete')}
         destructive
         handleConfirm={onDeleteConfirm}
       />

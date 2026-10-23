@@ -1,5 +1,7 @@
 import { Outlet } from '@tanstack/react-router'
+import i18n from '@/i18n'
 import { Building2, LockKeyhole, UserCog } from 'lucide-react'
+import { useTranslation } from 'react-i18next'
 import { useAuthStore } from '@/stores/auth-store'
 import { Separator } from '@/components/ui/separator'
 // import { LanguageSwitcher } from '@/components/language-switcher'
@@ -11,25 +13,31 @@ import { SidebarNav } from '@/features/settings/components/sidebar-nav'
 
 const accountNavItems = [
   {
-    title: 'Hồ sơ cá nhân',
+    get title() {
+      return i18n.t('messages.profile')
+    },
     href: '/settings',
     icon: <UserCog size={18} />,
   },
   {
-    title: 'Đổi mật khẩu',
+    get title() {
+      return i18n.t('messages.changePassword')
+    },
     href: '/settings/change-password',
     icon: <LockKeyhole size={18} />,
   },
 ]
 
 export function Settings() {
+  const { t } = useTranslation()
+
   const role = useAuthStore((state) => state.auth.user?.role)
   const sidebarNavItems = [
     ...accountNavItems,
     ...(role === 'TENANT_ADMIN'
       ? [
           {
-            title: 'Thông tin phòng khám',
+            title: t('messages.clinicInformation'),
             href: '/settings/tenant',
             icon: <Building2 size={18} />,
           },
@@ -51,10 +59,10 @@ export function Settings() {
       <Main fixed>
         <div className='space-y-0.5'>
           <h1 className='text-2xl font-bold tracking-tight md:text-3xl'>
-            Cài đặt tài khoản
+            {t('messages.accountSettings')}
           </h1>
           <p className='text-muted-foreground'>
-            Quản lý thông tin cá nhân và bảo mật tài khoản.
+            {t('messages.manageYourPersonalInformationAndAccountSecurity')}
           </p>
         </div>
         <Separator className='my-4 lg:my-6' />

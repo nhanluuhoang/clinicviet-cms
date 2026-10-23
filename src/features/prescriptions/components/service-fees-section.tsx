@@ -1,3 +1,5 @@
+import { getLocale } from '@/i18n'
+import { useTranslation } from 'react-i18next'
 import {
   Card,
   CardContent,
@@ -59,42 +61,52 @@ export function ServiceFeesSection({
   | 'medicineFee'
   | 'invoiceTotal'
 >) {
+  const { t } = useTranslation()
+
   return (
     <Card className='min-w-0'>
       <CardHeader className='border-b px-4 sm:px-6'>
-        <CardTitle>Chi phí dịch vụ</CardTitle>
+        <CardTitle>{t('messages.serviceCharges')}</CardTitle>
         <CardDescription>
-          Kiểm tra các khoản thu trước khi lưu phiếu dịch vụ.
+          {t('messages.reviewTheChargesBeforeSavingTheServiceRecord')}
         </CardDescription>
       </CardHeader>
       <CardContent className='grid min-w-0 grid-cols-[minmax(0,1fr)] gap-4 px-3 pt-4 sm:gap-6 sm:px-6 sm:pt-6'>
         <div className='grid min-w-0 grid-cols-[minmax(0,1fr)] gap-3'>
           <AutomaticFee
-            label='Phí khám'
+            label={t('messages.consultationFee')}
             value={consultationFee}
             note={
               isExamination
-                ? 'Theo cấu hình phòng khám'
-                : 'Không áp dụng cho loại phiếu này'
+                ? t('messages.basedOnClinicSettings')
+                : t('messages.notApplicableToThisRecordType')
             }
           />
           <AutomaticFee
-            label={isVaccination ? 'Vắc xin / thuốc' : 'Phí thuốc'}
+            label={
+              isVaccination
+                ? t('messages.vaccinesMedicines')
+                : t('messages.medicineChargesAlt2')
+            }
             value={medicineFee}
-            note={`${items.filter((item) => item.medicineId).length} loại thuốc`}
+            note={t('messages.medicines', {
+              value0: items.filter((item) => item.medicineId).length,
+            })}
           />
         </div>
 
         <div className='grid min-w-0 grid-cols-[minmax(0,1fr)] gap-3'>
           <div>
-            <p className='text-sm font-medium'>Khoản thu bổ sung</p>
+            <p className='text-sm font-medium'>
+              {t('messages.additionalCharges')}
+            </p>
             <p className='text-xs text-muted-foreground'>
-              Nhập nội dung và số tiền nếu có.
+              {t('messages.enterADescriptionAndAmountIfApplicable')}
             </p>
           </div>
           <OtherFeeField
             index={formId + '-service'}
-            title='Dịch vụ thêm'
+            title={t('messages.additionalService')}
             label={serviceFeeLabel}
             amount={serviceFee}
             onLabelChange={setServiceFeeLabel}
@@ -102,7 +114,7 @@ export function ServiceFeesSection({
           />
           <OtherFeeField
             index={formId + '-1'}
-            title='Khoản khác 1'
+            title={t('messages.otherCharge1')}
             label={otherFee1Label}
             amount={otherFee1}
             onLabelChange={setOtherFee1Label}
@@ -110,7 +122,7 @@ export function ServiceFeesSection({
           />
           <OtherFeeField
             index={formId + '-2'}
-            title='Khoản khác 2'
+            title={t('messages.otherCharge2')}
             label={otherFee2Label}
             amount={otherFee2}
             onLabelChange={setOtherFee2Label}
@@ -118,7 +130,7 @@ export function ServiceFeesSection({
           />
           <OtherFeeField
             index={formId + '-3'}
-            title='Khoản khác 3'
+            title={t('messages.otherCharge3')}
             label={otherFee3Label}
             amount={otherFee3}
             onLabelChange={setOtherFee3Label}
@@ -128,11 +140,13 @@ export function ServiceFeesSection({
 
         <div className='flex flex-col gap-1 rounded-lg bg-primary px-5 py-4 text-primary-foreground sm:flex-row sm:items-center sm:justify-between'>
           <div>
-            <p className='font-medium'>Tổng thanh toán</p>
-            <p className='text-xs opacity-80'>Đã bao gồm tất cả khoản phí</p>
+            <p className='font-medium'>{t('messages.totalPayment')}</p>
+            <p className='text-xs opacity-80'>
+              {t('messages.includesAllFees')}
+            </p>
           </div>
           <p className='text-2xl font-bold tabular-nums'>
-            {invoiceTotal.toLocaleString('vi-VN')} ₫
+            {invoiceTotal.toLocaleString(getLocale())} ₫
           </p>
         </div>
       </CardContent>

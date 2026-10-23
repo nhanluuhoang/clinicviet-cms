@@ -1,5 +1,6 @@
 import { MixerHorizontalIcon } from '@radix-ui/react-icons'
 import type { Table } from '@tanstack/react-table'
+import { useTranslation } from 'react-i18next'
 import { Button } from '@/components/ui/button'
 import {
   DropdownMenu,
@@ -12,6 +13,8 @@ import {
 import { auditLabels, type AuditColumnId } from './audit-columns'
 
 export function DataTableViewOptions<T>({ table }: { table: Table<T> }) {
+  const { t } = useTranslation()
+
   const columns = table
     .getAllLeafColumns()
     .filter((column) => column.columnDef.meta?.audit && column.getCanHide())
@@ -24,11 +27,11 @@ export function DataTableViewOptions<T>({ table }: { table: Table<T> }) {
           size='sm'
           className='ms-auto hidden h-8 shrink-0 gap-2 sm:inline-flex'
         >
-          <MixerHorizontalIcon className='size-4' /> Hiển thị cột
+          <MixerHorizontalIcon className='size-4' /> {t('messages.showColumns')}
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align='end' className='w-48'>
-        <DropdownMenuLabel>Bật/tắt cột</DropdownMenuLabel>
+        <DropdownMenuLabel>{t('messages.toggleColumns')}</DropdownMenuLabel>
         <DropdownMenuSeparator />
         {columns.map((column) => (
           <DropdownMenuCheckboxItem

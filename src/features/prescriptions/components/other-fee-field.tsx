@@ -1,3 +1,5 @@
+import { getLocale } from '@/i18n'
+import { useTranslation } from 'react-i18next'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 
@@ -16,6 +18,8 @@ export function OtherFeeField({
   onLabelChange: (value: string) => void
   onAmountChange: (value: number) => void
 }) {
+  const { t } = useTranslation()
+
   return (
     <div className='grid w-full min-w-0 grid-cols-[minmax(0,1fr)] gap-2 rounded-lg border p-3'>
       <Label htmlFor={`other-fee-label-${index}`}>{title}</Label>
@@ -24,15 +28,15 @@ export function OtherFeeField({
         value={label}
         maxLength={255}
         className='w-full min-w-0'
-        placeholder='Nội dung khoản thu'
+        placeholder={t('messages.feeDescription')}
         onChange={(event) => onLabelChange(event.target.value)}
       />
       <div className='relative min-w-0'>
         <Input
           type='text'
           inputMode='numeric'
-          aria-label={`${title} - Số tiền`}
-          value={amount.toLocaleString('vi-VN')}
+          aria-label={t('messages.amountAlt4', { value0: title })}
+          value={amount.toLocaleString(getLocale())}
           className='w-full min-w-0 pe-10 text-end tabular-nums'
           onChange={(event) => {
             const digits = event.target.value.replace(/\D/g, '')
