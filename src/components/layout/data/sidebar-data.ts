@@ -120,22 +120,6 @@ export const sidebarData: SidebarData = {
         },
         {
           get title() {
-            return i18n.t('diagnoses.title')
-          },
-          url: '/diagnoses',
-          icon: ClipboardPlus,
-          roles: CLINICAL_ADMIN_ROLES,
-        },
-        {
-          get title() {
-            return i18n.t('medicineInstructions.title')
-          },
-          url: '/medicine-instructions',
-          icon: ClipboardPlus,
-          roles: CLINICAL_ADMIN_ROLES,
-        },
-        {
-          get title() {
             return i18n.t('messages.invoices')
           },
           url: '/invoices',
@@ -263,6 +247,22 @@ export const sidebarData: SidebarData = {
           },
           icon: Settings,
           items: [
+            {
+              get title() {
+                return i18n.t('diagnoses.title')
+              },
+              url: '/diagnoses',
+              icon: ClipboardPlus,
+              roles: CLINICAL_ADMIN_ROLES,
+            },
+            {
+              get title() {
+                return i18n.t('medicineInstructions.title')
+              },
+              url: '/medicine-instructions',
+              icon: ClipboardPlus,
+              roles: CLINICAL_ADMIN_ROLES,
+            },
             {
               get title() {
                 return i18n.t('messages.generalSettings')

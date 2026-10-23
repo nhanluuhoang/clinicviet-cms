@@ -8,6 +8,8 @@
 
 ## Architecture
 
+- Diagnosis/medicine instruction suggestion popups show one flat list without common/private headings. Use modal Popover inside prescription/template dialogs so the portal remains scrollable under the dialog scroll lock; constrain content height to Radix available height with a shrinking Command and fixed load-more action.
+
 - Medicine instruction catalogs follow diagnosis scope/permissions at /medicine-instructions and /system/medicine-instructions. MedicineInstructionInput searches common plus own-clinic entries from the API, preserves free text (255 characters) and the document preview in prescriptions/templates. The former master-data settings editor and hardcoded suggestions are replaced by the catalog.
 
 - Diagnosis catalogs use /diagnoses (common plus own clinic) and /system/diagnoses (Super Admin common entries). Clinic admins/doctors manage only their own entries. DiagnosisInput searches paginated /diagnoses suggestions and retains editable multiline text; clinical history stores text independently of catalog entries.

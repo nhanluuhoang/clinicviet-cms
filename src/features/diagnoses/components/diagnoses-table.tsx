@@ -1,8 +1,7 @@
 import type { ColumnDef } from '@tanstack/react-table'
-import { Edit, Trash2 } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 import { Badge } from '@/components/ui/badge'
-import { Button } from '@/components/ui/button'
+import { CatalogRowActions } from '@/components/catalog-row-actions'
 import { DataTableColumnHeader } from '@/components/data-table'
 import { UrlDataTable } from '@/components/data-table/url-data-table'
 import type { Diagnosis } from '../api'
@@ -56,29 +55,10 @@ export function DiagnosesTable({
           ? row.original.tenantId === null
           : Boolean(tenantId && row.original.tenantId === tenantId)
         return editable ? (
-          <div className='flex items-center gap-1'>
-            <Button
-              type='button'
-              variant='ghost'
-              size='icon'
-              aria-label={t('diagnoses.editName', { name: row.original.name })}
-              onClick={() => onEdit(row.original)}
-            >
-              <Edit className='size-4' />
-            </Button>
-            <Button
-              type='button'
-              variant='ghost'
-              size='icon'
-              className='text-destructive'
-              aria-label={t('diagnoses.deleteName', {
-                name: row.original.name,
-              })}
-              onClick={() => onDelete(row.original)}
-            >
-              <Trash2 className='size-4' />
-            </Button>
-          </div>
+          <CatalogRowActions
+            onEdit={() => onEdit(row.original)}
+            onDelete={() => onDelete(row.original)}
+          />
         ) : null
       },
     },
