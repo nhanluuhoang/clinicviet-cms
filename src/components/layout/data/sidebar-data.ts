@@ -27,6 +27,8 @@ import {
   Building2,
   MessageSquare,
   ReceiptText,
+  BellRing,
+  ClipboardPlus,
 } from 'lucide-react'
 import { type SidebarData } from '../types'
 
@@ -41,6 +43,20 @@ export const sidebarData: SidebarData = {
           icon: Building2,
           roles: SUPER_ADMIN_ROLES,
           items: [
+            {
+              get title() {
+                return i18n.t('diagnoses.commonTitle')
+              },
+              url: '/system/diagnoses',
+              roles: SUPER_ADMIN_ROLES,
+            },
+            {
+              get title() {
+                return i18n.t('medicineInstructions.commonTitle')
+              },
+              url: '/system/medicine-instructions',
+              roles: SUPER_ADMIN_ROLES,
+            },
             {
               get title() {
                 return i18n.t('messages.supportRequests')
@@ -104,10 +120,34 @@ export const sidebarData: SidebarData = {
         },
         {
           get title() {
+            return i18n.t('diagnoses.title')
+          },
+          url: '/diagnoses',
+          icon: ClipboardPlus,
+          roles: CLINICAL_ADMIN_ROLES,
+        },
+        {
+          get title() {
+            return i18n.t('medicineInstructions.title')
+          },
+          url: '/medicine-instructions',
+          icon: ClipboardPlus,
+          roles: CLINICAL_ADMIN_ROLES,
+        },
+        {
+          get title() {
             return i18n.t('messages.invoices')
           },
           url: '/invoices',
           icon: ReceiptText,
+          roles: STAFF_ROLES,
+        },
+        {
+          get title() {
+            return i18n.t('reminders.title')
+          },
+          url: '/reminders',
+          icon: BellRing,
           roles: STAFF_ROLES,
         },
       ],

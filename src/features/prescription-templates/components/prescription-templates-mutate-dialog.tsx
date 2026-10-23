@@ -33,7 +33,6 @@ export function PrescriptionTemplatesMutateDialog({
   items,
   setItems,
   medicines,
-  instructionOptions,
   close,
   patchItem,
   save,
@@ -46,7 +45,6 @@ export function PrescriptionTemplatesMutateDialog({
   | 'items'
   | 'setItems'
   | 'medicines'
-  | 'instructionOptions'
   | 'close'
   | 'patchItem'
   | 'save'
@@ -140,7 +138,6 @@ export function PrescriptionTemplatesMutateDialog({
                     <Label>{t('messages.userGuide')}</Label>
                     <MedicineInstructionInput
                       value={item.instruction}
-                      options={instructionOptions}
                       onChange={(value) =>
                         patchItem(index, {
                           instruction: value,

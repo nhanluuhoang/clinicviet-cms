@@ -1,6 +1,7 @@
 import { useQuery } from '@tanstack/react-query'
 import { getLocale } from '@/i18n'
 import { useTranslation } from 'react-i18next'
+import { formatDate } from '@/lib/utils'
 import { getVaccinationFields } from '@/features/prescriptions/api'
 import { getMedicalHistories, type QueueUser } from '../api'
 
@@ -43,6 +44,12 @@ export function MedicalHistoryContent({
                 ? t('messages.vaccination')
                 : t('messages.examination')}
           </p>
+          {history.appointmentDate && (
+            <p className='text-sm'>
+              {t('reminders.appointmentDate')}:{' '}
+              {formatDate(history.appointmentDate)}
+            </p>
+          )}
           {history.serviceType === 'VACCINATION' && (
             <div className='grid gap-2 rounded-md bg-muted/40 p-3 text-sm sm:grid-cols-2'>
               {Object.entries(getVaccinationFields(history)).map(
@@ -54,7 +61,6 @@ export function MedicalHistoryContent({
                     batchNumber: t('messages.batchNumber'),
                     expiryDate: t('messages.expiryAlt2'),
                     administeredDate: t('messages.vaccinationDate'),
-                    nextDoseDate: t('messages.nextDoseDate'),
                     doseNumber: t('messages.doseNumber'),
                     dose: t('messages.dose'),
                     route: t('messages.administrationRoute'),

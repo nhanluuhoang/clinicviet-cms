@@ -8,6 +8,12 @@
 
 ## Architecture
 
+- Medicine instruction catalogs follow diagnosis scope/permissions at /medicine-instructions and /system/medicine-instructions. MedicineInstructionInput searches common plus own-clinic entries from the API, preserves free text (255 characters) and the document preview in prescriptions/templates. The former master-data settings editor and hardcoded suggestions are replaced by the catalog.
+
+- Diagnosis catalogs use /diagnoses (common plus own clinic) and /system/diagnoses (Super Admin common entries). Clinic admins/doctors manage only their own entries. DiagnosisInput searches paginated /diagnoses suggestions and retains editable multiline text; clinical history stores text independently of catalog entries.
+
+- MedicalHistory uses one optional appointmentDate (DATE) for the next examination/vaccination appointment. Migration 20261023010000_unify_appointment_date renames nextDoseDate and preserves existing vaccine dates. The read-only /reminders page reads appointmentDate with staff access, URL filters and server pagination; dateFrom defaults to today only when absent, while an explicit empty string/reset clears the date filter; there is no separate reminder/contact/attendance state.
+
 - Tenant subscriptions use ACTIVE/EXPIRED/SUSPENDED with one usage expiry (`subscriptionEndsAt`); creation defaults to ACTIVE and requires an expiry. No TRIAL option or trial date columns. Trial requests/referrals remain separate. Expiry notices use localized plan names without BASIC/PLUS/PRO codes.
 
 - Reuse react-i18next `useTranslation()/t()` in components and the exported `i18n` instance for module-level labels/schema error callbacks. Shared label getters/options must update on language changes; memoized translated content depends on `t`. Vietnamese/English resources live in `src/locales/{vi,en}/translation.json`; Zod defaults and `getLocale()` follow the selected language. Axios sends Accept-Language; language switchers are hidden in Header and AuthLayout. Preserve stored/user-entered values when translating labels.
