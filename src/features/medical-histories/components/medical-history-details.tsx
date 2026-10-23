@@ -2,6 +2,7 @@ import type { VisibilityState } from '@tanstack/react-table'
 import { API_URL } from '@/config'
 import i18n, { getLocale } from '@/i18n'
 import { useTranslation } from 'react-i18next'
+import { formatDate } from '@/lib/utils'
 import {
   Table,
   TableBody,
@@ -35,7 +36,7 @@ export function MedicalHistoryDetails({
     history.pdfs.length > 0 ||
     history.videos.length > 0
 
-  if (!prescription && !hasMedia) {
+  if (!prescription && !hasMedia && !history.appointmentDate) {
     return (
       <p className='py-6 text-center text-sm text-muted-foreground'>
         {t('messages.thisRecordHasNoPrescriptionOrAttachments')}
@@ -44,6 +45,12 @@ export function MedicalHistoryDetails({
   }
   return (
     <div className='space-y-6 bg-muted/20 p-5'>
+      {history.appointmentDate && (
+        <p className='text-sm'>
+          {t('reminders.appointmentDate')}:{' '}
+          {formatDate(history.appointmentDate)}
+        </p>
+      )}
       {prescription && (
         <section>
           <h4 className='mb-3 text-sm font-semibold underline underline-offset-4'>

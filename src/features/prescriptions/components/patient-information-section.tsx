@@ -3,10 +3,12 @@ import { ImagePlus } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 import { IMAGE_UPLOAD_ACCEPT } from '@/lib/image-upload'
 import { VIDEO_UPLOAD_ACCEPT } from '@/lib/video-upload'
+import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Textarea } from '@/components/ui/textarea'
+import { DatePickerInput } from '@/components/date-picker-input'
 import { MAX_MEDIA_FILES } from '../data/constants'
 import type { ServicePrescriptionFormState } from '../hooks/use-service-prescription-form'
 import { Field } from './field'
@@ -20,6 +22,8 @@ export function PatientInformationSection({
   isExamination,
   isPharmacy,
   isVaccination,
+  appointmentDate,
+  setAppointmentDate,
   symptoms,
   setSymptoms,
   diagnosis,
@@ -44,6 +48,8 @@ export function PatientInformationSection({
   | 'isExamination'
   | 'isPharmacy'
   | 'isVaccination'
+  | 'appointmentDate'
+  | 'setAppointmentDate'
   | 'symptoms'
   | 'setSymptoms'
   | 'diagnosis'
@@ -109,6 +115,28 @@ export function PatientInformationSection({
             required
           />
         </Field>
+        {!isPharmacy && (
+          <Field
+            label={t('reminders.appointmentDate')}
+            htmlFor={formId + '-follow-up-date'}
+          >
+            <DatePickerInput
+              id={formId + '-follow-up-date'}
+              value={appointmentDate}
+              onChange={setAppointmentDate}
+            />
+            {appointmentDate && (
+              <Button
+                type='button'
+                variant='ghost'
+                size='sm'
+                onClick={() => setAppointmentDate('')}
+              >
+                {t('reminders.removeDate')}
+              </Button>
+            )}
+          </Field>
+        )}
         {isExamination && (
           <>
             <Field

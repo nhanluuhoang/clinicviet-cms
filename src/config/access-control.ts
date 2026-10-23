@@ -66,6 +66,7 @@ const routeRoles: Array<{
   { path: '/patients', roles: STAFF_ROLES },
   { path: '/medical-histories', roles: STAFF_ROLES },
   { path: '/invoices', roles: STAFF_ROLES },
+  { path: '/reminders', roles: STAFF_ROLES },
   { path: '/medicines', roles: STAFF_ROLES },
   { path: '/inventory', roles: STAFF_ROLES },
   { path: '/dashboards', roles: CLINICAL_ADMIN_ROLES },

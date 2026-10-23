@@ -86,6 +86,8 @@ export function useServicePrescriptionForm({
 
   const showVaccination = isVaccination
 
+  const [appointmentDate, setAppointmentDate] = useState('')
+
   const [symptoms, setSymptoms] = useState('')
 
   const [diagnosis, setDiagnosis] = useState('')
@@ -151,6 +153,7 @@ export function useServicePrescriptionForm({
     const prescription = initialData.prescription
     const invoice = prescription?.invoice
     setVaccination(getVaccinationFields(initialData))
+    setAppointmentDate(initialData.appointmentDate?.slice(0, 10) ?? '')
     setSymptoms(initialData.symptoms ?? '')
     setDiagnosis(initialData.diagnosis ?? '')
     setTreatment(initialData.treatment ?? '')
@@ -305,6 +308,7 @@ export function useServicePrescriptionForm({
             ? { examinationQueueId }
             : {}),
           serviceType,
+          appointmentDate: !isPharmacy ? appointmentDate || null : null,
           ...(showVaccination
             ? {
                 temperature: vaccination.temperature?.trim() || null,
@@ -317,7 +321,6 @@ export function useServicePrescriptionForm({
                 administeredById: vaccination.administeredById ?? null,
                 expiryDate: vaccination.expiryDate ?? null,
                 administeredDate: vaccination.administeredDate ?? null,
-                nextDoseDate: vaccination.nextDoseDate ?? null,
               }
             : {}),
           userId: patient.id,
@@ -373,6 +376,7 @@ export function useServicePrescriptionForm({
     },
     onSuccess: () => {
       toast.success(i18n.t('messages.serviceRecordSaved'))
+      setAppointmentDate('')
       setSymptoms('')
       setDiagnosis('')
       setTreatment('')
@@ -391,6 +395,7 @@ export function useServicePrescriptionForm({
       setNextKey((value) => value + 1)
       draftMediaRef.current = []
       onSaved?.()
+      void queryClient.invalidateQueries({ queryKey: ['reminders'] })
       void queryClient.invalidateQueries({
         queryKey: ['examination-queue'],
       })
@@ -592,6 +597,8 @@ export function useServicePrescriptionForm({
     isPharmacy,
     isVaccination,
     showVaccination,
+    appointmentDate,
+    setAppointmentDate,
     symptoms,
     setSymptoms,
     diagnosis,

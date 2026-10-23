@@ -53,7 +53,7 @@ export interface QueueEntry {
     observation?: string | null
     expiryDate?: string | null
     administeredDate?: string | null
-    nextDoseDate?: string | null
+    appointmentDate?: string | null
     administeredById?: string | null
     id: string
     symptoms: string
@@ -259,6 +259,7 @@ export const deleteVideo = (fileName: string): Promise<void> =>
   deleteMedia('videos', fileName)
 
 export interface MedicalHistory extends VaccinationInput {
+  appointmentDate?: string | null
   serviceType?: import('@/features/prescriptions/api').ServiceType
   id: string
   createdAt: string

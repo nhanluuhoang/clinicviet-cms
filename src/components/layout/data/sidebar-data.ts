@@ -27,6 +27,7 @@ import {
   Building2,
   MessageSquare,
   ReceiptText,
+  BellRing,
 } from 'lucide-react'
 import { type SidebarData } from '../types'
 
@@ -108,6 +109,14 @@ export const sidebarData: SidebarData = {
           },
           url: '/invoices',
           icon: ReceiptText,
+          roles: STAFF_ROLES,
+        },
+        {
+          get title() {
+            return i18n.t('reminders.title')
+          },
+          url: '/reminders',
+          icon: BellRing,
           roles: STAFF_ROLES,
         },
       ],

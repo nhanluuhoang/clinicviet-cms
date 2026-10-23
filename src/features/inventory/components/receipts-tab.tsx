@@ -192,7 +192,7 @@ const columns: ColumnDef<GoodsReceiptSummary>[] = [
       <div className='min-w-44'>
         <div>{row.original.supplierName}</div>
         <div className='text-xs text-muted-foreground'>
-          {i18n.t('messages.invoice')} {row.original.invoiceNo}
+          {row.original.invoiceNo}
         </div>
       </div>
     ),

@@ -36,6 +36,7 @@ import { Route as AuthenticatedMonthlyStatisticsIndexRouteImport } from './route
 import { Route as AuthenticatedPatientsIndexRouteImport } from './routes/_authenticated/patients/index'
 import { Route as AuthenticatedPostsIndexRouteImport } from './routes/_authenticated/posts/index'
 import { Route as AuthenticatedPrescriptionTemplatesIndexRouteImport } from './routes/_authenticated/prescription-templates/index'
+import { Route as AuthenticatedRemindersIndexRouteImport } from './routes/_authenticated/reminders/index'
 import { Route as AuthenticatedSettingsIndexRouteImport } from './routes/_authenticated/settings/index'
 import { Route as AuthenticatedSettingsChangePasswordRouteImport } from './routes/_authenticated/settings/change-password'
 import { Route as AuthenticatedSettingsTenantRouteImport } from './routes/_authenticated/settings/tenant'
@@ -196,6 +197,12 @@ const AuthenticatedPrescriptionTemplatesIndexRoute =
     path: '/prescription-templates/',
     getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
+const AuthenticatedRemindersIndexRoute =
+  AuthenticatedRemindersIndexRouteImport.update({
+    id: '/reminders/',
+    path: '/reminders/',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
 const AuthenticatedSettingsIndexRoute =
   AuthenticatedSettingsIndexRouteImport.update({
     id: '/',
@@ -284,6 +291,7 @@ export interface FileRoutesByFullPath {
   '/patients/': typeof AuthenticatedPatientsIndexRoute
   '/posts/': typeof AuthenticatedPostsIndexRoute
   '/prescription-templates/': typeof AuthenticatedPrescriptionTemplatesIndexRoute
+  '/reminders/': typeof AuthenticatedRemindersIndexRoute
   '/settings/': typeof AuthenticatedSettingsIndexRoute
   '/tenants/': typeof AuthenticatedTenantsIndexRoute
   '/yearly-statistics/': typeof AuthenticatedYearlyStatisticsIndexRoute
@@ -320,6 +328,7 @@ export interface FileRoutesByTo {
   '/patients': typeof AuthenticatedPatientsIndexRoute
   '/posts': typeof AuthenticatedPostsIndexRoute
   '/prescription-templates': typeof AuthenticatedPrescriptionTemplatesIndexRoute
+  '/reminders': typeof AuthenticatedRemindersIndexRoute
   '/settings': typeof AuthenticatedSettingsIndexRoute
   '/tenants': typeof AuthenticatedTenantsIndexRoute
   '/yearly-statistics': typeof AuthenticatedYearlyStatisticsIndexRoute
@@ -359,6 +368,7 @@ export interface FileRoutesById {
   '/_authenticated/patients/': typeof AuthenticatedPatientsIndexRoute
   '/_authenticated/posts/': typeof AuthenticatedPostsIndexRoute
   '/_authenticated/prescription-templates/': typeof AuthenticatedPrescriptionTemplatesIndexRoute
+  '/_authenticated/reminders/': typeof AuthenticatedRemindersIndexRoute
   '/_authenticated/settings/': typeof AuthenticatedSettingsIndexRoute
   '/_authenticated/tenants/': typeof AuthenticatedTenantsIndexRoute
   '/_authenticated/yearly-statistics/': typeof AuthenticatedYearlyStatisticsIndexRoute
@@ -398,6 +408,7 @@ export interface FileRouteTypes {
     | '/patients/'
     | '/posts/'
     | '/prescription-templates/'
+    | '/reminders/'
     | '/settings/'
     | '/tenants/'
     | '/yearly-statistics/'
@@ -434,6 +445,7 @@ export interface FileRouteTypes {
     | '/patients'
     | '/posts'
     | '/prescription-templates'
+    | '/reminders'
     | '/settings'
     | '/tenants'
     | '/yearly-statistics'
@@ -472,6 +484,7 @@ export interface FileRouteTypes {
     | '/_authenticated/patients/'
     | '/_authenticated/posts/'
     | '/_authenticated/prescription-templates/'
+    | '/_authenticated/reminders/'
     | '/_authenticated/settings/'
     | '/_authenticated/tenants/'
     | '/_authenticated/yearly-statistics/'
@@ -680,6 +693,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedPrescriptionTemplatesIndexRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/reminders/': {
+      id: '/_authenticated/reminders/'
+      path: '/reminders'
+      fullPath: '/reminders/'
+      preLoaderRoute: typeof AuthenticatedRemindersIndexRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/settings/': {
       id: '/_authenticated/settings/'
       path: '/'
@@ -788,6 +808,7 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedPatientsIndexRoute: typeof AuthenticatedPatientsIndexRoute
   AuthenticatedPostsIndexRoute: typeof AuthenticatedPostsIndexRoute
   AuthenticatedPrescriptionTemplatesIndexRoute: typeof AuthenticatedPrescriptionTemplatesIndexRoute
+  AuthenticatedRemindersIndexRoute: typeof AuthenticatedRemindersIndexRoute
   AuthenticatedTenantsIndexRoute: typeof AuthenticatedTenantsIndexRoute
   AuthenticatedYearlyStatisticsIndexRoute: typeof AuthenticatedYearlyStatisticsIndexRoute
 }
@@ -819,6 +840,7 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedPostsIndexRoute: AuthenticatedPostsIndexRoute,
   AuthenticatedPrescriptionTemplatesIndexRoute:
     AuthenticatedPrescriptionTemplatesIndexRoute,
+  AuthenticatedRemindersIndexRoute: AuthenticatedRemindersIndexRoute,
   AuthenticatedTenantsIndexRoute: AuthenticatedTenantsIndexRoute,
   AuthenticatedYearlyStatisticsIndexRoute:
     AuthenticatedYearlyStatisticsIndexRoute,
