@@ -71,6 +71,7 @@ export function DiagnosisInput({
             <Button
               type='button'
               variant='outline'
+              className='h-auto self-stretch sm:h-9 sm:self-start'
               aria-label={t('diagnosisSuggestions.choose')}
             >
               {t('messages.suggestions')}
