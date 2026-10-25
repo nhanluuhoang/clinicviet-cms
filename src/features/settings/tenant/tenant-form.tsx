@@ -65,6 +65,11 @@ export function TenantForm() {
     onSuccess: async () => {
       await Promise.all([
         queryClient.invalidateQueries({ queryKey: ['tenant', 'me'] }),
+        queryClient.invalidateQueries({ queryKey: ['landing-config'] }),
+        queryClient.invalidateQueries({ queryKey: ['tenants'] }),
+        queryClient.invalidateQueries({
+          queryKey: ['support-requests', 'tenant-options'],
+        }),
         queryClient.invalidateQueries({ queryKey: ['auth', 'profile'] }),
       ])
       toast.success(t('messages.clinicInformationUpdated'))

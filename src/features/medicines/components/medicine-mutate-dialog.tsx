@@ -28,6 +28,7 @@ import {
   FormMessage,
 } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
+import { NumberInput } from '@/components/number-input'
 import { SelectDropdown } from '@/components/select-dropdown'
 import { CreateMedicine, UpdateMedicine, type Medicine } from '../api'
 import { medicineGroups, medicineUnits, medicineUnitLabel } from '../data/data'
@@ -282,12 +283,11 @@ export function MedicineMutateDialog({
                   <FormItem>
                     <FormLabel required>{t('messages.sellingPrice')}</FormLabel>
                     <FormControl>
-                      <Input
+                      <NumberInput
                         {...field}
-                        type='number'
                         min={0}
-                        onChange={(e) =>
-                          field.onChange(Number(e.target.value || 0))
+                        onValueChange={(value) =>
+                          field.onChange(Number(value || 0))
                         }
                       />
                     </FormControl>
@@ -311,14 +311,11 @@ export function MedicineMutateDialog({
                       </InfoHint>
                     </div>
                     <FormControl>
-                      <Input
+                      <NumberInput
                         {...field}
-                        type='number'
                         min={0}
-                        onChange={(e) =>
-                          field.onChange(
-                            e.target.value === '' ? 0 : Number(e.target.value)
-                          )
+                        onValueChange={(value) =>
+                          field.onChange(value === '' ? 0 : Number(value))
                         }
                       />
                     </FormControl>

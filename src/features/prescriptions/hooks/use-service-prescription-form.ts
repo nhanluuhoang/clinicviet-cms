@@ -86,6 +86,8 @@ export function useServicePrescriptionForm({
 
   const showVaccination = isVaccination
 
+  const [appointmentDate, setAppointmentDate] = useState('')
+
   const [symptoms, setSymptoms] = useState('')
 
   const [diagnosis, setDiagnosis] = useState('')
@@ -151,6 +153,7 @@ export function useServicePrescriptionForm({
     const prescription = initialData.prescription
     const invoice = prescription?.invoice
     setVaccination(getVaccinationFields(initialData))
+    setAppointmentDate(initialData.appointmentDate?.slice(0, 10) ?? '')
     setSymptoms(initialData.symptoms ?? '')
     setDiagnosis(initialData.diagnosis ?? '')
     setTreatment(initialData.treatment ?? '')
@@ -210,8 +213,6 @@ export function useServicePrescriptionForm({
     queryKey: ['master-data', currentUser?.tenantId],
     queryFn: () => GetMasterDatas(),
     enabled: !!currentUser?.tenantId,
-    staleTime: 0,
-    gcTime: 0,
   })
 
   const vaccinationStaff = useQuery({
@@ -274,15 +275,6 @@ export function useServicePrescriptionForm({
       )
     : 0
 
-  const instructionOptions = (
-    masterData.data?.data.find(
-      (item) => item.key === 'MEDICINE_INSTRUCTION_OPTIONS'
-    )?.value ?? ''
-  )
-    .split(/\r?\n/)
-    .map((value) => value.trim())
-    .filter(Boolean)
-
   const medicineFee = items.reduce((sum, item) => {
     return (
       sum + Number(item.selectedMedicine?.salePrice ?? 0) * (item.quantity ?? 0)
@@ -305,6 +297,7 @@ export function useServicePrescriptionForm({
             ? { examinationQueueId }
             : {}),
           serviceType,
+          appointmentDate: !isPharmacy ? appointmentDate || null : null,
           ...(showVaccination
             ? {
                 temperature: vaccination.temperature?.trim() || null,
@@ -317,7 +310,6 @@ export function useServicePrescriptionForm({
                 administeredById: vaccination.administeredById ?? null,
                 expiryDate: vaccination.expiryDate ?? null,
                 administeredDate: vaccination.administeredDate ?? null,
-                nextDoseDate: vaccination.nextDoseDate ?? null,
               }
             : {}),
           userId: patient.id,
@@ -373,6 +365,7 @@ export function useServicePrescriptionForm({
     },
     onSuccess: () => {
       toast.success(i18n.t('messages.serviceRecordSaved'))
+      setAppointmentDate('')
       setSymptoms('')
       setDiagnosis('')
       setTreatment('')
@@ -391,6 +384,7 @@ export function useServicePrescriptionForm({
       setNextKey((value) => value + 1)
       draftMediaRef.current = []
       onSaved?.()
+      void queryClient.invalidateQueries({ queryKey: ['reminders'] })
       void queryClient.invalidateQueries({
         queryKey: ['examination-queue'],
       })
@@ -592,6 +586,8 @@ export function useServicePrescriptionForm({
     isPharmacy,
     isVaccination,
     showVaccination,
+    appointmentDate,
+    setAppointmentDate,
     symptoms,
     setSymptoms,
     diagnosis,
@@ -627,7 +623,6 @@ export function useServicePrescriptionForm({
     selectedStaffId,
     applyTemplate,
     consultationFee,
-    instructionOptions,
     medicineFee,
     invoiceTotal,
     save,

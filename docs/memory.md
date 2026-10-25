@@ -8,6 +8,16 @@
 
 ## Architecture
 
+- TanStack Query defaults for diagnoses, medicineInstructions, prescription-templates, vaccination-staff, posts, landing-config, master-data, tenants and support-requests/tenant-options use staleTime 15 minutes, gcTime 30 minutes and refetch stale data on mount/focus/reconnect. Tenant-specific catalog/template/post/website keys include tenant/role (master-data and staff options use tenant). Successful writes invalidate related lists/pickers; staff writes also invalidate vaccination-staff, clinic name changes invalidate website/clinic options. Login/logout clear the memory-only query cache. Stock, medicine search, queue and transactional queries retain short defaults.
+
+- Diagnosis/medicine instruction suggestion popups show one flat list without common/private headings. Use modal Popover inside prescription/template dialogs so the portal remains scrollable under the dialog scroll lock; constrain content height to Radix available height with a shrinking Command and fixed load-more action.
+
+- Medicine instruction catalogs follow diagnosis scope/permissions at /medicine-instructions and /system/medicine-instructions. MedicineInstructionInput searches common plus own-clinic entries from the API, preserves free text (255 characters) and the document preview in prescriptions/templates. The former master-data settings editor and hardcoded suggestions are replaced by the catalog.
+
+- Diagnosis catalogs use /diagnoses (common plus own clinic) and /system/diagnoses (Super Admin common entries). Clinic admins/doctors manage only their own entries. DiagnosisInput searches paginated /diagnoses suggestions and retains editable multiline text; clinical history stores text independently of catalog entries.
+
+- MedicalHistory uses one optional appointmentDate (DATE) for the next examination/vaccination appointment. Migration 20261023010000_unify_appointment_date renames nextDoseDate and preserves existing vaccine dates. The read-only /reminders page reads appointmentDate with staff access, URL filters and server pagination; dateFrom defaults to today only when absent, while an explicit empty string/reset clears the date filter; there is no separate reminder/contact/attendance state.
+
 - Tenant subscriptions use ACTIVE/EXPIRED/SUSPENDED with one usage expiry (`subscriptionEndsAt`); creation defaults to ACTIVE and requires an expiry. No TRIAL option or trial date columns. Trial requests/referrals remain separate. Expiry notices use localized plan names without BASIC/PLUS/PRO codes.
 
 - Reuse react-i18next `useTranslation()/t()` in components and the exported `i18n` instance for module-level labels/schema error callbacks. Shared label getters/options must update on language changes; memoized translated content depends on `t`. Vietnamese/English resources live in `src/locales/{vi,en}/translation.json`; Zod defaults and `getLocale()` follow the selected language. Axios sends Accept-Language; language switchers are hidden in Header and AuthLayout. Preserve stored/user-entered values when translating labels.
@@ -22,7 +32,7 @@
 - Trang `/system/users` cho Super Admin đặt lại mật khẩu từng tài khoản bằng hộp thoại riêng; đổi thành công sẽ đăng xuất các phiên hiện tại của tài khoản đó.
 
 - Tính năng ở `src/features/`, route ở `src/routes/_authenticated/`; API và kiểu dữ liệu nằm trong `api.ts` của feature, gọi qua `src/lib/axios.ts`. Interceptor trả `response.data`, giữ `AxiosError` để nhận diện 401; CSRF lấy từ `/auth/csrf` và gửi cho request ghi.
-- Master data cache thuộc BE. Settings, ngày nghỉ, đơn thuốc và template dùng `useQuery` trực tiếp với key `['master-data', tenantId]`, `staleTime: 0`, `gcTime: 0`; refetch khi mount, bỏ dữ liệu không active, giữ focus behavior toàn cục. Mutation invalidate tiền tố `['master-data']`; không tạo hook master data riêng.
+- Master data uses direct useQuery calls keyed by ['master-data', tenantId] in settings, days off and prescription forms; inherit the 15-minute CMS policy alongside backend cache. Mutations invalidate ['master-data']; do not introduce a dedicated master-data hook.
 - PATCH medical history gửi đủ các danh sách media còn giữ, kể cả mảng rỗng; bỏ trường nghĩa là không đổi. Nhận HLS MIME `application/vnd.apple.mpegurl` là video. Bỏ media cũ chỉ sửa draft đến lúc Save; DELETE và dọn khi đóng dialog chỉ áp dụng upload mới. Giới hạn 5 ảnh, 5 PDF, 1 video.
 - PrescriptionDialog dùng chung ba tab EXAMINATION/PHARMACY/VACCINATION; mỗi tab giữ form và chi phí riêng, chỉ gửi tab mở. Nhớ tab gần nhất theo user trong localStorage, không lưu dữ liệu bệnh nhân. Sửa phiếu mở đúng loại đã lưu và khóa hai tab khác; PATCH theo history.id, refresh medical histories. Hồ sơ không có prescription chỉ sửa thông tin hồ sơ, ẩn thuốc và chi phí. Phí khám chỉ áp dụng EXAMINATION.
 - Vaccination API dùng trường phẳng; `getVaccinationFields` đổi ngày DB sang `YYYY-MM-DD`. Form hiện dấu hiệu sinh tồn, mũi/liều/đường/vị trí/người tiêm và các ngày; người tiêm từ `/users/staff-options`, mặc định user hiện tại, ngày tiêm mặc định hôm nay local, sửa phiếu giữ dữ liệu cũ.
@@ -31,9 +41,14 @@
 
 ## Convention
 
+- Price and quantity fields use shared `NumberInput` (`src/components/number-input.tsx`) for immediate locale grouping. `onValueChange` emits an unformatted numeric string; callers retain their existing number/empty conversion. Preserve native min/max/step validation and forward refs for React Hook Form.
+
+- Inventory document tabs (receipts/issues/stocktakes) use URL-backed dateFrom/dateTo filters on the document date. Stock/batch Excel exports use all filtered, sorted rows before pagination; preserve identifiers as text and quantities/amounts as numbers. ExcelJS loads only when exporting.
+
+
 - Mobile table expanders (`expand`/`expander`) fill the remaining action-row width with a 44px touch height in `MobileDataCards`; adjacent actions remain independent.
 
-- Inventory/medicine create requests omit code: BE generates PN/PX/KK/HUY/MED/RX through SnowflakeService. Disposal sends kind=DISPOSAL to /stock-takes with countedQty=0. Keep code fields only in responses and display the persisted code.
+- Inventory/medicine create requests omit code: BE generates decimal Snowflake strings without prefixes. CMS displays/searches raw codes without adding or parsing prefixes; historical data is not migrated. Disposal sends kind=DISPOSAL to /stock-takes with countedQty=0. Keep code fields only in responses.
 
 - Goods receipt entry treats supplier invoice number and batch number as optional; placeholders explain that blanks are generated by the backend. Keep response numbers required and do not generate these identifiers in CMS.
 

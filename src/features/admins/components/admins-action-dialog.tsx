@@ -151,7 +151,10 @@ export function AdminsActionDialog({
         : CreateStaff(payload)
     },
     onSuccess: async () => {
-      await queryClient.invalidateQueries({ queryKey: ['users'] })
+      await Promise.all([
+        queryClient.invalidateQueries({ queryKey: ['users'] }),
+        queryClient.invalidateQueries({ queryKey: ['vaccination-staff'] }),
+      ])
       toast.success(
         isEdit
           ? t('messages.staffMemberUpdated')

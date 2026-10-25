@@ -25,7 +25,6 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog'
-import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import {
   Popover,
@@ -34,6 +33,7 @@ import {
 } from '@/components/ui/popover'
 import { Textarea } from '@/components/ui/textarea'
 import { DatePickerInput } from '@/components/date-picker-input'
+import { NumberInput } from '@/components/number-input'
 import { GetMedicines, type Medicine } from '@/features/medicines/api'
 import { CreateStockTake, GetBatches } from '../api'
 import { ExpiryBadge } from './expiry-badge'
@@ -276,21 +276,16 @@ export function StockTakeMutateDrawer({
                             </p>
                             <label className='block space-y-1'>
                               <span>{t('messages.physicalCount')}</span>
-                              <Input
-                                type='number'
+                              <NumberInput
                                 min={0}
                                 className='h-8 w-full'
                                 placeholder={String(batch.qtyRemaining)}
                                 value={counted ?? ''}
-                                onChange={(event) =>
+                                onValueChange={(value) =>
                                   setCounts((previous) => {
                                     const next = { ...previous }
-                                    if (event.target.value === '')
-                                      delete next[batch.id]
-                                    else
-                                      next[batch.id] = Number(
-                                        event.target.value
-                                      )
+                                    if (value === '') delete next[batch.id]
+                                    else next[batch.id] = Number(value)
                                     return next
                                   })
                                 }
@@ -349,21 +344,18 @@ export function StockTakeMutateDrawer({
                                   {formatNumber(batch.qtyRemaining)}
                                 </td>
                                 <td className='px-3 py-2 text-end'>
-                                  <Input
-                                    type='number'
+                                  <NumberInput
                                     min={0}
                                     className='ms-auto h-8 w-24 text-end'
                                     placeholder={String(batch.qtyRemaining)}
                                     value={counted ?? ''}
-                                    onChange={(e) =>
+                                    onValueChange={(value) =>
                                       setCounts((prev) => {
                                         const next = { ...prev }
-                                        if (e.target.value === '') {
+                                        if (value === '') {
                                           delete next[batch.id]
                                         } else {
-                                          next[batch.id] = Number(
-                                            e.target.value
-                                          )
+                                          next[batch.id] = Number(value)
                                         }
                                         return next
                                       })

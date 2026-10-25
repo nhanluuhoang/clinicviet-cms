@@ -48,7 +48,7 @@ export interface VaccinationInput {
   batchNumber?: string | null
   expiryDate?: string | null
   administeredDate?: string | null
-  nextDoseDate?: string | null
+  appointmentDate?: string | null
   screening?: 'PENDING' | 'ELIGIBLE' | 'DEFERRED' | null
   administeredById?: string | null
   screeningNote?: string | null
@@ -140,7 +140,6 @@ export function getVaccinationFields(
     observation: history.observation,
     expiryDate: history.expiryDate?.slice(0, 10),
     administeredDate: history.administeredDate?.slice(0, 10),
-    nextDoseDate: history.nextDoseDate?.slice(0, 10),
     administeredById: history.administeredById,
   }
 }

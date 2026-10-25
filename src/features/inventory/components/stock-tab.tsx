@@ -7,7 +7,10 @@ import { cn, formatMoney, formatNumber } from '@/lib/utils'
 import { useApiSearch } from '@/hooks/use-api-search'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
-import { DataTableColumnHeader } from '@/components/data-table'
+import {
+  DataTableToolbar,
+  DataTableColumnHeader,
+} from '@/components/data-table'
 import { UrlDataTable } from '@/components/data-table/url-data-table'
 import {
   medicineGroupLabel,
@@ -15,7 +18,9 @@ import {
 } from '@/features/medicines/data/data'
 import { GetStock, type StockSummary } from '../api'
 import { expiryMeta, expiryStatuses } from '../data/data'
+import { routeApi } from '../data/route'
 import { ExpiryBadge } from './expiry-badge'
+import { InventoryExportButton } from './inventory-export-button'
 
 function BatchBreakdown({ row }: { row: Row<StockSummary> }) {
   const { t } = useTranslation()
@@ -270,11 +275,32 @@ const columns: ColumnDef<StockSummary>[] = [
 export function StockTab() {
   const { t } = useTranslation()
 
+  const currentSearch = routeApi.useSearch().filter ?? ''
   const search = useApiSearch()
-  const { data, isLoading } = useQuery({
+  const { data, isLoading, isFetching, isError } = useQuery({
     queryKey: ['inventory', 'stock', search],
     queryFn: () => GetStock(search),
   })
+
+  const filters = [
+    {
+      columnId: 'group',
+      title: t('messages.medicineGroup'),
+      options: medicineGroups.map((g) => ({
+        label: g.label,
+        value: g.value,
+      })),
+    },
+    {
+      columnId: 'expiryStatus',
+      title: t('messages.expiryDate'),
+      options: expiryStatuses.map((s) => ({
+        label: s.label,
+        value: s.value,
+        icon: s.icon,
+      })),
+    },
+  ]
 
   return (
     <UrlDataTable
@@ -286,25 +312,20 @@ export function StockTab() {
       mobileLabels={{ name: 'mobileTable.context.stockMedicine' }}
       getSearchText={(s) => `${s.name} ${s.code} ${s.manufacturer}`}
       renderSubRow={(row) => <BatchBreakdown row={row} />}
-      filters={[
-        {
-          columnId: 'group',
-          title: t('messages.medicineGroup'),
-          options: medicineGroups.map((g) => ({
-            label: g.label,
-            value: g.value,
-          })),
-        },
-        {
-          columnId: 'expiryStatus',
-          title: t('messages.expiryDate'),
-          options: expiryStatuses.map((s) => ({
-            label: s.label,
-            value: s.value,
-            icon: s.icon,
-          })),
-        },
-      ]}
+      filters={filters}
+      renderToolbar={(table) => (
+        <DataTableToolbar
+          table={table}
+          filters={filters}
+          searchPlaceholder={t('messages.searchMedicineNameCodeOrManufacturer')}
+        >
+          <InventoryExportButton
+            table={table}
+            kind='stock'
+            disabled={isFetching || isError || search !== currentSearch}
+          />
+        </DataTableToolbar>
+      )}
     />
   )
 }

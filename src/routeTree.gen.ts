@@ -24,6 +24,7 @@ import { Route as AuthenticatedSupportRequestsRouteImport } from './routes/_auth
 import { Route as AuthenticatedAdminsIndexRouteImport } from './routes/_authenticated/admins/index'
 import { Route as AuthenticatedClinicDaysOffIndexRouteImport } from './routes/_authenticated/clinic-days-off/index'
 import { Route as AuthenticatedDashboardsIndexRouteImport } from './routes/_authenticated/dashboards/index'
+import { Route as AuthenticatedDiagnosesIndexRouteImport } from './routes/_authenticated/diagnoses/index'
 import { Route as AuthenticatedErrorsErrorRouteImport } from './routes/_authenticated/errors/$error'
 import { Route as AuthenticatedHelpCenterIndexRouteImport } from './routes/_authenticated/help-center/index'
 import { Route as AuthenticatedInventoryIndexRouteImport } from './routes/_authenticated/inventory/index'
@@ -31,14 +32,18 @@ import { Route as AuthenticatedInvoicesIndexRouteImport } from './routes/_authen
 import { Route as AuthenticatedLandingConfigIndexRouteImport } from './routes/_authenticated/landing-config/index'
 import { Route as AuthenticatedMasterDataIndexRouteImport } from './routes/_authenticated/master-data/index'
 import { Route as AuthenticatedMedicalHistoriesIndexRouteImport } from './routes/_authenticated/medical-histories/index'
+import { Route as AuthenticatedMedicineInstructionsIndexRouteImport } from './routes/_authenticated/medicine-instructions/index'
 import { Route as AuthenticatedMedicinesIndexRouteImport } from './routes/_authenticated/medicines/index'
 import { Route as AuthenticatedMonthlyStatisticsIndexRouteImport } from './routes/_authenticated/monthly-statistics/index'
 import { Route as AuthenticatedPatientsIndexRouteImport } from './routes/_authenticated/patients/index'
 import { Route as AuthenticatedPostsIndexRouteImport } from './routes/_authenticated/posts/index'
 import { Route as AuthenticatedPrescriptionTemplatesIndexRouteImport } from './routes/_authenticated/prescription-templates/index'
+import { Route as AuthenticatedRemindersIndexRouteImport } from './routes/_authenticated/reminders/index'
 import { Route as AuthenticatedSettingsIndexRouteImport } from './routes/_authenticated/settings/index'
 import { Route as AuthenticatedSettingsChangePasswordRouteImport } from './routes/_authenticated/settings/change-password'
 import { Route as AuthenticatedSettingsTenantRouteImport } from './routes/_authenticated/settings/tenant'
+import { Route as AuthenticatedSystemDiagnosesRouteImport } from './routes/_authenticated/system/diagnoses'
+import { Route as AuthenticatedSystemMedicineInstructionsRouteImport } from './routes/_authenticated/system/medicine-instructions'
 import { Route as AuthenticatedSystemSupportRequestsRouteImport } from './routes/_authenticated/system/support-requests'
 import { Route as AuthenticatedSystemTenantsRouteImport } from './routes/_authenticated/system/tenants'
 import { Route as AuthenticatedSystemTrialRequestsRouteImport } from './routes/_authenticated/system/trial-requests'
@@ -125,6 +130,12 @@ const AuthenticatedDashboardsIndexRoute =
     path: '/dashboards/',
     getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
+const AuthenticatedDiagnosesIndexRoute =
+  AuthenticatedDiagnosesIndexRouteImport.update({
+    id: '/diagnoses/',
+    path: '/diagnoses/',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
 const AuthenticatedErrorsErrorRoute =
   AuthenticatedErrorsErrorRouteImport.update({
     id: '/errors/$error',
@@ -167,6 +178,12 @@ const AuthenticatedMedicalHistoriesIndexRoute =
     path: '/medical-histories/',
     getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
+const AuthenticatedMedicineInstructionsIndexRoute =
+  AuthenticatedMedicineInstructionsIndexRouteImport.update({
+    id: '/medicine-instructions/',
+    path: '/medicine-instructions/',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
 const AuthenticatedMedicinesIndexRoute =
   AuthenticatedMedicinesIndexRouteImport.update({
     id: '/medicines/',
@@ -196,6 +213,12 @@ const AuthenticatedPrescriptionTemplatesIndexRoute =
     path: '/prescription-templates/',
     getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
+const AuthenticatedRemindersIndexRoute =
+  AuthenticatedRemindersIndexRouteImport.update({
+    id: '/reminders/',
+    path: '/reminders/',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
 const AuthenticatedSettingsIndexRoute =
   AuthenticatedSettingsIndexRouteImport.update({
     id: '/',
@@ -213,6 +236,18 @@ const AuthenticatedSettingsTenantRoute =
     id: '/tenant',
     path: '/tenant',
     getParentRoute: () => AuthenticatedSettingsRouteRoute,
+  } as any)
+const AuthenticatedSystemDiagnosesRoute =
+  AuthenticatedSystemDiagnosesRouteImport.update({
+    id: '/system/diagnoses',
+    path: '/system/diagnoses',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
+const AuthenticatedSystemMedicineInstructionsRoute =
+  AuthenticatedSystemMedicineInstructionsRouteImport.update({
+    id: '/system/medicine-instructions',
+    path: '/system/medicine-instructions',
+    getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
 const AuthenticatedSystemSupportRequestsRoute =
   AuthenticatedSystemSupportRequestsRouteImport.update({
@@ -266,6 +301,8 @@ export interface FileRoutesByFullPath {
   '/errors/$error': typeof AuthenticatedErrorsErrorRoute
   '/settings/change-password': typeof AuthenticatedSettingsChangePasswordRoute
   '/settings/tenant': typeof AuthenticatedSettingsTenantRoute
+  '/system/diagnoses': typeof AuthenticatedSystemDiagnosesRoute
+  '/system/medicine-instructions': typeof AuthenticatedSystemMedicineInstructionsRoute
   '/system/support-requests': typeof AuthenticatedSystemSupportRequestsRoute
   '/system/tenants': typeof AuthenticatedSystemTenantsRoute
   '/system/trial-requests': typeof AuthenticatedSystemTrialRequestsRoute
@@ -273,17 +310,20 @@ export interface FileRoutesByFullPath {
   '/admins/': typeof AuthenticatedAdminsIndexRoute
   '/clinic-days-off/': typeof AuthenticatedClinicDaysOffIndexRoute
   '/dashboards/': typeof AuthenticatedDashboardsIndexRoute
+  '/diagnoses/': typeof AuthenticatedDiagnosesIndexRoute
   '/help-center/': typeof AuthenticatedHelpCenterIndexRoute
   '/inventory/': typeof AuthenticatedInventoryIndexRoute
   '/invoices/': typeof AuthenticatedInvoicesIndexRoute
   '/landing-config/': typeof AuthenticatedLandingConfigIndexRoute
   '/master-data/': typeof AuthenticatedMasterDataIndexRoute
   '/medical-histories/': typeof AuthenticatedMedicalHistoriesIndexRoute
+  '/medicine-instructions/': typeof AuthenticatedMedicineInstructionsIndexRoute
   '/medicines/': typeof AuthenticatedMedicinesIndexRoute
   '/monthly-statistics/': typeof AuthenticatedMonthlyStatisticsIndexRoute
   '/patients/': typeof AuthenticatedPatientsIndexRoute
   '/posts/': typeof AuthenticatedPostsIndexRoute
   '/prescription-templates/': typeof AuthenticatedPrescriptionTemplatesIndexRoute
+  '/reminders/': typeof AuthenticatedRemindersIndexRoute
   '/settings/': typeof AuthenticatedSettingsIndexRoute
   '/tenants/': typeof AuthenticatedTenantsIndexRoute
   '/yearly-statistics/': typeof AuthenticatedYearlyStatisticsIndexRoute
@@ -302,6 +342,8 @@ export interface FileRoutesByTo {
   '/errors/$error': typeof AuthenticatedErrorsErrorRoute
   '/settings/change-password': typeof AuthenticatedSettingsChangePasswordRoute
   '/settings/tenant': typeof AuthenticatedSettingsTenantRoute
+  '/system/diagnoses': typeof AuthenticatedSystemDiagnosesRoute
+  '/system/medicine-instructions': typeof AuthenticatedSystemMedicineInstructionsRoute
   '/system/support-requests': typeof AuthenticatedSystemSupportRequestsRoute
   '/system/tenants': typeof AuthenticatedSystemTenantsRoute
   '/system/trial-requests': typeof AuthenticatedSystemTrialRequestsRoute
@@ -309,17 +351,20 @@ export interface FileRoutesByTo {
   '/admins': typeof AuthenticatedAdminsIndexRoute
   '/clinic-days-off': typeof AuthenticatedClinicDaysOffIndexRoute
   '/dashboards': typeof AuthenticatedDashboardsIndexRoute
+  '/diagnoses': typeof AuthenticatedDiagnosesIndexRoute
   '/help-center': typeof AuthenticatedHelpCenterIndexRoute
   '/inventory': typeof AuthenticatedInventoryIndexRoute
   '/invoices': typeof AuthenticatedInvoicesIndexRoute
   '/landing-config': typeof AuthenticatedLandingConfigIndexRoute
   '/master-data': typeof AuthenticatedMasterDataIndexRoute
   '/medical-histories': typeof AuthenticatedMedicalHistoriesIndexRoute
+  '/medicine-instructions': typeof AuthenticatedMedicineInstructionsIndexRoute
   '/medicines': typeof AuthenticatedMedicinesIndexRoute
   '/monthly-statistics': typeof AuthenticatedMonthlyStatisticsIndexRoute
   '/patients': typeof AuthenticatedPatientsIndexRoute
   '/posts': typeof AuthenticatedPostsIndexRoute
   '/prescription-templates': typeof AuthenticatedPrescriptionTemplatesIndexRoute
+  '/reminders': typeof AuthenticatedRemindersIndexRoute
   '/settings': typeof AuthenticatedSettingsIndexRoute
   '/tenants': typeof AuthenticatedTenantsIndexRoute
   '/yearly-statistics': typeof AuthenticatedYearlyStatisticsIndexRoute
@@ -341,6 +386,8 @@ export interface FileRoutesById {
   '/_authenticated/errors/$error': typeof AuthenticatedErrorsErrorRoute
   '/_authenticated/settings/change-password': typeof AuthenticatedSettingsChangePasswordRoute
   '/_authenticated/settings/tenant': typeof AuthenticatedSettingsTenantRoute
+  '/_authenticated/system/diagnoses': typeof AuthenticatedSystemDiagnosesRoute
+  '/_authenticated/system/medicine-instructions': typeof AuthenticatedSystemMedicineInstructionsRoute
   '/_authenticated/system/support-requests': typeof AuthenticatedSystemSupportRequestsRoute
   '/_authenticated/system/tenants': typeof AuthenticatedSystemTenantsRoute
   '/_authenticated/system/trial-requests': typeof AuthenticatedSystemTrialRequestsRoute
@@ -348,17 +395,20 @@ export interface FileRoutesById {
   '/_authenticated/admins/': typeof AuthenticatedAdminsIndexRoute
   '/_authenticated/clinic-days-off/': typeof AuthenticatedClinicDaysOffIndexRoute
   '/_authenticated/dashboards/': typeof AuthenticatedDashboardsIndexRoute
+  '/_authenticated/diagnoses/': typeof AuthenticatedDiagnosesIndexRoute
   '/_authenticated/help-center/': typeof AuthenticatedHelpCenterIndexRoute
   '/_authenticated/inventory/': typeof AuthenticatedInventoryIndexRoute
   '/_authenticated/invoices/': typeof AuthenticatedInvoicesIndexRoute
   '/_authenticated/landing-config/': typeof AuthenticatedLandingConfigIndexRoute
   '/_authenticated/master-data/': typeof AuthenticatedMasterDataIndexRoute
   '/_authenticated/medical-histories/': typeof AuthenticatedMedicalHistoriesIndexRoute
+  '/_authenticated/medicine-instructions/': typeof AuthenticatedMedicineInstructionsIndexRoute
   '/_authenticated/medicines/': typeof AuthenticatedMedicinesIndexRoute
   '/_authenticated/monthly-statistics/': typeof AuthenticatedMonthlyStatisticsIndexRoute
   '/_authenticated/patients/': typeof AuthenticatedPatientsIndexRoute
   '/_authenticated/posts/': typeof AuthenticatedPostsIndexRoute
   '/_authenticated/prescription-templates/': typeof AuthenticatedPrescriptionTemplatesIndexRoute
+  '/_authenticated/reminders/': typeof AuthenticatedRemindersIndexRoute
   '/_authenticated/settings/': typeof AuthenticatedSettingsIndexRoute
   '/_authenticated/tenants/': typeof AuthenticatedTenantsIndexRoute
   '/_authenticated/yearly-statistics/': typeof AuthenticatedYearlyStatisticsIndexRoute
@@ -380,6 +430,8 @@ export interface FileRouteTypes {
     | '/errors/$error'
     | '/settings/change-password'
     | '/settings/tenant'
+    | '/system/diagnoses'
+    | '/system/medicine-instructions'
     | '/system/support-requests'
     | '/system/tenants'
     | '/system/trial-requests'
@@ -387,17 +439,20 @@ export interface FileRouteTypes {
     | '/admins/'
     | '/clinic-days-off/'
     | '/dashboards/'
+    | '/diagnoses/'
     | '/help-center/'
     | '/inventory/'
     | '/invoices/'
     | '/landing-config/'
     | '/master-data/'
     | '/medical-histories/'
+    | '/medicine-instructions/'
     | '/medicines/'
     | '/monthly-statistics/'
     | '/patients/'
     | '/posts/'
     | '/prescription-templates/'
+    | '/reminders/'
     | '/settings/'
     | '/tenants/'
     | '/yearly-statistics/'
@@ -416,6 +471,8 @@ export interface FileRouteTypes {
     | '/errors/$error'
     | '/settings/change-password'
     | '/settings/tenant'
+    | '/system/diagnoses'
+    | '/system/medicine-instructions'
     | '/system/support-requests'
     | '/system/tenants'
     | '/system/trial-requests'
@@ -423,17 +480,20 @@ export interface FileRouteTypes {
     | '/admins'
     | '/clinic-days-off'
     | '/dashboards'
+    | '/diagnoses'
     | '/help-center'
     | '/inventory'
     | '/invoices'
     | '/landing-config'
     | '/master-data'
     | '/medical-histories'
+    | '/medicine-instructions'
     | '/medicines'
     | '/monthly-statistics'
     | '/patients'
     | '/posts'
     | '/prescription-templates'
+    | '/reminders'
     | '/settings'
     | '/tenants'
     | '/yearly-statistics'
@@ -454,6 +514,8 @@ export interface FileRouteTypes {
     | '/_authenticated/errors/$error'
     | '/_authenticated/settings/change-password'
     | '/_authenticated/settings/tenant'
+    | '/_authenticated/system/diagnoses'
+    | '/_authenticated/system/medicine-instructions'
     | '/_authenticated/system/support-requests'
     | '/_authenticated/system/tenants'
     | '/_authenticated/system/trial-requests'
@@ -461,17 +523,20 @@ export interface FileRouteTypes {
     | '/_authenticated/admins/'
     | '/_authenticated/clinic-days-off/'
     | '/_authenticated/dashboards/'
+    | '/_authenticated/diagnoses/'
     | '/_authenticated/help-center/'
     | '/_authenticated/inventory/'
     | '/_authenticated/invoices/'
     | '/_authenticated/landing-config/'
     | '/_authenticated/master-data/'
     | '/_authenticated/medical-histories/'
+    | '/_authenticated/medicine-instructions/'
     | '/_authenticated/medicines/'
     | '/_authenticated/monthly-statistics/'
     | '/_authenticated/patients/'
     | '/_authenticated/posts/'
     | '/_authenticated/prescription-templates/'
+    | '/_authenticated/reminders/'
     | '/_authenticated/settings/'
     | '/_authenticated/tenants/'
     | '/_authenticated/yearly-statistics/'
@@ -596,6 +661,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedDashboardsIndexRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/diagnoses/': {
+      id: '/_authenticated/diagnoses/'
+      path: '/diagnoses'
+      fullPath: '/diagnoses/'
+      preLoaderRoute: typeof AuthenticatedDiagnosesIndexRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/errors/$error': {
       id: '/_authenticated/errors/$error'
       path: '/errors/$error'
@@ -645,6 +717,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedMedicalHistoriesIndexRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/medicine-instructions/': {
+      id: '/_authenticated/medicine-instructions/'
+      path: '/medicine-instructions'
+      fullPath: '/medicine-instructions/'
+      preLoaderRoute: typeof AuthenticatedMedicineInstructionsIndexRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/medicines/': {
       id: '/_authenticated/medicines/'
       path: '/medicines'
@@ -680,6 +759,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedPrescriptionTemplatesIndexRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/reminders/': {
+      id: '/_authenticated/reminders/'
+      path: '/reminders'
+      fullPath: '/reminders/'
+      preLoaderRoute: typeof AuthenticatedRemindersIndexRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/settings/': {
       id: '/_authenticated/settings/'
       path: '/'
@@ -700,6 +786,20 @@ declare module '@tanstack/react-router' {
       fullPath: '/settings/tenant'
       preLoaderRoute: typeof AuthenticatedSettingsTenantRouteImport
       parentRoute: typeof AuthenticatedSettingsRouteRoute
+    }
+    '/_authenticated/system/diagnoses': {
+      id: '/_authenticated/system/diagnoses'
+      path: '/system/diagnoses'
+      fullPath: '/system/diagnoses'
+      preLoaderRoute: typeof AuthenticatedSystemDiagnosesRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/system/medicine-instructions': {
+      id: '/_authenticated/system/medicine-instructions'
+      path: '/system/medicine-instructions'
+      fullPath: '/system/medicine-instructions'
+      preLoaderRoute: typeof AuthenticatedSystemMedicineInstructionsRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
     }
     '/_authenticated/system/support-requests': {
       id: '/_authenticated/system/support-requests'
@@ -770,6 +870,8 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedSupportRequestsRoute: typeof AuthenticatedSupportRequestsRoute
   AuthenticatedIndexRoute: typeof AuthenticatedIndexRoute
   AuthenticatedErrorsErrorRoute: typeof AuthenticatedErrorsErrorRoute
+  AuthenticatedSystemDiagnosesRoute: typeof AuthenticatedSystemDiagnosesRoute
+  AuthenticatedSystemMedicineInstructionsRoute: typeof AuthenticatedSystemMedicineInstructionsRoute
   AuthenticatedSystemSupportRequestsRoute: typeof AuthenticatedSystemSupportRequestsRoute
   AuthenticatedSystemTenantsRoute: typeof AuthenticatedSystemTenantsRoute
   AuthenticatedSystemTrialRequestsRoute: typeof AuthenticatedSystemTrialRequestsRoute
@@ -777,17 +879,20 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedAdminsIndexRoute: typeof AuthenticatedAdminsIndexRoute
   AuthenticatedClinicDaysOffIndexRoute: typeof AuthenticatedClinicDaysOffIndexRoute
   AuthenticatedDashboardsIndexRoute: typeof AuthenticatedDashboardsIndexRoute
+  AuthenticatedDiagnosesIndexRoute: typeof AuthenticatedDiagnosesIndexRoute
   AuthenticatedHelpCenterIndexRoute: typeof AuthenticatedHelpCenterIndexRoute
   AuthenticatedInventoryIndexRoute: typeof AuthenticatedInventoryIndexRoute
   AuthenticatedInvoicesIndexRoute: typeof AuthenticatedInvoicesIndexRoute
   AuthenticatedLandingConfigIndexRoute: typeof AuthenticatedLandingConfigIndexRoute
   AuthenticatedMasterDataIndexRoute: typeof AuthenticatedMasterDataIndexRoute
   AuthenticatedMedicalHistoriesIndexRoute: typeof AuthenticatedMedicalHistoriesIndexRoute
+  AuthenticatedMedicineInstructionsIndexRoute: typeof AuthenticatedMedicineInstructionsIndexRoute
   AuthenticatedMedicinesIndexRoute: typeof AuthenticatedMedicinesIndexRoute
   AuthenticatedMonthlyStatisticsIndexRoute: typeof AuthenticatedMonthlyStatisticsIndexRoute
   AuthenticatedPatientsIndexRoute: typeof AuthenticatedPatientsIndexRoute
   AuthenticatedPostsIndexRoute: typeof AuthenticatedPostsIndexRoute
   AuthenticatedPrescriptionTemplatesIndexRoute: typeof AuthenticatedPrescriptionTemplatesIndexRoute
+  AuthenticatedRemindersIndexRoute: typeof AuthenticatedRemindersIndexRoute
   AuthenticatedTenantsIndexRoute: typeof AuthenticatedTenantsIndexRoute
   AuthenticatedYearlyStatisticsIndexRoute: typeof AuthenticatedYearlyStatisticsIndexRoute
 }
@@ -797,6 +902,9 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedSupportRequestsRoute: AuthenticatedSupportRequestsRoute,
   AuthenticatedIndexRoute: AuthenticatedIndexRoute,
   AuthenticatedErrorsErrorRoute: AuthenticatedErrorsErrorRoute,
+  AuthenticatedSystemDiagnosesRoute: AuthenticatedSystemDiagnosesRoute,
+  AuthenticatedSystemMedicineInstructionsRoute:
+    AuthenticatedSystemMedicineInstructionsRoute,
   AuthenticatedSystemSupportRequestsRoute:
     AuthenticatedSystemSupportRequestsRoute,
   AuthenticatedSystemTenantsRoute: AuthenticatedSystemTenantsRoute,
@@ -805,6 +913,7 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedAdminsIndexRoute: AuthenticatedAdminsIndexRoute,
   AuthenticatedClinicDaysOffIndexRoute: AuthenticatedClinicDaysOffIndexRoute,
   AuthenticatedDashboardsIndexRoute: AuthenticatedDashboardsIndexRoute,
+  AuthenticatedDiagnosesIndexRoute: AuthenticatedDiagnosesIndexRoute,
   AuthenticatedHelpCenterIndexRoute: AuthenticatedHelpCenterIndexRoute,
   AuthenticatedInventoryIndexRoute: AuthenticatedInventoryIndexRoute,
   AuthenticatedInvoicesIndexRoute: AuthenticatedInvoicesIndexRoute,
@@ -812,6 +921,8 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedMasterDataIndexRoute: AuthenticatedMasterDataIndexRoute,
   AuthenticatedMedicalHistoriesIndexRoute:
     AuthenticatedMedicalHistoriesIndexRoute,
+  AuthenticatedMedicineInstructionsIndexRoute:
+    AuthenticatedMedicineInstructionsIndexRoute,
   AuthenticatedMedicinesIndexRoute: AuthenticatedMedicinesIndexRoute,
   AuthenticatedMonthlyStatisticsIndexRoute:
     AuthenticatedMonthlyStatisticsIndexRoute,
@@ -819,6 +930,7 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedPostsIndexRoute: AuthenticatedPostsIndexRoute,
   AuthenticatedPrescriptionTemplatesIndexRoute:
     AuthenticatedPrescriptionTemplatesIndexRoute,
+  AuthenticatedRemindersIndexRoute: AuthenticatedRemindersIndexRoute,
   AuthenticatedTenantsIndexRoute: AuthenticatedTenantsIndexRoute,
   AuthenticatedYearlyStatisticsIndexRoute:
     AuthenticatedYearlyStatisticsIndexRoute,

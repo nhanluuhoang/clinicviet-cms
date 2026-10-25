@@ -131,7 +131,6 @@ export function VaccinationSection({
           [
             ['expiryDate', t('messages.expiryAlt2')],
             ['administeredDate', t('messages.vaccinationDate')],
-            ['nextDoseDate', t('messages.nextDoseDate')],
           ] as const
         ).map(([key, label]) => (
           <Field key={key} label={label} htmlFor={formId + '-' + key}>

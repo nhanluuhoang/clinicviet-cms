@@ -20,11 +20,16 @@ import {
   DropdownMenuShortcut,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
-import { DataTableColumnHeader } from '@/components/data-table'
+import {
+  DataTableToolbar,
+  DataTableColumnHeader,
+} from '@/components/data-table'
 import { UrlDataTable } from '@/components/data-table/url-data-table'
 import { GetBatches, type StockBatch } from '../api'
 import { expiryStatuses } from '../data/data'
+import { routeApi } from '../data/route'
 import { ExpiryBadge } from './expiry-badge'
+import { InventoryExportButton } from './inventory-export-button'
 import { useInventory } from './inventory-provider'
 
 function BatchActions({ batch }: { batch: StockBatch }) {
@@ -199,14 +204,31 @@ const columns: ColumnDef<StockBatch>[] = [
 export function BatchesTab() {
   const { t } = useTranslation()
 
+  const currentSearch = routeApi.useSearch().filter ?? ''
   const search = useApiSearch()
-  const { data, isLoading } = useQuery({
+  const { data, isLoading, isFetching, isError } = useQuery({
     queryKey: ['inventory', 'batches', search],
     queryFn: () => GetBatches(search),
   })
 
   // Lô đã xuất/huỷ hết không còn ý nghĩa để theo dõi HSD.
   const batches = (data ?? []).filter((b) => b.qtyRemaining > 0)
+
+  const filters = [
+    {
+      // Lọc trên cột `expiryDate` (nó mang filterFn quy HSD ra mức cảnh
+      // báo). Trước đây trỏ 'expiryStatus' — cột đó không tồn tại nên
+      // DataTableToolbar gặp `!column` và filter này âm thầm không hiện.
+      columnId: 'expiryDate',
+      searchKey: 'expiryStatus',
+      title: t('messages.expiryDate'),
+      options: expiryStatuses.map((s) => ({
+        label: s.label,
+        value: s.value,
+        icon: s.icon,
+      })),
+    },
+  ]
 
   return (
     <UrlDataTable
@@ -226,21 +248,20 @@ export function BatchesTab() {
           ? 'bg-red-50/60 dark:bg-red-950/20'
           : undefined
       }
-      filters={[
-        {
-          // Lọc trên cột `expiryDate` (nó mang filterFn quy HSD ra mức cảnh
-          // báo). Trước đây trỏ 'expiryStatus' — cột đó không tồn tại nên
-          // DataTableToolbar gặp `!column` và filter này âm thầm không hiện.
-          columnId: 'expiryDate',
-          searchKey: 'expiryStatus',
-          title: t('messages.expiryDate'),
-          options: expiryStatuses.map((s) => ({
-            label: s.label,
-            value: s.value,
-            icon: s.icon,
-          })),
-        },
-      ]}
+      filters={filters}
+      renderToolbar={(table) => (
+        <DataTableToolbar
+          table={table}
+          filters={filters}
+          searchPlaceholder={t('messages.searchBatchNumberMedicineOrSupplier')}
+        >
+          <InventoryExportButton
+            table={table}
+            kind='batches'
+            disabled={isFetching || isError || search !== currentSearch}
+          />
+        </DataTableToolbar>
+      )}
     />
   )
 }

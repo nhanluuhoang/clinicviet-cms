@@ -10,7 +10,6 @@ import { MasterDataForm } from './components/master-data-form'
 import {
   CONSULTATION_FEE_KEY,
   SHOW_MEDICINES_TO_PATIENT_KEY,
-  MEDICINE_INSTRUCTION_OPTIONS_KEY,
 } from './data/constants'
 
 export function MasterData() {
@@ -21,17 +20,12 @@ export function MasterData() {
     queryKey: ['master-data', tenantId],
     queryFn: () => GetMasterDatas(),
     enabled: !!tenantId,
-    staleTime: 0,
-    gcTime: 0,
   })
   const consultationFeeItem = data?.data.find(
     (row) => row.key === CONSULTATION_FEE_KEY
   )
   const showMedicinesItem = data?.data.find(
     (row) => row.key === SHOW_MEDICINES_TO_PATIENT_KEY
-  )
-  const defaultAdviceItem = data?.data.find(
-    (row) => row.key === MEDICINE_INSTRUCTION_OPTIONS_KEY
   )
 
   return (
@@ -59,10 +53,9 @@ export function MasterData() {
             </p>
           ) : (
             <MasterDataForm
-              key={`${consultationFeeItem?.value ?? '0'}:${showMedicinesItem?.value ?? 'true'}:${defaultAdviceItem?.value ?? ''}`}
+              key={`${consultationFeeItem?.value ?? '0'}:${showMedicinesItem?.value ?? 'true'}`}
               consultationFeeItem={consultationFeeItem}
               showMedicinesItem={showMedicinesItem}
-              defaultAdviceItem={defaultAdviceItem}
             />
           )}
         </div>
