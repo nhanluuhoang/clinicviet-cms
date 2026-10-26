@@ -35,57 +35,58 @@ import { type SidebarData } from '../types'
 export const sidebarData: SidebarData = {
   navGroups: [
     {
+      get title() {
+        return i18n.t('messages.system')
+      },
+      roles: SUPER_ADMIN_ROLES,
       items: [
         {
           get title() {
-            return i18n.t('messages.system')
+            return i18n.t('diagnoses.commonTitle')
           },
+          url: '/system/diagnoses',
+          icon: ClipboardPlus,
+          roles: SUPER_ADMIN_ROLES,
+        },
+        {
+          get title() {
+            return i18n.t('medicineInstructions.commonTitle')
+          },
+          url: '/system/medicine-instructions',
+          icon: ClipboardPlus,
+          roles: SUPER_ADMIN_ROLES,
+        },
+        {
+          get title() {
+            return i18n.t('messages.supportRequests')
+          },
+          url: '/system/support-requests',
+          icon: MessageSquare,
+          roles: SUPER_ADMIN_ROLES,
+        },
+        {
+          get title() {
+            return i18n.t('messages.clinics')
+          },
+          url: '/system/tenants',
           icon: Building2,
           roles: SUPER_ADMIN_ROLES,
-          items: [
-            {
-              get title() {
-                return i18n.t('diagnoses.commonTitle')
-              },
-              url: '/system/diagnoses',
-              roles: SUPER_ADMIN_ROLES,
-            },
-            {
-              get title() {
-                return i18n.t('medicineInstructions.commonTitle')
-              },
-              url: '/system/medicine-instructions',
-              roles: SUPER_ADMIN_ROLES,
-            },
-            {
-              get title() {
-                return i18n.t('messages.supportRequests')
-              },
-              url: '/system/support-requests',
-              roles: SUPER_ADMIN_ROLES,
-            },
-            {
-              get title() {
-                return i18n.t('messages.clinics')
-              },
-              url: '/system/tenants',
-              roles: SUPER_ADMIN_ROLES,
-            },
-            {
-              get title() {
-                return i18n.t('messages.users')
-              },
-              url: '/system/users',
-              roles: SUPER_ADMIN_ROLES,
-            },
-            {
-              get title() {
-                return i18n.t('messages.trialRequests')
-              },
-              url: '/system/trial-requests',
-              roles: SUPER_ADMIN_ROLES,
-            },
-          ],
+        },
+        {
+          get title() {
+            return i18n.t('messages.users')
+          },
+          url: '/system/users',
+          icon: Users,
+          roles: SUPER_ADMIN_ROLES,
+        },
+        {
+          get title() {
+            return i18n.t('messages.trialRequests')
+          },
+          url: '/system/trial-requests',
+          icon: ClipboardList,
+          roles: SUPER_ADMIN_ROLES,
         },
       ],
     },

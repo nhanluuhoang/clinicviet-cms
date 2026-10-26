@@ -1,4 +1,4 @@
-import { hasAnyRole, USER_ROLES } from '@/config/access-control'
+import { USER_ROLES } from '@/config/access-control'
 import { useAuthStore } from '@/stores/auth-store'
 import { sidebarData } from './data/sidebar-data'
 import type { NavItem, NavGroup as NavGroupType } from './types'
@@ -6,7 +6,8 @@ import type { NavItem, NavGroup as NavGroupType } from './types'
 export function useNavigationGroups() {
   const { user } = useAuthStore((state) => state.auth)
 
-  const checkRole = (roles?: string[]) => hasAnyRole(user?.role, roles)
+  const checkRole = (roles?: string[]) =>
+    !roles?.length || (!!user?.role && roles.includes(user.role))
   const checkPlan = (plans?: readonly string[]) =>
     user?.role === USER_ROLES.SUPER_ADMIN ||
     !plans ||
