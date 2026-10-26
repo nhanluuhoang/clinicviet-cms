@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { Link } from '@tanstack/react-router'
 import { hasAnyRole, STAFF_ROLES } from '@/config/access-control'
-import { BookOpen, Building2, Gift, PackageOpen } from 'lucide-react'
+import { BadgeCheck, BookOpen, Building2, Gift, PackageOpen } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 import { useAuthStore } from '@/stores/auth-store'
 import useDialogState from '@/hooks/use-dialog-state'
@@ -59,7 +59,10 @@ export function ProfileDropdown() {
           <DropdownMenuSeparator />
           <DropdownMenuGroup>
             <DropdownMenuItem asChild>
-              <Link to='/settings'>{t('messages.profile')}</Link>
+              <Link to='/settings'>
+                <BadgeCheck />
+                {t('messages.profile')}
+              </Link>
             </DropdownMenuItem>
             {user?.role === 'TENANT_ADMIN' && (
               <DropdownMenuItem asChild>

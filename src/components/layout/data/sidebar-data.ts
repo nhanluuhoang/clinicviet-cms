@@ -42,30 +42,6 @@ export const sidebarData: SidebarData = {
       items: [
         {
           get title() {
-            return i18n.t('diagnoses.commonTitle')
-          },
-          url: '/system/diagnoses',
-          icon: ClipboardPlus,
-          roles: SUPER_ADMIN_ROLES,
-        },
-        {
-          get title() {
-            return i18n.t('medicineInstructions.commonTitle')
-          },
-          url: '/system/medicine-instructions',
-          icon: ClipboardPlus,
-          roles: SUPER_ADMIN_ROLES,
-        },
-        {
-          get title() {
-            return i18n.t('messages.supportRequests')
-          },
-          url: '/system/support-requests',
-          icon: MessageSquare,
-          roles: SUPER_ADMIN_ROLES,
-        },
-        {
-          get title() {
             return i18n.t('messages.clinics')
           },
           url: '/system/tenants',
@@ -86,6 +62,30 @@ export const sidebarData: SidebarData = {
           },
           url: '/system/trial-requests',
           icon: ClipboardList,
+          roles: SUPER_ADMIN_ROLES,
+        },
+        {
+          get title() {
+            return i18n.t('diagnoses.commonTitle')
+          },
+          url: '/system/diagnoses',
+          icon: ClipboardPlus,
+          roles: SUPER_ADMIN_ROLES,
+        },
+        {
+          get title() {
+            return i18n.t('medicineInstructions.commonTitle')
+          },
+          url: '/system/medicine-instructions',
+          icon: ClipboardPlus,
+          roles: SUPER_ADMIN_ROLES,
+        },
+        {
+          get title() {
+            return i18n.t('messages.supportRequests')
+          },
+          url: '/system/support-requests',
+          icon: MessageSquare,
           roles: SUPER_ADMIN_ROLES,
         },
       ],
