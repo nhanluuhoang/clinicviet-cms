@@ -55,7 +55,8 @@ function CommandDialog({
       </DialogHeader>
       <DialogContent
         className={cn(
-          'flex max-h-[calc(100dvh-2rem)] flex-col overflow-hidden p-0',
+          'flex max-h-[calc(100dvh-2rem)] flex-col overflow-hidden p-0 [&>[data-slot=dialog-close]]:top-1.5',
+          showCloseButton && '[&_[data-slot=command-input-wrapper]]:pe-14',
           className
         )}
         showCloseButton={showCloseButton}
