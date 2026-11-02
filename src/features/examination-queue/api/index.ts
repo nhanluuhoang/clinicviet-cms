@@ -1,4 +1,5 @@
 import { API_URL } from '@/config'
+import i18n from '@/i18n'
 import { axios } from '@/lib/axios'
 import type { VaccinationInput } from '@/features/prescriptions/api'
 
@@ -224,11 +225,30 @@ const uploadMedia = async (
 ): Promise<UploadedMedia> => {
   const formData = new FormData()
   formData.append(field, file)
-  const response = await axios.post<unknown, UploadMediaResponse>(
-    `/${resource}/upload`,
-    formData,
-    { headers: { 'Content-Type': 'multipart/form-data' }, params: query }
-  )
+  let response = await axios.post<
+    unknown,
+    UploadMediaResponse | { jobId: string }
+  >(`/${resource}/upload`, formData, {
+    headers: { 'Content-Type': 'multipart/form-data' },
+    params: query,
+  })
+  if ('jobId' in response) {
+    const jobId = response.jobId
+    const deadline = Date.now() + 30 * 60 * 1000
+    while (true) {
+      if (Date.now() >= deadline)
+        throw new Error(i18n.t('messages.videoProcessingTimedOut'))
+      await new Promise((resolve) => setTimeout(resolve, 2000))
+      const result = await axios.get<
+        unknown,
+        (UploadMediaResponse & { state: 'completed' }) | { state: 'processing' }
+      >(`/videos/uploads/${encodeURIComponent(jobId)}`)
+      if (result.state === 'completed') {
+        response = result
+        break
+      }
+    }
+  }
   const { id, fileName, url, name, mimeType, size } = response
   return {
     id,

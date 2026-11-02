@@ -1075,6 +1075,7 @@
     "eachRecordCanHaveUpTo1Video": "Mỗi hồ sơ chỉ được đính kèm tối đa 1 video.",
     "someFilesCouldNotBeUploadedSuccessfullyUploaded": "Một số tệp không tải lên được. Các tệp tải thành công đã được giữ lại.",
     "couldNotUploadFile": "Không thể tải tệp lên",
+    "videoProcessingTimedOut": "Video đang xử lý quá lâu. Vui lòng thử lại.",
     "thisFileWillBeDeletedWhenTheRecordIsSaved": "Tệp sẽ được xóa khi lưu hồ sơ.",
     "fileDeleted": "Đã xóa tệp",
     "couldNotDeleteFile": "Không thể xóa tệp",

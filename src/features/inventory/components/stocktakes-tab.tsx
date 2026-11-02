@@ -236,7 +236,6 @@ export function StockTakesTab() {
         'messages.noStocktakesYetClickStocktakeToCreateTheFirstO'
       )}
       getSearchText={(s) => `${s.code} ${s.note}`}
-      initialSorting={[{ id: 'countedAt', desc: true }]}
       renderToolbar={(table) => (
         <DocumentDateToolbar
           table={table}

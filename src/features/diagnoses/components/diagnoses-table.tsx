@@ -69,7 +69,6 @@ export function DiagnosesTable({
       data={data}
       total={total}
       isLoading={isLoading}
-      initialSorting={[{ id: 'name', desc: false }]}
       searchPlaceholder={t('diagnosisSuggestions.search')}
       emptyMessage={t('diagnoses.empty')}
       mobileLabels={{ name: 'diagnoses.name', scope: 'diagnoses.scope' }}
