@@ -1075,6 +1075,7 @@
     "eachRecordCanHaveUpTo1Video": "Each record can have up to 1 video.",
     "someFilesCouldNotBeUploadedSuccessfullyUploaded": "Some files could not be uploaded. Successfully uploaded files have been retained.",
     "couldNotUploadFile": "Could not upload file",
+    "videoProcessingTimedOut": "Video processing is taking too long. Please try again.",
     "thisFileWillBeDeletedWhenTheRecordIsSaved": "This file will be deleted when the record is saved.",
     "fileDeleted": "File deleted",
     "couldNotDeleteFile": "Could not delete file",

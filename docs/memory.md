@@ -8,6 +8,8 @@
 
 ## Architecture
 
+- Video upload accepts the BE 202/jobId response and polls /videos/uploads/:id every two seconds until saved media is ready (30-minute limit), preserving the existing uploading/save guard. Legacy synchronous responses still work, so CMS may deploy before the async-video BE.
+
 - TanStack Query defaults for diagnoses, medicineInstructions, prescription-templates, vaccination-staff, posts, landing-config, master-data, tenants and support-requests/tenant-options use staleTime 15 minutes, gcTime 30 minutes and refetch stale data on mount/focus/reconnect. Tenant-specific catalog/template/post/website keys include tenant/role (master-data and staff options use tenant). Successful writes invalidate related lists/pickers; staff writes also invalidate vaccination-staff, clinic name changes invalidate website/clinic options. Login/logout clear the memory-only query cache. Stock, medicine search, queue and transactional queries retain short defaults.
 
 - Diagnosis/medicine instruction suggestion popups show one flat list without common/private headings. Use modal Popover inside prescription/template dialogs so the portal remains scrollable under the dialog scroll lock; constrain content height to Radix available height with a shrinking Command and fixed load-more action.
@@ -40,6 +42,8 @@
 - Settings/tenant hiển thị hạn mức lưu trữ chỉ đọc và thanh dung lượng ảnh/PDF/video từ `storage` trong `/tenants/me`; `/system/tenants` cho Super Admin sửa hạn mức GB và ghi chú nội bộ của phòng khám.
 
 ## Convention
+
+- Resource lists preserve the API default createdAt descending order when URL sort is absent; do not override it with initialSorting by name, expiry date or document date. Explicit user sorting and internal workflow/calculation ordering remain separate.
 
 - Node.js is pinned to 26.12.1 in `.nvmrc` and staging/production CI.
 

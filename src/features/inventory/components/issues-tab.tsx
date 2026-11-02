@@ -190,7 +190,6 @@ export function IssuesTab() {
         searchPlaceholder={t('messages.searchDocumentCodeOrRecipient')}
         emptyMessage={t('messages.noIssuesYet')}
         getSearchText={(issue) => `${issue.code} ${issue.recipientName}`}
-        initialSorting={[{ id: 'issuedAt', desc: true }]}
         renderToolbar={(table) => (
           <DocumentDateToolbar
             table={table}
