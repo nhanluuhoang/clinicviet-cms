@@ -128,14 +128,8 @@ export function UrlDataTable<TData>({
     sorting: { defaultSort: '' },
   })
 
-  /**
-   * Hook trả `[]` khi URL không có param `sort`, nên phải tự fallback về
-   * `initialSorting` — nếu không thì thứ tự mặc định của tab (Lô hàng sắp theo
-   * HSD, Phiếu nhập sắp theo ngày nhập) sẽ mất.
-   *
-   * Cố ý KHÔNG đẩy sort mặc định lên URL: URL chỉ mang thứ tự do người dùng
-   * chủ động chọn, còn xoá sort thì quay về mặc định của tab.
-   */
+  // Without an explicit URL sort, preserve the API's createdAt descending order.
+  // Client tables also preserve that order before filtering and pagination.
   const effectiveSorting = sorting.length > 0 ? sorting : initialSorting
 
   const table = useReactTable({

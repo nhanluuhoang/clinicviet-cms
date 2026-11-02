@@ -240,8 +240,6 @@ export function BatchesTab() {
       getSearchText={(b) =>
         `${b.batchNo} ${b.medicineName} ${b.medicineCode} ${b.supplierName} ${b.receiptCode}`
       }
-      // Mặc định đưa lô sắp hết hạn lên trước, đó là việc cần xử lý sớm nhất.
-      initialSorting={[{ id: 'expiryDate', desc: false }]}
       pageSize={15}
       rowClassName={(row) =>
         getExpiryStatus(row.original.expiryDate) === 'expired'

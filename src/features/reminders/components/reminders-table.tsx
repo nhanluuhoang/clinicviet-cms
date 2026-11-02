@@ -140,7 +140,6 @@ export function RemindersTable({
           details: 'reminders.details',
           serviceType: 'reminders.serviceType',
         }}
-        initialSorting={[{ id: 'appointmentDate', desc: false }]}
         emptyMessage={t('reminders.empty')}
         renderToolbar={(table) => (
           <DataTableToolbar

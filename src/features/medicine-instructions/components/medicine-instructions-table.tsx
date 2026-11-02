@@ -76,7 +76,6 @@ export function MedicineInstructionsTable({
       data={data}
       total={total}
       isLoading={isLoading}
-      initialSorting={[{ id: 'name', desc: false }]}
       searchPlaceholder={t('messages.searchInstructions')}
       emptyMessage={t('medicineInstructions.empty')}
       mobileLabels={{

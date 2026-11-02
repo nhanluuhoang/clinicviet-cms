@@ -235,7 +235,6 @@ export function ReceiptsTab() {
       )}
       emptyMessage={t('messages.noReceiptsYet')}
       getSearchText={(r) => `${r.code} ${r.supplierName} ${r.invoiceNo}`}
-      initialSorting={[{ id: 'receivedAt', desc: true }]}
       renderToolbar={(table) => (
         <DocumentDateToolbar
           table={table}
