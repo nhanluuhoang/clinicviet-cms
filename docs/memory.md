@@ -8,6 +8,8 @@
 
 ## Architecture
 
+- Prescription dialogs load their content on first open. Service tabs mount on first visit and stay mounted afterward to preserve each tab's draft. VideoPlayer loads hls.js only when native HLS is unavailable. Both playback paths retain position/play intent across at most three automatic recoveries per mounted source, wait for online when offline, and offer manual retry after failure; timers/listeners/imports are cancelled on unmount. HLS 4xx errors except 408/429 do not trigger automatic recovery.
+
 - Video upload accepts the BE 202/jobId response and polls /videos/uploads/:id every two seconds until saved media is ready (30-minute limit), preserving the existing uploading/save guard. Legacy synchronous responses still work, so CMS may deploy before the async-video BE.
 
 - TanStack Query defaults for diagnoses, medicineInstructions, prescription-templates, vaccination-staff, posts, landing-config, master-data, tenants and support-requests/tenant-options use staleTime 15 minutes, gcTime 30 minutes and refetch stale data on mount/focus/reconnect. Tenant-specific catalog/template/post/website keys include tenant/role (master-data and staff options use tenant). Successful writes invalidate related lists/pickers; staff writes also invalidate vaccination-staff, clinic name changes invalidate website/clinic options. Login/logout clear the memory-only query cache. Stock, medicine search, queue and transactional queries retain short defaults.

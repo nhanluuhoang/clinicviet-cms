@@ -1,0 +1,148 @@
+import { useCallback, useState } from 'react'
+import { ClipboardList, FileClock, LoaderCircle } from 'lucide-react'
+import { createPortal } from 'react-dom'
+import { useTranslation } from 'react-i18next'
+import { Button } from '@/components/ui/button'
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from '@/components/ui/dialog'
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
+import {
+  Prescriptions,
+  type InitialPrescriptionData,
+} from '@/features/prescriptions'
+import { type QueueUser } from '../api'
+import { MedicalHistoryContent } from './medical-history-content'
+
+type View = 'prescription' | 'history'
+
+export function PrescriptionDialog({
+  open,
+  onOpenChange,
+  patient,
+  queueId,
+  initialData,
+}: {
+  open: boolean
+  onOpenChange: (open: boolean) => void
+  patient: QueueUser
+  queueId?: string
+  initialData: InitialPrescriptionData | null
+}) {
+  const { t } = useTranslation()
+
+  const [view, setView] = useState<View>('prescription')
+  const [isUploading, setIsUploading] = useState(false)
+  const [isSaving, setIsSaving] = useState(false)
+  const [activeForm, setActiveForm] = useState({
+    id: 'prescription-form-EXAMINATION',
+    label: t('messages.saveExaminationRecord'),
+  })
+  const handleActiveFormChange = useCallback(
+    (id: string, label: string) => setActiveForm({ id, label }),
+    []
+  )
+
+  return (
+    <Dialog
+      open={open}
+      onOpenChange={(nextOpen) => {
+        if (isUploading || isSaving) return
+        if (!nextOpen) setView('prescription')
+        onOpenChange(nextOpen)
+      }}
+    >
+      <DialogContent
+        className='block h-dvh max-h-dvh w-screen max-w-none overflow-x-hidden overflow-y-auto overscroll-contain rounded-none border-0 p-0 sm:flex sm:h-auto sm:max-h-[96dvh] sm:w-[98vw] sm:max-w-[min(98vw,90rem)] sm:flex-col sm:gap-0 sm:overflow-hidden sm:rounded-lg sm:border'
+        onInteractOutside={(event) => event.preventDefault()}
+      >
+        {isUploading &&
+          createPortal(
+            <div
+              className='fixed inset-0 z-[100] flex cursor-wait items-center justify-center bg-background/80 backdrop-blur-[1px]'
+              role='status'
+              aria-live='polite'
+            >
+              <div className='flex items-center gap-3 rounded-lg border bg-background px-5 py-4 shadow-lg'>
+                <LoaderCircle className='size-5 animate-spin' />
+                <span className='font-medium'>
+                  {t('messages.uploadingFiles')}
+                </span>
+              </div>
+            </div>,
+            document.body
+          )}
+        <div className='min-w-0 sm:min-h-0 sm:flex-1 sm:overflow-x-hidden sm:overflow-y-auto sm:overscroll-contain'>
+          <DialogHeader className='px-6 pt-6 pb-4'>
+            <DialogTitle>
+              {initialData
+                ? t('messages.updateMedicalHistory')
+                : t('messages.serviceRecord')}
+            </DialogTitle>
+          </DialogHeader>
+          <Tabs
+            value={view}
+            onValueChange={(value) => {
+              if (!isUploading && !isSaving) setView(value as View)
+            }}
+            className='min-w-0 gap-3 px-4 pb-6 sm:px-6'
+          >
+            <TabsList>
+              <TabsTrigger value='prescription'>
+                <ClipboardList />{' '}
+                {initialData
+                  ? t('messages.updateRecord')
+                  : t('messages.createRecord')}
+              </TabsTrigger>
+              <TabsTrigger value='history'>
+                <FileClock /> {t('messages.medicalHistoryAlt2')}
+              </TabsTrigger>
+            </TabsList>
+            <TabsContent value='prescription' className='min-w-0 shrink-0 pe-1'>
+              <Prescriptions
+                patient={patient}
+                examinationQueueId={queueId}
+                initialData={initialData}
+                onUploadingChange={setIsUploading}
+                onSavingChange={setIsSaving}
+                onActiveFormChange={handleActiveFormChange}
+                onSaved={() => {
+                  setView('prescription')
+                  onOpenChange(false)
+                }}
+              />
+            </TabsContent>
+            <TabsContent value='history' className='min-w-0 shrink-0 pe-1'>
+              <MedicalHistoryContent patient={patient} />
+            </TabsContent>
+          </Tabs>
+        </div>
+        <div className='flex shrink-0 justify-end gap-2 border-t bg-background px-6 pt-4 pb-[max(1rem,env(safe-area-inset-bottom))]'>
+          {view === 'prescription' && (
+            <Button
+              type='submit'
+              form={activeForm.id}
+              disabled={isUploading || isSaving}
+            >
+              {isSaving ? t('messages.saving') : activeForm.label}
+            </Button>
+          )}
+          <Button
+            type='button'
+            variant='outline'
+            disabled={isUploading || isSaving}
+            onClick={() => {
+              setView('prescription')
+              onOpenChange(false)
+            }}
+          >
+            {t('messages.close')}
+          </Button>
+        </div>
+      </DialogContent>
+    </Dialog>
+  )
+}
