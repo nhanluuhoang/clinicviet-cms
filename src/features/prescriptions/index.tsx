@@ -37,6 +37,7 @@ export function Prescriptions({
     }
   })
   const [isSaving, setIsSaving] = useState(false)
+  const [visitedTabs, setVisitedTabs] = useState<ServiceType[]>([serviceType])
   const [isUploading, setIsUploading] = useState(false)
   const busy = isSaving || isUploading
   const handleSavingChange = useCallback(
@@ -74,6 +75,11 @@ export function Prescriptions({
           )
             return
           setServiceType(value as ServiceType)
+          setVisitedTabs((tabs) =>
+            tabs.includes(value as ServiceType)
+              ? tabs
+              : [...tabs, value as ServiceType]
+          )
           try {
             localStorage.setItem(preferenceKey, value)
           } catch {
@@ -116,17 +122,19 @@ export function Prescriptions({
             forceMount
             className='min-w-0 data-[state=inactive]:hidden'
           >
-            <ServicePrescriptionForm
-              {...props}
-              serviceType={tab.value}
-              formId={formId + '-' + tab.value}
-              onSavingChange={
-                tab.value === serviceType ? handleSavingChange : undefined
-              }
-              onUploadingChange={
-                tab.value === serviceType ? handleUploadingChange : undefined
-              }
-            />
+            {visitedTabs.includes(tab.value) && (
+              <ServicePrescriptionForm
+                {...props}
+                serviceType={tab.value}
+                formId={formId + '-' + tab.value}
+                onSavingChange={
+                  tab.value === serviceType ? handleSavingChange : undefined
+                }
+                onUploadingChange={
+                  tab.value === serviceType ? handleUploadingChange : undefined
+                }
+              />
+            )}
           </TabsContent>
         ))}
       </Tabs>
