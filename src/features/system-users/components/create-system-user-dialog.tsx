@@ -45,7 +45,7 @@ import {
 } from '@/components/ui/popover'
 import { PasswordInput } from '@/components/password-input'
 import { SelectDropdown } from '@/components/select-dropdown'
-import { searchTenants, type Tenant } from '@/features/tenants/api'
+import { searchTenants, type TenantOption } from '@/features/tenants/api'
 import { createSystemUser } from '../api'
 
 const schema = z
@@ -108,13 +108,15 @@ export function CreateSystemUserDialog({
 }: {
   open: boolean
   onOpenChange: (open: boolean) => void
-  tenants: Tenant[]
+  tenants: TenantOption[]
 }) {
   const { t } = useTranslation()
 
   const [clinicSearch, setClinicSearch] = useState('')
   const [clinicOpen, setClinicOpen] = useState(false)
-  const [selectedTenant, setSelectedTenant] = useState<Tenant | null>(null)
+  const [selectedTenant, setSelectedTenant] = useState<TenantOption | null>(
+    null
+  )
   const debouncedSearch = useDebounce(clinicSearch, 300)
   const clinicResults = useQuery({
     queryKey: ['tenants', 'create-user-search', debouncedSearch],

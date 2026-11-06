@@ -10,7 +10,17 @@ export type ClinicStatisticsRow = {
   examinationCount: number
 }
 
-export const getClinicMonthlyExaminations = (
+export const getClinicMonthlyExaminations = (params: {
   month: string
-): Promise<{ month: string; total: number; data: ClinicStatisticsRow[] }> =>
-  axios.get('/statistics/clinics/monthly', { params: { month } })
+  page: number
+  limit: number
+  search?: string
+  sort?: string
+}): Promise<{
+  month: string
+  total: number
+  totalExaminations: number
+  page: number
+  limit: number
+  data: ClinicStatisticsRow[]
+}> => axios.get('/statistics/clinics/monthly', { params })

@@ -1,4 +1,5 @@
 import { axios } from '@/lib/axios'
+import type { ApiTableParams } from '@/hooks/use-api-table-params'
 
 export type TrialRequestStatus = 'PENDING' | 'APPROVED' | 'REJECTED'
 export type TrialRequest = {
@@ -21,10 +22,12 @@ export type ApproveTrialInput = {
   code: string
 }
 
-export const findTrialRequests = (): Promise<{
+export const findTrialRequests = (
+  params: ApiTableParams
+): Promise<{
   data: TrialRequest[]
   total: number
-}> => axios.get('/trial-requests', { params: { page: 1, limit: 100 } })
+}> => axios.get('/trial-requests', { params })
 
 export const approveTrialRequest = (id: string, data: ApproveTrialInput) =>
   axios.patch(`/trial-requests/${id}/approve`, data)

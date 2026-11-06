@@ -8,7 +8,7 @@ export const Route = createFileRoute('/_authenticated/reminders/')({
     pageSize: z.number().int().min(1).max(100).optional().catch(10),
     filter: z.string().optional().catch(''),
     sort: z
-      .enum(['appointmentDate', '-appointmentDate'])
+      .enum(['appointmentDate', '-appointmentDate', 'createdAt', '-createdAt'])
       .optional()
       .catch(undefined),
     dateFrom: z

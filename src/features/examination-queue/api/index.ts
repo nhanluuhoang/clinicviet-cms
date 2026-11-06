@@ -363,8 +363,9 @@ export const changeQueueStatus = (
 ): Promise<void> => axios.patch(`/examination-queue/${id}/status`, { status })
 
 export const getMedicalHistories = (
-  patientId: string
+  patientId: string,
+  page = 1
 ): Promise<Page<MedicalHistory>> =>
   axios.get('/medical-histories', {
-    params: { userId: patientId, page: 1, limit: 100 },
+    params: { userId: patientId, page, limit: 10 },
   })

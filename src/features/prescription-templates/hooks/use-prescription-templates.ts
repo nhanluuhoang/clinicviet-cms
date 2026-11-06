@@ -4,7 +4,7 @@ import i18n from '@/i18n'
 import { toast } from 'sonner'
 import { useAuthStore } from '@/stores/auth-store'
 import { showRequestError } from '@/lib/handle-server-error'
-import { getMedicines } from '@/features/prescriptions/api'
+import { useApiTableParams } from '@/hooks/use-api-table-params'
 import {
   createPrescriptionTemplate,
   deletePrescriptionTemplate,
@@ -17,11 +17,11 @@ import { emptyItem } from '../data/constants'
 import type { DialogType } from '../types'
 
 export function usePrescriptionTemplates() {
+  const params = useApiTableParams()
   const user = useAuthStore((state) => state.auth.user)
   const queryClient = useQueryClient()
 
   const [open, setOpen] = useState<DialogType>(null)
-  const isMutating = open === 'create' || open === 'update'
 
   const [current, setCurrent] = useState<PrescriptionTemplate | null>(null)
 
@@ -29,15 +29,15 @@ export function usePrescriptionTemplates() {
 
   const [items, setItems] = useState<PrescriptionTemplateItem[]>([emptyItem()])
 
-  const { data: templates = [], isLoading } = useQuery({
-    queryKey: ['prescription-templates', 'list', user?.tenantId, user?.role],
-    queryFn: () => getPrescriptionTemplates(),
-  })
-
-  const { data: medicines = [] } = useQuery({
-    queryKey: ['prescription-template-medicines'],
-    queryFn: () => getMedicines(),
-    enabled: isMutating,
+  const { data: templatePage, isLoading } = useQuery({
+    queryKey: [
+      'prescription-templates',
+      'list',
+      user?.tenantId,
+      user?.role,
+      params,
+    ],
+    queryFn: () => getPrescriptionTemplates(params),
   })
 
   const close = () => {
@@ -107,9 +107,9 @@ export function usePrescriptionTemplates() {
     setName,
     items,
     setItems,
-    templates,
+    templates: templatePage?.data ?? [],
+    total: templatePage?.total ?? 0,
     isLoading,
-    medicines,
     close,
     patchItem,
     save,

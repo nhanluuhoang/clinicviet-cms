@@ -3,12 +3,13 @@ import { useQuery } from '@tanstack/react-query'
 import { getRouteApi } from '@tanstack/react-router'
 import { SYSTEM_USER_ROLE_OPTIONS } from '@/config/user-role-labels'
 import { useTranslation } from 'react-i18next'
+import { useApiTableParams } from '@/hooks/use-api-table-params'
 import { Button } from '@/components/ui/button'
 import { Header } from '@/components/layout/header'
 import { Main } from '@/components/layout/main'
 import { ProfileDropdown } from '@/components/profile-dropdown'
 import { ThemeSwitch } from '@/components/theme-switch'
-import { getTenants } from '@/features/tenants/api'
+import { getTenantOptions } from '@/features/tenants/api'
 import { getSystemUsers, type SystemUserRole } from './api'
 import { CreateSystemUserDialog } from './components/create-system-user-dialog'
 import { SystemUsersTable } from './components/system-users-table'
@@ -17,14 +18,19 @@ const route = getRouteApi('/_authenticated/system/users')
 
 export function SystemUsers() {
   const { t } = useTranslation()
+  const params = useApiTableParams()
 
   const { tenantId, role } = route.useSearch()
   const [createOpen, setCreateOpen] = useState(false)
-  const tenants = useQuery({ queryKey: ['tenants'], queryFn: getTenants })
+  const tenants = useQuery({
+    queryKey: ['tenants', 'options'],
+    queryFn: getTenantOptions,
+  })
   const users = useQuery({
-    queryKey: ['system-users', tenantId?.[0], role?.[0]],
+    queryKey: ['system-users', tenantId?.[0], role?.[0], params],
     queryFn: () =>
       getSystemUsers({
+        ...params,
         tenantId: tenantId?.[0],
         role: role?.[0] as SystemUserRole | undefined,
       }),
@@ -53,6 +59,7 @@ export function SystemUsers() {
         </div>
         <SystemUsersTable
           data={users.data?.data ?? []}
+          total={users.data?.total ?? 0}
           isLoading={users.isLoading}
           searchPlaceholder={t('messages.searchUsernameFullNameOrEmail')}
           emptyMessage={t('messages.noMatchingUsers')}
@@ -74,7 +81,7 @@ export function SystemUsers() {
               columnId: 'tenantId',
               title: t('messages.clinics'),
               variant: 'radio',
-              options: (tenants.data?.data ?? []).map((tenant) => ({
+              options: (tenants.data ?? []).map((tenant) => ({
                 label: `${tenant.code} - ${tenant.name}`,
                 value: tenant.id,
               })),
@@ -91,7 +98,7 @@ export function SystemUsers() {
       <CreateSystemUserDialog
         open={createOpen}
         onOpenChange={setCreateOpen}
-        tenants={tenants.data?.data ?? []}
+        tenants={tenants.data ?? []}
       />
     </>
   )

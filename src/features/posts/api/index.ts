@@ -1,6 +1,7 @@
 import { axios } from '@/lib/axios'
 
 export interface PostParams {
+  sort?: string
   title?: string
   isPublic?: boolean
   page: number
@@ -48,6 +49,7 @@ const CreatePost = (data: PostDtoRequest): Promise<Post> =>
 const GetPosts = (params: PostParams): Promise<PostsResponse> =>
   axios.get('/posts', {
     params: {
+      sort: params.sort,
       page: params.page,
       limit: params.limit ?? 10,
       search: params.title,

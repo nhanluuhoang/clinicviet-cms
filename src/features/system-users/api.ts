@@ -1,4 +1,5 @@
 import { axios } from '@/lib/axios'
+import type { ApiTableParams } from '@/hooks/use-api-table-params'
 import type { AuditFields } from '@/components/data-table/audit-columns'
 import type { Tenant } from '@/features/tenants/api'
 
@@ -37,11 +38,13 @@ export type UpdateSystemUserInput = {
   role?: ManagedRole
 }
 
-export const getSystemUsers = (params?: {
-  tenantId?: string
-  role?: SystemUserRole
-}): Promise<{ data: SystemUser[]; total: number }> =>
-  axios.get('/system/users', { params: { ...params, page: 1, limit: 100 } })
+export const getSystemUsers = (
+  params: ApiTableParams & {
+    tenantId?: string
+    role?: SystemUserRole
+  }
+): Promise<{ data: SystemUser[]; total: number }> =>
+  axios.get('/system/users', { params })
 
 export const createSystemUser = (data: SystemUserInput): Promise<SystemUser> =>
   axios.post('/system/users', data)
@@ -54,4 +57,5 @@ export const updateSystemUser = (
 export const updateSystemUserPassword = (
   id: string,
   data: { password: string; passwordConfirmation: string }
-): Promise<{ status: true }> => axios.patch(`/system/users/${id}/password`, data)
+): Promise<{ status: true }> =>
+  axios.patch(`/system/users/${id}/password`, data)

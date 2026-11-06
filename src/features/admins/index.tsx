@@ -35,6 +35,7 @@ export function Admins() {
     queryKey: ['users', search],
     queryFn: () =>
       FindStaff({
+        sort: search.sort || undefined,
         fullName: search.fullName || '',
         role: search.role?.[0],
         isActive: search.isActive?.[0],

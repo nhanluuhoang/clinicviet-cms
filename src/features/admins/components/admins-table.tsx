@@ -67,10 +67,11 @@ export function AdminsTable({
       { columnId: 'role', searchKey: 'role', type: 'array' },
       { columnId: 'isActive', searchKey: 'isActive', type: 'array' },
     ],
-    sorting: { defaultSort: '' },
   })
 
   const table = useReactTable({
+    enableMultiSort: false,
+    maxMultiSortColCount: 1,
     data,
     columns,
     state: {

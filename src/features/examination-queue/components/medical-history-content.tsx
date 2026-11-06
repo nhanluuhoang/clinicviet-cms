@@ -1,7 +1,8 @@
-import { useQuery } from '@tanstack/react-query'
+import { useInfiniteQuery } from '@tanstack/react-query'
 import { getLocale } from '@/i18n'
 import { useTranslation } from 'react-i18next'
 import { formatDate } from '@/lib/utils'
+import { Button } from '@/components/ui/button'
 import { getVaccinationFields } from '@/features/prescriptions/api'
 import { getMedicalHistories, type QueueUser } from '../api'
 
@@ -12,10 +13,17 @@ export function MedicalHistoryContent({
 }) {
   const { t } = useTranslation()
 
-  const histories = useQuery({
+  const histories = useInfiniteQuery({
     queryKey: ['medical-histories', patient.id],
-    queryFn: () => getMedicalHistories(patient.id),
+    initialPageParam: 1,
+    queryFn: ({ pageParam }) => getMedicalHistories(patient.id, pageParam),
+    getNextPageParam: (lastPage) =>
+      lastPage.page * lastPage.limit < lastPage.total
+        ? lastPage.page + 1
+        : undefined,
   })
+
+  const records = histories.data?.pages.flatMap((page) => page.data) ?? []
 
   if (histories.isLoading) {
     return (
@@ -25,7 +33,7 @@ export function MedicalHistoryContent({
     )
   }
 
-  if (!histories.data?.data.length) {
+  if (!records.length) {
     return (
       <p className='py-8 text-center text-sm text-muted-foreground'>
         {t('messages.noMedicalHistoryYet')}
@@ -35,7 +43,7 @@ export function MedicalHistoryContent({
 
   return (
     <div className='space-y-3'>
-      {histories.data.data.map((history) => (
+      {records.map((history) => (
         <div key={history.id} className='space-y-2 rounded-lg border p-4'>
           <p className='text-sm font-medium'>
             {history.serviceType === 'PHARMACY'
@@ -205,6 +213,16 @@ export function MedicalHistoryContent({
           </div>
         </div>
       ))}
+      {histories.hasNextPage && (
+        <Button
+          type='button'
+          variant='outline'
+          disabled={histories.isFetchingNextPage}
+          onClick={() => void histories.fetchNextPage()}
+        >
+          {t('messages.loadMore')}
+        </Button>
+      )}
     </div>
   )
 }

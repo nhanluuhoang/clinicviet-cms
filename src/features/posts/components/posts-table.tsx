@@ -70,10 +70,11 @@ export function PostsTable({ data, total, isLoading }: PostsTableProps) {
         deserialize: (val) => (val === undefined ? [] : [String(val)]),
       },
     ],
-    sorting: { defaultSort: '' },
   })
 
   const table = useReactTable({
+    enableMultiSort: false,
+    maxMultiSortColCount: 1,
     data,
     columns,
     state: {

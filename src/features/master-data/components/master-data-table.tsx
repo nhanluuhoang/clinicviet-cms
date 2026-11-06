@@ -59,10 +59,11 @@ export function MasterDataTable({
     pagination: { defaultPage: 0, defaultPageSize: 10 },
     globalFilter: { enabled: true, key: 'filter' },
     columnFilters: [],
-    sorting: { defaultSort: '' },
   })
 
   const table = useReactTable({
+    enableMultiSort: false,
+    maxMultiSortColCount: 1,
     data,
     columns,
     state: {

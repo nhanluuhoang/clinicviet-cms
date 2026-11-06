@@ -76,10 +76,11 @@ export function PatientsTable({
         deserialize: (val) => (val ? [String(val)] : []),
       },
     ],
-    sorting: { defaultSort: '' },
   })
 
   const table = useReactTable({
+    enableMultiSort: false,
+    maxMultiSortColCount: 1,
     data,
     columns,
     state: {

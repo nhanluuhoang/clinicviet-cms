@@ -32,6 +32,7 @@ export type Invoice = AuditFields & {
 }
 
 export const getInvoices = (params: {
+  sort?: string
   date?: string
   search?: string
   serviceType?: InvoiceServiceType

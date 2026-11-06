@@ -8,6 +8,7 @@ export interface Params {
   isActive?: 'true' | 'false'
   fullName: string
   page: number
+  sort?: string
   pageSize: number
 }
 
@@ -43,6 +44,7 @@ const CreateStaff = (data: StaffInput): Promise<Admin> =>
 
 const FindStaff = ({
   fullName,
+  sort,
   role,
   isActive,
   page,
@@ -51,6 +53,7 @@ const FindStaff = ({
   axios.get('/users', {
     params: {
       search: fullName || undefined,
+      sort,
       role,
       isActive,
       page,

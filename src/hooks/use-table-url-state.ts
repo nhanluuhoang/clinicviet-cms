@@ -32,7 +32,6 @@ type UseTableUrlStateParams = {
   }
   sorting?: {
     key?: string
-    defaultSort?: string // JSON string or format of your choice
   }
   columnFilters?: Array<
     | {
@@ -152,10 +151,10 @@ export function useTableUrlState(
 
   const onGlobalFilterChange: OnChangeFn<string> | undefined =
     globalFilterEnabled
-     ? (updater) => {
+      ? (updater) => {
           const next =
             typeof updater === 'function'
-             ? updater(globalFilter ?? '')
+              ? updater(globalFilter ?? '')
               : updater
           const value = trimGlobal ? next.trim() : next
           setGlobalFilter(value)
@@ -203,22 +202,25 @@ export function useTableUrlState(
 
   const sorting: SortingState = useMemo(() => {
     const rawSort = (search as SearchRecord)[sortingKey]
-    if (typeof rawSort !== 'string' || !rawSort) return []
-    // New format: "-id" for desc, "id" for asc
-    const isDesc = rawSort.startsWith('-')
-    const id = isDesc ? rawSort.slice(1) : rawSort
+    const value =
+      typeof rawSort === 'string' && /^-?[a-zA-Z][a-zA-Z0-9]*$/.test(rawSort)
+        ? rawSort
+        : '-createdAt'
+    const isDesc = value.startsWith('-')
+    const id = isDesc ? value.slice(1) : value
     return [{ id, desc: isDesc }]
   }, [search, sortingKey])
 
   const onSortingChange: OnChangeFn<SortingState> = (updater) => {
     const next = typeof updater === 'function' ? updater(sorting) : updater
-    const first = next[0]
+    const first = next[next.length - 1]
     // New format: "-id" for desc, "id" for asc
     const value = first ? (first.desc ? `-${first.id}` : first.id) : undefined
     navigate({
       search: (prev) => ({
         ...(prev as SearchRecord),
         [sortingKey]: value || undefined,
+        [pageKey]: 1,
       }),
     })
   }

@@ -22,6 +22,7 @@ export function MedicalHistories() {
     queryKey: ['medical-histories', search, date],
     queryFn: () =>
       getMedicalHistoryList({
+        sort: search.sort || undefined,
         patientName: search.patientName || undefined,
         doctorName: search.doctorName || undefined,
         date: date || undefined,

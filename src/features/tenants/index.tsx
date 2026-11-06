@@ -3,6 +3,7 @@ import { SERVICE_PLAN_OPTIONS } from '@/config/service-plans'
 import { SUBSCRIPTION_STATUS_OPTIONS } from '@/config/subscription-statuses'
 import i18n from '@/i18n'
 import { useTranslation } from 'react-i18next'
+import { useApiTableParams } from '@/hooks/use-api-table-params'
 import { Header } from '@/components/layout/header'
 import { Main } from '@/components/layout/main'
 import { ProfileDropdown } from '@/components/profile-dropdown'
@@ -13,10 +14,11 @@ import { TenantsTable } from './components/tenants-table'
 
 export function Tenants() {
   const { t } = useTranslation()
+  const params = useApiTableParams()
 
   const { data, isLoading } = useQuery({
-    queryKey: ['tenants'],
-    queryFn: getTenants,
+    queryKey: ['tenants', params],
+    queryFn: () => getTenants(params),
   })
 
   return (
@@ -41,6 +43,7 @@ export function Tenants() {
         </div>
         <TenantsTable
           data={data?.data ?? []}
+          total={data?.total ?? 0}
           isLoading={isLoading}
           searchPlaceholder={t('messages.searchByCodeNameOrSubdomain')}
           emptyMessage={t('messages.noClinicsYet')}

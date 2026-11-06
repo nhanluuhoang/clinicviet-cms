@@ -1,4 +1,6 @@
+import type { ApiPage } from '@/lib/api-page'
 import { axios } from '@/lib/axios'
+import type { ApiTableParams } from '@/hooks/use-api-table-params'
 import type { AuditFields } from '@/components/data-table/audit-columns'
 
 export interface PrescriptionTemplateItem {
@@ -26,21 +28,24 @@ interface ApiPrescriptionTemplate extends AuditFields {
   >
 }
 
-export const getPrescriptionTemplates = async (search = '') => {
-  const templates = await axios.get<unknown, ApiPrescriptionTemplate[]>(
+export const getPrescriptionTemplates = async (params: ApiTableParams) => {
+  const templates = await axios.get<unknown, ApiPage<ApiPrescriptionTemplate>>(
     '/prescription-templates',
-    { params: { search: search || undefined } }
+    { params }
   )
-  return templates.map((template) => ({
-    ...template,
-    name: template.name,
-    items: template.items.map((item) => ({
-      medicineId: item.medicineId,
-      medicineName: item.medicine.name,
-      quantity: item.quantity,
-      instruction: item.instruction,
+  return {
+    ...templates,
+    data: templates.data.map((template) => ({
+      ...template,
+      name: template.name,
+      items: template.items.map((item) => ({
+        medicineId: item.medicineId,
+        medicineName: item.medicine.name,
+        quantity: item.quantity,
+        instruction: item.instruction,
+      })),
     })),
-  }))
+  }
 }
 
 export const createPrescriptionTemplate = (

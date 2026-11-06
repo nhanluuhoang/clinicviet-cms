@@ -4,9 +4,10 @@ import { Download } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 import { toast } from 'sonner'
 import { formatDate } from '@/lib/utils'
+import { useApiTableParams } from '@/hooks/use-api-table-params'
 import { Button } from '@/components/ui/button'
 import { medicineGroupLabel } from '@/features/medicines/data/data'
-import type { StockBatch, StockSummary } from '../api'
+import { GetInventoryExport, type StockBatch, type StockSummary } from '../api'
 import { expiryMeta } from '../data/data'
 
 type ExportColumn<T> = { label: string; value: (row: T) => string | number }
@@ -21,12 +22,14 @@ export function InventoryExportButton<T extends StockSummary | StockBatch>({
   disabled: boolean
 }) {
   const { t } = useTranslation()
+  const params = useApiTableParams()
   const [busy, setBusy] = useState(false)
   const rows = table.getSortedRowModel().rows
 
   async function exportFile() {
     setBusy(true)
     try {
+      const exportRows = await GetInventoryExport(kind, params)
       const { Workbook } = await import('exceljs')
       const workbook = new Workbook()
       const sheet = workbook.addWorksheet(t(`inventoryExport.${kind}`))
@@ -69,13 +72,13 @@ export function InventoryExportButton<T extends StockSummary | StockBatch>({
         kind === 'stock' ? stockColumns : batchColumns
       ) as ExportColumn<T>[]
       sheet.addRow(columns.map((c) => c.label))
-      for (const row of rows)
-        sheet.addRow(columns.map((c) => c.value(row.original)))
+      for (const row of exportRows)
+        sheet.addRow(columns.map((c) => c.value(row as T)))
       sheet.getRow(1).font = { bold: true }
       sheet.views = [{ state: 'frozen', ySplit: 1 }]
       sheet.autoFilter = {
         from: { row: 1, column: 1 },
-        to: { row: rows.length + 1, column: columns.length },
+        to: { row: exportRows.length + 1, column: columns.length },
       }
       sheet.columns.forEach((c) => {
         c.width = 22

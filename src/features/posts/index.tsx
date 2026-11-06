@@ -26,6 +26,8 @@ export default function Posts() {
     queryFn: () =>
       GetPosts({
         page: search.page ?? 1,
+        limit: search.pageSize ?? 10,
+        sort: search.sort || undefined,
         title: search.title,
         isPublic: search.isPublic,
       }),

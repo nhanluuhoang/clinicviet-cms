@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react'
 import { z } from 'zod'
 import { useFieldArray, useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { useQuery, useQueryClient } from '@tanstack/react-query'
+import { useInfiniteQuery, useQueryClient } from '@tanstack/react-query'
 import { Link } from '@tanstack/react-router'
 import i18n, { getLocale } from '@/i18n'
 import { Check, ChevronsUpDown, ExternalLink, Plus, Trash2 } from 'lucide-react'
@@ -47,7 +47,7 @@ import {
 import { Textarea } from '@/components/ui/textarea'
 import { DatePickerInput } from '@/components/date-picker-input'
 import { NumberInput } from '@/components/number-input'
-import { GetMedicines, type Medicine } from '@/features/medicines/api'
+import { GetMedicinesPage, type Medicine } from '@/features/medicines/api'
 import { CreateReceipt } from '../api'
 import { expiryMeta } from '../data/data'
 
@@ -117,11 +117,23 @@ function MedicinePicker({
   const [search, setSearch] = useState('')
   const [selected, setSelected] = useState<Medicine | null>(null)
   const debouncedSearch = useDebounce(search, 300)
-  const { data: medicines, isLoading } = useQuery({
-    queryKey: ['medicines', 'search', debouncedSearch],
-    queryFn: () => GetMedicines(debouncedSearch),
+  const medicinePages = useInfiniteQuery({
+    queryKey: ['medicines', 'options', debouncedSearch],
+    initialPageParam: 1,
+    queryFn: ({ pageParam }) =>
+      GetMedicinesPage({
+        page: pageParam,
+        limit: 20,
+        search: debouncedSearch || undefined,
+      }),
+    getNextPageParam: (lastPage) =>
+      lastPage.page * lastPage.limit < lastPage.total
+        ? lastPage.page + 1
+        : undefined,
     enabled: open,
   })
+  const medicines = medicinePages.data?.pages.flatMap((page) => page.data) ?? []
+  const isLoading = medicinePages.isLoading
 
   return (
     <div className='min-w-0 space-y-1.5'>
@@ -203,6 +215,16 @@ function MedicinePicker({
                 ))}
               </CommandGroup>
             </CommandList>
+            {medicinePages.hasNextPage && (
+              <Button
+                type='button'
+                variant='ghost'
+                disabled={medicinePages.isFetchingNextPage}
+                onClick={() => void medicinePages.fetchNextPage()}
+              >
+                {t('messages.loadMore')}
+              </Button>
+            )}
           </Command>
         </PopoverContent>
       </Popover>

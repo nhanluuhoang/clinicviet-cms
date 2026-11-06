@@ -12,9 +12,15 @@ export const Route = createFileRoute(
       .optional()
       .catch(undefined),
     clinicId: z.string().optional().catch(undefined),
-    page: z.number().optional().catch(1),
-    pageSize: z.number().optional().catch(10),
-    sort: z.string().optional().catch(''),
+    page: z.number().int().min(1).optional().catch(1),
+    pageSize: z.number().int().min(1).max(100).optional().catch(10),
+    sort: z
+      .string()
+      .regex(
+        /^-?(code|name|examinationCount|totalAmount|medicineRevenue|medicineCost|createdAt)$/
+      )
+      .optional()
+      .catch(''),
     filter: z.string().optional().catch(''),
   }),
   component: ClinicStatistics,
