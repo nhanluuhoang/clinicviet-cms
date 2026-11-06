@@ -8,6 +8,8 @@
 
 ## Architecture
 
+- Super-admin `/system/clinic-statistics` is separate from clinic management. Its searchable, sortable list shows four monthly metrics for each clinic: completed visits by completedAt, total invoice revenue, medicine sales and saved medicine cost by issuedAt, including zero values. Month is URL-backed and defaults to UTC+7; source is `/statistics/clinics/monthly`.
+
 - Prescription dialogs load their content on first open. Service tabs mount on first visit and stay mounted afterward to preserve each tab's draft. VideoPlayer loads hls.js only when native HLS is unavailable. Both playback paths retain position/play intent across at most three automatic recoveries per mounted source, wait for online when offline, and offer manual retry after failure; timers/listeners/imports are cancelled on unmount. HLS 4xx errors except 408/429 do not trigger automatic recovery.
 
 - Video upload accepts the BE 202/jobId response and polls /videos/uploads/:id every two seconds until saved media is ready (30-minute limit), preserving the existing uploading/save guard. Legacy synchronous responses still work, so CMS may deploy before the async-video BE.

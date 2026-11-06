@@ -42,6 +42,7 @@ import { Route as AuthenticatedRemindersIndexRouteImport } from './routes/_authe
 import { Route as AuthenticatedSettingsIndexRouteImport } from './routes/_authenticated/settings/index'
 import { Route as AuthenticatedSettingsChangePasswordRouteImport } from './routes/_authenticated/settings/change-password'
 import { Route as AuthenticatedSettingsTenantRouteImport } from './routes/_authenticated/settings/tenant'
+import { Route as AuthenticatedSystemClinicStatisticsRouteImport } from './routes/_authenticated/system/clinic-statistics'
 import { Route as AuthenticatedSystemDiagnosesRouteImport } from './routes/_authenticated/system/diagnoses'
 import { Route as AuthenticatedSystemMedicineInstructionsRouteImport } from './routes/_authenticated/system/medicine-instructions'
 import { Route as AuthenticatedSystemSupportRequestsRouteImport } from './routes/_authenticated/system/support-requests'
@@ -237,6 +238,12 @@ const AuthenticatedSettingsTenantRoute =
     path: '/tenant',
     getParentRoute: () => AuthenticatedSettingsRouteRoute,
   } as any)
+const AuthenticatedSystemClinicStatisticsRoute =
+  AuthenticatedSystemClinicStatisticsRouteImport.update({
+    id: '/system/clinic-statistics',
+    path: '/system/clinic-statistics',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
 const AuthenticatedSystemDiagnosesRoute =
   AuthenticatedSystemDiagnosesRouteImport.update({
     id: '/system/diagnoses',
@@ -301,6 +308,7 @@ export interface FileRoutesByFullPath {
   '/errors/$error': typeof AuthenticatedErrorsErrorRoute
   '/settings/change-password': typeof AuthenticatedSettingsChangePasswordRoute
   '/settings/tenant': typeof AuthenticatedSettingsTenantRoute
+  '/system/clinic-statistics': typeof AuthenticatedSystemClinicStatisticsRoute
   '/system/diagnoses': typeof AuthenticatedSystemDiagnosesRoute
   '/system/medicine-instructions': typeof AuthenticatedSystemMedicineInstructionsRoute
   '/system/support-requests': typeof AuthenticatedSystemSupportRequestsRoute
@@ -342,6 +350,7 @@ export interface FileRoutesByTo {
   '/errors/$error': typeof AuthenticatedErrorsErrorRoute
   '/settings/change-password': typeof AuthenticatedSettingsChangePasswordRoute
   '/settings/tenant': typeof AuthenticatedSettingsTenantRoute
+  '/system/clinic-statistics': typeof AuthenticatedSystemClinicStatisticsRoute
   '/system/diagnoses': typeof AuthenticatedSystemDiagnosesRoute
   '/system/medicine-instructions': typeof AuthenticatedSystemMedicineInstructionsRoute
   '/system/support-requests': typeof AuthenticatedSystemSupportRequestsRoute
@@ -386,6 +395,7 @@ export interface FileRoutesById {
   '/_authenticated/errors/$error': typeof AuthenticatedErrorsErrorRoute
   '/_authenticated/settings/change-password': typeof AuthenticatedSettingsChangePasswordRoute
   '/_authenticated/settings/tenant': typeof AuthenticatedSettingsTenantRoute
+  '/_authenticated/system/clinic-statistics': typeof AuthenticatedSystemClinicStatisticsRoute
   '/_authenticated/system/diagnoses': typeof AuthenticatedSystemDiagnosesRoute
   '/_authenticated/system/medicine-instructions': typeof AuthenticatedSystemMedicineInstructionsRoute
   '/_authenticated/system/support-requests': typeof AuthenticatedSystemSupportRequestsRoute
@@ -430,6 +440,7 @@ export interface FileRouteTypes {
     | '/errors/$error'
     | '/settings/change-password'
     | '/settings/tenant'
+    | '/system/clinic-statistics'
     | '/system/diagnoses'
     | '/system/medicine-instructions'
     | '/system/support-requests'
@@ -471,6 +482,7 @@ export interface FileRouteTypes {
     | '/errors/$error'
     | '/settings/change-password'
     | '/settings/tenant'
+    | '/system/clinic-statistics'
     | '/system/diagnoses'
     | '/system/medicine-instructions'
     | '/system/support-requests'
@@ -514,6 +526,7 @@ export interface FileRouteTypes {
     | '/_authenticated/errors/$error'
     | '/_authenticated/settings/change-password'
     | '/_authenticated/settings/tenant'
+    | '/_authenticated/system/clinic-statistics'
     | '/_authenticated/system/diagnoses'
     | '/_authenticated/system/medicine-instructions'
     | '/_authenticated/system/support-requests'
@@ -787,6 +800,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedSettingsTenantRouteImport
       parentRoute: typeof AuthenticatedSettingsRouteRoute
     }
+    '/_authenticated/system/clinic-statistics': {
+      id: '/_authenticated/system/clinic-statistics'
+      path: '/system/clinic-statistics'
+      fullPath: '/system/clinic-statistics'
+      preLoaderRoute: typeof AuthenticatedSystemClinicStatisticsRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/system/diagnoses': {
       id: '/_authenticated/system/diagnoses'
       path: '/system/diagnoses'
@@ -870,6 +890,7 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedSupportRequestsRoute: typeof AuthenticatedSupportRequestsRoute
   AuthenticatedIndexRoute: typeof AuthenticatedIndexRoute
   AuthenticatedErrorsErrorRoute: typeof AuthenticatedErrorsErrorRoute
+  AuthenticatedSystemClinicStatisticsRoute: typeof AuthenticatedSystemClinicStatisticsRoute
   AuthenticatedSystemDiagnosesRoute: typeof AuthenticatedSystemDiagnosesRoute
   AuthenticatedSystemMedicineInstructionsRoute: typeof AuthenticatedSystemMedicineInstructionsRoute
   AuthenticatedSystemSupportRequestsRoute: typeof AuthenticatedSystemSupportRequestsRoute
@@ -902,6 +923,8 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedSupportRequestsRoute: AuthenticatedSupportRequestsRoute,
   AuthenticatedIndexRoute: AuthenticatedIndexRoute,
   AuthenticatedErrorsErrorRoute: AuthenticatedErrorsErrorRoute,
+  AuthenticatedSystemClinicStatisticsRoute:
+    AuthenticatedSystemClinicStatisticsRoute,
   AuthenticatedSystemDiagnosesRoute: AuthenticatedSystemDiagnosesRoute,
   AuthenticatedSystemMedicineInstructionsRoute:
     AuthenticatedSystemMedicineInstructionsRoute,

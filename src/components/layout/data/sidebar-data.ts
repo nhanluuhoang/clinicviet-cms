@@ -50,6 +50,14 @@ export const sidebarData: SidebarData = {
         },
         {
           get title() {
+            return i18n.t('clinicStatistics.title')
+          },
+          url: '/system/clinic-statistics',
+          icon: ChartColumn,
+          roles: SUPER_ADMIN_ROLES,
+        },
+        {
+          get title() {
             return i18n.t('messages.users')
           },
           url: '/system/users',

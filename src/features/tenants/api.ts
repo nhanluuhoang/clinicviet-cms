@@ -36,7 +36,13 @@ export type TenantsResponse = {
 
 export type TenantUpdate = Pick<
   Tenant,
-  'code' | 'name' | 'address' | 'note' | 'servicePlan' | 'storageLimitGb' | 'isActive'
+  | 'code'
+  | 'name'
+  | 'address'
+  | 'note'
+  | 'servicePlan'
+  | 'storageLimitGb'
+  | 'isActive'
 > &
   Partial<Pick<Tenant, 'subscriptionStatus'>> & {
     subdomain?: string | null
