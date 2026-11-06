@@ -1,4 +1,22 @@
 {
+  "clinicStatistics": {
+    "title": "Clinic statistics",
+    "description": "Completed visits by month, using Vietnam time.",
+    "month": "Reporting month",
+    "visits": "Visits",
+    "date": "Date",
+    "detail": "Details",
+    "detailTitle": "Clinic statistics",
+    "completedVisits": "Completed visits",
+    "totalAmount": "Total revenue",
+    "medicineRevenue": "Medicine sales",
+    "medicineCost": "Medicine cost",
+    "loading": "Loading statistics…",
+    "error": "Could not load visit statistics.",
+    "total": "Total: {{count, number}} visits",
+    "summary": "Total: {{count, number}} visits / {{clinics}} clinics",
+    "search": "Search clinic code or name"
+  },
   "diagnoses": {
     "title": "Diagnosis catalog",
     "commonTitle": "Shared diagnoses",

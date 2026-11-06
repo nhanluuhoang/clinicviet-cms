@@ -1,4 +1,22 @@
 {
+  "clinicStatistics": {
+    "title": "Thống kê phòng khám",
+    "description": "Lượt khám đã hoàn tất theo tháng, tính theo giờ Việt Nam.",
+    "month": "Tháng thống kê",
+    "visits": "Lượt khám",
+    "date": "Ngày",
+    "detail": "Chi tiết",
+    "detailTitle": "Thống kê phòng khám",
+    "completedVisits": "Tổng lượt khám thành công",
+    "totalAmount": "Tổng thu",
+    "medicineRevenue": "Tiền thuốc bán ra",
+    "medicineCost": "Giá vốn thuốc",
+    "loading": "Đang tải thống kê…",
+    "error": "Không thể tải thống kê lượt khám.",
+    "total": "Tổng: {{count, number}} lượt khám",
+    "summary": "Tổng: {{count, number}} lượt khám / {{clinics}} phòng khám",
+    "search": "Tìm theo mã hoặc tên phòng khám"
+  },
   "diagnoses": {
     "title": "Danh mục chẩn đoán",
     "commonTitle": "Chẩn đoán dùng chung",
