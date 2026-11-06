@@ -8,7 +8,9 @@
 
 ## Architecture
 
-- Super-admin `/system/clinic-statistics` is separate from clinic management. Its searchable, sortable list shows four monthly metrics for each clinic: completed visits by completedAt, total invoice revenue, medicine sales and saved medicine cost by issuedAt, including zero values. Month is URL-backed and defaults to UTC+7; source is `/statistics/clinics/monthly`.
+- Super-admin `/system/clinic-statistics` uses server pagination/search/sorting via `/statistics/clinics/monthly`, with URL-backed month/page/pageSize/filter/sort; month defaults to UTC+7. API total counts matching clinics; totalExaminations supplies the summary across all matching clinics, independent of the current page. The four metrics retain zero values: completed visits by completedAt and invoice revenue/medicine sales/saved medicine cost by issuedAt.
+
+- Tenant, system-user, trial-request, medicine, stock/batch/document and template tables load only the current API page, including server filters/sort/count. All table instances disable multi-sort; useTableUrlState uses one sort field, defaults to createdAt desc, and resets to page 1 on sort changes. Inventory totals come from /medicines/stock/statistics; batch breakdowns and medicine/template/history pickers load more on demand. Excel exports collect all filtered pages only on click. Stocktakes collect batches only for the explicitly selected medicine; template application fetches only its medicine IDs. Tenant dropdowns use lightweight /tenants/options.
 
 - Prescription dialogs load their content on first open. Service tabs mount on first visit and stay mounted afterward to preserve each tab's draft. VideoPlayer loads hls.js only when native HLS is unavailable. Both playback paths retain position/play intent across at most three automatic recoveries per mounted source, wait for online when offline, and offer manual retry after failure; timers/listeners/imports are cancelled on unmount. HLS 4xx errors except 408/429 do not trigger automatic recovery.
 

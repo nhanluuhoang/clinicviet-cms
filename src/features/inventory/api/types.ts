@@ -56,7 +56,6 @@ export interface StockSummary {
   expiryStatus: ExpiryStatus
   stockValue: number
   belowMinStock: boolean
-  batches: StockBatch[]
 }
 
 export interface GoodsReceiptLineInput {

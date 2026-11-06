@@ -4,7 +4,7 @@ import { type ColumnDef } from '@tanstack/react-table'
 import i18n, { getLocale } from '@/i18n'
 import { Edit, Trash } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
-import { useApiSearch } from '@/hooks/use-api-search'
+import { useApiTableParams } from '@/hooks/use-api-table-params'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import {
@@ -18,7 +18,7 @@ import {
 import { DataTableColumnHeader } from '@/components/data-table'
 import { withAuditColumns } from '@/components/data-table/audit-columns'
 import { UrlDataTable } from '@/components/data-table/url-data-table'
-import { GetMedicines, type Medicine } from '../api'
+import { GetMedicinesPage, type Medicine } from '../api'
 import { medicineGroupLabel, medicineGroups, medicineUnits } from '../data/data'
 import { useMedicines } from './medicines-provider'
 
@@ -168,16 +168,17 @@ const columns: ColumnDef<Medicine>[] = withAuditColumns([
 export function MedicinesTable() {
   const { t } = useTranslation()
 
-  const search = useApiSearch()
+  const params = useApiTableParams(15)
   const { data: medicines, isLoading } = useQuery({
-    queryKey: ['medicines', search],
-    queryFn: () => GetMedicines(search),
+    queryKey: ['medicines', params],
+    queryFn: () => GetMedicinesPage(params),
   })
 
   return (
     <UrlDataTable
       columns={columns}
-      data={medicines ?? []}
+      data={medicines?.data ?? []}
+      total={medicines?.total ?? 0}
       isLoading={isLoading}
       searchPlaceholder={t('messages.searchNameCodeOrActiveIngredientAlt3')}
       emptyMessage={t('messages.noMedicinesInTheCatalogYet')}

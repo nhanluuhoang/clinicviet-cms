@@ -4,6 +4,7 @@ import { API_URL } from '@/config'
 import i18n from '@/i18n'
 import { toast } from 'sonner'
 import { useAuthStore } from '@/stores/auth-store'
+import { collectPages } from '@/lib/api-page'
 import { getApiErrorMessage } from '@/lib/axios'
 import { showRequestError } from '@/lib/handle-server-error'
 import { normalizeImageFile } from '@/lib/image-upload'
@@ -24,7 +25,7 @@ import {
   getVaccinationStaff,
   getVaccinationFields,
   updatePrescription,
-  getMedicines,
+  getMedicinesPage,
   type VaccinationInput,
 } from '../api'
 import {
@@ -239,26 +240,35 @@ export function useServicePrescriptionForm({
     staffOptions.find((user) => user.fullName === vaccination.administeredBy)
       ?.id
 
-  const templateMedicines = useQuery({
-    queryKey: ['prescription-template-medicines'],
-    queryFn: () => getMedicines(),
-  })
-
-  const applyTemplate = (template: PrescriptionTemplate) => {
-    const catalog = templateMedicines.data ?? []
-    const rows = template.items.map((item, index) => ({
-      key: nextKey + index,
-      medicineId: item.medicineId,
-      medicineName: item.medicineName,
-      quantity: item.quantity,
-      instruction: item.instruction,
-      selectedMedicine: catalog.find(
-        (medicine) => medicine.id === item.medicineId
-      ),
-    }))
-    setItems(rows.length ? rows : [emptyMedicine(nextKey)])
-    setNextKey((value) => value + Math.max(rows.length, 1))
-    toast.success(i18n.t('messages.templateApplied', { value0: template.name }))
+  const applyTemplate = async (template: PrescriptionTemplate) => {
+    try {
+      const catalog = template.items.length
+        ? await collectPages((page) =>
+            getMedicinesPage(
+              '',
+              page,
+              template.items.map((item) => item.medicineId)
+            )
+          )
+        : []
+      const rows = template.items.map((item, index) => ({
+        key: nextKey + index,
+        medicineId: item.medicineId,
+        medicineName: item.medicineName,
+        quantity: item.quantity,
+        instruction: item.instruction,
+        selectedMedicine: catalog.find(
+          (medicine) => medicine.id === item.medicineId
+        ),
+      }))
+      setItems(rows.length ? rows : [emptyMedicine(nextKey)])
+      setNextKey((value) => value + Math.max(rows.length, 1))
+      toast.success(
+        i18n.t('messages.templateApplied', { value0: template.name })
+      )
+    } catch (error) {
+      showRequestError(error, i18n.t('messages.somethingWentWrong'))
+    }
   }
 
   const defaultConsultationFee = Number(

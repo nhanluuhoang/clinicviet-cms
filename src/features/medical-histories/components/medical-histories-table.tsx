@@ -74,10 +74,11 @@ export function MedicalHistoriesTable({
       { columnId: 'patientName', searchKey: 'patientName', type: 'string' },
       { columnId: 'doctorName', searchKey: 'doctorName', type: 'string' },
     ],
-    sorting: { defaultSort: '' },
   })
 
   const table = useReactTable({
+    enableMultiSort: false,
+    maxMultiSortColCount: 1,
     data,
     columns,
     state: { sorting, pagination, columnFilters, expanded, columnVisibility },

@@ -1,5 +1,6 @@
 import type { ServicePlan } from '@/config/access-control'
 import { axios } from '@/lib/axios'
+import type { ApiTableParams } from '@/hooks/use-api-table-params'
 
 export type Tenant = {
   id: string
@@ -49,8 +50,12 @@ export type TenantUpdate = Pick<
     subscriptionEndsAt?: string
   }
 
-export const getTenants = (): Promise<TenantsResponse> =>
-  axios.get('/tenants', { params: { page: 1, limit: 100 } })
+export const getTenants = (params: ApiTableParams): Promise<TenantsResponse> =>
+  axios.get('/tenants', { params })
+
+export type TenantOption = Pick<Tenant, 'id' | 'code' | 'name'>
+export const getTenantOptions = (): Promise<TenantOption[]> =>
+  axios.get('/tenants/options')
 
 export const createTenant = (data: TenantInput): Promise<Tenant> =>
   axios.post('/tenants', data)
