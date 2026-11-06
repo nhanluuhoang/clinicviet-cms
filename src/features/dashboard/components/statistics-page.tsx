@@ -6,19 +6,10 @@ import {
   formatNumber,
   getCurrentMonth,
   getToday,
-  MONTH_OPTIONS,
   YEAR_MONTH_PATTERN,
   DATE_ONLY_PATTERN,
-  YEAR_OPTIONS,
 } from '@/lib/utils'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select'
 import {
   Table,
   TableBody,
@@ -30,6 +21,7 @@ import {
 import { DatePickerInput } from '@/components/date-picker-input'
 import { Header } from '@/components/layout/header'
 import { Main } from '@/components/layout/main'
+import { MonthPickerInput } from '@/components/month-picker-input'
 import { ProfileDropdown } from '@/components/profile-dropdown'
 import { ThemeSwitch } from '@/components/theme-switch'
 import {
@@ -96,43 +88,10 @@ export function StatisticsPage({ period }: { period: 'day' | 'month' }) {
                 : t('messages.reportingDate')}
             </label>
             {isMonthly ? (
-              <div className='grid grid-cols-[minmax(0,1fr)_1px_minmax(0,1fr)] items-center gap-2 rounded-lg border bg-card p-1.5 shadow-sm sm:flex'>
-                <Select
-                  value={selectedPeriod.slice(5, 7)}
-                  onValueChange={(month) =>
-                    setSelectedPeriod(`${selectedPeriod.slice(0, 4)}-${month}`)
-                  }
-                >
-                  <SelectTrigger className='w-full min-w-0 border-0 shadow-none sm:w-36'>
-                    <SelectValue placeholder={t('messages.selectMonth')} />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {MONTH_OPTIONS.map((option) => (
-                      <SelectItem key={option.value} value={option.value}>
-                        {option.label}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-                <div className='my-1 w-px bg-border' />
-                <Select
-                  value={selectedPeriod.slice(0, 4)}
-                  onValueChange={(year) =>
-                    setSelectedPeriod(`${year}-${selectedPeriod.slice(5, 7)}`)
-                  }
-                >
-                  <SelectTrigger className='w-full min-w-0 border-0 shadow-none sm:w-36'>
-                    <SelectValue placeholder={t('messages.selectYear')} />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {YEAR_OPTIONS.map((year) => (
-                      <SelectItem key={year} value={String(year)}>
-                        {t('messages.year')} {year}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
+              <MonthPickerInput
+                value={selectedPeriod}
+                onChange={setSelectedPeriod}
+              />
             ) : (
               <DatePickerInput
                 value={selectedPeriod}
