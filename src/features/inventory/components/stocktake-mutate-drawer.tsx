@@ -1,5 +1,9 @@
 import { useEffect, useMemo, useState } from 'react'
-import { useQuery, useQueryClient } from '@tanstack/react-query'
+import {
+  useInfiniteQuery,
+  useQuery,
+  useQueryClient,
+} from '@tanstack/react-query'
 import { Check, ChevronsUpDown } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 import { toast } from 'sonner'
@@ -34,7 +38,7 @@ import {
 import { Textarea } from '@/components/ui/textarea'
 import { DatePickerInput } from '@/components/date-picker-input'
 import { NumberInput } from '@/components/number-input'
-import { GetMedicines, type Medicine } from '@/features/medicines/api'
+import { GetMedicinesPage, type Medicine } from '@/features/medicines/api'
 import { CreateStockTake, GetBatches } from '../api'
 import { ExpiryBadge } from './expiry-badge'
 
@@ -50,11 +54,23 @@ function MedicinePicker({
   const [open, setOpen] = useState(false)
   const [search, setSearch] = useState('')
   const debouncedSearch = useDebounce(search, 300)
-  const { data: medicines, isLoading } = useQuery({
-    queryKey: ['medicines', 'search', debouncedSearch],
-    queryFn: () => GetMedicines(debouncedSearch),
+  const medicinePages = useInfiniteQuery({
+    queryKey: ['medicines', 'options', debouncedSearch],
+    initialPageParam: 1,
+    queryFn: ({ pageParam }) =>
+      GetMedicinesPage({
+        page: pageParam,
+        limit: 20,
+        search: debouncedSearch || undefined,
+      }),
+    getNextPageParam: (lastPage) =>
+      lastPage.page * lastPage.limit < lastPage.total
+        ? lastPage.page + 1
+        : undefined,
     enabled: open,
   })
+  const medicines = medicinePages.data?.pages.flatMap((page) => page.data) ?? []
+  const isLoading = medicinePages.isLoading
 
   return (
     <Popover open={open} onOpenChange={setOpen}>
@@ -121,6 +137,16 @@ function MedicinePicker({
               ))}
             </CommandGroup>
           </CommandList>
+          {medicinePages.hasNextPage && (
+            <Button
+              type='button'
+              variant='ghost'
+              disabled={medicinePages.isFetchingNextPage}
+              onClick={() => void medicinePages.fetchNextPage()}
+            >
+              {t('messages.loadMore')}
+            </Button>
+          )}
         </Command>
       </PopoverContent>
     </Popover>
@@ -147,9 +173,9 @@ export function StockTakeMutateDrawer({
   const [isSubmitting, setIsSubmitting] = useState(false)
 
   const { data: allBatches } = useQuery({
-    queryKey: ['inventory', 'batches'],
-    queryFn: () => GetBatches(),
-    enabled: open,
+    queryKey: ['inventory', 'batches', 'stocktake', medicineId],
+    queryFn: () => GetBatches(medicineId),
+    enabled: open && !!medicineId,
   })
 
   const batches = useMemo(

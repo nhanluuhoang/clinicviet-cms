@@ -20,6 +20,7 @@ export function Invoices() {
     queryKey: ['invoices', search, date],
     queryFn: () =>
       getInvoices({
+        sort: search.sort || undefined,
         date: date || undefined,
         search: search.filter || undefined,
         serviceType: search.serviceType?.[0],

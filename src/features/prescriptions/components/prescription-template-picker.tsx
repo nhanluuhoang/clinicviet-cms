@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { useQuery } from '@tanstack/react-query'
+import { useInfiniteQuery } from '@tanstack/react-query'
 import { ChevronsUpDown } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 import { useAuthStore } from '@/stores/auth-store'
@@ -34,17 +34,29 @@ export function PrescriptionTemplatePicker({
   const [open, setOpen] = useState(false)
   const [search, setSearch] = useState('')
   const debouncedSearch = useDebounce(search, 300)
-  const { data: templates = [], isLoading } = useQuery({
-    queryKey: [
-      'prescription-templates',
-      'search',
-      user?.tenantId,
-      user?.role,
-      debouncedSearch,
-    ],
-    queryFn: () => getPrescriptionTemplates(debouncedSearch),
-    enabled: open,
-  })
+  const { data, isLoading, hasNextPage, fetchNextPage, isFetchingNextPage } =
+    useInfiniteQuery({
+      queryKey: [
+        'prescription-templates',
+        'search',
+        user?.tenantId,
+        user?.role,
+        debouncedSearch,
+      ],
+      initialPageParam: 1,
+      queryFn: ({ pageParam }) =>
+        getPrescriptionTemplates({
+          page: pageParam,
+          limit: 20,
+          search: debouncedSearch || undefined,
+        }),
+      getNextPageParam: (lastPage) =>
+        lastPage.page * lastPage.limit < lastPage.total
+          ? lastPage.page + 1
+          : undefined,
+      enabled: open,
+    })
+  const templates = data?.pages.flatMap((page) => page.data) ?? []
 
   return (
     <Popover open={open} onOpenChange={setOpen}>
@@ -97,6 +109,16 @@ export function PrescriptionTemplatePicker({
               ))}
             </CommandGroup>
           </CommandList>
+          {hasNextPage && (
+            <Button
+              type='button'
+              variant='ghost'
+              disabled={isFetchingNextPage}
+              onClick={() => void fetchNextPage()}
+            >
+              {t('messages.loadMore')}
+            </Button>
+          )}
         </Command>
       </PopoverContent>
     </Popover>

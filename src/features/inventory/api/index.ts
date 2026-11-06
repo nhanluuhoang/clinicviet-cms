@@ -1,8 +1,9 @@
 import i18n from '@/i18n'
+import { collectPages } from '@/lib/api-page'
 import { axios } from '@/lib/axios'
-import { isExpired, worstExpiryStatus } from '@/lib/utils'
+import type { ApiTableParams } from '@/hooks/use-api-table-params'
 import type { AuditFields } from '@/components/data-table/audit-columns'
-import { GetMedicines, type Medicine } from '@/features/medicines/api'
+import { type Medicine } from '@/features/medicines/api'
 import {
   type GoodsReceipt,
   type GoodsReceiptInput,
@@ -104,22 +105,6 @@ interface ApiGoodsIssue extends AuditFields {
   lines: Array<{ quantity: number; batch: ApiBatch }>
 }
 
-const getAll = async <T>(url: string, search = ''): Promise<T[]> => {
-  const first = await axios.get<unknown, Page<T>>(url, {
-    params: { page: 1, limit: 100, search: search || undefined },
-  })
-  if (first.data.length >= first.total) return first.data
-  const pageCount = Math.ceil(first.total / 100)
-  const rest = await Promise.all(
-    Array.from({ length: pageCount - 1 }, (_, index) =>
-      axios.get<unknown, Page<T>>(url, {
-        params: { page: index + 2, limit: 100, search: search || undefined },
-      })
-    )
-  )
-  return [...first.data, ...rest.flatMap((page) => page.data)]
-}
-
 const mapBatch = (batch: ApiBatch): StockBatch => ({
   id: batch.id,
   medicineId: batch.medicineId,
@@ -139,15 +124,24 @@ const mapBatch = (batch: ApiBatch): StockBatch => ({
   receivedAt: batch.receiptLine?.receipt.receivedAt ?? '',
 })
 
-const GetBatches = async (search = ''): Promise<StockBatch[]> =>
-  (await getAll<ApiBatch>('/stock-batches', search)).map(mapBatch)
-
-const SearchBatches = async (search: string): Promise<StockBatch[]> => {
-  const page = await axios.get<unknown, Page<ApiBatch>>('/stock-batches', {
-    params: { page: 1, limit: 50, search: search || undefined },
+export const GetBatchesPage = async (
+  params: ApiTableParams & { medicineId?: string; inStock?: string }
+) => {
+  const response = await axios.get<unknown, Page<ApiBatch>>('/stock-batches', {
+    params,
   })
-  return page.data.map(mapBatch)
+  return { ...response, data: response.data.map(mapBatch) }
 }
+const GetBatches = (medicineId: string): Promise<StockBatch[]> =>
+  collectPages((page) =>
+    GetBatchesPage({
+      page,
+      limit: 100,
+      medicineId,
+      inStock: 'true',
+      sort: 'expiryDate',
+    })
+  )
 
 const UpdateBatch = (id: string, data: StockBatchUpdateInput): Promise<void> =>
   axios.patch(`/stock-batches/${id}`, {
@@ -155,63 +149,22 @@ const UpdateBatch = (id: string, data: StockBatchUpdateInput): Promise<void> =>
     mfgDate: data.mfgDate || undefined,
   })
 
-const GetStock = async (search = ''): Promise<StockSummary[]> => {
-  const [medicines, batches] = await Promise.all([
-    GetMedicines(search),
-    GetBatches(),
-  ])
-  return medicines.map((medicine) => {
-    const own = batches
-      .filter(
-        (batch) => batch.medicineId === medicine.id && batch.qtyRemaining > 0
+const GetStock = async (
+  params: ApiTableParams
+): Promise<Page<StockSummary>> => {
+  return axios.get<unknown, Page<StockSummary>>('/medicines/stock', { params })
+}
+const GetStats = (): Promise<InventoryStats> =>
+  axios.get('/medicines/stock/statistics')
+export const GetInventoryExport = (
+  kind: 'stock' | 'batches',
+  params: ApiTableParams
+) =>
+  kind === 'stock'
+    ? collectPages((page) => GetStock({ ...params, page, limit: 100 }))
+    : collectPages((page) =>
+        GetBatchesPage({ ...params, page, limit: 100, inStock: 'true' })
       )
-      .sort((a, b) => a.expiryDate.localeCompare(b.expiryDate))
-    const totalQty = own.reduce((sum, batch) => sum + batch.qtyRemaining, 0)
-    return {
-      medicineId: medicine.id,
-      code: medicine.code,
-      name: medicine.name,
-      strength: medicine.strength,
-      unit: medicine.unit,
-      group: medicine.group,
-      manufacturer: medicine.manufacturer,
-      minStock: medicine.minStock,
-      totalQty,
-      batchCount: own.length,
-      nearestExpiry: own[0]?.expiryDate ?? null,
-      expiryStatus: worstExpiryStatus(own.map((batch) => batch.expiryDate)),
-      stockValue: own.reduce(
-        (sum, batch) => sum + batch.qtyRemaining * batch.unitCost,
-        0
-      ),
-      belowMinStock: totalQty < medicine.minStock,
-      batches: own,
-    }
-  })
-}
-
-const GetStats = async (): Promise<InventoryStats> => {
-  const [medicines, stock, batches] = await Promise.all([
-    GetMedicines(),
-    GetStock(),
-    GetBatches(),
-  ])
-  const inStock = batches.filter((batch) => batch.qtyRemaining > 0)
-  const criticalDate = new Date()
-  criticalDate.setDate(criticalDate.getDate() + 30)
-  return {
-    medicineCount: medicines.filter((medicine) => medicine.isActive).length,
-    totalStockValue: stock.reduce((sum, item) => sum + item.stockValue, 0),
-    expiredBatches: inStock.filter((batch) => isExpired(batch.expiryDate))
-      .length,
-    criticalBatches: inStock.filter(
-      (batch) =>
-        !isExpired(batch.expiryDate) &&
-        new Date(batch.expiryDate) <= criticalDate
-    ).length,
-    belowMinStock: stock.filter((item) => item.belowMinStock).length,
-  }
-}
 
 const mapReceipt = (receipt: ApiReceipt): GoodsReceipt => {
   const lines = receipt.lines.map(({ batch, qty, unitCost, amount }) => ({
@@ -260,14 +213,23 @@ interface ApiGoodsIssueSummary extends AuditFields {
   _count: { lines: number }
 }
 
-const GetReceipts = async (search = ''): Promise<GoodsReceiptSummary[]> => {
-  const summaries = await getAll<ApiReceiptSummary>('/goods-receipts', search)
-  return summaries.map(({ _count, creator, ...receipt }) => ({
-    ...receipt,
-    creator,
-    operatorName: getOperatorName(creator),
-    lineCount: _count.lines,
-  }))
+const GetReceipts = async (
+  params: ApiTableParams
+): Promise<Page<GoodsReceiptSummary>> => {
+  const response = await axios.get<unknown, Page<ApiReceiptSummary>>(
+    '/goods-receipts',
+    { params }
+  )
+  const summaries = response.data
+  return {
+    ...response,
+    data: summaries.map(({ _count, creator, ...receipt }) => ({
+      ...receipt,
+      creator,
+      operatorName: getOperatorName(creator),
+      lineCount: _count.lines,
+    })),
+  }
 }
 
 const GetReceipt = async (id: string): Promise<GoodsReceipt> =>
@@ -282,14 +244,23 @@ const CreateReceipt = (data: GoodsReceiptInput): Promise<void> =>
     })),
   })
 
-const GetGoodsIssues = async (search = ''): Promise<GoodsIssueSummary[]> => {
-  const summaries = await getAll<ApiGoodsIssueSummary>('/goods-issues', search)
-  return summaries.map(({ _count, creator, ...issue }) => ({
-    ...issue,
-    creator,
-    operatorName: getOperatorName(creator),
-    lineCount: _count.lines,
-  }))
+const GetGoodsIssues = async (
+  params: ApiTableParams
+): Promise<Page<GoodsIssueSummary>> => {
+  const response = await axios.get<unknown, Page<ApiGoodsIssueSummary>>(
+    '/goods-issues',
+    { params }
+  )
+  const summaries = response.data
+  return {
+    ...response,
+    data: summaries.map(({ _count, creator, ...issue }) => ({
+      ...issue,
+      creator,
+      operatorName: getOperatorName(creator),
+      lineCount: _count.lines,
+    })),
+  }
 }
 
 const GetGoodsIssue = async (id: string): Promise<GoodsIssue> => {
@@ -315,14 +286,23 @@ const GetGoodsIssue = async (id: string): Promise<GoodsIssue> => {
 const CreateGoodsIssue = (data: GoodsIssueInput): Promise<void> =>
   axios.post('/goods-issues', data)
 
-const GetStockTakes = async (search = ''): Promise<StockTakeSummary[]> => {
-  const summaries = await getAll<ApiStockTakeSummary>('/stock-takes', search)
-  return summaries.map(({ _count, creator, ...take }) => ({
-    ...take,
-    creator,
-    operatorName: getOperatorName(creator),
-    lineCount: _count.lines,
-  }))
+const GetStockTakes = async (
+  params: ApiTableParams
+): Promise<Page<StockTakeSummary>> => {
+  const response = await axios.get<unknown, Page<ApiStockTakeSummary>>(
+    '/stock-takes',
+    { params }
+  )
+  const summaries = response.data
+  return {
+    ...response,
+    data: summaries.map(({ _count, creator, ...take }) => ({
+      ...take,
+      creator,
+      operatorName: getOperatorName(creator),
+      lineCount: _count.lines,
+    })),
+  }
 }
 
 const GetStockTake = async (id: string): Promise<StockTake> => {
@@ -364,7 +344,6 @@ const DisposeBatch = (batchId: string): Promise<void> =>
 export {
   GetStock,
   GetBatches,
-  SearchBatches,
   UpdateBatch,
   GetStats,
   GetReceipts,

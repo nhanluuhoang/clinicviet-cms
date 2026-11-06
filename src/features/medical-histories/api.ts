@@ -75,6 +75,7 @@ interface MedicalHistoryPage {
 }
 
 export const getMedicalHistoryList = (params: {
+  sort?: string
   patientName?: string
   doctorName?: string
   date?: string

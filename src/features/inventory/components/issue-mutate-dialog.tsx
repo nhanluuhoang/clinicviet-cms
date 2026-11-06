@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react'
 import { z } from 'zod'
 import { useFieldArray, useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { useQuery, useQueryClient } from '@tanstack/react-query'
+import { useInfiniteQuery, useQueryClient } from '@tanstack/react-query'
 import i18n from '@/i18n'
 import { Check, ChevronsUpDown, Plus, Trash2 } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
@@ -46,7 +46,7 @@ import {
 import { Textarea } from '@/components/ui/textarea'
 import { DatePickerInput } from '@/components/date-picker-input'
 import { NumberInput } from '@/components/number-input'
-import { CreateGoodsIssue, SearchBatches, type StockBatch } from '../api'
+import { CreateGoodsIssue, GetBatchesPage, type StockBatch } from '../api'
 
 const lineSchema = z.object({
   batchId: z
@@ -92,14 +92,25 @@ function BatchPicker({
   const [open, setOpen] = useState(false)
   const [search, setSearch] = useState('')
   const debouncedSearch = useDebounce(search, 300)
-  const { data: batches, isLoading } = useQuery({
+  const batchPages = useInfiniteQuery({
     queryKey: ['inventory', 'batch-search', debouncedSearch],
-    queryFn: () => SearchBatches(debouncedSearch),
+    initialPageParam: 1,
+    queryFn: ({ pageParam }) =>
+      GetBatchesPage({
+        page: pageParam,
+        limit: 20,
+        search: debouncedSearch || undefined,
+        inStock: 'true',
+      }),
+    getNextPageParam: (lastPage) =>
+      lastPage.page * lastPage.limit < lastPage.total
+        ? lastPage.page + 1
+        : undefined,
     enabled: open,
   })
-  const availableBatches = (batches ?? []).filter(
-    (batch) => batch.qtyRemaining > 0
-  )
+  const isLoading = batchPages.isLoading
+  const batches = batchPages.data?.pages.flatMap((page) => page.data) ?? []
+  const availableBatches = batches.filter((batch) => batch.qtyRemaining > 0)
 
   return (
     <Popover open={open} onOpenChange={setOpen}>
@@ -173,6 +184,16 @@ function BatchPicker({
               ))}
             </CommandGroup>
           </CommandList>
+          {batchPages.hasNextPage && (
+            <Button
+              type='button'
+              variant='ghost'
+              disabled={batchPages.isFetchingNextPage}
+              onClick={() => void batchPages.fetchNextPage()}
+            >
+              {t('messages.loadMore')}
+            </Button>
+          )}
         </Command>
       </PopoverContent>
     </Popover>

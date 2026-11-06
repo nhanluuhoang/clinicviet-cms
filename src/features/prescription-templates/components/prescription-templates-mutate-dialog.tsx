@@ -13,15 +13,9 @@ import {
 } from '@/components/ui/dialog'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select'
 import { MedicineInstructionInput } from '@/components/medicine-instruction-input'
 import { NumberInput } from '@/components/number-input'
+import { MedicinePicker } from '@/features/prescriptions/components/medicine-picker'
 import { emptyItem } from '../data/constants'
 import type { PrescriptionTemplatesState } from '../hooks/use-prescription-templates'
 
@@ -32,7 +26,6 @@ export function PrescriptionTemplatesMutateDialog({
   setName,
   items,
   setItems,
-  medicines,
   close,
   patchItem,
   save,
@@ -44,7 +37,6 @@ export function PrescriptionTemplatesMutateDialog({
   | 'setName'
   | 'items'
   | 'setItems'
-  | 'medicines'
   | 'close'
   | 'patchItem'
   | 'save'
@@ -96,33 +88,26 @@ export function PrescriptionTemplatesMutateDialog({
                     <Trash2 className='size-4' />
                   </Button>
                 </div>
-                <Select
-                  value={item.medicineId || undefined}
-                  onValueChange={(value) => {
-                    const medicine = medicines.find((m) => m.id === value)
+                <MedicinePicker
+                  requireStock={false}
+                  selected={
+                    item.medicineId
+                      ? {
+                          id: item.medicineId,
+                          name: item.medicineName,
+                          strength: '',
+                          unit: '',
+                          totalQty: 0,
+                        }
+                      : undefined
+                  }
+                  onChange={(medicine) =>
                     patchItem(index, {
-                      medicineId: value,
-                      medicineName: medicine?.name ?? '',
+                      medicineId: medicine.id,
+                      medicineName: medicine.name,
                     })
-                  }}
-                >
-                  <SelectTrigger className='w-full'>
-                    <SelectValue placeholder={t('messages.selectMedicine')} />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {item.medicineId &&
-                      !medicines.some((m) => m.id === item.medicineId) && (
-                        <SelectItem value={item.medicineId}>
-                          {item.medicineName}
-                        </SelectItem>
-                      )}
-                    {medicines.map((medicine) => (
-                      <SelectItem key={medicine.id} value={medicine.id}>
-                        {medicine.name} · {medicine.strength}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
+                  }
+                />
                 <div className='grid gap-3 sm:grid-cols-[8rem_1fr]'>
                   <div className='space-y-2'>
                     <Label required>{t('messages.quantityAlt2')}</Label>

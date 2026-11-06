@@ -4,7 +4,6 @@ import {
   type ColumnDef,
   type ExpandedState,
   type Row,
-  type SortingState,
   type Table as ReactTable,
   flexRender,
   getCoreRowModel,
@@ -62,7 +61,6 @@ type UrlDataTableProps<TData> = {
   filters?: ToolbarFilter[]
   emptyMessage?: string
   mobileLabels?: Record<string, string>
-  initialSorting?: SortingState
   pageSize?: number
   renderSubRow?: (row: Row<TData>) => React.ReactNode
   rowClassName?: (row: Row<TData>) => string | undefined
@@ -79,7 +77,6 @@ export function UrlDataTable<TData>({
   filters = [],
   emptyMessage = i18n.t('messages.noData'),
   mobileLabels,
-  initialSorting = [],
   pageSize = 10,
   renderSubRow,
   rowClassName,
@@ -125,18 +122,15 @@ export function UrlDataTable<TData>({
     pagination: { defaultPage: 1, defaultPageSize: pageSize },
     globalFilter: { enabled: true, key: 'filter' },
     columnFilters: columnFiltersCfg,
-    sorting: { defaultSort: '' },
   })
 
-  // Without an explicit URL sort, preserve the API's createdAt descending order.
-  // Client tables also preserve that order before filtering and pagination.
-  const effectiveSorting = sorting.length > 0 ? sorting : initialSorting
-
   const table = useReactTable({
+    enableMultiSort: false,
+    maxMultiSortColCount: 1,
     data,
     columns,
     state: {
-      sorting: effectiveSorting,
+      sorting,
       columnFilters,
       globalFilter,
       pagination,

@@ -1,10 +1,10 @@
-import { useQuery } from '@tanstack/react-query'
+import { useInfiniteQuery, useQuery } from '@tanstack/react-query'
 import { type ColumnDef, type Row } from '@tanstack/react-table'
 import i18n from '@/i18n'
 import { ChevronDown, ChevronRight, TrendingDown } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 import { cn, formatMoney, formatNumber } from '@/lib/utils'
-import { useApiSearch } from '@/hooks/use-api-search'
+import { useApiTableParams } from '@/hooks/use-api-table-params'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import {
@@ -16,7 +16,7 @@ import {
   medicineGroupLabel,
   medicineGroups,
 } from '@/features/medicines/data/data'
-import { GetStock, type StockSummary } from '../api'
+import { GetStock, GetBatchesPage, type StockSummary } from '../api'
 import { expiryMeta, expiryStatuses } from '../data/data'
 import { routeApi } from '../data/route'
 import { ExpiryBadge } from './expiry-badge'
@@ -25,12 +25,36 @@ import { InventoryExportButton } from './inventory-export-button'
 function BatchBreakdown({ row }: { row: Row<StockSummary> }) {
   const { t } = useTranslation()
 
-  const { batches, unit } = row.original
+  const { medicineId, unit } = row.original
+  const {
+    data,
+    hasNextPage,
+    fetchNextPage,
+    isFetchingNextPage,
+    isPending,
+    isError,
+  } = useInfiniteQuery({
+    queryKey: ['inventory', 'batches', 'breakdown', medicineId],
+    initialPageParam: 1,
+    queryFn: ({ pageParam }) =>
+      GetBatchesPage({
+        page: pageParam,
+        limit: 10,
+        medicineId,
+        inStock: 'true',
+        sort: 'expiryDate',
+      }),
+    getNextPageParam: (lastPage) =>
+      lastPage.page * lastPage.limit < lastPage.total
+        ? lastPage.page + 1
+        : undefined,
+  })
+  const batches = data?.pages.flatMap((page) => page.data) ?? []
 
   return (
     <div className='px-4 py-3'>
       <p className='mb-2 text-xs font-medium text-muted-foreground'>
-        {batches.length}{' '}
+        {data?.pages[0]?.total ?? 0}{' '}
         {t('messages.receiptBatchesWithRemainingStockOrderedByEarlies')}
       </p>
       <div className='grid gap-2 sm:hidden'>
@@ -120,6 +144,18 @@ function BatchBreakdown({ row }: { row: Row<StockSummary> }) {
           </tbody>
         </table>
       </div>
+      {isPending && <p>{t('messages.loading')}</p>}
+      {isError && <p role='alert'>{t('messages.somethingWentWrong')}</p>}
+      {hasNextPage && (
+        <Button
+          type='button'
+          variant='ghost'
+          disabled={isFetchingNextPage}
+          onClick={() => void fetchNextPage()}
+        >
+          {t('messages.loadMore')}
+        </Button>
+      )}
     </div>
   )
 }
@@ -276,10 +312,10 @@ export function StockTab() {
   const { t } = useTranslation()
 
   const currentSearch = routeApi.useSearch().filter ?? ''
-  const search = useApiSearch()
+  const params = useApiTableParams(10)
   const { data, isLoading, isFetching, isError } = useQuery({
-    queryKey: ['inventory', 'stock', search],
-    queryFn: () => GetStock(search),
+    queryKey: ['inventory', 'stock', params],
+    queryFn: () => GetStock(params),
   })
 
   const filters = [
@@ -305,7 +341,8 @@ export function StockTab() {
   return (
     <UrlDataTable
       columns={columns}
-      data={data ?? []}
+      data={data?.data ?? []}
+      total={data?.total ?? 0}
       isLoading={isLoading}
       searchPlaceholder={t('messages.searchMedicineNameCodeOrManufacturer')}
       emptyMessage={t('messages.noMedicinesInInventoryYet')}
@@ -322,7 +359,11 @@ export function StockTab() {
           <InventoryExportButton
             table={table}
             kind='stock'
-            disabled={isFetching || isError || search !== currentSearch}
+            disabled={
+              isFetching ||
+              isError ||
+              params.search !== (currentSearch || undefined)
+            }
           />
         </DataTableToolbar>
       )}

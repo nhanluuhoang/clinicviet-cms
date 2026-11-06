@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { useQuery } from '@tanstack/react-query'
+import { useInfiniteQuery } from '@tanstack/react-query'
 import { getLocale } from '@/i18n'
 import { Check, ChevronsUpDown } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
@@ -19,13 +19,15 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from '@/components/ui/popover'
-import { getMedicines, type Medicine } from '../api'
+import { getMedicinesPage, type Medicine } from '../api'
 
 export function MedicinePicker({
   selected,
   onChange,
+  requireStock = true,
 }: {
-  selected?: Medicine
+  requireStock?: boolean
+  selected?: Pick<Medicine, 'id' | 'name' | 'strength' | 'unit' | 'totalQty'>
   onChange: (medicine: Medicine) => void
 }) {
   const { t } = useTranslation()
@@ -33,9 +35,14 @@ export function MedicinePicker({
   const [open, setOpen] = useState(false)
   const [search, setSearch] = useState('')
   const debouncedSearch = useDebounce(search, 300)
-  const medicines = useQuery({
+  const medicines = useInfiniteQuery({
     queryKey: ['prescription-medicines', debouncedSearch],
-    queryFn: () => getMedicines(debouncedSearch),
+    initialPageParam: 1,
+    queryFn: ({ pageParam }) => getMedicinesPage(debouncedSearch, pageParam),
+    getNextPageParam: (lastPage) =>
+      lastPage.page * lastPage.limit < lastPage.total
+        ? lastPage.page + 1
+        : undefined,
     enabled: open,
   })
 
@@ -51,12 +58,14 @@ export function MedicinePicker({
         >
           <span className='min-w-0 truncate'>
             {selected
-              ? t('messages.stockAlt2', {
-                  value0: selected.name,
-                  value1: selected.strength,
-                  value2: selected.unit,
-                  value3: selected.totalQty,
-                })
+              ? requireStock
+                ? t('messages.stockAlt2', {
+                    value0: selected.name,
+                    value1: selected.strength,
+                    value2: selected.unit,
+                    value3: selected.totalQty,
+                  })
+                : selected.name
               : medicines.isLoading
                 ? t('messages.loading')
                 : t('messages.selectMedicine')}
@@ -77,33 +86,47 @@ export function MedicinePicker({
           <CommandList>
             <CommandEmpty>{t('messages.noMedicinesFound')}</CommandEmpty>
             <CommandGroup>
-              {(medicines.data ?? []).map((medicine) => (
-                <CommandItem
-                  key={medicine.id}
-                  value={`${medicine.name} ${medicine.strength}`}
-                  disabled={medicine.totalQty < 1}
-                  onSelect={() => {
-                    onChange(medicine)
-                    setOpen(false)
-                  }}
-                >
-                  <Check
-                    className={cn(
-                      'size-4',
-                      medicine.id === selected?.id ? 'opacity-100' : 'opacity-0'
-                    )}
-                  />
-                  <span className='min-w-0 flex-1 truncate'>
-                    {medicine.name} · {medicine.strength} ({medicine.unit})
-                  </span>
-                  <span className='ms-auto shrink-0 text-xs text-muted-foreground'>
-                    {medicine.salePrice.toLocaleString(getLocale())}{' '}
-                    {t('messages.stockAlt3')} {medicine.totalQty}
-                  </span>
-                </CommandItem>
-              ))}
+              {(medicines.data?.pages.flatMap((page) => page.data) ?? []).map(
+                (medicine) => (
+                  <CommandItem
+                    key={medicine.id}
+                    value={`${medicine.name} ${medicine.strength}`}
+                    disabled={requireStock && medicine.totalQty < 1}
+                    onSelect={() => {
+                      onChange(medicine)
+                      setOpen(false)
+                    }}
+                  >
+                    <Check
+                      className={cn(
+                        'size-4',
+                        medicine.id === selected?.id
+                          ? 'opacity-100'
+                          : 'opacity-0'
+                      )}
+                    />
+                    <span className='min-w-0 flex-1 truncate'>
+                      {medicine.name} · {medicine.strength} ({medicine.unit})
+                    </span>
+                    <span className='ms-auto shrink-0 text-xs text-muted-foreground'>
+                      {medicine.salePrice.toLocaleString(getLocale())}{' '}
+                      {t('messages.stockAlt3')} {medicine.totalQty}
+                    </span>
+                  </CommandItem>
+                )
+              )}
             </CommandGroup>
           </CommandList>
+          {medicines.hasNextPage && (
+            <Button
+              type='button'
+              variant='ghost'
+              disabled={medicines.isFetchingNextPage}
+              onClick={() => void medicines.fetchNextPage()}
+            >
+              {t('messages.loadMore')}
+            </Button>
+          )}
         </Command>
       </PopoverContent>
     </Popover>

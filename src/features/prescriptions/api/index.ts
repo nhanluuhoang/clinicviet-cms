@@ -75,18 +75,32 @@ export interface PrescriptionItemInput {
   instruction?: string
 }
 
-export const getMedicines = async (search = ''): Promise<Medicine[]> => {
+export const getMedicinesPage = async (
+  search = '',
+  page = 1,
+  ids?: string[]
+) => {
   const response = await axios.get<unknown, Page<Medicine>>(
     '/medicines/search',
-    { params: { page: 1, limit: 100, search: search || undefined } }
+    {
+      params: {
+        page,
+        limit: 20,
+        search: search || undefined,
+        ids: ids?.join(','),
+      },
+    }
   )
-  return response.data
-    .filter((medicine) => medicine.isActive)
-    .map((medicine) => ({
-      ...medicine,
-      salePrice: Number(medicine.salePrice ?? 0),
-      totalQty: Number(medicine.totalQty ?? 0),
-    }))
+  return {
+    ...response,
+    data: response.data
+      .filter((medicine) => medicine.isActive)
+      .map((medicine) => ({
+        ...medicine,
+        salePrice: Number(medicine.salePrice ?? 0),
+        totalQty: Number(medicine.totalQty ?? 0),
+      })),
+  }
 }
 
 export const createPrescription = (data: {

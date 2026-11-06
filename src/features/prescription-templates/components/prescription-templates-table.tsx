@@ -10,10 +10,17 @@ export function PrescriptionTemplatesTable({
   setName,
   setItems,
   templates,
+  total,
   isLoading,
 }: Pick<
   PrescriptionTemplatesState,
-  'setOpen' | 'setCurrent' | 'setName' | 'setItems' | 'templates' | 'isLoading'
+  | 'setOpen'
+  | 'setCurrent'
+  | 'setName'
+  | 'setItems'
+  | 'templates'
+  | 'total'
+  | 'isLoading'
 >) {
   const { t } = useTranslation()
 
@@ -27,6 +34,7 @@ export function PrescriptionTemplatesTable({
     <UrlDataTable
       columns={withAuditColumns(columns)}
       data={templates}
+      total={total}
       isLoading={isLoading}
       searchPlaceholder={t('messages.searchTemplateNameOrMedicine')}
       emptyMessage={t('messages.noPrescriptionTemplatesYet')}

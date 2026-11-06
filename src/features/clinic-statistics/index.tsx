@@ -1,10 +1,11 @@
 import { useState } from 'react'
 import { useQuery } from '@tanstack/react-query'
 import { useNavigate, useSearch } from '@tanstack/react-router'
-import { type ColumnDef } from '@tanstack/react-table'
+import { type Column, type ColumnDef } from '@tanstack/react-table'
 import { getLocale } from '@/i18n'
 import { useTranslation } from 'react-i18next'
 import { Label } from '@/components/ui/label'
+import { DataTableColumnHeader } from '@/components/data-table/column-header'
 import { UrlDataTable } from '@/components/data-table/url-data-table'
 import { Header } from '@/components/layout/header'
 import { Main } from '@/components/layout/main'
@@ -21,23 +22,53 @@ export function ClinicStatistics() {
     new Date(Date.now() + 7 * 3600000).toISOString().slice(0, 7)
   )
   const month = search.month || currentMonth
+  const params: Parameters<typeof getClinicMonthlyExaminations>[0] = {
+    month,
+    page: search.page ?? 1,
+    limit: search.pageSize ?? 10,
+    search: search.filter || undefined,
+    sort: search.sort || undefined,
+  }
   const { data, isPending, isError } = useQuery({
-    queryKey: ['clinic-monthly-examinations', month],
-    queryFn: () => getClinicMonthlyExaminations(month),
+    queryKey: ['clinic-monthly-examinations', params],
+    queryFn: () => getClinicMonthlyExaminations(params),
   })
   const columns: ColumnDef<ClinicStatisticsRow>[] = [
-    { accessorKey: 'code', header: t('messages.clinicCode') },
-    { accessorKey: 'name', header: t('messages.clinics') },
+    {
+      accessorKey: 'code',
+      header: ({ column }) => (
+        <DataTableColumnHeader
+          column={column}
+          title={t('messages.clinicCode')}
+        />
+      ),
+    },
+    {
+      accessorKey: 'name',
+      header: ({ column }) => (
+        <DataTableColumnHeader column={column} title={t('messages.clinics')} />
+      ),
+    },
     {
       accessorKey: 'examinationCount',
-      header: t('clinicStatistics.completedVisits'),
+      header: ({ column }) => (
+        <DataTableColumnHeader
+          column={column}
+          title={t('clinicStatistics.completedVisits')}
+        />
+      ),
       cell: ({ row }) =>
         row.original.examinationCount.toLocaleString(getLocale()),
     },
     ...(['totalAmount', 'medicineRevenue', 'medicineCost'] as const).map(
       (key) => ({
         accessorKey: key,
-        header: t('clinicStatistics.' + key),
+        header: ({ column }: { column: Column<ClinicStatisticsRow> }) => (
+          <DataTableColumnHeader
+            column={column}
+            title={t('clinicStatistics.' + key)}
+          />
+        ),
         cell: ({ row }: { row: { original: ClinicStatisticsRow } }) => (
           <span className='whitespace-nowrap tabular-nums'>
             {t('messages.vndAlt2', {
@@ -90,8 +121,8 @@ export function ClinicStatistics() {
           {data && (
             <p className='text-sm font-medium'>
               {t('clinicStatistics.summary', {
-                count: data.total,
-                clinics: data.data.length,
+                count: data.totalExaminations,
+                clinics: data.total,
               })}
             </p>
           )}
@@ -101,10 +132,10 @@ export function ClinicStatistics() {
         ) : (
           <UrlDataTable
             data={data?.data ?? []}
+            total={data?.total ?? 0}
             columns={columns}
             isLoading={isPending}
             searchPlaceholder={t('clinicStatistics.search')}
-            getSearchText={(clinic) => `${clinic.code} ${clinic.name}`}
             mobileLabels={{
               code: t('messages.clinicCode'),
               name: t('messages.clinics'),

@@ -1,5 +1,6 @@
 import { useQuery } from '@tanstack/react-query'
 import { useTranslation } from 'react-i18next'
+import { useApiTableParams } from '@/hooks/use-api-table-params'
 import { Header } from '@/components/layout/header'
 import { Main } from '@/components/layout/main'
 import { ProfileDropdown } from '@/components/profile-dropdown'
@@ -10,10 +11,11 @@ import { TRIAL_REQUEST_STATUS_OPTIONS } from './data'
 
 export function TrialRequests() {
   const { t } = useTranslation()
+  const params = useApiTableParams()
 
   const query = useQuery({
-    queryKey: ['trial-requests'],
-    queryFn: findTrialRequests,
+    queryKey: ['trial-requests', params],
+    queryFn: () => findTrialRequests(params),
   })
   return (
     <>
@@ -34,6 +36,7 @@ export function TrialRequests() {
         </div>
         <TrialRequestsTable
           data={query.data?.data ?? []}
+          total={query.data?.total ?? 0}
           isLoading={query.isLoading}
           searchPlaceholder={t('messages.searchPhoneNumberOrClinicCode')}
           emptyMessage={t('messages.noTrialRequestsYet')}

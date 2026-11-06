@@ -10,7 +10,7 @@ import {
   formatNumber,
   getExpiryStatus,
 } from '@/lib/utils'
-import { useApiSearch } from '@/hooks/use-api-search'
+import { useApiTableParams } from '@/hooks/use-api-table-params'
 import { Button } from '@/components/ui/button'
 import {
   DropdownMenu,
@@ -25,7 +25,7 @@ import {
   DataTableColumnHeader,
 } from '@/components/data-table'
 import { UrlDataTable } from '@/components/data-table/url-data-table'
-import { GetBatches, type StockBatch } from '../api'
+import { GetBatchesPage, type StockBatch } from '../api'
 import { expiryStatuses } from '../data/data'
 import { routeApi } from '../data/route'
 import { ExpiryBadge } from './expiry-badge'
@@ -205,14 +205,14 @@ export function BatchesTab() {
   const { t } = useTranslation()
 
   const currentSearch = routeApi.useSearch().filter ?? ''
-  const search = useApiSearch()
+  const params = useApiTableParams(15)
   const { data, isLoading, isFetching, isError } = useQuery({
-    queryKey: ['inventory', 'batches', search],
-    queryFn: () => GetBatches(search),
+    queryKey: ['inventory', 'batches', params],
+    queryFn: () => GetBatchesPage({ ...params, inStock: 'true' }),
   })
 
   // Lô đã xuất/huỷ hết không còn ý nghĩa để theo dõi HSD.
-  const batches = (data ?? []).filter((b) => b.qtyRemaining > 0)
+  const batches = data?.data ?? []
 
   const filters = [
     {
@@ -234,6 +234,7 @@ export function BatchesTab() {
     <UrlDataTable
       columns={columns}
       data={batches}
+      total={data?.total ?? 0}
       isLoading={isLoading}
       searchPlaceholder={t('messages.searchBatchNumberMedicineOrSupplier')}
       emptyMessage={t('messages.noBatchesYet')}
@@ -256,7 +257,11 @@ export function BatchesTab() {
           <InventoryExportButton
             table={table}
             kind='batches'
-            disabled={isFetching || isError || search !== currentSearch}
+            disabled={
+              isFetching ||
+              isError ||
+              params.search !== (currentSearch || undefined)
+            }
           />
         </DataTableToolbar>
       )}

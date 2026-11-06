@@ -15,8 +15,8 @@ const inventorySearchSchema = z.object({
   tab: z.enum(INVENTORY_TAB_VALUES).optional().catch('stock'),
 
   // Phân trang + sắp xếp (sort dạng 'id' tăng, '-id' giảm).
-  page: z.number().optional().catch(1),
-  pageSize: z.number().optional().catch(10),
+  page: z.number().int().min(1).optional().catch(1),
+  pageSize: z.number().int().min(1).max(100).optional().catch(10),
   sort: z.string().optional().catch(''),
 
   // Ô tìm kiếm chung của toolbar.

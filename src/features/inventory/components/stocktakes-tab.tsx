@@ -4,13 +4,12 @@ import i18n from '@/i18n'
 import { ChevronDown, ChevronRight } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 import { cn, formatDate, formatNumber } from '@/lib/utils'
-import { useApiSearch } from '@/hooks/use-api-search'
+import { useApiTableParams } from '@/hooks/use-api-table-params'
 import { Button } from '@/components/ui/button'
 import { DataTableColumnHeader } from '@/components/data-table'
 import { withAuditColumns } from '@/components/data-table/audit-columns'
 import { UrlDataTable } from '@/components/data-table/url-data-table'
 import { GetStockTake, GetStockTakes, type StockTakeSummary } from '../api'
-import { useDocumentDates } from '../hooks/use-document-dates'
 import { DocumentDateToolbar } from './document-date-toolbar'
 import { ExpiryBadge } from './expiry-badge'
 
@@ -218,18 +217,17 @@ const columns: ColumnDef<StockTakeSummary>[] = [
 export function StockTakesTab() {
   const { t } = useTranslation()
 
-  const search = useApiSearch()
+  const params = useApiTableParams(10)
   const { data, isLoading } = useQuery({
-    queryKey: ['inventory', 'stocktakes', search],
-    queryFn: () => GetStockTakes(search),
+    queryKey: ['inventory', 'stocktakes', params],
+    queryFn: () => GetStockTakes(params),
   })
-
-  const filteredData = useDocumentDates(data ?? [], (item) => item.countedAt)
 
   return (
     <UrlDataTable
       columns={withAuditColumns(columns)}
-      data={filteredData}
+      data={data?.data ?? []}
+      total={data?.total ?? 0}
       isLoading={isLoading}
       searchPlaceholder={t('messages.searchDocumentCodeMedicineOrBatchNumber')}
       emptyMessage={t(

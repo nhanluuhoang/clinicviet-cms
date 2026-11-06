@@ -3,8 +3,8 @@ import { createFileRoute } from '@tanstack/react-router'
 import { Medicines } from '@/features/medicines'
 
 const medicinesSearchSchema = z.object({
-  page: z.number().optional().catch(1),
-  pageSize: z.number().optional().catch(15),
+  page: z.number().int().min(1).optional().catch(1),
+  pageSize: z.number().int().min(1).max(100).optional().catch(15),
   sort: z.string().optional().catch(''),
   filter: z.string().optional().catch(''),
   unit: z.array(z.string()).optional().catch([]),
