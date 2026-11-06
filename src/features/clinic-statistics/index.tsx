@@ -67,7 +67,7 @@ export function ClinicStatistics() {
           </p>
         </div>
         <div className='flex flex-wrap items-end justify-between gap-3'>
-          <div className='space-y-1'>
+          <div className='w-full space-y-1 sm:w-auto'>
             <Label htmlFor='statistics-month'>
               {t('clinicStatistics.month')}
             </Label>
