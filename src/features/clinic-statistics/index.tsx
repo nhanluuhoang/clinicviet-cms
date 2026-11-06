@@ -4,11 +4,11 @@ import { useNavigate, useSearch } from '@tanstack/react-router'
 import { type ColumnDef } from '@tanstack/react-table'
 import { getLocale } from '@/i18n'
 import { useTranslation } from 'react-i18next'
-import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { UrlDataTable } from '@/components/data-table/url-data-table'
 import { Header } from '@/components/layout/header'
 import { Main } from '@/components/layout/main'
+import { MonthPickerInput } from '@/components/month-picker-input'
 import { ProfileDropdown } from '@/components/profile-dropdown'
 import { ThemeSwitch } from '@/components/theme-switch'
 import { getClinicMonthlyExaminations, type ClinicStatisticsRow } from './api'
@@ -71,12 +71,10 @@ export function ClinicStatistics() {
             <Label htmlFor='statistics-month'>
               {t('clinicStatistics.month')}
             </Label>
-            <Input
+            <MonthPickerInput
               id='statistics-month'
-              type='month'
               value={month}
-              onChange={(event) => {
-                const value = event.target.value
+              onChange={(value) => {
                 if (/^\d{4}-(0[1-9]|1[0-2])$/.test(value))
                   void navigate({
                     search: (previous) => ({
